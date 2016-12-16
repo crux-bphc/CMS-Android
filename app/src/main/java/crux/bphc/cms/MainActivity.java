@@ -2,7 +2,6 @@ package crux.bphc.cms;
 
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -13,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import app.Constants;
 import crux.bphc.cms.fragments.MyCoursesFragment;
 import helper.UserAccount;
 
@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity
 
     MyCoursesFragment fragment;
     private UserAccount mUserAccount;
-    private String mToken;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         mUserAccount = new UserAccount(this);
-        mToken = mUserAccount.getToken();
+        Constants.TOKEN = mUserAccount.getToken();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         if (fragment == null)
-            fragment = MyCoursesFragment.newInstance(mToken);
+            fragment = MyCoursesFragment.newInstance(Constants.TOKEN);
         transaction.replace(R.id.content_main, fragment, "My Courses");
         transaction.commit();
     }
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        switch (id){
+        switch (id) {
             case R.id.my_courses:
                 setHome();
                 break;

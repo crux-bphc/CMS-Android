@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 import static android.content.Context.MODE_PRIVATE;
 
 /**
- * Created by admin on 16-12-2016.
+ * Created by harsu on 16-12-2016.
  */
 
 public class UserAccount {

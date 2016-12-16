@@ -1,10 +1,13 @@
 package set;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by harsu on 16-12-2016.
  */
 
-public class Course {
+public class Course implements Parcelable {
 
     private int id, idnumber, enrolledusercount;
     private String shortname, fullname, summary, format;
@@ -19,6 +22,28 @@ public class Course {
         this.format = format;
     }
 
+    protected Course(Parcel in) {
+        id = in.readInt();
+        idnumber = in.readInt();
+        enrolledusercount = in.readInt();
+        shortname = in.readString();
+        fullname = in.readString();
+        summary = in.readString();
+        format = in.readString();
+    }
+
+    public static final Creator<Course> CREATOR = new Creator<Course>() {
+        @Override
+        public Course createFromParcel(Parcel in) {
+            return new Course(in);
+        }
+
+        @Override
+        public Course[] newArray(int size) {
+            return new Course[size];
+        }
+    };
+
     public int getCourseId() {
         return id;
     }
@@ -29,5 +54,21 @@ public class Course {
 
     public String getFullname() {
         return fullname;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(id);
+        parcel.writeInt(idnumber);
+        parcel.writeInt(enrolledusercount);
+        parcel.writeString(shortname);
+        parcel.writeString(fullname);
+        parcel.writeString(summary);
+        parcel.writeString(format);
     }
 }

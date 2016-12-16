@@ -2,6 +2,7 @@ package crux.bphc.cms.fragments;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import crux.bphc.cms.CourseDetailActivity;
 import crux.bphc.cms.R;
 import helper.ClickListener;
 import helper.MoodleServices;
@@ -85,7 +87,10 @@ public class MyCoursesFragment extends Fragment {
             @Override
             public boolean onClick(Object object, int position) {
                 Course course = (Course) object;
-                //todo implement transfer control to course detail activity
+
+                Intent intent = new Intent(getActivity(), CourseDetailActivity.class);
+                intent.putExtra("data", course);
+                startActivity(intent);
                 return true;
             }
         });
@@ -151,8 +156,8 @@ public class MyCoursesFragment extends Fragment {
 
     private void filterMyCourses(String searchedText) {
         List<Course> filteredCourses = new ArrayList<>();
-        for (Course course: courses) {
-            if (course.getFullname().toLowerCase().contains(searchedText)){
+        for (Course course : courses) {
+            if (course.getFullname().toLowerCase().contains(searchedText)) {
                 filteredCourses.add(course);
             }
         }
@@ -190,7 +195,7 @@ public class MyCoursesFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return mCourseList!= null ? mCourseList.size() : 0;
+            return mCourseList != null ? mCourseList.size() : 0;
         }
 
         public void setCourses(List<Course> courseList) {
