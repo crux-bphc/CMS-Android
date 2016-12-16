@@ -51,4 +51,16 @@ public class UserAccount {
         return prefs.getString("firstname", "");
 
     }
+
+    public int getUserID() {
+        SharedPreferences prefs = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        return prefs.getInt("userid", 0);
+
+    }
+
+    public void clearData() {
+        SharedPreferences.Editor editor = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+        editor.clear();
+        editor.apply();
+    }
 }

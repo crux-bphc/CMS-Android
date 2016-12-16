@@ -2,23 +2,27 @@ package crux.bphc.cms;
 
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import crux.bphc.cms.fragments.MyCoursesFragment;
 import helper.UserAccount;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    MyCoursesFragment fragment;
     private UserAccount mUserAccount;
     private String mToken;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,8 +30,8 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mUserAccount=new UserAccount(this);
-        mToken=mUserAccount.getToken();
+        mUserAccount = new UserAccount(this);
+        mToken = mUserAccount.getToken();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -38,13 +42,24 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        View headerView=navigationView.getHeaderView(0);
-        TextView username= (TextView) headerView.findViewById(R.id.username);
-        TextView fullName= (TextView) headerView.findViewById(R.id.firstname);
+        View headerView = navigationView.getHeaderView(0);
+        TextView username = (TextView) headerView.findViewById(R.id.username);
+        TextView fullName = (TextView) headerView.findViewById(R.id.firstname);
         username.setText(mUserAccount.getUsername());
         fullName.setText(mUserAccount.getFirstName());
 
 
+        setHome();
+
+    }
+
+    private void setHome() {
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        if (fragment == null)
+            fragment = MyCoursesFragment.newInstance(mToken);
+        transaction.replace(R.id.content_main, fragment, "My Courses");
+        transaction.commit();
     }
 
     @Override
@@ -63,21 +78,11 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-/*
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }*/
-
+        switch (id){
+            case R.id.my_courses:
+                setHome();
+                break;
+        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
