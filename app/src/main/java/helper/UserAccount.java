@@ -34,4 +34,21 @@ public class UserAccount {
         editor.putInt("userid", userDetail.getUserid());
         editor.commit();
     }
+
+    public String getToken() {
+        SharedPreferences prefs = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        return prefs.getString("token", "");
+    }
+
+    public String getUsername() {
+        SharedPreferences prefs = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        return prefs.getString("username", "");
+
+    }
+
+    public String getFirstName() {
+        SharedPreferences prefs = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        return prefs.getString("firstname", "");
+
+    }
 }
