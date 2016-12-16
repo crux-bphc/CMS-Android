@@ -8,6 +8,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,7 +80,7 @@ public class MyCoursesFragment extends Fragment {
         mFilter = (EditText) view.findViewById(R.id.filterET);
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
 
-        mAdapter = new MyAdapter(getActivity());
+        mAdapter = new MyAdapter(getActivity(), courses);
         mAdapter.setClickListener(new ClickListener() {
             @Override
             public boolean onClick(Object object, int position) {
@@ -91,6 +93,23 @@ public class MyCoursesFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         mSwipeRefreshLayout.setRefreshing(true);
+        mFilter.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String searchText = s.toString().toLowerCase();
+                filterMyCourses(searchText);
+            }
+        });
         makeRequest();
     }
 
@@ -116,10 +135,8 @@ public class MyCoursesFragment extends Fragment {
                     return;
                 }
 
-                for (Course course : coursesList) {
-                    courses.add(course);
-                    mAdapter.notifyItemInserted(courses.size() - 1);
-                }
+                courses.addAll(coursesList);
+                mAdapter.setCourses(courses);
                 mSwipeRefreshLayout.setRefreshing(false);
             }
 
@@ -132,15 +149,28 @@ public class MyCoursesFragment extends Fragment {
 
     }
 
+    private void filterMyCourses(String searchedText) {
+        List<Course> filteredCourses = new ArrayList<>();
+        for (Course course: courses) {
+            if (course.getFullname().toLowerCase().contains(searchedText)){
+                filteredCourses.add(course);
+            }
+        }
+        mAdapter.setCourses(filteredCourses);
+    }
+
     private class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
         LayoutInflater inflater;
         Context context;
         ClickListener clickListener;
 
-        public MyAdapter(Context context) {
+        private List<Course> mCourseList;
+
+        public MyAdapter(Context context, List<Course> courseList) {
             this.context = context;
             inflater = LayoutInflater.from(context);
+            mCourseList = courseList;
 
         }
 
@@ -155,12 +185,17 @@ public class MyCoursesFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(MyViewHolder holder, int position) {
-            holder.bind(courses.get(position));
+            holder.bind(mCourseList.get(position));
         }
 
         @Override
         public int getItemCount() {
-            return courses != null ? courses.size() : 0;
+            return mCourseList!= null ? mCourseList.size() : 0;
+        }
+
+        public void setCourses(List<Course> courseList) {
+            mCourseList = courseList;
+            notifyDataSetChanged();
         }
 
         class MyViewHolder extends RecyclerView.ViewHolder {
