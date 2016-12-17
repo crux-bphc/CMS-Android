@@ -52,6 +52,12 @@ public class CourseModulesActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(dividerItemDecoration);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
+    }
+
     private class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         Context context;
@@ -93,6 +99,8 @@ public class CourseModulesActivity extends AppCompatActivity {
         public int getItemCount() {
             return modules.size();
         }
+
+
 
         class ViewHolderResource extends RecyclerView.ViewHolder {
             TextView name;

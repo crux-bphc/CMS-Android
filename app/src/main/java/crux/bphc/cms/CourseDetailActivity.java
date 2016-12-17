@@ -89,7 +89,7 @@ public class CourseDetailActivity extends AppCompatActivity {
                     return;
                 }
 
-                final RealmResults<CourseSection> results = realm.where(CourseSection.class).equalTo("courseID",courseId).findAll();
+                final RealmResults<CourseSection> results = realm.where(CourseSection.class).equalTo("courseID", courseId).findAll();
                 realm.executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
@@ -126,6 +126,7 @@ public class CourseDetailActivity extends AppCompatActivity {
                 Intent intent = new Intent(CourseDetailActivity.this, CourseModulesActivity.class);
                 intent.putExtra("id", section.getId());
                 startActivity(intent);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
         });
         linearLayout.addView(v);
