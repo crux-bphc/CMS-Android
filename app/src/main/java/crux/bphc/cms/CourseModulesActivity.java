@@ -60,7 +60,7 @@ public class CourseModulesActivity extends AppCompatActivity {
         List<Module> modules;
 
 
-        public MyAdapter(Context context) {
+        MyAdapter(Context context) {
             this.context = context;
             inflater = LayoutInflater.from(context);
             modules = new ArrayList<>();
@@ -72,36 +72,21 @@ public class CourseModulesActivity extends AppCompatActivity {
             return modules.get(position).getModType();
         }
 
-        public void setModules(List<Module> modules) {
+        void setModules(List<Module> modules) {
             this.modules = modules;
             notifyDataSetChanged();
         }
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            switch (viewType) {
-                case 0:
-                default:
-                case 3:
-                    return new ViewHolderResource(inflater.inflate(R.layout.row_course_module_resource, parent, false));
 
-                case 2:
-                    return new ViewHolderLabel(inflater.inflate(R.layout.row_course_module_label, parent, false));
-                case 1:
-                    return new ViewHolderForum(inflater.inflate(R.layout.row_course_module_label, parent, false));
-
-            }
-
+            return new ViewHolderResource(inflater.inflate(R.layout.row_course_module_resource, parent, false));
         }
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            if (holder instanceof ViewHolderResource)
-                ((ViewHolderResource) holder).bind(modules.get(position));
-            else if (holder instanceof ViewHolderLabel)
-                ((ViewHolderLabel) holder).bind(modules.get(position));
-            else if (holder instanceof ViewHolderForum)
-                ((ViewHolderForum) holder).bind(modules.get(position));
+
+            ((ViewHolderResource) holder).bind(modules.get(position));
         }
 
         @Override
@@ -124,6 +109,12 @@ public class CourseModulesActivity extends AppCompatActivity {
 
             void bind(Module module) {
                 name.setText(module.getName());
+                modIcon.setVisibility(View.VISIBLE);
+                if (module.getContents() == null || module.getContents().size()==0) {
+                    download.setVisibility(View.GONE);
+                } else
+                    download.setVisibility(View.VISIBLE);
+
                 switch (module.getModType()) {
                     case 0:
                     case 100:
@@ -131,47 +122,21 @@ public class CourseModulesActivity extends AppCompatActivity {
                         break;
                     case 3:
                         modIcon.setImageResource(R.drawable.book);
+                        break;
+                    case 4:
+                        modIcon.setImageResource(R.drawable.folder);
+                        break;
+                    case 2:
+                        modIcon.setVisibility(View.GONE);
+                        break;
+                    case 1:
+                        modIcon.setImageResource(R.drawable.forum);
+                        break;
+
                 }
                 //todo download or open icon
             }
         }
 
-        class ViewHolderLabel extends RecyclerView.ViewHolder {
-            TextView name, description;
-
-
-            ViewHolderLabel(View itemView) {
-                super(itemView);
-
-                name = (TextView) itemView.findViewById(R.id.fileName);
-                description = (TextView) itemView.findViewById(R.id.description);
-                itemView.findViewById(R.id.fileIcon).setVisibility(View.GONE);
-
-            }
-
-            void bind(Module module) {
-                name.setText(module.getName());
-                description.setText(Html.fromHtml(module.getDescription()));
-            }
-        }
-
-        class ViewHolderForum extends RecyclerView.ViewHolder {
-            TextView name, description;
-            ImageView modIcon;
-
-            ViewHolderForum(View itemView) {
-                super(itemView);
-                modIcon = (ImageView) itemView.findViewById(R.id.fileIcon);
-                name = (TextView) itemView.findViewById(R.id.fileName);
-                description = (TextView) itemView.findViewById(R.id.description);
-                modIcon.setImageResource(R.drawable.forum);
-            }
-
-            void bind(Module module) {
-
-                name.setText(module.getName());
-                description.setText(Html.fromHtml(module.getDescription()));
-            }
-        }
     }
 }

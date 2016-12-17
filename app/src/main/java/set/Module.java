@@ -23,7 +23,7 @@ public class Module extends RealmObject {
     private int modType;
 
     public Module() {
-        modType=-1;
+        modType = -1;
     }
 
     public Module(int id, String url, String name, int instance, String modicon, String modname, String modplural, String description, RealmList<Content> contents) {
@@ -48,7 +48,7 @@ public class Module extends RealmObject {
     }
 
     public int getModType() {
-        if(modType==-1)
+        if (modType == -1)
             setModType();
         return modType;
     }
@@ -66,6 +66,8 @@ public class Module extends RealmObject {
             modType = 2;
         else if (modname.equalsIgnoreCase("assign"))
             modType = 3;
+        else if (modname.equalsIgnoreCase("folder"))
+            modType = 4;
         else
             modType = 100;
 
