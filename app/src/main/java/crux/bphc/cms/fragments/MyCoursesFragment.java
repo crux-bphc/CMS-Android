@@ -25,6 +25,8 @@ import crux.bphc.cms.R;
 import helper.ClickListener;
 import helper.MoodleServices;
 import helper.UserAccount;
+import io.realm.Realm;
+import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -42,6 +44,7 @@ public class MyCoursesFragment extends Fragment {
     EditText mFilter;
     SwipeRefreshLayout mSwipeRefreshLayout;
     List<Course> courses;
+    Realm realm;
     private String TOKEN;
     private MyAdapter mAdapter;
 
@@ -77,7 +80,15 @@ public class MyCoursesFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
+        realm = Realm.getDefaultInstance();
+        RealmResults<Course> result = realm.where(Course.class).findAll();
+
         courses = new ArrayList<>();
+        for (Course course : result) {
+            courses.add(course);
+        }
+
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         mFilter = (EditText) view.findViewById(R.id.filterET);
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
@@ -89,11 +100,12 @@ public class MyCoursesFragment extends Fragment {
                 Course course = (Course) object;
 
                 Intent intent = new Intent(getActivity(), CourseDetailActivity.class);
-                intent.putExtra("data", course);
+                intent.putExtra("id", course.getCourseId());
                 startActivity(intent);
                 return true;
             }
         });
+        mAdapter.setCourses(courses);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -141,17 +153,29 @@ public class MyCoursesFragment extends Fragment {
         courseCall.enqueue(new Callback<List<Course>>() {
             @Override
             public void onResponse(Call<List<Course>> call, Response<List<Course>> response) {
-                List<Course> coursesList = response.body();
+                final List<Course> coursesList = response.body();
                 if (coursesList == null) {
                     //todo error token. logout and ask to re-login
                     mSwipeRefreshLayout.setRefreshing(false);
                     return;
                 }
 
+
                 courses.clear();
                 courses.addAll(coursesList);
                 mAdapter.setCourses(courses);
                 mSwipeRefreshLayout.setRefreshing(false);
+
+
+                final RealmResults<Course> results = realm.where(Course.class).findAll();
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        results.deleteAllFromRealm();
+                        realm.copyToRealm(coursesList);
+                    }
+                });
+
             }
 
             @Override

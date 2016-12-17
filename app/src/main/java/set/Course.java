@@ -3,13 +3,17 @@ package set;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
 /**
  * Created by harsu on 16-12-2016.
  */
 
-public class Course implements Parcelable {
-
-    private int id, idnumber, enrolledusercount;
+public class Course extends RealmObject {
+    @PrimaryKey
+    private int id;
+    private int idnumber, enrolledusercount;
     private String shortname, fullname, summary, format;
 
     public Course(int id, int idnumber, int enrolledusercount, String shortname, String fullname, String summary, String format) {
@@ -22,27 +26,56 @@ public class Course implements Parcelable {
         this.format = format;
     }
 
-    protected Course(Parcel in) {
-        id = in.readInt();
-        idnumber = in.readInt();
-        enrolledusercount = in.readInt();
-        shortname = in.readString();
-        fullname = in.readString();
-        summary = in.readString();
-        format = in.readString();
+    public Course() {
     }
 
-    public static final Creator<Course> CREATOR = new Creator<Course>() {
-        @Override
-        public Course createFromParcel(Parcel in) {
-            return new Course(in);
-        }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-        @Override
-        public Course[] newArray(int size) {
-            return new Course[size];
-        }
-    };
+    public void setIdnumber(int idnumber) {
+        this.idnumber = idnumber;
+    }
+
+    public void setEnrolledusercount(int enrolledusercount) {
+        this.enrolledusercount = enrolledusercount;
+    }
+
+    public void setShortname(String shortname) {
+        this.shortname = shortname;
+    }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getIdnumber() {
+        return idnumber;
+    }
+
+    public int getEnrolledusercount() {
+        return enrolledusercount;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public String getFormat() {
+        return format;
+    }
 
     public int getCourseId() {
         return id;
@@ -56,19 +89,4 @@ public class Course implements Parcelable {
         return fullname;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(id);
-        parcel.writeInt(idnumber);
-        parcel.writeInt(enrolledusercount);
-        parcel.writeString(shortname);
-        parcel.writeString(fullname);
-        parcel.writeString(summary);
-        parcel.writeString(format);
-    }
 }
