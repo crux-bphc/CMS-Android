@@ -115,6 +115,14 @@ public class MyCoursesFragment extends Fragment {
                 filterMyCourses(searchText);
             }
         });
+
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mSwipeRefreshLayout.setRefreshing(true);
+                makeRequest();
+            }
+        });
         makeRequest();
     }
 
@@ -140,6 +148,7 @@ public class MyCoursesFragment extends Fragment {
                     return;
                 }
 
+                courses.clear();
                 courses.addAll(coursesList);
                 mAdapter.setCourses(courses);
                 mSwipeRefreshLayout.setRefreshing(false);
