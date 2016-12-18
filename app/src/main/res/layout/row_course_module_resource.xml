@@ -5,7 +5,9 @@
     android:paddingBottom="8dp"
     android:paddingLeft="8dp"
     android:paddingRight="8dp"
-    android:paddingTop="8dp">
+    android:paddingTop="8dp"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true">
 
     <ImageView
         android:id="@+id/fileIcon"
@@ -37,7 +39,7 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:padding="8dp"
-        android:src="@drawable/ic_folder_download"
+        android:src="@drawable/content_save"
         android:tint="#000" />
 
 </RelativeLayout>

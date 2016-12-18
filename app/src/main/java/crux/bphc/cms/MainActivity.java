@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity
 
         setHome();
 
+        //todo add runtime permission for WRITE_EXTERNAL_STORAGE
     }
 
     private void setHome() {
