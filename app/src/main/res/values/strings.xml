@@ -16,6 +16,11 @@
 
     <string name="action_settings">Settings</string>
 
+    <!-- resources for course search functionality -->
+    <string name="course_search_edit_text_hint">Enter Course Name</string>
+    <string name="course_search_button">Search</string>
+    <string name="course_search_navigation_drawer">Courses</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 

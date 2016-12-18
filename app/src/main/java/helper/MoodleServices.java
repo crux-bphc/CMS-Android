@@ -7,6 +7,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 import set.Course;
 import set.CourseSection;
+import set.search.CourseSearch;
 
 /**
  * Created by harsu on 16-12-2016.
@@ -18,4 +19,10 @@ public interface MoodleServices {
 
     @GET("webservice/rest/server.php?wsfunction=core_course_get_contents&moodlewsrestformat=json")
     Call<List<CourseSection>> getCourseContent(@Query("wstoken") String token, @Query("courseid") int courseID);
+
+    @GET("webservice/rest/server.php?wsfunction=core_course_search_courses&moodlewsrestformat=json&criterianame=search")
+    Call<CourseSearch> getSearchedCourses(@Query("wstoken") String token,
+                                          @Query("criteriavalue") String courseName,
+                                          @Query("page") int page,
+                                          @Query("perpage") int numberOfResults);
 }
