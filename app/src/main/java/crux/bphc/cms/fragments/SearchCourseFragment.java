@@ -1,10 +1,11 @@
 package crux.bphc.cms.fragments;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.NestedScrollView;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -20,7 +21,6 @@ import java.util.List;
 
 import crux.bphc.cms.R;
 import helper.MoodleServices;
-import helper.UserAccount;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -36,19 +36,18 @@ public class SearchCourseFragment extends Fragment {
 
     private static final String TOKEN_KEY = "token";
     private static final int GARBAGE_TOTAL_PAGES = 1000;
-
+    boolean containsMore = true;
+    int mLastVisibleCount = 0;
     private RecyclerView mRecyclerView;
     private EditText mEditText;
     private Button mButton;
-
     private SearchCourseAdapter mSearchCourseAdapter;
     private String TOKEN;
-
-    private boolean mLoading = true;
+    private boolean mLoading = false;
     private int matchedSearches;
     private int page = 0;
-    private int mTotalPages;
     private String mPreviousSearch = "";
+    private SwipeRefreshLayout mSwipeToRefresh;
 
     public SearchCourseFragment() {
         // Required empty public constructor
@@ -85,26 +84,42 @@ public class SearchCourseFragment extends Fragment {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.searched_courses);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
 
+        mSwipeToRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
         mEditText = (EditText) view.findViewById(R.id.course_search_edit_text);
         mButton = (Button) view.findViewById(R.id.course_search_button);
 
+        mRecyclerView.setNestedScrollingEnabled(false);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mSearchCourseAdapter);
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        NestedScrollView nestedScrollView = (NestedScrollView) view.findViewById(R.id.nestedScroll);
+        nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
 
                 int visibleItemCount = layoutManager.getChildCount();
                 int totalItemCount = layoutManager.getItemCount();
                 int pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
 
-                if(mLoading) {
-                    if(visibleItemCount + pastVisibleItems >= totalItemCount) {
-                        mLoading = false;
+                if (!mLoading) {
+                    if (visibleItemCount + pastVisibleItems >= totalItemCount && visibleItemCount > mLastVisibleCount) {
+                        mLastVisibleCount = visibleItemCount;
+                        mLoading = true;
                         getSearchCourses(mPreviousSearch);
+
                     }
                 }
+            }
+        });
+
+
+        mSwipeToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                page = 0;
+                mSearchCourseAdapter.clearCourses();
+                mLoading = true;
+                containsMore = true;
+                getSearchCourses(mPreviousSearch);
             }
         });
 
@@ -112,11 +127,12 @@ public class SearchCourseFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 String searchText = mEditText.getText().toString().trim();
-                if(!mPreviousSearch.equals(searchText)) {
+                if (!mPreviousSearch.equals(searchText)) {
                     mPreviousSearch = searchText;
-                    mTotalPages = GARBAGE_TOTAL_PAGES;
                     page = 0;
                     mSearchCourseAdapter.clearCourses();
+                    mLoading = true;
+                    containsMore = true;
                     getSearchCourses(searchText);
                 }
             }
@@ -138,31 +154,39 @@ public class SearchCourseFragment extends Fragment {
                 PER_PAGE
         );
         System.out.println("Page number is: " + page);
+        if (!containsMore) {
+
+            return;
+        }
+        mSwipeToRefresh.setRefreshing(true);
         call.enqueue(new Callback<CourseSearch>() {
             @Override
             public void onResponse(Call<CourseSearch> call, Response<CourseSearch> response) {
 
-                if(mTotalPages == GARBAGE_TOTAL_PAGES) {
-                    matchedSearches = response.body().getTotal();
-                    mTotalPages = matchedSearches % PER_PAGE == 0 ?
-                            ((matchedSearches / PER_PAGE) - 1) : (matchedSearches / PER_PAGE);
+
+                int totalResults = response.body().getTotal();
+                int fetchedResults = (page + 1) * PER_PAGE;
+                if (fetchedResults >= totalResults) {
+                    containsMore = false;
                 }
 
-                if (page <= mTotalPages) {
-                    if (page == 0) {
-                        List<Course> matchedCourses = response.body().getCourses();
-                        mSearchCourseAdapter.setCourses(matchedCourses);
-                    } else {
-                        List<Course> newMatchedCourses = response.body().getCourses();
-                        mSearchCourseAdapter.addExtraCourses(newMatchedCourses);
-                    }
-                    mLoading = true;
-                    page++;
+                if (page == 0) {
+                    List<Course> matchedCourses = response.body().getCourses();
+                    mSearchCourseAdapter.setCourses(matchedCourses);
+                } else {
+                    List<Course> newMatchedCourses = response.body().getCourses();
+                    mSearchCourseAdapter.addExtraCourses(newMatchedCourses);
                 }
+                mSwipeToRefresh.setRefreshing(false);
+                mLoading = false;
+                page++;
+
             }
 
             @Override
             public void onFailure(Call<CourseSearch> call, Throwable t) {
+                mLoading = false;
+                mSwipeToRefresh.setRefreshing(false);
                 Toast.makeText(getActivity(), "Check your Internet Connection", Toast.LENGTH_SHORT).show();
             }
         });
@@ -195,6 +219,7 @@ public class SearchCourseFragment extends Fragment {
 
         public void clearCourses() {
             mCourses.clear();
+            notifyDataSetChanged();
         }
 
         @Override

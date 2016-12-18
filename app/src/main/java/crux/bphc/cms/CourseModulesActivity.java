@@ -151,6 +151,7 @@ public class CourseModulesActivity extends AppCompatActivity {
     }
 
     private void downloadFile(Content content, Module module) {
+        Toast.makeText(this, "Downloading file - " + content.getFilename(), Toast.LENGTH_SHORT).show();
         String url = content.getFileurl() + "&token=" + Constants.TOKEN;
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
         request.setDescription(module.getModname());
