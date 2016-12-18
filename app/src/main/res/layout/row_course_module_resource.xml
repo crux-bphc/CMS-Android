@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
     android:paddingBottom="8dp"
     android:paddingLeft="8dp"
     android:paddingRight="8dp"
-    android:paddingTop="8dp"
-    android:background="?attr/selectableItemBackground"
-    android:clickable="true">
+    android:paddingTop="8dp">
 
     <ImageView
         android:id="@+id/fileIcon"
@@ -16,8 +16,7 @@
         android:layout_height="48dp"
         android:layout_centerVertical="true"
         android:padding="12dp"
-        android:src="@drawable/powerpoint"
-         />
+        android:src="@drawable/powerpoint" />
 
     <TextView
         android:id="@+id/fileName"
@@ -40,7 +39,7 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:padding="8dp"
-        app:srcCompat="@drawable/content_save"
-        android:tint="#000" />
+        android:tint="#000"
+        app:srcCompat="@drawable/content_save" />
 
 </RelativeLayout>

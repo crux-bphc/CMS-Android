@@ -50,6 +50,7 @@ public class CourseModulesActivity extends AppCompatActivity {
                 if (searchFile(fileName, i == 0)) {
                     requestedDownloads.remove(fileName);
                     setDownloaded(fileName);
+                    openFile(fileName);
                     return;
                 }
                 i++;
@@ -118,7 +119,7 @@ public class CourseModulesActivity extends AppCompatActivity {
                             requestedDownloads.add(content.getFilename());
                             downloadFile(content, module);
                         } else {
-                            openFile(content);
+                            openFile(content.getFilename());
                         }
                     }
                     return true;
@@ -128,18 +129,17 @@ public class CourseModulesActivity extends AppCompatActivity {
         });
     }
 
-    private void openFile(Content content) {
+    private void openFile(String filename) {
         File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
-                + File.separator +
-                content.getFilename());
+                + File.separator + filename);
         Uri path = Uri.fromFile(file);
         Intent pdfOpenintent = new Intent(Intent.ACTION_VIEW);
         pdfOpenintent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        pdfOpenintent.setDataAndType(path, "application/" + getExtension(content.getFilename()));
+        pdfOpenintent.setDataAndType(path, "application/" + getExtension(filename));
         try {
             CourseModulesActivity.this.startActivity(pdfOpenintent);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(CourseModulesActivity.this, "No app found to open the file.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(CourseModulesActivity.this, "No app found to open the file - " + filename, Toast.LENGTH_SHORT).show();
             pdfOpenintent.setDataAndType(path, "application/*");
             CourseModulesActivity.this.startActivity(pdfOpenintent);
         }
