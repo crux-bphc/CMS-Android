@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import app.Constants;
 import crux.bphc.cms.fragments.MyCoursesFragment;
+import crux.bphc.cms.fragments.SearchCourseFragment;
 import helper.UserAccount;
 
 public class MainActivity extends AppCompatActivity
@@ -115,6 +116,13 @@ public class MainActivity extends AppCompatActivity
         transaction.commit();
     }
 
+    private void setCourseSearch() {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        SearchCourseFragment fragment = SearchCourseFragment.newInstance(Constants.TOKEN);
+        transaction.replace(R.id.content_main, fragment, "Course Search");
+        transaction.commit();
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -134,6 +142,9 @@ public class MainActivity extends AppCompatActivity
         switch (id) {
             case R.id.my_courses:
                 setHome();
+                break;
+            case R.id.course_search:
+                setCourseSearch();;
                 break;
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
