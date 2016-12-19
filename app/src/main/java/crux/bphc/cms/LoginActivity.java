@@ -85,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
         Picasso.with(this).load(R.drawable.bitslogo).into(bitsLogo);
         Picasso.with(this).load(R.drawable.intro_bg).into(background);
 
-        
+
 
     }
 

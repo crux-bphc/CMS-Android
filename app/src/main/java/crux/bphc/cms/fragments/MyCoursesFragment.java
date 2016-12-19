@@ -85,9 +85,7 @@ public class MyCoursesFragment extends Fragment {
         RealmResults<Course> result = realm.where(Course.class).findAll();
 
         courses = new ArrayList<>();
-        for (Course course : result) {
-            courses.add(course);
-        }
+        courses = realm.copyFromRealm(result);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         mFilter = (EditText) view.findViewById(R.id.filterET);
@@ -108,7 +106,8 @@ public class MyCoursesFragment extends Fragment {
         mAdapter.setCourses(courses);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
+//        DividerItemDecoration dividerItemDecoration=new DividerItemDecoration(getActivity());
+//        mRecyclerView.addItemDecoration(dividerItemDecoration);
         mSwipeRefreshLayout.setRefreshing(true);
         mFilter.addTextChangedListener(new TextWatcher() {
             @Override
@@ -125,6 +124,7 @@ public class MyCoursesFragment extends Fragment {
             public void afterTextChanged(Editable s) {
                 String searchText = s.toString().toLowerCase();
                 filterMyCourses(searchText);
+                //todo filter icon to be changed to cross
             }
         });
 
