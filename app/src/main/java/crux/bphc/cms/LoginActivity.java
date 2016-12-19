@@ -1,5 +1,6 @@
 package crux.bphc.cms;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -11,8 +12,11 @@ import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
 
 import helper.UserAccount;
 import helper.UserDetail;
@@ -32,17 +36,17 @@ import static app.Constants.API_URL;
 public class LoginActivity extends AppCompatActivity {
 
 
+    UserAccount userAccount;
     private EditText mEmailView;
     private EditText mPasswordView;
-    private View mProgressView;
     private View mLoginFormView;
-    UserAccount userAccount;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        userAccount=new UserAccount(this);
+        userAccount = new UserAccount(this);
         checkLoggedIn();
 
         setContentView(R.layout.activity_login);
@@ -68,13 +72,26 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.setCancelable(false);
+
         mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
+
+        ImageView bitsLogo, background;
+        background = (ImageView) findViewById(R.id.background);
+        bitsLogo = (ImageView) findViewById(R.id.bitsLogo);
+        Picasso.with(this).load(R.drawable.bitslogo).into(bitsLogo);
+        Picasso.with(this).load(R.drawable.intro_bg).into(background);
+
+        
+
     }
 
     private void checkLoggedIn() {
-        if(userAccount.isLoggedIn()){
-            startActivity(new Intent(this,MainActivity.class));
+        if (userAccount.isLoggedIn()) {
+            startActivity(new Intent(this, MainActivity.class));
             finish();
         }
     }
@@ -141,11 +158,19 @@ public class LoginActivity extends AppCompatActivity {
 
 
     private void showProgress(final boolean show) {
-        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-        mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        if (show)
+            progressDialog.show();
+        else
+            progressDialog.hide();
+        // mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        progressDialog.dismiss();
+    }
 
     private interface MoodleLogin {
         @GET("login/token.php?service=moodle_mobile_app")
@@ -155,7 +180,6 @@ public class LoginActivity extends AppCompatActivity {
         Call<UserDetail> fetchUserDetail(@Query("wstoken") String token);
 
     }
-
 
 
     private class UserLoginTask {
@@ -177,30 +201,30 @@ public class LoginActivity extends AppCompatActivity {
             call.enqueue(new Callback<LoginDetail>() {
                 @Override
                 public void onResponse(Call<LoginDetail> call, Response<LoginDetail> response) {
-                    final LoginDetail loginDetail=response.body();
-                    Log.d("Login: ",loginDetail.error + " " + loginDetail.token);
+                    final LoginDetail loginDetail = response.body();
+                    Log.d("Login: ", loginDetail.error + " " + loginDetail.token);
 
                     //check if password is correct
-                    if(loginDetail.error!=null){
-                        Toast.makeText(LoginActivity.this,"The Username or Password is incorrect",Toast.LENGTH_SHORT).show();
+                    if (loginDetail.error != null) {
+                        Toast.makeText(LoginActivity.this, "The Username or Password is incorrect", Toast.LENGTH_SHORT).show();
                         showProgress(false);
                         return;
                     }
 
-                    if(loginDetail.token==null){
-                        Toast.makeText(LoginActivity.this,"Please contact network administrator to enable mobile services",Toast.LENGTH_LONG).show();
+                    if (loginDetail.token == null) {
+                        Toast.makeText(LoginActivity.this, "Please contact network administrator to enable mobile services", Toast.LENGTH_LONG).show();
                         showProgress(false);
                         return;
                     }
 
-                    Call<UserDetail> userDetailCall=moodleLogin.fetchUserDetail(loginDetail.token);
+                    Call<UserDetail> userDetailCall = moodleLogin.fetchUserDetail(loginDetail.token);
                     userDetailCall.enqueue(new Callback<UserDetail>() {
                         @Override
                         public void onResponse(Call<UserDetail> call, Response<UserDetail> response) {
-                            UserDetail userDetail=response.body();
+                            UserDetail userDetail = response.body();
 
-                            if(userDetail.errorcode!=null){
-                                Toast.makeText(LoginActivity.this,"Unknown error occured. Please retry.",Toast.LENGTH_LONG).show();
+                            if (userDetail.errorcode != null) {
+                                Toast.makeText(LoginActivity.this, "Unknown error occured. Please retry.", Toast.LENGTH_LONG).show();
                                 showProgress(false);
                                 return;
                             }
@@ -213,19 +237,17 @@ public class LoginActivity extends AppCompatActivity {
 
                         @Override
                         public void onFailure(Call<UserDetail> call, Throwable t) {
-                            Toast.makeText(LoginActivity.this,"Please check your Internet Connection",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, "Please check your Internet Connection", Toast.LENGTH_SHORT).show();
                             showProgress(false);
                         }
                     });
-
-
 
 
                 }
 
                 @Override
                 public void onFailure(Call<LoginDetail> call, Throwable t) {
-                    Toast.makeText(LoginActivity.this,"Please check your Internet Connection",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Please check your Internet Connection", Toast.LENGTH_SHORT).show();
                     showProgress(false);
                 }
             });
