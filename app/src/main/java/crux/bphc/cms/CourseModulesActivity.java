@@ -4,23 +4,29 @@ import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -91,6 +97,7 @@ public class CourseModulesActivity extends AppCompatActivity {
         realm = Realm.getDefaultInstance();
         RealmResults<CourseSection> sections = realm.where(CourseSection.class).equalTo("id", sectionID).findAll();
 
+        setTitle(sections.first().getName());
 
         modules = realm.copyFromRealm(sections.first().getModules());
 
@@ -127,6 +134,17 @@ public class CourseModulesActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void openFile(String filename) {
@@ -139,9 +157,8 @@ public class CourseModulesActivity extends AppCompatActivity {
         try {
             CourseModulesActivity.this.startActivity(pdfOpenintent);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(CourseModulesActivity.this, "No app found to open the file - " + filename, Toast.LENGTH_SHORT).show();
             pdfOpenintent.setDataAndType(path, "application/*");
-            CourseModulesActivity.this.startActivity(pdfOpenintent);
+            startActivity(Intent.createChooser(pdfOpenintent, "Open File - "+filename));
         }
     }
 
@@ -169,6 +186,23 @@ public class CourseModulesActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+    }
+
+    private void shareFile(String filename) {
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
+                + File.separator + filename);
+        Uri path = Uri.fromFile(file);
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_STREAM, path);
+        sendIntent.setType("application/*");
+
+        try {
+            startActivity(Intent.createChooser(sendIntent, "Share File"));
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(CourseModulesActivity.this, "No app found to share the file - " + filename, Toast.LENGTH_SHORT).show();
+
+        }
     }
 
     private class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -222,6 +256,7 @@ public class CourseModulesActivity extends AppCompatActivity {
             TextView name;
             ImageView modIcon, download;
             int downloaded = -1;
+            ProgressBar progressBar;
 
             ViewHolderResource(View itemView) {
                 super(itemView);
@@ -237,6 +272,64 @@ public class CourseModulesActivity extends AppCompatActivity {
                         }
                     }
                 });
+                itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        final Module module = modules.get(getLayoutPosition());
+                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(CourseModulesActivity.this);
+                        alertDialog.setTitle(module.getName());
+                        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(CourseModulesActivity.this, android.R.layout.simple_list_item_1);
+                        if (downloaded == 1) {
+                            arrayAdapter.add("View");
+                            arrayAdapter.add("Re-Download");
+                            arrayAdapter.add("Share");
+                        } else {
+                            arrayAdapter.add("Download");
+                        }
+
+                        alertDialog.setNegativeButton("Cancel", null);
+                        alertDialog.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                if (downloaded == 1) {
+                                    switch (i) {
+                                        case 0:
+                                            if (module.getContents() != null)
+                                                for (Content content : module.getContents()) {
+                                                    openFile(content.getFilename());
+
+                                                }
+                                            break;
+                                        case 1:
+                                            if (module.getContents() == null || module.getContents().size() == 0) {
+                                                //todo open label/forum/etc in new activity
+                                                return;
+                                            }
+
+                                            for (Content content : module.getContents()) {
+                                                requestedDownloads.add(content.getFilename());
+                                                downloadFile(content, module);
+                                            }
+                                            break;
+                                        case 2:
+                                            if (module.getContents() != null)
+                                                for (Content content : module.getContents()) {
+                                                    shareFile(content.getFilename());
+                                                }
+
+                                    }
+                                }
+                                else{
+                                    downloadFile(module.getContents().get(0),module);
+                                }
+                            }
+                        });
+                        alertDialog.show();
+                        return true;
+
+                    }
+                });
+                progressBar = (ProgressBar) itemView.findViewById(R.id.progressBar);
             }
 
             void bind(Module module) {
@@ -246,28 +339,36 @@ public class CourseModulesActivity extends AppCompatActivity {
                     download.setVisibility(View.GONE);
                 } else {
                     download.setVisibility(View.VISIBLE);
-                    if (downloaded == -1 || downloaded == 0) {
-                        List<Content> contents = module.getContents();
-                        downloaded = 1;
-                        for (Content content : contents) {
-                            if (!searchFile(content.getFilename(), false)) {
-                                downloaded = 0;
-                                break;
-                            }
+                    List<Content> contents = module.getContents();
+                    downloaded = 1;
+                    for (Content content : contents) {
+                        if (!searchFile(content.getFilename(), false)) {
+                            downloaded = 0;
+                            break;
                         }
                     }
-
                     if (downloaded == 1) {
-                        download.setImageResource(R.drawable.open_in_app);
+                        download.setImageResource(R.drawable.eye);
                     } else {
                         download.setImageResource(R.drawable.content_save);
                     }
                 }
-
+                progressBar.setVisibility(View.GONE);
                 switch (module.getModType()) {
                     case 0:
                     case 100:
-                        Picasso.with(context).load(module.getModicon()).into(modIcon);
+                        progressBar.setVisibility(View.VISIBLE);
+                        Picasso.with(context).load(module.getModicon()).into(modIcon, new Callback() {
+                            @Override
+                            public void onSuccess() {
+                                progressBar.setVisibility(View.GONE);
+                            }
+
+                            @Override
+                            public void onError() {
+
+                            }
+                        });
                         break;
                     case 3:
                         modIcon.setImageResource(R.drawable.book);

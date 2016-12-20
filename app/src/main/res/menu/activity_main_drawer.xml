@@ -3,6 +3,7 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:checked="true"
             android:id="@+id/my_courses"
             android:icon="@drawable/ic_book_multiple_variant"
             android:title="My Courses" />
@@ -13,9 +14,10 @@
         <item
             android:id="@+id/course_search"
             android:icon="@drawable/ic_magnify"
-            android:title="@string/course_search_navigation_drawer"/>
+            android:title="@string/course_search_navigation_drawer" />
         <item
             android:id="@+id/website"
+            android:checkable="false"
             android:icon="@drawable/ic_web"
             android:title="Website" />
     </group>

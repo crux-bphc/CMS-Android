@@ -55,7 +55,6 @@
             android:imeOptions="actionUnspecified"
             android:inputType="textPassword"
             android:maxLines="1"
-
             android:paddingBottom="10dp"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"

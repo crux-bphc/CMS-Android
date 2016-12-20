@@ -4,14 +4,12 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,7 +38,7 @@ public class SearchCourseFragment extends Fragment {
     int mLastVisibleCount = 0;
     private RecyclerView mRecyclerView;
     private EditText mEditText;
-    private Button mButton;
+    private View mButton;
     private SearchCourseAdapter mSearchCourseAdapter;
     private String TOKEN;
     private boolean mLoading = false;
@@ -86,16 +84,20 @@ public class SearchCourseFragment extends Fragment {
 
         mSwipeToRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
         mEditText = (EditText) view.findViewById(R.id.course_search_edit_text);
-        mButton = (Button) view.findViewById(R.id.course_search_button);
+        mButton = view.findViewById(R.id.course_search_button);
 
-        mRecyclerView.setNestedScrollingEnabled(false);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mSearchCourseAdapter);
-        NestedScrollView nestedScrollView = (NestedScrollView) view.findViewById(R.id.nestedScroll);
-        nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-            @Override
-            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
 
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
                 int visibleItemCount = layoutManager.getChildCount();
                 int totalItemCount = layoutManager.getItemCount();
                 int pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
@@ -199,25 +201,25 @@ public class SearchCourseFragment extends Fragment {
         private LayoutInflater mLayoutInflater;
         private List<Course> mCourses = new ArrayList<>();
 
-        public SearchCourseAdapter(Context context, List<Course> courses) {
+        SearchCourseAdapter(Context context, List<Course> courses) {
             mContext = context;
             mLayoutInflater = LayoutInflater.from(mContext);
             mCourses = courses;
         }
 
-        public void setCourses(List<Course> courses) {
+        void setCourses(List<Course> courses) {
             mCourses = courses;
             notifyDataSetChanged();
             System.out.println("Number of courses setCourses: " + mCourses.size());
         }
 
-        public void addExtraCourses(List<Course> courses) {
+        void addExtraCourses(List<Course> courses) {
             mCourses.addAll(courses);
             notifyDataSetChanged();
             System.out.println("Number of courses addExtraCourses: " + mCourses.size());
         }
 
-        public void clearCourses() {
+        void clearCourses() {
             mCourses.clear();
             notifyDataSetChanged();
         }
@@ -245,7 +247,7 @@ public class SearchCourseFragment extends Fragment {
 
             TextView mSearchCourseDisplayName;
 
-            public SearchCourseViewHolder(View itemView) {
+            SearchCourseViewHolder(View itemView) {
                 super(itemView);
                 mSearchCourseDisplayName = (TextView) itemView.findViewById(R.id.search_course_display_name);
             }

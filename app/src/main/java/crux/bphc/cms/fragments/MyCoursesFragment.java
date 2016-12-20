@@ -14,7 +14,9 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -34,6 +36,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import set.Course;
 
+import static android.content.Context.INPUT_METHOD_SERVICE;
 import static app.Constants.API_URL;
 
 
@@ -45,6 +48,8 @@ public class MyCoursesFragment extends Fragment {
     SwipeRefreshLayout mSwipeRefreshLayout;
     List<Course> courses;
     Realm realm;
+    ImageView mFilterIcon;
+    boolean isClearIconSet = false;
     private String TOKEN;
     private MyAdapter mAdapter;
 
@@ -90,6 +95,7 @@ public class MyCoursesFragment extends Fragment {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         mFilter = (EditText) view.findViewById(R.id.filterET);
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
+        mFilterIcon = (ImageView) view.findViewById(R.id.filterIcon);
 
         mAdapter = new MyAdapter(getActivity(), courses);
         mAdapter.setClickListener(new ClickListener() {
@@ -103,6 +109,7 @@ public class MyCoursesFragment extends Fragment {
                 return true;
             }
         });
+
         mAdapter.setCourses(courses);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -122,9 +129,29 @@ public class MyCoursesFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                String searchText = s.toString().toLowerCase();
+                String searchText = s.toString().toLowerCase().trim();
                 filterMyCourses(searchText);
-                //todo filter icon to be changed to cross
+
+                if (!isClearIconSet) {
+                    mFilterIcon.setImageResource(R.drawable.ic_clear_black_24dp);
+                    isClearIconSet = true;
+                    mFilterIcon.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            mFilter.setText("");
+                            mFilterIcon.setImageResource(R.drawable.filter);
+                            mFilterIcon.setOnClickListener(null);
+                            isClearIconSet = false;
+                            InputMethodManager inputManager = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
+                            inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                        }
+                    });
+                }
+                if(searchText.isEmpty()){
+                    mFilterIcon.setImageResource(R.drawable.filter);
+                    mFilterIcon.setOnClickListener(null);
+                    isClearIconSet = false;
+                }
             }
         });
 
