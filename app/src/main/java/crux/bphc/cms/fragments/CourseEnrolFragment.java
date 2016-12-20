@@ -124,7 +124,8 @@ public class CourseEnrolFragment extends Fragment {
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(getActivity(), "Positive button works", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(), "Positive button works", Toast.LENGTH_SHORT).show();
+                //TODO: to add a loader while the network request tries to enrol the course.
                 enrolInCourse();
             }
         });
@@ -158,12 +159,14 @@ public class CourseEnrolFragment extends Fragment {
                             "Successfully enrolled in " + course.getDisplayname(),
                             Toast.LENGTH_SHORT).show();
 
-                    FragmentManager fm = getActivity().getSupportFragmentManager();
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 
-                    CourseEnrolFragment courseEnrolFragment = (CourseEnrolFragment) fm
-                            .findFragmentByTag(COURSE_ENROL_FRAG_TRANSACTION_KEY);
-                    fm.beginTransaction().remove(courseEnrolFragment).commit();
-                    getActivity().finish();
+                    CourseSectionFragment courseSectionFragment = CourseSectionFragment
+                            .newInstance(TOKEN, course.getId());
+                    fragmentManager
+                            .beginTransaction()
+                            .replace(R.id.course_section_enrol_container, courseSectionFragment)
+                            .commit();
                 }
             }
 

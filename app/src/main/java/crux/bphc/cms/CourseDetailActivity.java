@@ -2,19 +2,20 @@ package crux.bphc.cms;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
 
 import crux.bphc.cms.fragments.CourseEnrolFragment;
+import crux.bphc.cms.fragments.CourseSectionFragment;
 import helper.MoodleServices;
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -36,12 +37,12 @@ public class CourseDetailActivity extends AppCompatActivity {
     Course course;
     public List<Contact> contacts;
 
-    LinearLayout linearLayout;
     private FrameLayout mCourseEnrolContainer;
+    private FragmentManager fragmentManager;
     private CourseEnrolFragment mCourseEnrolFragment;
 
     public static final String COURSE_ENROL_FRAG_TRANSACTION_KEY = "course_enrol_frag";
-    private set.search.Course mReceivedCourse;
+    private set.search.Course mEnrolCourse;
 
     Realm realm;
 
@@ -50,48 +51,37 @@ public class CourseDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         realm = Realm.getDefaultInstance();
         setContentView(R.layout.activity_course_detail);
+        fragmentManager = getSupportFragmentManager();
+        mCourseEnrolContainer = (FrameLayout) findViewById(R.id.course_section_enrol_container);
 
-        linearLayout = (LinearLayout) findViewById(R.id.linearLayout);
-        mCourseEnrolContainer = (FrameLayout) findViewById(R.id.course_enrol_container);
+        Intent intent = getIntent();
 
-        mReceivedCourse = getIntent().getParcelableExtra(COURSE_PARCEL_INTENT_KEY);
-        int courseId = getIntent().getIntExtra("id", -1);
+        mEnrolCourse = intent.getParcelableExtra(COURSE_PARCEL_INTENT_KEY);
+        int courseId = intent.getIntExtra("id", -1);
 
-        if (courseId == -1 && mReceivedCourse != null) {
-            int receivedCourseId = mReceivedCourse.getId();
-            System.out.println("receivedCourseId: " + receivedCourseId);
-            Course courseEnrol = getFirstCourse(receivedCourseId);
-
-            if(courseEnrol == null) {
-                linearLayout.setVisibility(View.GONE);
-                mCourseEnrolContainer.setVisibility(View.VISIBLE);
-                contacts = mReceivedCourse.getContacts();
-                setCourseEnrol();
-            }
-        }
-        else if(mReceivedCourse == null && courseId != -1) {
-            mCourseEnrolContainer.setVisibility(View.GONE);
-            linearLayout.setVisibility(View.VISIBLE);
-
-            course = getFirstCourse(courseId);
-            setTitle(course.getShortname());
-
-
-            RealmResults<CourseSection> courseSections = realm.where(CourseSection.class).equalTo("courseID", courseId).findAll();
-            for (CourseSection section : courseSections) {
-                addSection(section);
-            }
-
-            sendRequest(course.getCourseId());
-
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeButtonEnabled(true);
-        }
-        else {
+        if(courseId == -1 && mEnrolCourse == null) {
             finish();
             return;
         }
+        else if(courseId == -1 && mEnrolCourse != null) {
+            courseId = mEnrolCourse.getId();
+        }
 
+        course = getFirstCourse(courseId);
+
+        if(course == null) {
+            System.out.println("receivedCourseId: " + courseId);
+            contacts = mEnrolCourse.getContacts();
+            setCourseEnrol();
+
+        }
+        else {
+            String activityTitleName = intent.getStringExtra("course_name");
+            setTitle(activityTitleName);
+            setCourseSection();
+        }
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
     }
 
     private Course getFirstCourse(int courseId) {
@@ -108,19 +98,31 @@ public class CourseDetailActivity extends AppCompatActivity {
     }
 
     private void setCourseEnrol() {
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        CourseEnrolFragment oldFragment = (CourseEnrolFragment) getSupportFragmentManager()
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        CourseEnrolFragment oldFragment = (CourseEnrolFragment) fragmentManager
                 .findFragmentByTag(COURSE_ENROL_FRAG_TRANSACTION_KEY);
         if(oldFragment != null) {
             fragmentTransaction.remove(oldFragment);
             fragmentTransaction.commit();
         }
-        mCourseEnrolFragment = CourseEnrolFragment.newInstance(TOKEN, mReceivedCourse);
+        mCourseEnrolFragment = CourseEnrolFragment.newInstance(TOKEN, mEnrolCourse);
         fragmentTransaction.add(
-                R.id.course_enrol_container,
+                R.id.course_section_enrol_container,
                 mCourseEnrolFragment,
                 COURSE_ENROL_FRAG_TRANSACTION_KEY);
         fragmentTransaction.commit();
+    }
+
+    private void setCourseSection() {
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        CourseSectionFragment courseSectionFragment = CourseSectionFragment.newInstance(
+                TOKEN,
+                course.getCourseId());
+        fragmentTransaction.add(
+                R.id.course_section_enrol_container,
+                courseSectionFragment,
+                "course_section_frag"
+        ).commit();
     }
 
     @Override
@@ -131,69 +133,5 @@ public class CourseDetailActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-    private void sendRequest(final int courseId) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(API_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        MoodleServices moodleServices = retrofit.create(MoodleServices.class);
-
-        Call<List<CourseSection>> courseCall = moodleServices.getCourseContent(TOKEN, courseId);
-
-        courseCall.enqueue(new Callback<List<CourseSection>>() {
-            @Override
-            public void onResponse(Call<List<CourseSection>> call, Response<List<CourseSection>> response) {
-                final List<CourseSection> sectionList = response.body();
-                if (sectionList == null) {
-                    //todo not registered, ask to register, change UI, show enroll button
-
-                    return;
-                }
-
-                final RealmResults<CourseSection> results = realm.where(CourseSection.class).equalTo("courseID", courseId).findAll();
-                realm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        results.deleteAllFromRealm();
-                        linearLayout.removeAllViews();
-                        for (CourseSection section : sectionList) {
-                            addSection(section);
-                            section.setCourseID(courseId);
-                            realm.copyToRealmOrUpdate(section);
-
-                        }
-                    }
-                });
-
-
-            }
-
-            @Override
-            public void onFailure(Call<List<CourseSection>> call, Throwable t) {
-                //no internet connection
-
-                //todo show offline available data
-                Toast.makeText(CourseDetailActivity.this, "Check your internet connection", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void addSection(final CourseSection section) {
-        View v = LayoutInflater.from(this).inflate(R.layout.row_course_section, linearLayout, false);
-        ((TextView) v.findViewById(R.id.sectionName)).setText(section.getName());
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(CourseDetailActivity.this, CourseModulesActivity.class);
-                intent.putExtra("id", section.getId());
-                startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-            }
-        });
-        linearLayout.addView(v);
-    }
-
 
 }

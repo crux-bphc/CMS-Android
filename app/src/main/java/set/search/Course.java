@@ -43,6 +43,10 @@ public class Course implements Parcelable{
         this.enrollmentmethods = enrollmentmethods;
     }
 
+    public String getShortname() {
+        return shortname;
+    }
+
     private Course(Parcel source) {
         this.id = source.readInt();
         this.fullname = source.readString();

@@ -8,24 +8,9 @@
     android:orientation="vertical"
     tools:context="crux.bphc.cms.CourseDetailActivity">
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:descendantFocusability="blocksDescendants"
-            android:orientation="vertical" />
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/course_enrol_container"
-            android:visibility="gone" />
-
-    </LinearLayout>
+        android:id="@+id/course_section_enrol_container" />
 
 </android.support.v4.widget.NestedScrollView>
