@@ -65,28 +65,39 @@
                 android:layout_height="match_parent"
                 android:background="#bdbdbd" />-->
 
-            <LinearLayout
+            <RelativeLayout
+                android:id="@+id/download"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="?attr/selectableItemBackground"
                 android:clickable="true"
                 android:padding="16dp">
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:visibility="gone" />
+
                 <ImageView
+                    android:id="@+id/downloadIcon"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_gravity="center_vertical"
                     app:srcCompat="@drawable/content_save" />
 
                 <TextView
+                    android:id="@+id/downloadText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
+                    android:layout_centerVertical="true"
                     android:layout_marginLeft="8dp"
+                    android:layout_toRightOf="@+id/downloadIcon"
                     android:text="Download Course"
                     android:textColor="#212121"
                     android:textSize="14sp" />
-            </LinearLayout>
+            </RelativeLayout>
         </LinearLayout>
     </LinearLayout>
 </android.support.v7.widget.CardView>

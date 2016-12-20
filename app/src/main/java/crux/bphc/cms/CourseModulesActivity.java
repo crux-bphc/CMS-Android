@@ -162,6 +162,12 @@ public class CourseModulesActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(onComplete);
+    }
+
     @NonNull
     private String getExtension(String filename) {
         return filename.substring(filename.lastIndexOf('.') + 1);

@@ -1,8 +1,11 @@
 package crux.bphc.cms.fragments;
 
 
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,7 +20,9 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +30,7 @@ import java.util.List;
 import crux.bphc.cms.CourseDetailActivity;
 import crux.bphc.cms.R;
 import helper.ClickListener;
+import helper.CourseDownloader;
 import helper.MoodleServices;
 import helper.UserAccount;
 import io.realm.Realm;
@@ -35,6 +41,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import set.Course;
+import set.CourseSection;
 
 import static android.content.Context.INPUT_METHOD_SERVICE;
 import static app.Constants.API_URL;
@@ -50,8 +57,27 @@ public class MyCoursesFragment extends Fragment {
     Realm realm;
     ImageView mFilterIcon;
     boolean isClearIconSet = false;
+    CourseDownloader courseDownloader;
+    List<CourseDownloader.DownloadReq> requestedDownloads;
     private String TOKEN;
     private MyAdapter mAdapter;
+    BroadcastReceiver onComplete = new BroadcastReceiver() {
+        public void onReceive(Context ctxt, Intent intent) {
+            for (CourseDownloader.DownloadReq downloadReq : requestedDownloads) {
+                if (courseDownloader.searchFile(downloadReq.getFileName())) {
+                    requestedDownloads.remove(downloadReq);
+                    courses.get(downloadReq.getPosition())
+                            .setDownloadedFiles(courses.get(downloadReq.getPosition()).getDownloadedFiles() + 1);
+                    if (courses.get(downloadReq.getPosition()).getDownloadedFiles() == courses.get(downloadReq.getPosition()).getTotalFiles()) {
+                        courses.get(downloadReq.getPosition()).setDownloadStatus(-1);
+                        //todo notification all files downloaded for this course
+                    }
+                    mAdapter.notifyItemChanged(downloadReq.getPosition());
+                    return;
+                }
+            }
+        }
+    };
 
     public MyCoursesFragment() {
         // Required empty public constructor
@@ -64,6 +90,8 @@ public class MyCoursesFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,7 +113,9 @@ public class MyCoursesFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        getActivity().registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 
+        requestedDownloads = new ArrayList<>();
         realm = Realm.getDefaultInstance();
         RealmResults<Course> result = realm.where(Course.class).findAll();
 
@@ -113,8 +143,6 @@ public class MyCoursesFragment extends Fragment {
         mAdapter.setCourses(courses);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-//        DividerItemDecoration dividerItemDecoration=new DividerItemDecoration(getActivity());
-//        mRecyclerView.addItemDecoration(dividerItemDecoration);
         mSwipeRefreshLayout.setRefreshing(true);
         mFilter.addTextChangedListener(new TextWatcher() {
             @Override
@@ -147,7 +175,7 @@ public class MyCoursesFragment extends Fragment {
                         }
                     });
                 }
-                if(searchText.isEmpty()){
+                if (searchText.isEmpty()) {
                     mFilterIcon.setImageResource(R.drawable.filter);
                     mFilterIcon.setOnClickListener(null);
                     isClearIconSet = false;
@@ -163,6 +191,66 @@ public class MyCoursesFragment extends Fragment {
             }
         });
         makeRequest();
+        courseDownloader = new CourseDownloader(getActivity());
+
+        mAdapter.setDownloadClickListener(new ClickListener() {
+            @Override
+            public boolean onClick(Object object, final int position) {
+                final Course course = (Course) object;
+                if (course.getDownloadStatus() != -1)
+                    return false;
+                courses.get(position).setDownloadStatus(0);
+                mAdapter.notifyItemChanged(position);
+
+                courseDownloader.downloadCourseData(course.getCourseId(), new CourseDownloader.DownloadCallback() {
+                    @Override
+                    public void onSuccess(Object object) {
+
+                        RealmResults<CourseSection> courseSections = realm.where(CourseSection.class).equalTo("courseID", course.getCourseId()).findAll();
+                        for (CourseSection section : courseSections) {
+                            courseDownloader.downloadSection(section, new CourseDownloader.DownloadCallback() {
+
+                                @Override
+                                public void onSuccess(Object object) {
+                                    if (object instanceof CourseDownloader.DownloadReq) {
+                                        CourseDownloader.DownloadReq downloadReq = (CourseDownloader.DownloadReq) object;
+                                        downloadReq.setPosition(position);
+                                        requestedDownloads.add(downloadReq);
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure() {
+                                    int totalFiles = 0;
+                                    for (CourseDownloader.DownloadReq downloadReq : requestedDownloads) {
+
+                                        if (downloadReq.getPosition() == position) {
+                                            totalFiles++;
+                                        }
+                                    }
+                                    courses.get(position).setTotalFiles(totalFiles);
+                                    if (totalFiles == 0) {
+                                        Toast.makeText(getActivity(), "All files already downloaded", Toast.LENGTH_SHORT).show();
+                                        courses.get(position).setDownloadStatus(-1);
+                                    }else{
+                                        courses.get(position).setDownloadStatus(1);
+                                    }
+                                    mAdapter.notifyItemChanged(position);
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onFailure() {
+                        Toast.makeText(getActivity(), "Check your internet connection", Toast.LENGTH_SHORT).show();
+                        courses.get(position).setDownloadStatus(-1);
+                        mAdapter.notifyItemChanged(position);
+                    }
+                });
+                return true;
+            }
+        });
     }
 
     private void makeRequest() {
@@ -229,17 +317,17 @@ public class MyCoursesFragment extends Fragment {
         LayoutInflater inflater;
         Context context;
         ClickListener clickListener;
-
+        ClickListener downloadClickListener;
         private List<Course> mCourseList;
 
-        public MyAdapter(Context context, List<Course> courseList) {
+        MyAdapter(Context context, List<Course> courseList) {
             this.context = context;
             inflater = LayoutInflater.from(context);
             mCourseList = courseList;
 
         }
 
-        public void setClickListener(ClickListener clickListener) {
+        void setClickListener(ClickListener clickListener) {
             this.clickListener = clickListener;
         }
 
@@ -258,18 +346,35 @@ public class MyCoursesFragment extends Fragment {
             return mCourseList != null ? mCourseList.size() : 0;
         }
 
-        public void setCourses(List<Course> courseList) {
+        void setCourses(List<Course> courseList) {
             mCourseList = courseList;
+            for (int i = 0; i < mCourseList.size(); i++) {
+                mCourseList.get(i).setDownloadStatus(-1);
+            }
             notifyDataSetChanged();
+        }
+
+        public void setDownloadClickListener(ClickListener downloadClickListener) {
+            this.downloadClickListener = downloadClickListener;
         }
 
         class MyViewHolder extends RecyclerView.ViewHolder {
 
             TextView courseName;
+            View download;
+            ImageView downloadIcon;
+            ProgressBar progressBar;
+            TextView downloadText;
+
 
             MyViewHolder(View itemView) {
                 super(itemView);
                 courseName = (TextView) itemView.findViewById(R.id.courseName);
+                download = itemView.findViewById(R.id.download);
+                downloadText = (TextView) itemView.findViewById(R.id.downloadText);
+                progressBar = (ProgressBar) itemView.findViewById(R.id.progressBar);
+                downloadIcon = (ImageView) itemView.findViewById(R.id.downloadIcon);
+
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -279,10 +384,38 @@ public class MyCoursesFragment extends Fragment {
                         }
                     }
                 });
+                download.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        if (downloadClickListener != null) {
+                            int pos = getLayoutPosition();
+                            if (!downloadClickListener.onClick(courses.get(pos), pos)) {
+                                Toast.makeText(getActivity(), "Download already in progress", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                });
             }
 
-            public void bind(Course course) {
+
+            void bind(Course course) {
                 courseName.setText(course.getShortname());
+                if (course.getDownloadStatus() == -1) {
+                    progressBar.setVisibility(View.GONE);
+                    downloadIcon.setVisibility(View.VISIBLE);
+                    downloadText.setText("Download Course");
+                } else {
+                    //the course is downloading and is in midway
+                    progressBar.setVisibility(View.VISIBLE);
+                    downloadIcon.setVisibility(View.INVISIBLE);
+                    if (course.getDownloadStatus() == 0)   // downloading section data
+                        downloadText.setText("Downloading course information... ");
+                    else if (course.getDownloadStatus() == 1)
+                        downloadText.setText("Downloading files... ( " + course.getDownloadedFiles() + " / " + course.getTotalFiles() + " )");
+                    else
+                        downloadText.setText("Downloaded");
+                }
             }
         }
 
