@@ -18,6 +18,13 @@
         android:padding="12dp"
         android:src="@drawable/powerpoint" />
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:padding="12dp"
+        android:layout_centerVertical="true"/>
+
     <TextView
         android:id="@+id/fileName"
         android:layout_width="match_parent"
@@ -38,7 +45,7 @@
         android:layout_height="48dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:padding="8dp"
+        android:padding="10dp"
         android:tint="#000"
         app:srcCompat="@drawable/content_save" />
 

@@ -2,7 +2,9 @@ package crux.bphc.cms;
 
 import android.Manifest;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -59,6 +61,7 @@ public class MainActivity extends AppCompatActivity
 
 
         setHome();
+
 
         askPermission();
 
@@ -144,7 +147,11 @@ public class MainActivity extends AppCompatActivity
                 setHome();
                 break;
             case R.id.course_search:
-                setCourseSearch();;
+                setCourseSearch();
+                break;
+            case R.id.website:
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.API_URL));
+                startActivity(browserIntent);
                 break;
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

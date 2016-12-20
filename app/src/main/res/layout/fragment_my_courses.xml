@@ -26,15 +26,18 @@
 
 
             <EditText
+                android:focusableInTouchMode="true"
+                android:focusable="true"
                 android:id="@+id/filterET"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:hint="Filter my courses" />
 
             <ImageView
-                android:tint="?attr/colorAccent"
+                android:clickable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:id="@+id/filterIcon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"

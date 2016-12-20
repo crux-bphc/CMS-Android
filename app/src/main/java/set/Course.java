@@ -1,9 +1,7 @@
 package set;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -11,6 +9,12 @@ import io.realm.annotations.PrimaryKey;
  */
 
 public class Course extends RealmObject {
+    @Ignore
+    private int downloadStatus;
+    @Ignore
+    private int totalFiles;
+    @Ignore
+    private int downloadedFiles;
     @PrimaryKey
     private int id;
     private int idnumber, enrolledusercount;
@@ -29,52 +33,68 @@ public class Course extends RealmObject {
     public Course() {
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public int getTotalFiles() {
+        return totalFiles;
     }
 
-    public void setIdnumber(int idnumber) {
-        this.idnumber = idnumber;
+    public void setTotalFiles(int totalFiles) {
+        this.totalFiles = totalFiles;
     }
 
-    public void setEnrolledusercount(int enrolledusercount) {
-        this.enrolledusercount = enrolledusercount;
+    public int getDownloadedFiles() {
+        return downloadedFiles;
     }
 
-    public void setShortname(String shortname) {
-        this.shortname = shortname;
+    public void setDownloadedFiles(int downloadedFiles) {
+        this.downloadedFiles = downloadedFiles;
     }
 
-    public void setFullname(String fullname) {
-        this.fullname = fullname;
+    public int getDownloadStatus() {
+        return downloadStatus;
     }
 
-    public void setSummary(String summary) {
-        this.summary = summary;
-    }
-
-    public void setFormat(String format) {
-        this.format = format;
+    public void setDownloadStatus(int downloadStatus) {
+        this.downloadStatus = downloadStatus;
     }
 
     public int getId() {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public int getIdnumber() {
         return idnumber;
+    }
+
+    public void setIdnumber(int idnumber) {
+        this.idnumber = idnumber;
     }
 
     public int getEnrolledusercount() {
         return enrolledusercount;
     }
 
+    public void setEnrolledusercount(int enrolledusercount) {
+        this.enrolledusercount = enrolledusercount;
+    }
+
     public String getSummary() {
         return summary;
     }
 
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+
     public String getFormat() {
         return format;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
     }
 
     public int getCourseId() {
@@ -85,8 +105,16 @@ public class Course extends RealmObject {
         return shortname;
     }
 
+    public void setShortname(String shortname) {
+        this.shortname = shortname;
+    }
+
     public String getFullname() {
         return fullname;
+    }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
     }
 
 }
