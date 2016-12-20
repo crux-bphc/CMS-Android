@@ -7,6 +7,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 import set.Course;
 import set.CourseSection;
+import set.enrol.SelfEnrol;
 import set.search.CourseSearch;
 
 /**
@@ -25,4 +26,7 @@ public interface MoodleServices {
                                           @Query("criteriavalue") String courseName,
                                           @Query("page") int page,
                                           @Query("perpage") int numberOfResults);
+
+    @GET("webservice/rest/server.php?wsfunction=enrol_self_enrol_user&moodlewsrestformat=json")
+    Call<SelfEnrol> selfEnrolUserInCourse(@Query("wstoken") String token, @Query("courseid") int courseId);
 }

@@ -2,16 +2,19 @@ package crux.bphc.cms;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
 
+import crux.bphc.cms.fragments.CourseEnrolFragment;
 import helper.MoodleServices;
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -22,13 +25,24 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import set.Course;
 import set.CourseSection;
+import set.search.Contact;
 
 import static app.Constants.API_URL;
+import static app.Constants.COURSE_PARCEL_INTENT_KEY;
 import static app.Constants.TOKEN;
 
 public class CourseDetailActivity extends AppCompatActivity {
+
     Course course;
+    public List<Contact> contacts;
+
     LinearLayout linearLayout;
+    private FrameLayout mCourseEnrolContainer;
+    private CourseEnrolFragment mCourseEnrolFragment;
+
+    public static final String COURSE_ENROL_FRAG_TRANSACTION_KEY = "course_enrol_frag";
+    private set.search.Course mReceivedCourse;
+
     Realm realm;
 
     @Override
@@ -37,27 +51,76 @@ public class CourseDetailActivity extends AppCompatActivity {
         realm = Realm.getDefaultInstance();
         setContentView(R.layout.activity_course_detail);
 
+        linearLayout = (LinearLayout) findViewById(R.id.linearLayout);
+        mCourseEnrolContainer = (FrameLayout) findViewById(R.id.course_enrol_container);
+
+        mReceivedCourse = getIntent().getParcelableExtra(COURSE_PARCEL_INTENT_KEY);
         int courseId = getIntent().getIntExtra("id", -1);
-        if (courseId == -1) {
+
+        if (courseId == -1 && mReceivedCourse != null) {
+            int receivedCourseId = mReceivedCourse.getId();
+            System.out.println("receivedCourseId: " + receivedCourseId);
+            Course courseEnrol = getFirstCourse(receivedCourseId);
+
+            if(courseEnrol == null) {
+                linearLayout.setVisibility(View.GONE);
+                mCourseEnrolContainer.setVisibility(View.VISIBLE);
+                contacts = mReceivedCourse.getContacts();
+                setCourseEnrol();
+            }
+        }
+        else if(mReceivedCourse == null && courseId != -1) {
+            mCourseEnrolContainer.setVisibility(View.GONE);
+            linearLayout.setVisibility(View.VISIBLE);
+
+            course = getFirstCourse(courseId);
+            setTitle(course.getShortname());
+
+
+            RealmResults<CourseSection> courseSections = realm.where(CourseSection.class).equalTo("courseID", courseId).findAll();
+            for (CourseSection section : courseSections) {
+                addSection(section);
+            }
+
+            sendRequest(course.getCourseId());
+
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+        }
+        else {
             finish();
             return;
         }
-        RealmResults<Course> courses = realm.where(Course.class).equalTo("id", courseId).findAll();
-        course = courses.first();
-        linearLayout = (LinearLayout) findViewById(R.id.linearLayout);
-        setTitle(course.getShortname());
 
+    }
 
-        RealmResults<CourseSection> courseSections = realm.where(CourseSection.class).equalTo("courseID", courseId).findAll();
-        for (CourseSection section : courseSections) {
-            addSection(section);
+    private Course getFirstCourse(int courseId) {
+        RealmResults<Course> courses = realm
+                .where(Course.class)
+                .equalTo("id", courseId)
+                .findAll();
+        if(courses.size() == 0) {
+            System.out.println("Zero courses matched");
+            return null;
         }
+        System.out.println("Number of courses matched: " + courses.size());
+        return courses.first();
+    }
 
-        sendRequest(course.getCourseId());
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-
+    private void setCourseEnrol() {
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        CourseEnrolFragment oldFragment = (CourseEnrolFragment) getSupportFragmentManager()
+                .findFragmentByTag(COURSE_ENROL_FRAG_TRANSACTION_KEY);
+        if(oldFragment != null) {
+            fragmentTransaction.remove(oldFragment);
+            fragmentTransaction.commit();
+        }
+        mCourseEnrolFragment = CourseEnrolFragment.newInstance(TOKEN, mReceivedCourse);
+        fragmentTransaction.add(
+                R.id.course_enrol_container,
+                mCourseEnrolFragment,
+                COURSE_ENROL_FRAG_TRANSACTION_KEY);
+        fragmentTransaction.commit();
     }
 
     @Override

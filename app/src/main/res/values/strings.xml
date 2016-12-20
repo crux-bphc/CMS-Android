@@ -21,6 +21,14 @@
     <string name="course_search_button">Search</string>
     <string name="course_search_navigation_drawer">Courses</string>
 
+    <!-- resources for course enrol functionality -->
+    <string name="course_enrol_category">Category</string>
+    <string name="course_enrol_teachers">Teachers</string>
+    <string name="course_enrol_self_enrol">Self enrolment (Student)</string>
+    <string name="course_enrol_self_enrol_button">Enrol me</string>
+    <string name="course_enrol_teachers_no_info">No information available about teachers</string>
+    <string name="course_enrol_confirmation_msg">Are you sure you want to enrol yourself in this course?</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 

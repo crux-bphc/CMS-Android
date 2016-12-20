@@ -143,19 +143,23 @@ public class MyCoursesFragment extends Fragment {
                 .baseUrl(API_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
+        System.out.println("Inside make request");
 
         UserAccount userAccount = new UserAccount(getActivity());
 
         MoodleServices moodleServices = retrofit.create(MoodleServices.class);
 
         Call<List<Course>> courseCall = moodleServices.getCourses(TOKEN, userAccount.getUserID());
+        System.out.println(courseCall.request().url().toString());
 
         courseCall.enqueue(new Callback<List<Course>>() {
             @Override
             public void onResponse(Call<List<Course>> call, Response<List<Course>> response) {
                 final List<Course> coursesList = response.body();
+                System.out.println("Size of coursesList: " + coursesList.size() + response.code());
                 if (coursesList == null) {
                     //todo error token. logout and ask to re-login
+                    System.out.println("CoursesList is null");
                     mSwipeRefreshLayout.setRefreshing(false);
                     return;
                 }
@@ -164,6 +168,7 @@ public class MyCoursesFragment extends Fragment {
                 courses.clear();
                 courses.addAll(coursesList);
                 mAdapter.setCourses(courses);
+                System.out.println("number of courses in coursesList: " + coursesList.size());
                 mSwipeRefreshLayout.setRefreshing(false);
 
 
@@ -180,6 +185,7 @@ public class MyCoursesFragment extends Fragment {
 
             @Override
             public void onFailure(Call<List<Course>> call, Throwable t) {
+                System.out.println("No internet connection");
                 //no internet connection
                 mSwipeRefreshLayout.setRefreshing(false);
             }

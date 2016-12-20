@@ -1,0 +1,146 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="crux.bphc.cms.fragments.CourseEnrolFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="16dp">
+        
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/course_enrol_course_display_name"
+                    android:paddingLeft="@dimen/course_enrol_cardview_lr_padding"
+                    android:paddingRight="@dimen/course_enrol_cardview_lr_padding"
+
+                    android:text="BIO F211 BIOLOGICAL CHEMISTRY LS1"
+                    android:textColor="#000"
+                    android:textSize="16sp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginTop="16dp"
+                    android:background="#bdbdbd" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="@dimen/course_enrol_cardview_lr_padding"
+                    android:paddingRight="@dimen/course_enrol_cardview_lr_padding"
+
+                    android:text="@string/course_enrol_category"
+                    android:textSize="16sp"
+                    android:textColor="#000"
+                    android:layout_marginTop="16dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/course_enrol_course_category"
+                    android:layout_marginTop="8dp"
+                    android:paddingLeft="@dimen/course_enrol_cardview_lr_padding"
+                    android:paddingRight="@dimen/course_enrol_cardview_lr_padding"
+
+                    android:text="FIRST SEMESTER 2016-17"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/course_enrol_teachers"
+                android:orientation="vertical"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="@dimen/course_enrol_cardview_lr_padding"
+                    android:paddingRight="@dimen/course_enrol_cardview_lr_padding"
+
+                    android:text="@string/course_enrol_teachers"
+                    android:textSize="16sp"
+                    android:textColor="#000"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/course_enrol_teacher_no_info"
+                    android:layout_marginTop="8dp"
+                    android:paddingLeft="@dimen/course_enrol_cardview_lr_padding"
+                    android:paddingRight="@dimen/course_enrol_cardview_lr_padding"
+                    android:visibility="gone"
+
+                    android:text="@string/course_enrol_teachers_no_info"
+                    android:textSize="16sp"/>
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:paddingLeft="@dimen/course_enrol_cardview_lr_padding"
+                    android:paddingRight="@dimen/course_enrol_cardview_lr_padding"
+
+                    android:text="@string/course_enrol_self_enrol"
+                    android:textSize="16sp"
+                    android:textColor="#000" />
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/course_enrol_enrol_button"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+
+                    android:text="@string/course_enrol_self_enrol_button"
+                    android:textAllCaps="false" />
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+    </LinearLayout>
+    
+</ScrollView>

@@ -1,6 +1,7 @@
 package crux.bphc.cms.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,7 +20,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import crux.bphc.cms.CourseDetailActivity;
 import crux.bphc.cms.R;
+import helper.ClickListener;
 import helper.MoodleServices;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,12 +33,12 @@ import set.search.Course;
 import set.search.CourseSearch;
 
 import static app.Constants.API_URL;
+import static app.Constants.COURSE_PARCEL_INTENT_KEY;
 import static app.Constants.PER_PAGE;
 
 public class SearchCourseFragment extends Fragment {
 
     private static final String TOKEN_KEY = "token";
-    private static final int GARBAGE_TOTAL_PAGES = 1000;
     boolean containsMore = true;
     int mLastVisibleCount = 0;
     private RecyclerView mRecyclerView;
@@ -81,6 +84,17 @@ public class SearchCourseFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mSearchCourseAdapter = new SearchCourseAdapter(getActivity(), new ArrayList<Course>());
+        mSearchCourseAdapter.setClickListener(new ClickListener() {
+            @Override
+            public boolean onClick(Object object, int position) {
+                Course course = (Course) object;
+                Intent intent = new Intent(getActivity(), CourseDetailActivity.class);
+                intent.putExtra(COURSE_PARCEL_INTENT_KEY, course);
+                startActivity(intent);
+                return true;
+            }
+        });
+
         mRecyclerView = (RecyclerView) view.findViewById(R.id.searched_courses);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
 
@@ -198,6 +212,7 @@ public class SearchCourseFragment extends Fragment {
         private Context mContext;
         private LayoutInflater mLayoutInflater;
         private List<Course> mCourses = new ArrayList<>();
+        private ClickListener mClickListener;
 
         public SearchCourseAdapter(Context context, List<Course> courses) {
             mContext = context;
@@ -222,6 +237,10 @@ public class SearchCourseFragment extends Fragment {
             notifyDataSetChanged();
         }
 
+        public void setClickListener(ClickListener clickListener) {
+            this.mClickListener = clickListener;
+        }
+
         @Override
         public SearchCourseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             return new SearchCourseViewHolder(
@@ -241,6 +260,7 @@ public class SearchCourseFragment extends Fragment {
             return mCourses == null ? 0 : mCourses.size();
         }
 
+
         class SearchCourseViewHolder extends RecyclerView.ViewHolder {
 
             TextView mSearchCourseDisplayName;
@@ -248,6 +268,16 @@ public class SearchCourseFragment extends Fragment {
             public SearchCourseViewHolder(View itemView) {
                 super(itemView);
                 mSearchCourseDisplayName = (TextView) itemView.findViewById(R.id.search_course_display_name);
+
+                mSearchCourseDisplayName.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(mClickListener != null) {
+                            int pos = getLayoutPosition();
+                            mClickListener.onClick(mCourses.get(pos), pos);
+                        }
+                    }
+                });
             }
         }
     }
