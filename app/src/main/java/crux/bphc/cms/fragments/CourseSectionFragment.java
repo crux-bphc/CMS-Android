@@ -55,7 +55,7 @@ public class CourseSectionFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
-        if(args != null) {
+        if (args != null) {
             TOKEN = args.getString(TOKEN_KEY);
             courseId = args.getInt(COURSE_ID_KEY);
         }
@@ -135,6 +135,8 @@ public class CourseSectionFragment extends Fragment {
     }
 
     private void addSection(final CourseSection section) {
+        if (linearLayout == null || getActivity() == null)
+            return;
         View v = LayoutInflater.from(getActivity()).inflate(R.layout.row_course_section, linearLayout, false);
         ((TextView) v.findViewById(R.id.sectionName)).setText(section.getName());
         v.setOnClickListener(new View.OnClickListener() {

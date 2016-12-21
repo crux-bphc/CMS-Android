@@ -4,12 +4,14 @@ package crux.bphc.cms.fragments;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -90,7 +92,6 @@ public class MyCoursesFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-
 
 
     @Override
@@ -233,7 +234,7 @@ public class MyCoursesFragment extends Fragment {
                                     if (totalFiles == 0) {
                                         Toast.makeText(getActivity(), "All files already downloaded", Toast.LENGTH_SHORT).show();
                                         courses.get(position).setDownloadStatus(-1);
-                                    }else{
+                                    } else {
                                         courses.get(position).setDownloadStatus(1);
                                     }
                                     mAdapter.notifyItemChanged(position);
@@ -395,12 +396,23 @@ public class MyCoursesFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
 
-                        if (downloadClickListener != null) {
-                            int pos = getLayoutPosition();
-                            if (!downloadClickListener.onClick(courses.get(pos), pos)) {
-                                Toast.makeText(getActivity(), "Download already in progress", Toast.LENGTH_SHORT).show();
+                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+                        alertDialog.setTitle("Confirm Download");
+                        alertDialog.setMessage("Are you sure, you want to download the course?");
+                        alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                if (downloadClickListener != null) {
+                                    int pos = getLayoutPosition();
+                                    if (!downloadClickListener.onClick(courses.get(pos), pos)) {
+                                        Toast.makeText(getActivity(), "Download already in progress", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
                             }
-                        }
+                        });
+                        alertDialog.setNegativeButton("Cancel", null);
+                        alertDialog.show();
+
                     }
                 });
             }
