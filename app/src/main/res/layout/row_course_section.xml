@@ -5,20 +5,19 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     android:animateLayoutChanges="true"
-    android:orientation="vertical"
-    android:foreground="?attr/selectableItemBackground">
+    android:foreground="?attr/selectableItemBackground"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
 
         <RelativeLayout
-            android:padding="8dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:padding="8dp">
 
             <TextView
                 android:id="@+id/sectionName"
@@ -34,16 +33,38 @@
                 android:textSize="18sp" />
 
             <ImageView
-                android:layout_centerVertical="true"
                 android:id="@+id/dropDown"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
                 android:padding="8dp"
                 app:srcCompat="@drawable/ic_arrow_drop_down_black_24dp" />
 
 
         </RelativeLayout>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/descriptionWrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#bdbdbd" />
+
+            <TextView
+                android:id="@+id/description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:padding="8dp"
+                android:text="aasnfljsnflnsalkfn" />
+        </LinearLayout>
 
     </LinearLayout>
 

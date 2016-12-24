@@ -99,14 +99,8 @@ public class CourseDetailActivity extends AppCompatActivity {
 
     private void setCourseEnrol() {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        CourseEnrolFragment oldFragment = (CourseEnrolFragment) fragmentManager
-                .findFragmentByTag(COURSE_ENROL_FRAG_TRANSACTION_KEY);
-        if(oldFragment != null) {
-            fragmentTransaction.remove(oldFragment);
-            fragmentTransaction.commit();
-        }
         mCourseEnrolFragment = CourseEnrolFragment.newInstance(TOKEN, mEnrolCourse);
-        fragmentTransaction.add(
+        fragmentTransaction.replace(
                 R.id.course_section_enrol_container,
                 mCourseEnrolFragment,
                 COURSE_ENROL_FRAG_TRANSACTION_KEY);
@@ -118,7 +112,7 @@ public class CourseDetailActivity extends AppCompatActivity {
         CourseSectionFragment courseSectionFragment = CourseSectionFragment.newInstance(
                 TOKEN,
                 course.getCourseId());
-        fragmentTransaction.add(
+        fragmentTransaction.replace(
                 R.id.course_section_enrol_container,
                 courseSectionFragment,
                 "course_section_frag"

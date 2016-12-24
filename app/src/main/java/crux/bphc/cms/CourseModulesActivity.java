@@ -15,6 +15,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -100,6 +101,9 @@ public class CourseModulesActivity extends AppCompatActivity {
         setTitle(sections.first().getName());
 
         modules = realm.copyFromRealm(sections.first().getModules());
+        if(modules.size()==0){
+            findViewById(R.id.empty).setVisibility(View.VISIBLE);
+        }
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 
@@ -117,18 +121,23 @@ public class CourseModulesActivity extends AppCompatActivity {
                 if (object instanceof Module) {
                     Module module = (Module) object;
                     if (module.getContents() == null || module.getContents().size() == 0) {
-                        //todo open label/forum/etc in new activity
-                        return true;
-                    }
-
-                    for (Content content : module.getContents()) {
-                        if (!searchFile(content.getFilename(), false)) {
-                            requestedDownloads.add(content.getFilename());
-                            downloadFile(content, module);
-                        } else {
-                            openFile(content.getFilename());
+                        if(module.getDescription()==null || module.getDescription().length()==0){
+                            showInWebsite(module.getUrl());
+                        }else{
+                            AlertDialog.Builder alertDialog=new AlertDialog.Builder(CourseModulesActivity.this);
+                            alertDialog.setMessage(Html.fromHtml(module.getDescription()));
+                            alertDialog.setNegativeButton("Close",null);
+                            alertDialog.show();
                         }
-                    }
+                    } else
+                        for (Content content : module.getContents()) {
+                            if (!searchFile(content.getFilename(), false)) {
+                                requestedDownloads.add(content.getFilename());
+                                downloadFile(content, module);
+                            } else {
+                                openFile(content.getFilename());
+                            }
+                        }
                     return true;
                 }
                 return false;
@@ -136,6 +145,11 @@ public class CourseModulesActivity extends AppCompatActivity {
         });
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    private void showInWebsite(String url) {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        startActivity(browserIntent);
     }
 
     @Override
@@ -158,7 +172,7 @@ public class CourseModulesActivity extends AppCompatActivity {
             CourseModulesActivity.this.startActivity(pdfOpenintent);
         } catch (ActivityNotFoundException e) {
             pdfOpenintent.setDataAndType(path, "application/*");
-            startActivity(Intent.createChooser(pdfOpenintent, "Open File - "+filename));
+            startActivity(Intent.createChooser(pdfOpenintent, "Open File - " + filename));
         }
     }
 
@@ -282,6 +296,9 @@ public class CourseModulesActivity extends AppCompatActivity {
                     @Override
                     public boolean onLongClick(View view) {
                         final Module module = modules.get(getLayoutPosition());
+                        if (module.getContents() == null || module.getContents().size() == 0) {
+                            return false;
+                        }
                         AlertDialog.Builder alertDialog = new AlertDialog.Builder(CourseModulesActivity.this);
                         alertDialog.setTitle(module.getName());
                         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(CourseModulesActivity.this, android.R.layout.simple_list_item_1);
@@ -324,9 +341,8 @@ public class CourseModulesActivity extends AppCompatActivity {
                                                 }
 
                                     }
-                                }
-                                else{
-                                    downloadFile(module.getContents().get(0),module);
+                                } else {
+                                    downloadFile(module.getContents().get(0), module);
                                 }
                             }
                         });

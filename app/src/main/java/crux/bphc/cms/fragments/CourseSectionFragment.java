@@ -1,15 +1,16 @@
 package crux.bphc.cms.fragments;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ import crux.bphc.cms.R;
 import helper.MoodleServices;
 import io.realm.Realm;
 import io.realm.RealmResults;
+import io.realm.Sort;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,11 +37,11 @@ public class CourseSectionFragment extends Fragment {
 
     private static final String TOKEN_KEY = "token";
     private static final String COURSE_ID_KEY = "id";
-
+    ProgressDialog progressDialog;
+    View empty;
     private Realm realm;
     private String TOKEN;
     private int courseId;
-
     private LinearLayout linearLayout;
 
     public static CourseSectionFragment newInstance(String token, int courseId) {
@@ -64,23 +66,40 @@ public class CourseSectionFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        linearLayout = (LinearLayout) inflater.inflate(R.layout.fragment_course_section, container, false);
-        return linearLayout;
+
+        return inflater.inflate(R.layout.fragment_course_section, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         realm = Realm.getDefaultInstance();
-
+        linearLayout = (LinearLayout) view.findViewById(R.id.linearLayout);
+        empty = view.findViewById(R.id.empty);
         RealmResults<CourseSection> courseSections = realm
                 .where(CourseSection.class)
                 .equalTo("courseID", courseId)
-                .findAll();
+                .findAll()
+                .sort("id", Sort.ASCENDING);
+
+        if (courseSections.isEmpty()) {
+            progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setMessage("Loading...");
+            progressDialog.setCancelable(false);
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.show();
+        }
         for (CourseSection section : courseSections) {
             addSection(section);
         }
 
         sendRequest(courseId);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (progressDialog != null)
+            progressDialog.dismiss();
     }
 
     private void sendRequest(final int courseId) {
@@ -96,6 +115,11 @@ public class CourseSectionFragment extends Fragment {
         courseCall.enqueue(new Callback<List<CourseSection>>() {
             @Override
             public void onResponse(Call<List<CourseSection>> call, Response<List<CourseSection>> response) {
+                if (progressDialog != null)
+                    progressDialog.dismiss();
+
+                empty.setVisibility(View.GONE);
+
                 final List<CourseSection> sectionList = response.body();
                 if (sectionList == null) {
                     //todo not registered, ask to register, change UI, show enroll button
@@ -127,9 +151,19 @@ public class CourseSectionFragment extends Fragment {
             @Override
             public void onFailure(Call<List<CourseSection>> call, Throwable t) {
                 //no internet connection
+                if (progressDialog != null) {
+                    progressDialog.hide();
+                    empty.setVisibility(View.VISIBLE);
+                    empty.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            progressDialog.show();
+                            sendRequest(courseId);
+                            linearLayout.setOnClickListener(null);
+                        }
+                    });
 
-                //todo show offline available data
-                Toast.makeText(getActivity(), "Check your internet connection", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -148,6 +182,10 @@ public class CourseSectionFragment extends Fragment {
                 getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
         });
+        if (!section.getSummary().isEmpty()) {
+            v.findViewById(R.id.descriptionWrapper).setVisibility(View.VISIBLE);
+            ((TextView) v.findViewById(R.id.description)).setText(Html.fromHtml(section.getSummary()));
+        }
         linearLayout.addView(v);
     }
 }
