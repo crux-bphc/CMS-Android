@@ -5,51 +5,36 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
 import crux.bphc.cms.fragments.CourseEnrolFragment;
 import crux.bphc.cms.fragments.CourseSectionFragment;
-import helper.MoodleServices;
-import io.realm.Realm;
 import io.realm.RealmResults;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import set.Course;
-import set.CourseSection;
 import set.search.Contact;
 
-import static app.Constants.API_URL;
 import static app.Constants.COURSE_PARCEL_INTENT_KEY;
 import static app.Constants.TOKEN;
+import static app.MyApplication.realm;
 
 public class CourseDetailActivity extends AppCompatActivity {
 
-    Course course;
+    public static final String COURSE_ENROL_FRAG_TRANSACTION_KEY = "course_enrol_frag";
     public List<Contact> contacts;
-
+    Course course;
     private FrameLayout mCourseEnrolContainer;
     private FragmentManager fragmentManager;
     private CourseEnrolFragment mCourseEnrolFragment;
-
-    public static final String COURSE_ENROL_FRAG_TRANSACTION_KEY = "course_enrol_frag";
     private set.search.Course mEnrolCourse;
 
-    Realm realm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        realm = Realm.getDefaultInstance();
+
         setContentView(R.layout.activity_course_detail);
         fragmentManager = getSupportFragmentManager();
         mCourseEnrolContainer = (FrameLayout) findViewById(R.id.course_section_enrol_container);
@@ -59,23 +44,21 @@ public class CourseDetailActivity extends AppCompatActivity {
         mEnrolCourse = intent.getParcelableExtra(COURSE_PARCEL_INTENT_KEY);
         int courseId = intent.getIntExtra("id", -1);
 
-        if(courseId == -1 && mEnrolCourse == null) {
+        if (courseId == -1 && mEnrolCourse == null) {
             finish();
             return;
-        }
-        else if(courseId == -1 && mEnrolCourse != null) {
+        } else if (courseId == -1 && mEnrolCourse != null) {
             courseId = mEnrolCourse.getId();
         }
 
         course = getFirstCourse(courseId);
 
-        if(course == null) {
+        if (course == null) {
             System.out.println("receivedCourseId: " + courseId);
             contacts = mEnrolCourse.getContacts();
             setCourseEnrol();
 
-        }
-        else {
+        } else {
             String activityTitleName = intent.getStringExtra("course_name");
             setTitle(activityTitleName);
             setCourseSection();
@@ -89,7 +72,7 @@ public class CourseDetailActivity extends AppCompatActivity {
                 .where(Course.class)
                 .equalTo("id", courseId)
                 .findAll();
-        if(courses.size() == 0) {
+        if (courses.size() == 0) {
             System.out.println("Zero courses matched");
             return null;
         }

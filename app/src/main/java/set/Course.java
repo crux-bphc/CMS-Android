@@ -17,12 +17,11 @@ public class Course extends RealmObject {
     private int downloadedFiles;
     @PrimaryKey
     private int id;
-    private int idnumber, enrolledusercount;
+    private int enrolledusercount;
     private String shortname, fullname, summary, format;
 
-    public Course(int id, int idnumber, int enrolledusercount, String shortname, String fullname, String summary, String format) {
+    public Course(int id,  int enrolledusercount, String shortname, String fullname, String summary, String format) {
         this.id = id;
-        this.idnumber = idnumber;
         this.enrolledusercount = enrolledusercount;
         this.shortname = shortname;
         this.fullname = fullname;
@@ -65,13 +64,6 @@ public class Course extends RealmObject {
         this.id = id;
     }
 
-    public int getIdnumber() {
-        return idnumber;
-    }
-
-    public void setIdnumber(int idnumber) {
-        this.idnumber = idnumber;
-    }
 
     public int getEnrolledusercount() {
         return enrolledusercount;

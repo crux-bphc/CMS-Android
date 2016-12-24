@@ -38,14 +38,15 @@ import java.util.List;
 import app.Constants;
 import helper.ClickListener;
 import helper.DividerItemDecoration;
-import io.realm.Realm;
 import io.realm.RealmResults;
 import set.Content;
 import set.CourseSection;
 import set.Module;
 
+import static app.MyApplication.realm;
+
 public class CourseModulesActivity extends AppCompatActivity {
-    Realm realm;
+
     List<Module> modules;
     ArrayList<String> requestedDownloads;
     List<String> fileList;
@@ -95,13 +96,13 @@ public class CourseModulesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_course_modules);
 
         requestedDownloads = new ArrayList<>();
-        realm = Realm.getDefaultInstance();
+
         RealmResults<CourseSection> sections = realm.where(CourseSection.class).equalTo("id", sectionID).findAll();
 
         setTitle(sections.first().getName());
 
         modules = realm.copyFromRealm(sections.first().getModules());
-        if(modules.size()==0){
+        if (modules.size() == 0) {
             findViewById(R.id.empty).setVisibility(View.VISIBLE);
         }
 
@@ -121,15 +122,19 @@ public class CourseModulesActivity extends AppCompatActivity {
                 if (object instanceof Module) {
                     Module module = (Module) object;
                     if (module.getContents() == null || module.getContents().size() == 0) {
-                        if(module.getDescription()==null || module.getDescription().length()==0){
-                            showInWebsite(module.getUrl());
-                        }else{
-                            AlertDialog.Builder alertDialog=new AlertDialog.Builder(CourseModulesActivity.this);
+                        if (module.getModType() == 1 || module.getModType() == 2) {
+                            if (module.getDescription() == null || module.getDescription().length() == 0) {
+                                return false;
+                            }
+                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(CourseModulesActivity.this);
                             alertDialog.setMessage(Html.fromHtml(module.getDescription()));
-                            alertDialog.setNegativeButton("Close",null);
+                            alertDialog.setNegativeButton("Close", null);
                             alertDialog.show();
-                        }
-                    } else
+                        } else
+                            //todo assignment, quiz
+                            showInWebsite(module.getUrl());
+
+                    } else {
                         for (Content content : module.getContents()) {
                             if (!searchFile(content.getFilename(), false)) {
                                 requestedDownloads.add(content.getFilename());
@@ -138,6 +143,7 @@ public class CourseModulesActivity extends AppCompatActivity {
                                 openFile(content.getFilename());
                             }
                         }
+                    }
                     return true;
                 }
                 return false;

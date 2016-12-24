@@ -28,6 +28,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import set.CourseSection;
 
 import static app.Constants.API_URL;
+import static app.MyApplication.realm;
 
 /**
  * Created by siddhant on 12/21/16.
@@ -39,7 +40,6 @@ public class CourseSectionFragment extends Fragment {
     private static final String COURSE_ID_KEY = "id";
     ProgressDialog progressDialog;
     View empty;
-    private Realm realm;
     private String TOKEN;
     private int courseId;
     private LinearLayout linearLayout;
@@ -72,7 +72,7 @@ public class CourseSectionFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        realm = Realm.getDefaultInstance();
+
         linearLayout = (LinearLayout) view.findViewById(R.id.linearLayout);
         empty = view.findViewById(R.id.empty);
         RealmResults<CourseSection> courseSections = realm

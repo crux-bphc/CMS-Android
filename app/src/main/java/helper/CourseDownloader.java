@@ -12,6 +12,7 @@ import java.util.List;
 
 import app.Constants;
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -36,7 +37,10 @@ public class CourseDownloader {
 
     public CourseDownloader(Context context) {
         this.context = context;
-        realm = Realm.getDefaultInstance();
+        RealmConfiguration config = new RealmConfiguration.Builder()
+                .deleteRealmIfMigrationNeeded()
+                .build();
+        realm = Realm.getInstance(config);
     }
 
     public void downloadCourseData(final int courseId, final DownloadCallback downloadCallback) {

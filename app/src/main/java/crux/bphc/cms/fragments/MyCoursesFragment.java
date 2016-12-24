@@ -36,6 +36,7 @@ import helper.CourseDownloader;
 import helper.MoodleServices;
 import helper.UserAccount;
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -47,6 +48,7 @@ import set.CourseSection;
 
 import static android.content.Context.INPUT_METHOD_SERVICE;
 import static app.Constants.API_URL;
+import static app.MyApplication.realm;
 
 
 public class MyCoursesFragment extends Fragment {
@@ -56,7 +58,7 @@ public class MyCoursesFragment extends Fragment {
     EditText mFilter;
     SwipeRefreshLayout mSwipeRefreshLayout;
     List<Course> courses;
-    Realm realm;
+
     ImageView mFilterIcon;
     boolean isClearIconSet = false;
     CourseDownloader courseDownloader;
@@ -117,7 +119,7 @@ public class MyCoursesFragment extends Fragment {
         getActivity().registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 
         requestedDownloads = new ArrayList<>();
-        realm = Realm.getDefaultInstance();
+
         RealmResults<Course> result = realm.where(Course.class).findAll();
 
         courses = new ArrayList<>();
@@ -302,7 +304,7 @@ public class MyCoursesFragment extends Fragment {
 
             @Override
             public void onFailure(Call<List<Course>> call, Throwable t) {
-                System.out.println("No internet connection");
+                System.out.println(t.toString());
                 //no internet connection
                 mSwipeRefreshLayout.setRefreshing(false);
             }
