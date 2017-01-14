@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import app.MyApplication;
 import crux.bphc.cms.CourseModulesActivity;
 import crux.bphc.cms.R;
 import helper.MoodleServices;
@@ -28,7 +29,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import set.CourseSection;
 
 import static app.Constants.API_URL;
-import static app.MyApplication.realm;
 
 /**
  * Created by siddhant on 12/21/16.
@@ -38,6 +38,7 @@ public class CourseSectionFragment extends Fragment {
 
     private static final String TOKEN_KEY = "token";
     private static final String COURSE_ID_KEY = "id";
+    Realm realm;
     ProgressDialog progressDialog;
     View empty;
     private String TOKEN;
@@ -61,6 +62,7 @@ public class CourseSectionFragment extends Fragment {
             TOKEN = args.getString(TOKEN_KEY);
             courseId = args.getInt(COURSE_ID_KEY);
         }
+        realm = MyApplication.getInstance().getRealmInstance();
     }
 
     @Nullable

@@ -8,9 +8,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,6 +51,7 @@ public class SearchCourseFragment extends Fragment {
     private int page = 0;
     private String mPreviousSearch = "";
     private SwipeRefreshLayout mSwipeToRefresh;
+    private TextView empty;
 
     public SearchCourseFragment() {
         // Required empty public constructor
@@ -94,6 +97,7 @@ public class SearchCourseFragment extends Fragment {
         });
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.searched_courses);
+        empty = (TextView) view.findViewById(R.id.empty);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
 
         mSwipeToRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
@@ -139,23 +143,41 @@ public class SearchCourseFragment extends Fragment {
             }
         });
 
+        mEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    performSearch();
+                    return true;
+                }
+                return false;
+            }
+        });
+
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String searchText = mEditText.getText().toString().trim();
-                if (!mPreviousSearch.equals(searchText)) {
-                    mPreviousSearch = searchText;
-                    page = 0;
-                    mSearchCourseAdapter.clearCourses();
-                    mLoading = true;
-                    containsMore = true;
-                    getSearchCourses(searchText);
-                }
+                performSearch();
             }
         });
     }
 
+    private void performSearch() {
+        String searchText = mEditText.getText().toString().trim();
+        if(searchText.isEmpty()){
+            Toast.makeText(getActivity(),"Please enter a query to search",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        mPreviousSearch = searchText;
+        page = 0;
+        mSearchCourseAdapter.clearCourses();
+        mLoading = true;
+        containsMore = true;
+        getSearchCourses(searchText);
+    }
+
     private void getSearchCourses(final String searchString) {
+        empty.setVisibility(View.GONE);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(API_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -180,18 +202,33 @@ public class SearchCourseFragment extends Fragment {
             public void onResponse(Call<CourseSearch> call, Response<CourseSearch> response) {
 
 
-                int totalResults = response.body().getTotal();
-                int fetchedResults = (page + 1) * PER_PAGE;
-                if (fetchedResults >= totalResults) {
-                    containsMore = false;
-                }
+                if (response.body() == null) {
+                    if (page == 0) {
+                        empty.setVisibility(View.VISIBLE);
+                        containsMore = false;
 
-                if (page == 0) {
-                    List<Course> matchedCourses = response.body().getCourses();
-                    mSearchCourseAdapter.setCourses(matchedCourses);
+                    }
                 } else {
-                    List<Course> newMatchedCourses = response.body().getCourses();
-                    mSearchCourseAdapter.addExtraCourses(newMatchedCourses);
+                    int totalResults = response.body().getTotal();
+                    int fetchedResults = (page + 1) * PER_PAGE;
+                    if (fetchedResults >= totalResults) {
+                        containsMore = false;
+                    }
+
+                    if (page == 0) {
+                        List<Course> matchedCourses = response.body().getCourses();
+                        if (matchedCourses == null || matchedCourses.size() == 0) {
+                            empty.setVisibility(View.VISIBLE);
+                            containsMore = false;
+
+                        } else {
+
+                            mSearchCourseAdapter.setCourses(matchedCourses);
+                        }
+                    } else {
+                        List<Course> newMatchedCourses = response.body().getCourses();
+                        mSearchCourseAdapter.addExtraCourses(newMatchedCourses);
+                    }
                 }
                 mSwipeToRefresh.setRefreshing(false);
                 mLoading = false;
@@ -215,6 +252,10 @@ public class SearchCourseFragment extends Fragment {
         private LayoutInflater mLayoutInflater;
         private List<Course> mCourses = new ArrayList<>();
         private ClickListener mClickListener;
+
+        public List<Course> getCourses() {
+            return mCourses;
+        }
 
         SearchCourseAdapter(Context context, List<Course> courses) {
             mContext = context;
@@ -274,7 +315,7 @@ public class SearchCourseFragment extends Fragment {
                 mSearchCourseDisplayName.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(mClickListener != null) {
+                        if (mClickListener != null) {
                             int pos = getLayoutPosition();
                             mClickListener.onClick(mCourses.get(pos), pos);
                         }

@@ -204,18 +204,22 @@ public class LoginActivity extends AppCompatActivity {
                     final LoginDetail loginDetail = response.body();
                     Log.d("Login: ", loginDetail.error + " " + loginDetail.token);
 
-                    //check if password is correct
-                    if (loginDetail.error != null) {
-                        Toast.makeText(LoginActivity.this, "The Username or Password is incorrect", Toast.LENGTH_SHORT).show();
-                        showProgress(false);
-                        return;
+                    if(loginDetail.error!=null ) {
+                        if (loginDetail.error.contains("Web services must be enabled")) {
+
+                            Toast.makeText(LoginActivity.this, "Please contact network administrator to enable mobile services", Toast.LENGTH_LONG).show();
+                            showProgress(false);
+                            return;
+                        }
+
+                        //check if password is correct
+                        else  {
+                            Toast.makeText(LoginActivity.this, "The Username or Password is incorrect", Toast.LENGTH_SHORT).show();
+                            showProgress(false);
+                            return;
+                        }
                     }
 
-                    if (loginDetail.token == null) {
-                        Toast.makeText(LoginActivity.this, "Please contact network administrator to enable mobile services", Toast.LENGTH_LONG).show();
-                        showProgress(false);
-                        return;
-                    }
 
                     Call<UserDetail> userDetailCall = moodleLogin.fetchUserDetail(loginDetail.token);
                     userDetailCall.enqueue(new Callback<UserDetail>() {
@@ -224,7 +228,7 @@ public class LoginActivity extends AppCompatActivity {
                             UserDetail userDetail = response.body();
 
                             if (userDetail.errorcode != null) {
-                                Toast.makeText(LoginActivity.this, "Unknown error occured. Please retry.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(LoginActivity.this, "Unknown error occurred. Please retry.", Toast.LENGTH_LONG).show();
                                 showProgress(false);
                                 return;
                             }

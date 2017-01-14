@@ -26,6 +26,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
+                android:inputType="text"
+                android:singleLine="true"
+                android:imeOptions="actionSearch"
                 android:hint="@string/course_search_edit_text_hint" />
 
             <ImageView
@@ -42,6 +45,10 @@
         </LinearLayout>
     </android.support.v7.widget.CardView>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
@@ -52,6 +59,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </android.support.v4.widget.SwipeRefreshLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="No results to display!!!"
+            android:textSize="18sp"
+            android:id="@+id/empty"
+            android:visibility="gone"/>
+    </RelativeLayout>
 </LinearLayout>
 
 

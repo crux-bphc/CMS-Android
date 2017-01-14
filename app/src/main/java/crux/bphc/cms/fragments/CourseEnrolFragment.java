@@ -1,13 +1,12 @@
 package crux.bphc.cms.fragments;
 
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -17,7 +16,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import java.util.List;
 
@@ -33,7 +31,6 @@ import set.search.Contact;
 import set.search.Course;
 
 import static app.Constants.API_URL;
-import static crux.bphc.cms.CourseDetailActivity.COURSE_ENROL_FRAG_TRANSACTION_KEY;
 
 
 public class CourseEnrolFragment extends Fragment {
@@ -91,10 +88,9 @@ public class CourseEnrolFragment extends Fragment {
         mTeachers = (LinearLayout) view.findViewById(R.id.course_enrol_teachers);
         List<Contact> teachers = course.getContacts();
         TextView noTeacherInfo = (TextView) view.findViewById(R.id.course_enrol_teacher_no_info);
-        if(teachers.size() == 0 || teachers == null) {
+        if (teachers.size() == 0 || teachers == null) {
             noTeacherInfo.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) noTeacherInfo.getLayoutParams();
             layoutParams.setMargins(0, 8, 0, 0);
             for (Contact contact : teachers) {
@@ -140,6 +136,11 @@ public class CourseEnrolFragment extends Fragment {
     }
 
     private void enrolInCourse() {
+        final ProgressDialog progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage("Attempting to enroll");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(API_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -151,6 +152,7 @@ public class CourseEnrolFragment extends Fragment {
         call.enqueue(new Callback<SelfEnrol>() {
             @Override
             public void onResponse(Call<SelfEnrol> call, Response<SelfEnrol> response) {
+                progressDialog.dismiss();
                 boolean status = response.body().getStatus();
                 System.out.println("status is: " + status);
                 if (status) {
@@ -168,11 +170,15 @@ public class CourseEnrolFragment extends Fragment {
                             .replace(R.id.course_section_enrol_container, courseSectionFragment)
                             .commit();
                 }
+                else{
+                    Toast.makeText(getActivity(), "Unknown error occurred", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
             public void onFailure(Call<SelfEnrol> call, Throwable t) {
-
+                progressDialog.dismiss();
+                Toast.makeText(getActivity(), "Unable to connect to server", Toast.LENGTH_SHORT).show();
             }
         });
     }

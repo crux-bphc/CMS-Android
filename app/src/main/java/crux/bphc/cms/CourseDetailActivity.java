@@ -10,32 +10,34 @@ import android.widget.FrameLayout;
 
 import java.util.List;
 
+import app.MyApplication;
 import crux.bphc.cms.fragments.CourseEnrolFragment;
 import crux.bphc.cms.fragments.CourseSectionFragment;
+import io.realm.Realm;
 import io.realm.RealmResults;
 import set.Course;
 import set.search.Contact;
 
 import static app.Constants.COURSE_PARCEL_INTENT_KEY;
 import static app.Constants.TOKEN;
-import static app.MyApplication.realm;
 
 public class CourseDetailActivity extends AppCompatActivity {
 
     public static final String COURSE_ENROL_FRAG_TRANSACTION_KEY = "course_enrol_frag";
     public List<Contact> contacts;
     Course course;
+    Realm realm;
     private FrameLayout mCourseEnrolContainer;
     private FragmentManager fragmentManager;
     private CourseEnrolFragment mCourseEnrolFragment;
     private set.search.Course mEnrolCourse;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_course_detail);
+
+        realm = MyApplication.getInstance().getRealmInstance();
         fragmentManager = getSupportFragmentManager();
         mCourseEnrolContainer = (FrameLayout) findViewById(R.id.course_section_enrol_container);
 

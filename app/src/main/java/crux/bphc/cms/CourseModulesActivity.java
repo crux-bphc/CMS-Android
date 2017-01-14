@@ -36,14 +36,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import app.Constants;
+import app.MyApplication;
 import helper.ClickListener;
 import helper.DividerItemDecoration;
+import io.realm.Realm;
 import io.realm.RealmResults;
 import set.Content;
 import set.CourseSection;
 import set.Module;
-
-import static app.MyApplication.realm;
 
 public class CourseModulesActivity extends AppCompatActivity {
 
@@ -51,6 +51,7 @@ public class CourseModulesActivity extends AppCompatActivity {
     ArrayList<String> requestedDownloads;
     List<String> fileList;
     MyAdapter myAdapter;
+    Realm realm;
     BroadcastReceiver onComplete = new BroadcastReceiver() {
         public void onReceive(Context ctxt, Intent intent) {
             int i = 0;
@@ -93,6 +94,8 @@ public class CourseModulesActivity extends AppCompatActivity {
             finish();
             return;
         }
+
+        realm = MyApplication.getInstance().getRealmInstance();
         setContentView(R.layout.activity_course_modules);
 
         requestedDownloads = new ArrayList<>();

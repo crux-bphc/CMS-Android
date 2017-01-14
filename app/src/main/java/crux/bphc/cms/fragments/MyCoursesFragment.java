@@ -29,14 +29,15 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.MyApplication;
 import crux.bphc.cms.CourseDetailActivity;
+import crux.bphc.cms.MainActivity;
 import crux.bphc.cms.R;
 import helper.ClickListener;
 import helper.CourseDownloader;
 import helper.MoodleServices;
 import helper.UserAccount;
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -48,7 +49,6 @@ import set.CourseSection;
 
 import static android.content.Context.INPUT_METHOD_SERVICE;
 import static app.Constants.API_URL;
-import static app.MyApplication.realm;
 
 
 public class MyCoursesFragment extends Fragment {
@@ -58,7 +58,9 @@ public class MyCoursesFragment extends Fragment {
     EditText mFilter;
     SwipeRefreshLayout mSwipeRefreshLayout;
     List<Course> courses;
+    Realm realm;
 
+    View empty;
     ImageView mFilterIcon;
     boolean isClearIconSet = false;
     CourseDownloader courseDownloader;
@@ -102,7 +104,7 @@ public class MyCoursesFragment extends Fragment {
         if (getArguments() != null) {
             TOKEN = getArguments().getString(ARG_PARAM1);
         }
-
+        realm = MyApplication.getInstance().getRealmInstance();
     }
 
     @Override
@@ -122,8 +124,10 @@ public class MyCoursesFragment extends Fragment {
 
         RealmResults<Course> result = realm.where(Course.class).findAll();
 
+        empty=view.findViewById(R.id.empty);
         courses = new ArrayList<>();
         courses = realm.copyFromRealm(result);
+
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         mFilter = (EditText) view.findViewById(R.id.filterET);
@@ -255,6 +259,17 @@ public class MyCoursesFragment extends Fragment {
                 return true;
             }
         });
+
+        checkEmpty();
+    }
+
+    private void checkEmpty() {
+        if(courses.isEmpty()){
+            empty.setVisibility(View.VISIBLE);
+        }
+        else{
+            empty.setVisibility(View.GONE);
+        }
     }
 
     private void makeRequest() {
@@ -275,14 +290,12 @@ public class MyCoursesFragment extends Fragment {
             @Override
             public void onResponse(Call<List<Course>> call, Response<List<Course>> response) {
                 final List<Course> coursesList = response.body();
-                System.out.println("Size of coursesList: " + coursesList.size() + response.code());
                 if (coursesList == null) {
-                    //todo error token. logout and ask to re-login
+                    ((MainActivity)getActivity()).logout();
                     System.out.println("CoursesList is null");
                     mSwipeRefreshLayout.setRefreshing(false);
                     return;
                 }
-
 
                 courses.clear();
                 courses.addAll(coursesList);
@@ -299,7 +312,7 @@ public class MyCoursesFragment extends Fragment {
                         realm.copyToRealm(coursesList);
                     }
                 });
-
+                checkEmpty();
             }
 
             @Override

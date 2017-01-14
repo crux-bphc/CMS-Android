@@ -22,9 +22,11 @@ import android.view.View;
 import android.widget.TextView;
 
 import app.Constants;
+import app.MyApplication;
 import crux.bphc.cms.fragments.MyCoursesFragment;
 import crux.bphc.cms.fragments.SearchCourseFragment;
 import helper.UserAccount;
+import io.realm.Realm;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -124,6 +126,13 @@ public class MainActivity extends AppCompatActivity
         SearchCourseFragment fragment = SearchCourseFragment.newInstance(Constants.TOKEN);
         transaction.replace(R.id.content_main, fragment, "Course Search");
         transaction.commit();
+    }
+
+    public void logout(){
+        Realm realm= MyApplication.getInstance().getRealmInstance();
+        realm.deleteAll();
+        startActivity(new Intent(this,LoginActivity.class));
+        finish();
     }
 
     @Override
