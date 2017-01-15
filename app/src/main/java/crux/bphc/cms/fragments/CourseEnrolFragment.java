@@ -19,8 +19,10 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import app.MyApplication;
 import crux.bphc.cms.R;
 import helper.MoodleServices;
+import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -165,12 +167,18 @@ public class CourseEnrolFragment extends Fragment {
 
                     CourseSectionFragment courseSectionFragment = CourseSectionFragment
                             .newInstance(TOKEN, course.getId());
+                    set.Course courseSet = new set.Course(course);
+                    
+                    Realm realm = MyApplication.getInstance().getRealmInstance();
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(courseSet);
+                    realm.commitTransaction();
+
                     fragmentManager
                             .beginTransaction()
                             .replace(R.id.course_section_enrol_container, courseSectionFragment)
                             .commit();
-                }
-                else{
+                } else {
                     Toast.makeText(getActivity(), "Unknown error occurred", Toast.LENGTH_SHORT).show();
                 }
             }

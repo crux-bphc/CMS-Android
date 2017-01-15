@@ -22,6 +22,19 @@ public class Course implements Parcelable{
     private List<Contact> contacts;
     private List<String> enrollmentmethods;
 
+    public int getSummaryformat() {
+        return summaryformat;
+    }
+
+    public String getFullname() {
+
+        return fullname;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
     public Course(int id,
                   String fullname, String displayname, String shortname,
                   int categoryid,

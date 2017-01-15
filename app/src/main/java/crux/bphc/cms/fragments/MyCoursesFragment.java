@@ -26,6 +26,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +43,7 @@ import helper.MoodleServices;
 import helper.UserAccount;
 import io.realm.Realm;
 import io.realm.RealmResults;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -124,7 +129,7 @@ public class MyCoursesFragment extends Fragment {
 
         RealmResults<Course> result = realm.where(Course.class).findAll();
 
-        empty=view.findViewById(R.id.empty);
+        empty = view.findViewById(R.id.empty);
         courses = new ArrayList<>();
         courses = realm.copyFromRealm(result);
 
@@ -264,10 +269,9 @@ public class MyCoursesFragment extends Fragment {
     }
 
     private void checkEmpty() {
-        if(courses.isEmpty()){
+        if (courses.isEmpty()) {
             empty.setVisibility(View.VISIBLE);
-        }
-        else{
+        } else {
             empty.setVisibility(View.GONE);
         }
     }
@@ -283,40 +287,47 @@ public class MyCoursesFragment extends Fragment {
 
         MoodleServices moodleServices = retrofit.create(MoodleServices.class);
 
-        Call<List<Course>> courseCall = moodleServices.getCourses(TOKEN, userAccount.getUserID());
+        Call<ResponseBody> courseCall = moodleServices.getCourses(TOKEN, userAccount.getUserID());
         System.out.println(courseCall.request().url().toString());
 
-        courseCall.enqueue(new Callback<List<Course>>() {
+        courseCall.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<List<Course>> call, Response<List<Course>> response) {
-                final List<Course> coursesList = response.body();
-                if (coursesList == null) {
-                    ((MainActivity)getActivity()).logout();
-                    System.out.println("CoursesList is null");
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    String responseString = response.body().string();
+                    if (responseString.contains("Invalid token")) {
+                        ((MainActivity) getActivity()).logout();
+                        return;
+                    }
+                    Gson gson=new Gson();
+                    final List<Course> coursesList = gson
+                            .fromJson(responseString,new TypeToken<List<Course>>(){}.getType());
+
+                    courses.clear();
+                    courses.addAll(coursesList);
+                    mAdapter.setCourses(courses);
+                    System.out.println("number of courses in coursesList: " + coursesList.size());
                     mSwipeRefreshLayout.setRefreshing(false);
-                    return;
+
+
+                    final RealmResults<Course> results = realm.where(Course.class).findAll();
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            results.deleteAllFromRealm();
+                            realm.copyToRealm(coursesList);
+                        }
+                    });
+                    checkEmpty();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
 
-                courses.clear();
-                courses.addAll(coursesList);
-                mAdapter.setCourses(courses);
-                System.out.println("number of courses in coursesList: " + coursesList.size());
-                mSwipeRefreshLayout.setRefreshing(false);
 
-
-                final RealmResults<Course> results = realm.where(Course.class).findAll();
-                realm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        results.deleteAllFromRealm();
-                        realm.copyToRealm(coursesList);
-                    }
-                });
-                checkEmpty();
             }
 
             @Override
-            public void onFailure(Call<List<Course>> call, Throwable t) {
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
                 System.out.println(t.toString());
                 //no internet connection
                 mSwipeRefreshLayout.setRefreshing(false);

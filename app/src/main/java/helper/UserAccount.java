@@ -58,7 +58,7 @@ public class UserAccount {
 
     }
 
-    public void clearData() {
+    public void logout() {
         SharedPreferences.Editor editor = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
         editor.clear();
         editor.apply();

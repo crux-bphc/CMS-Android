@@ -32,6 +32,16 @@ public class Course extends RealmObject {
     public Course() {
     }
 
+    public Course(set.search.Course course) {
+        this.id=course.getId();
+        enrolledusercount=0;
+        shortname=course.getShortname();
+        fullname=course.getFullname();
+        summary=course.getSummary();
+        format="";
+
+    }
+
     public int getTotalFiles() {
         return totalFiles;
     }

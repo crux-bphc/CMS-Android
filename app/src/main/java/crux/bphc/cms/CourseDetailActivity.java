@@ -59,6 +59,7 @@ public class CourseDetailActivity extends AppCompatActivity {
             System.out.println("receivedCourseId: " + courseId);
             contacts = mEnrolCourse.getContacts();
             setCourseEnrol();
+            setTitle(mEnrolCourse.getShortname());
 
         } else {
             String activityTitleName = intent.getStringExtra("course_name");

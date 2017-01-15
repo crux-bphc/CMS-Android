@@ -130,7 +130,11 @@ public class MainActivity extends AppCompatActivity
 
     public void logout(){
         Realm realm= MyApplication.getInstance().getRealmInstance();
+        realm.beginTransaction();
         realm.deleteAll();
+        realm.commitTransaction();
+        UserAccount userAccount=new UserAccount(this);
+        userAccount.logout();
         startActivity(new Intent(this,LoginActivity.class));
         finish();
     }
