@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 
 ext{
-    supportLibraryVersion = '25.1.0'
+    supportLibraryVersion = '24.2.0'
 }
 
 android {

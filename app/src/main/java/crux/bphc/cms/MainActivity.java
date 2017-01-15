@@ -1,6 +1,9 @@
 package crux.bphc.cms;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,13 +23,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import app.Constants;
 import app.MyApplication;
 import crux.bphc.cms.fragments.MyCoursesFragment;
 import crux.bphc.cms.fragments.SearchCourseFragment;
+import crux.bphc.cms.service.NotificationService;
 import helper.UserAccount;
 import io.realm.Realm;
+
+import static android.app.AlarmManager.INTERVAL_HALF_DAY;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -60,14 +67,19 @@ public class MainActivity extends AppCompatActivity
         TextView fullName = (TextView) headerView.findViewById(R.id.firstname);
         username.setText(mUserAccount.getUsername());
         fullName.setText(mUserAccount.getFirstName());
-
-
         setHome();
-
-
         askPermission();
 
 
+        setAlarm();
+    }
+
+    private void setAlarm() {
+        Intent intent = new Intent(this, NotificationService.class);
+        PendingIntent pintent = PendingIntent.getService(this, 0, intent, 0);
+        AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, Constants.TRIGGER_AT, Constants.INTERVAL, pintent);
+        Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
     }
 
     private void askPermission() {
@@ -128,14 +140,14 @@ public class MainActivity extends AppCompatActivity
         transaction.commit();
     }
 
-    public void logout(){
-        Realm realm= MyApplication.getInstance().getRealmInstance();
+    public void logout() {
+        Realm realm = MyApplication.getInstance().getRealmInstance();
         realm.beginTransaction();
         realm.deleteAll();
         realm.commitTransaction();
-        UserAccount userAccount=new UserAccount(this);
+        UserAccount userAccount = new UserAccount(this);
         userAccount.logout();
-        startActivity(new Intent(this,LoginActivity.class));
+        startActivity(new Intent(this, LoginActivity.class));
         finish();
     }
 

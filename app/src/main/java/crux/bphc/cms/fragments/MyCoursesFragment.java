@@ -120,6 +120,12 @@ public class MyCoursesFragment extends Fragment {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getActivity().unregisterReceiver(onComplete);
+    }
+
+    @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
@@ -152,6 +158,8 @@ public class MyCoursesFragment extends Fragment {
                 return true;
             }
         });
+
+
 
         mAdapter.setCourses(courses);
         mRecyclerView.setAdapter(mAdapter);
