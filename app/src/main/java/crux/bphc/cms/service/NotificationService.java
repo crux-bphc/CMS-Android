@@ -2,8 +2,10 @@ package crux.bphc.cms.service;
 
 import android.app.IntentService;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -12,6 +14,7 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.util.List;
 
+import app.Constants;
 import crux.bphc.cms.R;
 import helper.MoodleServices;
 import helper.UserAccount;
@@ -25,9 +28,12 @@ import set.Course;
 import set.CourseSection;
 import set.Module;
 
+import static android.content.Intent.ACTION_VIEW;
 import static app.Constants.API_URL;
 
 public class NotificationService extends IntentService {
+    private static final String COURSE_GROUP = "course_group";
+
     public NotificationService() {
         super("NotificationService");
     }
@@ -41,13 +47,13 @@ public class NotificationService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         Log.d("service ", "started");
-        Handler mHandler = new Handler(getMainLooper());
+        /*Handler mHandler = new Handler(getMainLooper());
         mHandler.post(new Runnable() {
             @Override
             public void run() {
                 Toast.makeText(getApplicationContext(), "service running", Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
         UserAccount userAccount = new UserAccount(this);
         userAccount.waitForInternetConnection(false);
         if (!userAccount.isLoggedIn()) {
@@ -116,13 +122,13 @@ public class NotificationService extends IntentService {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                Handler mHandler2 = new Handler(getMainLooper());
+                /*Handler mHandler2 = new Handler(getMainLooper());
                 mHandler2.post(new Runnable() {
                     @Override
                     public void run() {
                         Toast.makeText(getApplicationContext(), "Network error", Toast.LENGTH_SHORT).show();
                     }
-                });
+                });*/
                 userAccount.waitForInternetConnection(true);
                 break;
             }
@@ -138,16 +144,26 @@ public class NotificationService extends IntentService {
     }
 
     private void createNotifModuleAdded(Module module, Course course) {
-        //todo group notification
+        //todo group notification and add pending intent to redirect to course section
+
+        Intent intent=new Intent();
+        intent.setAction(ACTION_VIEW);
+        intent.setData(Uri.parse(Constants.getCourseURL(course.getCourseId())));
+
+        PendingIntent pendingIntent=PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle("New content added " + course.getShortname())
-                        .setContentText(module.getName());
+                        .setContentTitle("New content in " + course.getShortname())
+                        .setContentText(module.getName())
+                        .setGroup(COURSE_GROUP)
+                        .setAutoCancel(true)
+                .setContentIntent(pendingIntent);
         NotificationManager mNotifyMgr =
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 // Builds the notification and issues it.
-        mNotifyMgr.notify(1, mBuilder.build());
+
+        mNotifyMgr.notify(UserAccount.getNotifId(this), mBuilder.build());
     }
 
 }
