@@ -53,34 +53,23 @@ public class CourseDetailActivity extends AppCompatActivity {
             courseId = mEnrolCourse.getId();
         }
 
-        course = getFirstCourse(courseId);
+        course =  realm
+                .where(Course.class)
+                .equalTo("id", courseId)
+                .findFirst();
 
-        if (course == null) {
+        if (course == null ) {
             System.out.println("receivedCourseId: " + courseId);
             contacts = mEnrolCourse.getContacts();
             setCourseEnrol();
             setTitle(mEnrolCourse.getShortname());
 
         } else {
-            String activityTitleName = intent.getStringExtra("course_name");
-            setTitle(activityTitleName);
+            setTitle(course.getShortname());
             setCourseSection();
         }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-    }
-
-    private Course getFirstCourse(int courseId) {
-        RealmResults<Course> courses = realm
-                .where(Course.class)
-                .equalTo("id", courseId)
-                .findAll();
-        if (courses.size() == 0) {
-            System.out.println("Zero courses matched");
-            return null;
-        }
-        System.out.println("Number of courses matched: " + courses.size());
-        return courses.first();
     }
 
     private void setCourseEnrol() {

@@ -26,6 +26,7 @@ public class Module extends RealmObject {
         modType = -1;
     }
 
+
     public Module(int id, String url, String name, int instance, String modicon, String modname, String modplural, String description, RealmList<Content> contents) {
         this.id = id;
         this.url = url;
@@ -37,6 +38,16 @@ public class Module extends RealmObject {
         this.description = description;
         this.contents = contents;
         setModType();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Module && ((Module) obj).getId() == id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 
     public String getDescription() {

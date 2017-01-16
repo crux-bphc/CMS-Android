@@ -18,6 +18,16 @@ public class UserAccount {
         this.context = context;
     }
 
+    public static int getNotifId(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        int id = prefs.getInt("notif", 1);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        editor.putInt("notif", id + 1);
+        editor.commit();
+
+        return id;
+    }
 
     public boolean isLoggedIn() {
         SharedPreferences prefs = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
@@ -62,5 +72,17 @@ public class UserAccount {
         SharedPreferences.Editor editor = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
         editor.clear();
         editor.apply();
+    }
+
+    public void waitForInternetConnection(boolean b) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+        editor.putBoolean("internet", b);
+        editor.commit();
+    }
+
+    public boolean waitForInternetConnection() {
+        SharedPreferences prefs = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        return prefs.getBoolean("internet", false);
+
     }
 }

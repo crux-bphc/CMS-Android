@@ -1,12 +1,17 @@
 package crux.bphc.cms;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
@@ -25,6 +30,7 @@ import app.Constants;
 import app.MyApplication;
 import crux.bphc.cms.fragments.MyCoursesFragment;
 import crux.bphc.cms.fragments.SearchCourseFragment;
+import crux.bphc.cms.service.NotificationService;
 import helper.UserAccount;
 import io.realm.Realm;
 
@@ -60,14 +66,44 @@ public class MainActivity extends AppCompatActivity
         TextView fullName = (TextView) headerView.findViewById(R.id.firstname);
         username.setText(mUserAccount.getUsername());
         fullName.setText(mUserAccount.getFirstName());
-
-
         setHome();
-
-
         askPermission();
+        setAlarm();
+        resolveDeepLink();
+    }
+
+    private void resolveDeepLink() {
+        Uri path = getIntent().getParcelableExtra("path");
+        if (path == null) {
+            return;
+        }
+        String pathString = path.toString();
+        if (pathString.contains("view.php")) {
+            String[] ids = pathString.split("=");
+            try {
+                int id = Integer.parseInt(ids[ids.length - 1]);
+                if (id == 1) {
+                    //todo open site news
+                } else {
+                    Intent intent = new Intent(this, CourseDetailActivity.class);
+                    intent.putExtra("id", id);
+                    startActivity(intent);
+                }
+
+            } catch (NumberFormatException e) {
+
+            }
 
 
+        }
+    }
+
+    private void setAlarm() {
+        Intent intent = new Intent(this, NotificationService.class);
+        PendingIntent pintent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarm.cancel(pintent);
+        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, Constants.TRIGGER_AT, Constants.INTERVAL, pintent);
     }
 
     private void askPermission() {
@@ -128,14 +164,14 @@ public class MainActivity extends AppCompatActivity
         transaction.commit();
     }
 
-    public void logout(){
-        Realm realm= MyApplication.getInstance().getRealmInstance();
+    public void logout() {
+        Realm realm = MyApplication.getInstance().getRealmInstance();
         realm.beginTransaction();
         realm.deleteAll();
         realm.commitTransaction();
-        UserAccount userAccount=new UserAccount(this);
+        UserAccount userAccount = new UserAccount(this);
         userAccount.logout();
-        startActivity(new Intent(this,LoginActivity.class));
+        startActivity(new Intent(this, LoginActivity.class));
         finish();
     }
 
@@ -163,8 +199,21 @@ public class MainActivity extends AppCompatActivity
                 setCourseSearch();
                 break;
             case R.id.website:
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.API_URL));
-                startActivity(browserIntent);
+               /* CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+                CustomTabsIntent customTabsIntent = builder.build();
+                customTabsIntent.launchUrl(this, Uri.parse(Constants.API_URL));*/
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.API_URL));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setPackage("com.android.chrome");
+                try {
+                    startActivity(intent);
+                } catch (ActivityNotFoundException ex) {
+                    // Chrome browser presumably not installed so allow user to choose instead
+                    intent.setPackage(null);
+                    startActivity(Intent.createChooser(intent,"Choose an application"));
+                }
+//                startActivity(browserIntent);
+
                 break;
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

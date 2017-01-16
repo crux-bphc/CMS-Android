@@ -3,6 +3,7 @@ package crux.bphc.cms;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -16,10 +17,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
+import java.util.List;
+
+import app.MyApplication;
+import helper.MoodleServices;
 import helper.UserAccount;
 import helper.UserDetail;
+import io.realm.Realm;
+import io.realm.RealmResults;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -27,6 +38,9 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
+import set.Course;
+import set.CourseSection;
+import set.Module;
 
 import static app.Constants.API_URL;
 
@@ -37,6 +51,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
     UserAccount userAccount;
+    Realm realm;
     private EditText mEmailView;
     private EditText mPasswordView;
     private View mLoginFormView;
@@ -86,12 +101,14 @@ public class LoginActivity extends AppCompatActivity {
         Picasso.with(this).load(R.drawable.intro_bg).into(background);
 
 
-
     }
 
     private void checkLoggedIn() {
         if (userAccount.isLoggedIn()) {
-            startActivity(new Intent(this, MainActivity.class));
+            Intent intent = new Intent(this, MainActivity.class);
+            if (getIntent().getParcelableExtra("path") != null)
+                intent.putExtra("path", getIntent().getParcelableExtra("path"));
+            startActivity(intent);
             finish();
         }
     }
@@ -140,7 +157,7 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            showProgress(true);
+            showProgress(true, "Logging in...");
             UserLoginTask mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute();
         }
@@ -157,11 +174,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    private void showProgress(final boolean show) {
+    private void showProgress(final boolean show, String message) {
         if (show)
             progressDialog.show();
         else
             progressDialog.hide();
+        progressDialog.setMessage(message);
         // mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
 
     }
@@ -172,6 +190,117 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.dismiss();
     }
 
+    private void getUserCourses() {
+        showProgress(true, "Fetching courses list");
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(API_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        realm = MyApplication.getInstance().getRealmInstance();
+
+        MoodleServices moodleServices = retrofit.create(MoodleServices.class);
+
+        Call<ResponseBody> courseCall = moodleServices.getCourses(userAccount.getToken(), userAccount.getUserID());
+        System.out.println(courseCall.request().url().toString());
+
+        courseCall.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    String responseString = response.body().string();
+                    if (responseString.contains("Invalid token")) {
+                        return;
+                    }
+                    Gson gson = new Gson();
+                    final List<Course> coursesList = gson
+                            .fromJson(responseString, new TypeToken<List<Course>>() {
+                            }.getType());
+
+
+                    final RealmResults<Course> results = realm.where(Course.class).findAll();
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            results.deleteAllFromRealm();
+                            realm.copyToRealm(coursesList);
+                            downloadCourseContents();
+                        }
+                    });
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(LoginActivity.this,"Unable to fetch course list",Toast.LENGTH_SHORT).show();
+                checkLoggedIn();
+
+
+            }
+        });
+
+    }
+
+    private int toDownload=0;
+
+
+    private void downloadCourseContents() {
+        showProgress(true,"Fetching course contents");
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(API_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        MoodleServices moodleServices = retrofit.create(MoodleServices.class);
+
+        List<Course> courses = realm.copyFromRealm(realm.where(Course.class).findAll());
+
+        toDownload=courses.size();
+        if(toDownload==0){
+            checkLoggedIn();
+            return;
+        }
+        for (final Course course : courses) {
+            Call<List<CourseSection>> courseCall = moodleServices.getCourseContent(userAccount.getToken(), course.getId());
+            courseCall.enqueue(new Callback<List<CourseSection>>() {
+                @Override
+                public void onResponse(Call<List<CourseSection>> call, Response<List<CourseSection>> response) {
+                    List<CourseSection> sectionList =  response.body();
+                    if (sectionList == null) {
+                        return;
+                    }
+                    for (CourseSection section : sectionList) {
+                        section.setCourseID(course.getId());
+                        realm.beginTransaction();
+                        realm.where(CourseSection.class)
+                                .equalTo("id", section.getId())
+                                .findAll().deleteAllFromRealm();
+                        realm.copyToRealmOrUpdate(section);
+                        realm.commitTransaction();
+                    }
+                    toDownload--;
+                    if(toDownload==0){
+                        checkLoggedIn();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<CourseSection>> call, Throwable t) {
+                    userAccount.waitForInternetConnection(true);
+                    toDownload--;
+                    if(toDownload==0){
+                        checkLoggedIn();
+                    }
+                }
+            });
+        }
+    }
+
+
     private interface MoodleLogin {
         @GET("login/token.php?service=moodle_mobile_app")
         Call<LoginDetail> login(@Query("username") String username, @Query("password") String password);
@@ -180,7 +309,6 @@ public class LoginActivity extends AppCompatActivity {
         Call<UserDetail> fetchUserDetail(@Query("wstoken") String token);
 
     }
-
 
     private class UserLoginTask {
         String email, password;
@@ -204,23 +332,23 @@ public class LoginActivity extends AppCompatActivity {
                     final LoginDetail loginDetail = response.body();
                     Log.d("Login: ", loginDetail.error + " " + loginDetail.token);
 
-                    if(loginDetail.error!=null ) {
+                    if (loginDetail.error != null) {
                         if (loginDetail.error.contains("Web services must be enabled")) {
 
                             Toast.makeText(LoginActivity.this, "Please contact network administrator to enable mobile services", Toast.LENGTH_LONG).show();
-                            showProgress(false);
+                            showProgress(false, "");
                             return;
                         }
 
                         //check if password is correct
-                        else  {
+                        else {
                             Toast.makeText(LoginActivity.this, "The Username or Password is incorrect", Toast.LENGTH_SHORT).show();
-                            showProgress(false);
+                            showProgress(false, "");
                             return;
                         }
                     }
 
-
+                    showProgress(true, "Fetching user details");
                     Call<UserDetail> userDetailCall = moodleLogin.fetchUserDetail(loginDetail.token);
                     userDetailCall.enqueue(new Callback<UserDetail>() {
                         @Override
@@ -229,20 +357,21 @@ public class LoginActivity extends AppCompatActivity {
 
                             if (userDetail.errorcode != null) {
                                 Toast.makeText(LoginActivity.this, "Unknown error occurred. Please retry.", Toast.LENGTH_LONG).show();
-                                showProgress(false);
+                                showProgress(false, "");
                                 return;
                             }
 
                             userDetail.setUsername(email);
                             userDetail.setToken(loginDetail.token);
                             userAccount.setUser(userDetail);
-                            checkLoggedIn();
+                            getUserCourses();
+
                         }
 
                         @Override
                         public void onFailure(Call<UserDetail> call, Throwable t) {
                             Toast.makeText(LoginActivity.this, "Please check your Internet Connection", Toast.LENGTH_SHORT).show();
-                            showProgress(false);
+                            showProgress(false, "");
                         }
                     });
 
@@ -252,7 +381,7 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(Call<LoginDetail> call, Throwable t) {
                     Toast.makeText(LoginActivity.this, "Please check your Internet Connection", Toast.LENGTH_SHORT).show();
-                    showProgress(false);
+                    showProgress(false, "");
                 }
             });
 
