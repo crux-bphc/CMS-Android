@@ -70,6 +70,7 @@ public class MyCoursesFragment extends Fragment {
     boolean isClearIconSet = false;
     CourseDownloader courseDownloader;
     List<CourseDownloader.DownloadReq> requestedDownloads;
+    String mSearchedText = "";
     private String TOKEN;
     private MyAdapter mAdapter;
     BroadcastReceiver onComplete = new BroadcastReceiver() {
@@ -101,7 +102,6 @@ public class MyCoursesFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -160,11 +160,10 @@ public class MyCoursesFragment extends Fragment {
         });
 
 
-
         mAdapter.setCourses(courses);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mSwipeRefreshLayout.setRefreshing(true);
+//        mSwipeRefreshLayout.setRefreshing(true);
         mFilter.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -178,8 +177,8 @@ public class MyCoursesFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                String searchText = s.toString().toLowerCase().trim();
-                filterMyCourses(searchText);
+                mSearchedText = s.toString().toLowerCase().trim();
+                filterMyCourses(mSearchedText);
 
                 if (!isClearIconSet) {
                     mFilterIcon.setImageResource(R.drawable.ic_clear_black_24dp);
@@ -196,7 +195,7 @@ public class MyCoursesFragment extends Fragment {
                         }
                     });
                 }
-                if (searchText.isEmpty()) {
+                if (mSearchedText.isEmpty()) {
                     mFilterIcon.setImageResource(R.drawable.filter);
                     mFilterIcon.setOnClickListener(null);
                     isClearIconSet = false;
@@ -307,13 +306,15 @@ public class MyCoursesFragment extends Fragment {
                         ((MainActivity) getActivity()).logout();
                         return;
                     }
-                    Gson gson=new Gson();
+                    Gson gson = new Gson();
                     final List<Course> coursesList = gson
-                            .fromJson(responseString,new TypeToken<List<Course>>(){}.getType());
+                            .fromJson(responseString, new TypeToken<List<Course>>() {
+                            }.getType());
 
                     courses.clear();
                     courses.addAll(coursesList);
-                    mAdapter.setCourses(courses);
+//                    mAdapter.setCourses(courses);
+                    filterMyCourses(mSearchedText);
                     System.out.println("number of courses in coursesList: " + coursesList.size());
                     mSwipeRefreshLayout.setRefreshing(false);
 
@@ -345,13 +346,18 @@ public class MyCoursesFragment extends Fragment {
     }
 
     private void filterMyCourses(String searchedText) {
-        List<Course> filteredCourses = new ArrayList<>();
-        for (Course course : courses) {
-            if (course.getFullname().toLowerCase().contains(searchedText)) {
-                filteredCourses.add(course);
+        if (searchedText.isEmpty()) {
+            mAdapter.setCourses(courses);
+
+        } else {
+            List<Course> filteredCourses = new ArrayList<>();
+            for (Course course : courses) {
+                if (course.getFullname().toLowerCase().contains(searchedText)) {
+                    filteredCourses.add(course);
+                }
             }
+            mAdapter.setCourses(filteredCourses);
         }
-        mAdapter.setCourses(filteredCourses);
     }
 
     private class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {

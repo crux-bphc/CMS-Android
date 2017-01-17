@@ -11,12 +11,13 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import app.Constants;
 import helper.UserAccount;
 
 public class NetworkStateReceiver extends BroadcastReceiver {
     public static boolean hasActiveInternetConnection() {
         try {
-            HttpURLConnection urlc = (HttpURLConnection) (new URL("http://www.google.com").openConnection());
+            HttpURLConnection urlc = (HttpURLConnection) (new URL(Constants.API_URL).openConnection());
             urlc.setRequestProperty("User-Agent", "Test");
             urlc.setRequestProperty("Connection", "close");
             urlc.setConnectTimeout(1500);
