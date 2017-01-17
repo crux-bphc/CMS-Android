@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -171,17 +172,18 @@ public class CourseModulesActivity extends AppCompatActivity {
     }
 
     private void openFile(String filename) {
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
-                + File.separator + filename);
-        Uri path = Uri.fromFile(file);
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath(), filename);
+        Uri path = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", file);
         Intent pdfOpenintent = new Intent(Intent.ACTION_VIEW);
-        pdfOpenintent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         pdfOpenintent.setDataAndType(path, "application/" + getExtension(filename));
+        pdfOpenintent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        pdfOpenintent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        pdfOpenintent.setType("application/" + getExtension(filename));
         try {
             CourseModulesActivity.this.startActivity(pdfOpenintent);
         } catch (ActivityNotFoundException e) {
-            pdfOpenintent.setDataAndType(path, "application/*");
-            startActivity(Intent.createChooser(pdfOpenintent, "Open File - " + filename));
+            pdfOpenintent.setType("application/*");
+            startActivity(Intent.createChooser(pdfOpenintent, "No Application found to open File - " + filename));
         }
     }
 
@@ -220,7 +222,7 @@ public class CourseModulesActivity extends AppCompatActivity {
     private void shareFile(String filename) {
         File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
                 + File.separator + filename);
-        Uri path = Uri.fromFile(file);
+        Uri path = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", file);
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_STREAM, path);
@@ -258,6 +260,7 @@ public class CourseModulesActivity extends AppCompatActivity {
             this.modules = modules;
             notifyDataSetChanged();
         }
+
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

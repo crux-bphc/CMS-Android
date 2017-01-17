@@ -1,17 +1,13 @@
 package crux.bphc.cms;
 
 import android.Manifest;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
@@ -30,7 +26,7 @@ import app.Constants;
 import app.MyApplication;
 import crux.bphc.cms.fragments.MyCoursesFragment;
 import crux.bphc.cms.fragments.SearchCourseFragment;
-import crux.bphc.cms.service.NotificationService;
+import helper.MyNotificationManager;
 import helper.UserAccount;
 import io.realm.Realm;
 
@@ -40,7 +36,6 @@ public class MainActivity extends AppCompatActivity
     private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 1001;
     MyCoursesFragment fragment;
     private UserAccount mUserAccount;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +63,7 @@ public class MainActivity extends AppCompatActivity
         fullName.setText(mUserAccount.getFirstName());
         setHome();
         askPermission();
-        setAlarm();
+        MyNotificationManager.startNotificationServices(this);
         resolveDeepLink();
     }
 
@@ -98,13 +93,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void setAlarm() {
-        Intent intent = new Intent(this, NotificationService.class);
-        PendingIntent pintent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        alarm.cancel(pintent);
-        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, Constants.TRIGGER_AT, Constants.INTERVAL, pintent);
-    }
 
     private void askPermission() {
         if (ContextCompat.checkSelfPermission(this,
@@ -210,7 +198,7 @@ public class MainActivity extends AppCompatActivity
                 } catch (ActivityNotFoundException ex) {
                     // Chrome browser presumably not installed so allow user to choose instead
                     intent.setPackage(null);
-                    startActivity(Intent.createChooser(intent,"Choose an application"));
+                    startActivity(Intent.createChooser(intent, "Choose an application"));
                 }
 //                startActivity(browserIntent);
 

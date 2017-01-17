@@ -113,7 +113,7 @@ public class CourseSectionFragment extends Fragment {
         MoodleServices moodleServices = retrofit.create(MoodleServices.class);
 
         Call<List<CourseSection>> courseCall = moodleServices.getCourseContent(TOKEN, courseId);
-
+        System.out.println(courseCall.request().url().toString());
         courseCall.enqueue(new Callback<List<CourseSection>>() {
             @Override
             public void onResponse(Call<List<CourseSection>> call, Response<List<CourseSection>> response) {

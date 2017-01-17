@@ -6,15 +6,14 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.List;
 
 import app.Constants;
+import crux.bphc.cms.LoginActivity;
 import crux.bphc.cms.R;
 import helper.MoodleServices;
 import helper.UserAccount;
@@ -28,7 +27,6 @@ import set.Course;
 import set.CourseSection;
 import set.Module;
 
-import static android.content.Intent.ACTION_VIEW;
 import static app.Constants.API_URL;
 
 public class NotificationService extends IntentService {
@@ -110,13 +108,6 @@ public class NotificationService extends IntentService {
                         }
                     }
                 } else {
-                    Handler mHandler2 = new Handler(getMainLooper());
-                    mHandler2.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(), "Network error", Toast.LENGTH_SHORT).show();
-                        }
-                    });
                     userAccount.waitForInternetConnection(true);
                     break;
                 }
@@ -146,11 +137,11 @@ public class NotificationService extends IntentService {
     private void createNotifModuleAdded(Module module, Course course) {
         //todo group notification and add pending intent to redirect to course section
 
-        Intent intent=new Intent();
-        intent.setAction(ACTION_VIEW);
-        intent.setData(Uri.parse(Constants.getCourseURL(course.getCourseId())));
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.putExtra("path",Uri.parse(Constants.getCourseURL(course.getCourseId())));
+//        intent.setData();
 
-        PendingIntent pendingIntent=PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.mipmap.ic_launcher)
@@ -158,7 +149,7 @@ public class NotificationService extends IntentService {
                         .setContentText(module.getName())
                         .setGroup(COURSE_GROUP)
                         .setAutoCancel(true)
-                .setContentIntent(pendingIntent);
+                        .setContentIntent(pendingIntent);
         NotificationManager mNotifyMgr =
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 // Builds the notification and issues it.

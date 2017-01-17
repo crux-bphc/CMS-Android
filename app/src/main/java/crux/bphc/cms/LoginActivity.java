@@ -54,7 +54,6 @@ public class LoginActivity extends AppCompatActivity {
     Realm realm;
     private EditText mEmailView;
     private EditText mPasswordView;
-    private View mLoginFormView;
     private ProgressDialog progressDialog;
 
     @Override
@@ -91,8 +90,6 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.setMessage("Loading...");
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.setCancelable(false);
-
-        mLoginFormView = findViewById(R.id.login_form);
 
         ImageView bitsLogo, background;
         background = (ImageView) findViewById(R.id.background);
