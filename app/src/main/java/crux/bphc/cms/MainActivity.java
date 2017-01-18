@@ -203,6 +203,10 @@ public class MainActivity extends AppCompatActivity
 //                startActivity(browserIntent);
 
                 break;
+
+            case  R.id.settings:
+                Intent intent1=new Intent(this,SettingsActivity.class);
+                startActivity(intent1);
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

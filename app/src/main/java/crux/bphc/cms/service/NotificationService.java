@@ -26,11 +26,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import set.Course;
 import set.CourseSection;
 import set.Module;
+import set.Notification;
 
 import static app.Constants.API_URL;
 
 public class NotificationService extends IntentService {
     private static final String COURSE_GROUP = "course_group";
+    UserAccount userAccount;
+    Realm realm;
 
     public NotificationService() {
         super("NotificationService");
@@ -41,18 +44,11 @@ public class NotificationService extends IntentService {
         context.startService(intent);
     }
 
-
     @Override
     protected void onHandleIntent(Intent intent) {
         Log.d("service ", "started");
-        /*Handler mHandler = new Handler(getMainLooper());
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getApplicationContext(), "service running", Toast.LENGTH_SHORT).show();
-            }
-        });*/
-        UserAccount userAccount = new UserAccount(this);
+
+        userAccount = new UserAccount(this);
         userAccount.waitForInternetConnection(false);
         if (!userAccount.isLoggedIn()) {
             return;
@@ -68,7 +64,8 @@ public class NotificationService extends IntentService {
                 .deleteRealmIfMigrationNeeded()
                 .build();
 
-        final Realm realm = Realm.getInstance(config);
+
+        realm = Realm.getInstance(config);
         List<Course> courses = realm.copyFromRealm(realm.where(Course.class).findAll());
 
         for (final Course course : courses) {
@@ -94,7 +91,7 @@ public class NotificationService extends IntentService {
                                     realm.copyFromRealm(realm.where(CourseSection.class).equalTo("id", section.getId()).findFirst());
                             for (Module module : section.getModules()) {
                                 if (!realmSection.getModules().contains(module)) {
-                                    createNotifModuleAdded(module, course);
+                                    createNotifModuleAdded(new Notification(course, module));
                                 }
 
                             }
@@ -113,13 +110,6 @@ public class NotificationService extends IntentService {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                /*Handler mHandler2 = new Handler(getMainLooper());
-                mHandler2.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(), "Network error", Toast.LENGTH_SHORT).show();
-                    }
-                });*/
                 userAccount.waitForInternetConnection(true);
                 break;
             }
@@ -130,31 +120,37 @@ public class NotificationService extends IntentService {
 
     private void createNotifSectionAdded(CourseSection section, Course course) {
         for (Module module : section.getModules()) {
-            createNotifModuleAdded(module, course);
+            createNotifModuleAdded(new Notification(course, module));
         }
     }
 
-    private void createNotifModuleAdded(Module module, Course course) {
+    private void createNotifModuleAdded(Notification notification) {
         //todo group notification and add pending intent to redirect to course section
 
-        Intent intent = new Intent(this, LoginActivity.class);
-        intent.putExtra("path",Uri.parse(Constants.getCourseURL(course.getCourseId())));
+        if (userAccount.isNotificationsEnabled()) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.putExtra("path", Uri.parse(Constants.getCourseURL(notification.getCourse().getCourseId())));
 //        intent.setData();
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle("New content in " + course.getShortname())
-                        .setContentText(module.getName())
-                        .setGroup(COURSE_GROUP)
-                        .setAutoCancel(true)
-                        .setContentIntent(pendingIntent);
-        NotificationManager mNotifyMgr =
-                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            NotificationCompat.Builder mBuilder =
+                    new NotificationCompat.Builder(this)
+                            .setSmallIcon(R.mipmap.ic_launcher)
+                            .setContentTitle("New content in " + notification.getCourse().getShortname())
+                            .setContentText(notification.getModule().getName())
+                            .setGroup(COURSE_GROUP)
+                            .setAutoCancel(true)
+                            .setContentIntent(pendingIntent);
+            NotificationManager mNotifyMgr =
+                    (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 // Builds the notification and issues it.
 
-        mNotifyMgr.notify(UserAccount.getNotifId(this), mBuilder.build());
+            mNotifyMgr.notify(UserAccount.getNotifId(this), mBuilder.build());
+        }
+
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(notification);
+        realm.commitTransaction();
     }
 
 }

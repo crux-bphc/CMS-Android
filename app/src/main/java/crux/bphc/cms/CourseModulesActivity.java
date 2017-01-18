@@ -178,11 +178,10 @@ public class CourseModulesActivity extends AppCompatActivity {
         pdfOpenintent.setDataAndType(path, "application/" + getExtension(filename));
         pdfOpenintent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         pdfOpenintent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        pdfOpenintent.setType("application/" + getExtension(filename));
         try {
             CourseModulesActivity.this.startActivity(pdfOpenintent);
         } catch (ActivityNotFoundException e) {
-            pdfOpenintent.setType("application/*");
+            pdfOpenintent.setDataAndType(path,"application/*");
             startActivity(Intent.createChooser(pdfOpenintent, "No Application found to open File - " + filename));
         }
     }
@@ -226,6 +225,7 @@ public class CourseModulesActivity extends AppCompatActivity {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_STREAM, path);
+        sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         sendIntent.setType("application/*");
 
         try {

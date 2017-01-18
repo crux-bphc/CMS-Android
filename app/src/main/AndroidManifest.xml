@@ -26,14 +26,17 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:screenOrientation="portrait"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".CourseDetailActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".CourseModulesActivity"
-            android:screenOrientation="portrait"/>
-       <!-- <activity
+        <activity
+            android:name=".CourseDetailActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".CourseModulesActivity"
+            android:screenOrientation="portrait" />
+        <!--
+        <activity
             android:name=".DeepLinkActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
@@ -48,7 +51,8 @@
                     android:pathPrefix="/moodle"
                     android:scheme="http" />
             </intent-filter>
-        </activity>-->
+        </activity>
+        -->
 
         <service
             android:name=".service.NotificationService"
@@ -76,9 +80,17 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+                android:resource="@xml/provider_paths" />
         </provider>
 
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="crux.bphc.cms.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

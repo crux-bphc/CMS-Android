@@ -85,4 +85,15 @@ public class UserAccount {
         return prefs.getBoolean("internet", false);
 
     }
+
+    public boolean isNotificationsEnabled() {
+        SharedPreferences prefs = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        return prefs.getBoolean("notificationEnable", true);
+    }
+
+    public void setNotifications(boolean b) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+        editor.putBoolean("notificationEnable", b);
+        editor.commit();
+    }
 }
