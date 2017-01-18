@@ -1,15 +1,20 @@
 package crux.bphc.cms.service;
 
 import android.app.IntentService;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import app.Constants;
@@ -26,14 +31,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import set.Course;
 import set.CourseSection;
 import set.Module;
-import set.Notification;
+import set.NotificationSet;
 
+import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
 import static app.Constants.API_URL;
 
 public class NotificationService extends IntentService {
-    private static final String COURSE_GROUP = "course_group";
     UserAccount userAccount;
     Realm realm;
+    NotificationManager mNotifyMgr;
 
     public NotificationService() {
         super("NotificationService");
@@ -54,6 +60,7 @@ public class NotificationService extends IntentService {
             return;
         }
 
+        mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(API_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -91,7 +98,7 @@ public class NotificationService extends IntentService {
                                     realm.copyFromRealm(realm.where(CourseSection.class).equalTo("id", section.getId()).findFirst());
                             for (Module module : section.getModules()) {
                                 if (!realmSection.getModules().contains(module)) {
-                                    createNotifModuleAdded(new Notification(course, module));
+                                    createNotifModuleAdded(new NotificationSet(course, module));
                                 }
 
                             }
@@ -120,37 +127,103 @@ public class NotificationService extends IntentService {
 
     private void createNotifSectionAdded(CourseSection section, Course course) {
         for (Module module : section.getModules()) {
-            createNotifModuleAdded(new Notification(course, module));
+            createNotifModuleAdded(new NotificationSet(course, module));
         }
     }
 
-    private void createNotifModuleAdded(Notification notification) {
-        //todo group notification and add pending intent to redirect to course section
+    private void createNotifModuleAdded(NotificationSet notificationSet) {
 
         if (userAccount.isNotificationsEnabled()) {
-            Intent intent = new Intent(this, LoginActivity.class);
-            intent.putExtra("path", Uri.parse(Constants.getCourseURL(notification.getCourse().getCourseId())));
-//        intent.setData();
 
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.putExtra("path", Uri.parse(Constants.getCourseURL(notificationSet.getCourse().getCourseId())));
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis() , intent, PendingIntent.FLAG_UPDATE_CURRENT);
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(this)
                             .setSmallIcon(R.mipmap.ic_launcher)
-                            .setContentTitle("New content in " + notification.getCourse().getShortname())
-                            .setContentText(notification.getModule().getName())
-                            .setGroup(COURSE_GROUP)
+                            .setContentTitle("New Content in " + notificationSet.getCourse().getShortname())
+                            .setContentText(notificationSet.getContentText())
+                            .setGroup(notificationSet.getGroupKey())
                             .setAutoCancel(true)
                             .setContentIntent(pendingIntent);
-            NotificationManager mNotifyMgr =
-                    (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-// Builds the notification and issues it.
 
-            mNotifyMgr.notify(UserAccount.getNotifId(this), mBuilder.build());
+
+            mNotifyMgr.notify(notificationSet.getGroupKey(), UserAccount.getNotifId(this), mBuilder.build());
+
+            groupNotifications(notificationSet);
+
+
         }
 
         realm.beginTransaction();
-        realm.copyToRealmOrUpdate(notification);
+        realm.copyToRealmOrUpdate(notificationSet);
         realm.commitTransaction();
     }
+
+
+    private boolean groupNotifications(NotificationSet notificationSet) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            ArrayList<StatusBarNotification> groupedNotification = new ArrayList<>();
+            for (StatusBarNotification statusBarNotification : mNotifyMgr.getActiveNotifications()) {
+                if (statusBarNotification.getTag() != null && statusBarNotification.getTag().equalsIgnoreCase(notificationSet.getGroupKey())) {
+                    groupedNotification.add(statusBarNotification);
+                }
+            }
+            if (groupedNotification.size() > 1) {
+
+                ArrayList<String> arrayLines=new ArrayList<>();
+                NotificationCompat.InboxStyle inbox = new NotificationCompat.InboxStyle();
+                for (StatusBarNotification activeSbn : groupedNotification) {
+                    ArrayList<String> previousLines= activeSbn.getNotification().extras.getStringArrayList("lines");
+                    if(previousLines==null || previousLines.isEmpty()) {
+                        String stackNotificationLine = (String) activeSbn.getNotification().extras.get(NotificationCompat.EXTRA_TEXT);
+                        if (stackNotificationLine != null) {
+                            inbox.addLine(stackNotificationLine);
+                            arrayLines.add(stackNotificationLine);
+                        }
+                    }else{
+                        for(String string:previousLines) {
+                            inbox.addLine(string);
+                            arrayLines.add(string);
+                        }
+                    }
+                }
+                inbox.setSummaryText((arrayLines.size()) + " new content added");
+
+                Intent intent = new Intent(this, LoginActivity.class);
+                intent.putExtra("path", Uri.parse(Constants.getCourseURL(notificationSet.getCourse().getCourseId())));
+                PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis() , intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                Bundle bundle=new Bundle();
+                bundle.putStringArrayList("lines",arrayLines);
+
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+                builder.setContentTitle(notificationSet.getTitle())
+                        .setContentText((groupedNotification.size() + 1) + " new content added")
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setStyle(inbox)
+                        .setGroup(notificationSet.getGroupKey())
+                        .setGroupSummary(true)
+                        .setAutoCancel(true)
+                        .setVisibility(VISIBILITY_PUBLIC)
+                        .setContentIntent(pendingIntent)
+                        .addExtras(bundle);
+
+                for (StatusBarNotification statusBarNotification : groupedNotification)
+                    mNotifyMgr.cancel(statusBarNotification.getId());
+                mNotifyMgr.notify(notificationSet.getGroupKey(), groupedNotification.get(0).getId(), builder.build());
+
+                return true;
+
+            } else {
+                return false;
+            }
+
+        } else {
+            return false;
+        }
+    }
+
 
 }

@@ -9,17 +9,17 @@ import io.realm.annotations.RealmClass;
  */
 
 @RealmClass
-public class Notification implements RealmModel {
+public class NotificationSet implements RealmModel {
 
     @PrimaryKey
     private int modId;
     private Course course;
     private Module module;
 
-    public Notification() {
+    public NotificationSet() {
     }
 
-    public Notification(Course course, Module module) {
+    public NotificationSet(Course course, Module module) {
         this.course = course;
         this.module = module;
         this.modId = module.getId();
@@ -44,5 +44,18 @@ public class Notification implements RealmModel {
     public void setModule(Module module) {
         this.module = module;
         modId=module.getId();
+    }
+
+    public String getTitle() {
+        return course.getShortname();
+    }
+
+    public String getGroupKey() {
+        return course.getShortname();
+
+    }
+
+    public String getContentText() {
+        return module.getName();
     }
 }
