@@ -12,6 +12,8 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.AlertDialog;
+import android.text.Html;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -22,7 +24,9 @@ import java.util.List;
 
 import app.Constants;
 import crux.bphc.cms.BuildConfig;
+import io.realm.Realm;
 import set.Content;
+import set.Course;
 import set.Module;
 
 /**
@@ -30,21 +34,22 @@ import set.Module;
  */
 
 public class MyFileManager {
-    private List<String> fileList;
     public static final int DATA_DOWNLOADED = 20;
-    private Context context;
+    private static final String CMS = "CMS";
+    private List<String> fileList;
+    private Activity activity;
     private ArrayList<String> requestedDownloads;
     private Callback callback;
     private BroadcastReceiver onComplete = new BroadcastReceiver() {
         public void onReceive(Context ctxt, Intent intent) {
             int i = 0;
-            for (String fileName : requestedDownloads) {
-                if (searchFile(fileName, i == 0)) {
-                    requestedDownloads.remove(fileName);
+            reloadFileList();
+            for (String filename : requestedDownloads) {
+                if (searchFile(filename)) {
+                    requestedDownloads.remove(filename);
                     if (callback != null) {
-                        callback.onDownloadCompleted(fileName);
+                        callback.onDownloadCompleted(filename);
                     }
-
                     return;
                 }
                 i++;
@@ -52,48 +57,73 @@ public class MyFileManager {
         }
     };
 
-    public MyFileManager(Context context) {
-        this.context = context;
+    public MyFileManager(Activity activity) {
+        this.activity = activity;
         requestedDownloads = new ArrayList<>();
     }
 
-    public void registerDownloadReceiver() {
-        context.registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-    }
-
-    public void unregisterDownloadReceiver() {
-        context.unregisterReceiver(onComplete);
-    }
-
-    public void setCallback(Callback callback) {
-        this.callback = callback;
-    }
-
-    public void downloadFile(Content content, Module module) {
-        requestedDownloads.add(content.getFilename());
-        Toast.makeText(context, "Downloading file - " + content.getFilename(), Toast.LENGTH_SHORT).show();
-        String url = content.getFileurl() + "&token=" + Constants.TOKEN;
-        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
-        request.setDescription(module.getModname());
-        request.setTitle(content.getFilename());
-
-        request.allowScanningByMediaScanner();
-        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, content.getFilename());
-        DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-
-        manager.enqueue(request);
-    }
 
     @NonNull
     public static String getExtension(String filename) {
         return filename.substring(filename.lastIndexOf('.') + 1);
     }
 
-    public boolean searchFile(String fileName, boolean reload) {
-        if (reload || fileList == null) {
-            File direc = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-            fileList = Arrays.asList(direc.list());
+    public static void showInWebsite(Activity activity, String url) {
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        CustomTabsIntent customTabsIntent = builder.build();
+        customTabsIntent.launchUrl(activity, Uri.parse(url));
+    }
+
+    public static String getCourseName(int courseId, Realm realm) {
+        Course course = realm.where(Course.class).equalTo("id", courseId).findFirst();
+        return course.getShortname();
+    }
+
+    public void registerDownloadReceiver() {
+        activity.registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+    }
+
+    public void unregisterDownloadReceiver() {
+        activity.unregisterReceiver(onComplete);
+    }
+
+    public void setCallback(Callback callback) {
+        this.callback = callback;
+    }
+
+    public void downloadFile(Content content, Module module, String courseName) {
+        downloadFile(content.getFilename(), content.getFileurl(), module.getDescription(), courseName);
+    }
+
+    private void downloadFile(String fileName, String fileurl, String description, String courseName) {
+
+        String url = fileurl + "&token=" + Constants.TOKEN;
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+        request.setDescription(description);
+        request.setTitle(fileName);
+
+        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
+                + getPathExtension(courseName);
+        File direct = new File(path);
+        if (!direct.exists()) {
+            File dir = new File(path);
+            dir.mkdirs();
+        }
+
+        request.allowScanningByMediaScanner();
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,
+                getFilePath(courseName, fileName));
+        DownloadManager manager = (DownloadManager) activity.getSystemService(Context.DOWNLOAD_SERVICE);
+        manager.enqueue(request);
+        requestedDownloads.add(fileName);
+    }
+
+
+    public boolean searchFile(String fileName) {
+        //if courseName is empty check sb folders
+        if (fileList == null) {
+            reloadFileList();
             if (fileList.size() == 0) {
                 return false;
             }
@@ -105,25 +135,26 @@ public class MyFileManager {
         return false;
     }
 
-    public void openFile(String filename) {
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath(), filename);
-        Uri path = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file);
+    public void openFile(String filename, String courseName) {
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath(),
+                getFilePath(courseName, filename));
+        Uri path = FileProvider.getUriForFile(activity, BuildConfig.APPLICATION_ID + ".provider", file);
         Intent pdfOpenintent = new Intent(Intent.ACTION_VIEW);
         pdfOpenintent.setDataAndType(path, "application/" + getExtension(filename));
         pdfOpenintent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         pdfOpenintent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         try {
-            context.startActivity(pdfOpenintent);
+            activity.startActivity(pdfOpenintent);
         } catch (ActivityNotFoundException e) {
             pdfOpenintent.setDataAndType(path, "application/*");
-            context.startActivity(Intent.createChooser(pdfOpenintent, "No Application found to open File - " + filename));
+            activity.startActivity(Intent.createChooser(pdfOpenintent, "No Application found to open File - " + filename));
         }
     }
 
-    public void shareFile(String filename) {
+    public void shareFile(String filename, String courseName) {
         File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
-                + File.separator + filename);
-        Uri path = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file);
+                + getFilePath(courseName, filename));
+        Uri path = FileProvider.getUriForFile(activity, BuildConfig.APPLICATION_ID + ".provider", file);
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_STREAM, path);
@@ -131,22 +162,68 @@ public class MyFileManager {
         sendIntent.setType("application/*");
 
         try {
-            context.startActivity(Intent.createChooser(sendIntent, "Share File"));
+            activity.startActivity(Intent.createChooser(sendIntent, "Share File"));
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(context, "No app found to share the file - " + filename, Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "No app found to share the file - " + filename, Toast.LENGTH_SHORT).show();
 
         }
     }
 
-    public static void showInWebsite(Activity activity, String url) {
-        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-        CustomTabsIntent customTabsIntent = builder.build();
-        customTabsIntent.launchUrl(activity, Uri.parse(url));
+    private String getFilePath(String courseName, String fileName) {
+
+        return getPathExtension(courseName) + File.separator + fileName;
+    }
+
+    private String getPathExtension(String courseName) {
+        return File.separator + CMS
+                + File.separator + courseName;
     }
 
     public void reloadFileList() {
-        File direc = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        fileList = Arrays.asList(direc.list());
+        fileList = new ArrayList<>();
+        File cmsDirec = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
+                + File.separator + CMS);
+        if (cmsDirec.isDirectory()) {
+            for (File courseDir : cmsDirec.listFiles()) {
+                if (courseDir.isDirectory()) {
+                    fileList.addAll(Arrays.asList(courseDir.list()));
+                }
+            }
+        }
+
+    }
+
+    public boolean onClickAction(Module module, String courseName) {
+        if (module.getModType() == Module.Type.URL) {
+            if (module.getContents().size() > 0 && !module.getContents().get(0).getFileurl().isEmpty()) {
+                MyFileManager.showInWebsite(activity, module.getContents().get(0).getFileurl());
+            }
+        }
+        //todo update on click model
+        else if (module.getContents() == null || module.getContents().size() == 0) {
+            if (module.getModType() == Module.Type.FORUM || module.getModType() == Module.Type.LABEL) {
+                if (module.getDescription() == null || module.getDescription().length() == 0) {
+                    return false;
+                }
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(activity);
+                alertDialog.setMessage(Html.fromHtml(module.getDescription()));
+                alertDialog.setNegativeButton("Close", null);
+                alertDialog.show();
+            } else
+
+                showInWebsite(activity, module.getUrl());
+
+        } else {
+            for (Content content : module.getContents()) {
+                if (!searchFile(content.getFilename())) {
+                    Toast.makeText(activity, "Downloading file - " + content.getFilename(), Toast.LENGTH_SHORT).show();
+                    downloadFile(content, module, courseName);
+                } else {
+                    openFile(content.getFilename(), courseName);
+                }
+            }
+        }
+        return true;
     }
 
     public interface Callback {

@@ -123,7 +123,6 @@ public class CourseEnrolFragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //Toast.makeText(getActivity(), "Positive button works", Toast.LENGTH_SHORT).show();
-                //TODO: to add a loader while the network request tries to enrol the course.
                 enrolInCourse();
             }
         });

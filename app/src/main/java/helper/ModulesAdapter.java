@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -31,12 +32,14 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private LayoutInflater inflater;
     private List<Module> modules;
     private ClickListener clickListener;
+    private String courseName;
 
-    public ModulesAdapter(Context context, MyFileManager fileManager) {
+    public ModulesAdapter(Context context, MyFileManager fileManager, String courseName) {
         this.context = context;
         inflater = LayoutInflater.from(context);
         modules = new ArrayList<>();
         mFileManager = fileManager;
+        this.courseName=courseName;
     }
 
 
@@ -117,29 +120,31 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                     case 0:
                                         if (module.getContents() != null)
                                             for (Content content : module.getContents()) {
-                                                mFileManager.openFile(content.getFilename());
+                                                mFileManager.openFile(content.getFilename(),courseName);
 
                                             }
                                         break;
                                     case 1:
                                         if (module.getContents() == null || module.getContents().size() == 0) {
                                             //todo open label/forum/etc in new activity
+                                            // TODO: 19-01-2017 handle all types
                                             return;
                                         }
 
                                         for (Content content : module.getContents()) {
-                                            mFileManager.downloadFile(content, module);
+                                            Toast.makeText(context, "Downloading file - " + content.getFilename(), Toast.LENGTH_SHORT).show();
+                                            mFileManager.downloadFile(content, module,courseName);
                                         }
                                         break;
                                     case 2:
                                         if (module.getContents() != null)
                                             for (Content content : module.getContents()) {
-                                                mFileManager.shareFile(content.getFilename());
+                                                mFileManager.shareFile(content.getFilename(),courseName);
                                             }
 
                                 }
                             } else {
-                                mFileManager.downloadFile(module.getContents().get(0), module);
+                                mFileManager.downloadFile(module.getContents().get(0), module,courseName);
                             }
                         }
                     });
@@ -154,14 +159,14 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         void bind(Module module) {
             name.setText(Html.fromHtml(module.getName()));
             iconWrapper.setVisibility(View.VISIBLE);
-            if (module.getContents() == null || module.getContents().size() == 0 || module.getModType() == Module.Type.URL) {
+            if (!module.isDownloadable()) {
                 download.setVisibility(View.GONE);
             } else {
                 download.setVisibility(View.VISIBLE);
                 List<Content> contents = module.getContents();
                 downloaded = 1;
                 for (Content content : contents) {
-                    if (!mFileManager.searchFile(content.getFilename(), false)) {
+                    if (!mFileManager.searchFile(content.getFilename())) {
                         downloaded = 0;
                         break;
                     }

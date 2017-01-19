@@ -1,10 +1,5 @@
 package set;
 
-import android.view.View;
-
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
-
 import java.util.List;
 
 import crux.bphc.cms.R;
@@ -164,11 +159,11 @@ public class Module extends RealmObject {
     }
 
     public boolean hasResourceIcon() {
-        if(modType==Type.DEFAULT){
+        if (modType == Type.DEFAULT) {
             return false;
         }
-        if(modType==Type.RESOURCE && contents.size()>0) {
-            switch (MyFileManager.getExtension(contents.get(0).getFilename())){
+        if (modType == Type.RESOURCE && contents.size() > 0) {
+            switch (MyFileManager.getExtension(contents.get(0).getFilename())) {
                 case "pdf":
                 case "xls":
                 case "xlsx":
@@ -185,7 +180,9 @@ public class Module extends RealmObject {
 
     }
 
-    /** should be used in association with {@link #hasResourceIcon()} or should be checked for -1
+    /**
+     * should be used in association with {@link #hasResourceIcon()} or should be checked for -1
+     *
      * @return resource id if icon available, else returns -1
      */
     public int getResourceIcon() {
@@ -195,47 +192,54 @@ public class Module extends RealmObject {
             case RESOURCE:
                 switch (MyFileManager.getExtension(getContents().get(0).getFilename())) {
                     case "pdf":
-                        return(R.drawable.file_pdf);
+                        return (R.drawable.file_pdf);
 
                     case "xls":
                     case "xlsx":
-                        return(R.drawable.file_excel);
+                        return (R.drawable.file_excel);
 
                     case "doc":
                     case "docx":
-                        return(R.drawable.file_word);
+                        return (R.drawable.file_word);
 
                     case "ppt":
                     case "pptx":
-                        return(R.drawable.file_powerpoint);
+                        return (R.drawable.file_powerpoint);
 
                     default:
-                       return -1;
+                        return -1;
                 }
 
             case DEFAULT:
                 return -1;
 
             case ASSIGNMENT:
-                return(R.drawable.book);
+                return (R.drawable.book);
 
             case FOLDER:
-                return(R.drawable.folder);
+                return (R.drawable.folder);
 
             case URL:
-                return(R.drawable.web);
+                return (R.drawable.web);
 
             case PAGE:
-                return(R.drawable.page);
+                return (R.drawable.page);
 
             case QUIZ:
-                return(R.drawable.quiz);
+                return (R.drawable.quiz);
 
             case FORUM:
-                return(R.drawable.forum);
+                return (R.drawable.forum);
 
         }
         return -1;
+    }
+
+    public boolean isDownloadable() {
+        if (getContents() == null || getContents().size() == 0 || getModType() == Module.Type.URL) {
+            return false;
+        }
+        return true;
     }
 
     public static enum Type {

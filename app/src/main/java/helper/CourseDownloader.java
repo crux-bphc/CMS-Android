@@ -1,16 +1,10 @@
 package helper;
 
-import android.app.DownloadManager;
+import android.app.Activity;
 import android.content.Context;
-import android.net.Uri;
-import android.os.Environment;
-import android.util.Log;
 
-import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 
-import app.Constants;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
@@ -30,20 +24,30 @@ import static app.Constants.TOKEN;
  * Created by harsu on 21-12-2016.
  */
 
-public class CourseDownloader {
+public class CourseDownloader implements MyFileManager.Callback {
+    // TODO: 19-01-2017 rewrite using MyFileManager properly
 
+    private DownloadCallback downloadCallback;
+    private MyFileManager myFileManager;
     private Realm realm;
     private Context context;
 
-    public CourseDownloader(Context context) {
-        this.context = context;
+    public CourseDownloader(Activity activity) {
+        this.context = activity;
         RealmConfiguration config = new RealmConfiguration.Builder()
                 .deleteRealmIfMigrationNeeded()
                 .build();
         realm = Realm.getInstance(config);
+        myFileManager = new MyFileManager(activity);
+        myFileManager.registerDownloadReceiver();
+        myFileManager.setCallback(this);
     }
 
-    public void downloadCourseData(final int courseId, final DownloadCallback downloadCallback) {
+    public void setDownloadCallback(DownloadCallback downloadCallback) {
+        this.downloadCallback = downloadCallback;
+    }
+
+    public void downloadCourseData(final int courseId) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(API_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -58,79 +62,107 @@ public class CourseDownloader {
             public void onResponse(Call<List<CourseSection>> call, Response<List<CourseSection>> response) {
                 final List<CourseSection> sectionList = response.body();
                 if (sectionList == null) {
-                    downloadCallback.onFailure();
+                    if (downloadCallback != null)
+                        downloadCallback.onFailure();
                     return;
                 }
 
-                final RealmResults<CourseSection> results = realm.where(CourseSection.class).equalTo("courseID", courseId).findAll();
-                realm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        results.deleteAllFromRealm();
-                        for (CourseSection section : sectionList) {
-                            section.setCourseID(courseId);
-                            realm.copyToRealmOrUpdate(section);
-                        }
-                        downloadCallback.onSuccess(sectionList);
-                    }
-                });
 
+                final RealmResults<CourseSection> results = realm.where(CourseSection.class).equalTo("courseID", courseId).findAll();
+                realm.beginTransaction();
+                results.deleteAllFromRealm();
+                for (CourseSection section : sectionList) {
+                    section.setCourseID(courseId);
+                    realm.copyToRealmOrUpdate(section);
+
+                }
+                realm.commitTransaction();
+                if (downloadCallback != null)
+                    downloadCallback.onCourseDataDownloaded();
+                for (CourseSection section : sectionList) {
+                    downloadSection(section, MyFileManager.getCourseName(courseId, realm));
+                }
 
             }
 
             @Override
             public void onFailure(Call<List<CourseSection>> call, Throwable t) {
-                downloadCallback.onFailure();
+                if (downloadCallback != null)
+                    downloadCallback.onFailure();
             }
         });
     }
 
-    public void downloadSection(CourseSection section, DownloadCallback downloadCallback) {
+
+    public void downloadSection(CourseSection section, String courseName) {
+        myFileManager.reloadFileList();
         List<Module> modules = section.getModules();
         for (Module module : modules) {
-            if (module.getContents().size() == 0) {
+            if (!module.isDownloadable())
                 continue;
-            }
             for (Content content : module.getContents()) {
-                if (!searchFile(content.getFilename())) {
-                    downloadFile(content, module);
-                    downloadCallback.onSuccess(new DownloadReq(-1, module.getId(), content.getFilename()));
+                if (!myFileManager.searchFile(content.getFilename())) {
+                    myFileManager.downloadFile(content, module, courseName);
+//                    if(downloadCallback!=null)
+//                    downloadCallback.onCourseContentDownloaded();// onSuccess(new DownloadReq(-1, module.getId(), content.getFilename()));
                 }
             }
         }
-        downloadCallback.onFailure();
-    }
-
-    private void downloadFile(Content content, Module module) {
-        String url = content.getFileurl() + "&token=" + Constants.TOKEN;
-        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
-        request.setDescription(module.getModname());
-        request.setTitle(content.getFilename());
-
-        request.allowScanningByMediaScanner();
-        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, content.getFilename());
-        DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-
-        manager.enqueue(request);
+//        if(downloadCallback!=null)
+//        downloadCallback.onFailure();
     }
 
     public boolean searchFile(String fileName) {
-        File direc = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        List<String> fileList = Arrays.asList(direc.list());
-        if (fileList.size() == 0) {
-            return false;
-        }
-
-        if (fileList.contains(fileName)) {
-            Log.d("File found:", fileName);
-            return true;
-        }
-        return false;
+        return myFileManager.searchFile(fileName);
     }
 
+    public int getDownloadedContentCount(int courseID) {
+        myFileManager.reloadFileList();
+        int count = 0;
+        RealmResults<CourseSection> courseSections = realm.where(CourseSection.class).equalTo("courseID", courseID).findAll();
+        for (CourseSection section : courseSections) {
+            List<Module> modules = section.getModules();
+            for (Module module : modules) {
+                if (module.isDownloadable())
+                    for (Content content : module.getContents()) {
+                        if (myFileManager.searchFile(content.getFilename())) {
+                            count++;
+                        }
+                    }
+            }
+
+        }
+        return count;
+    }
+
+    public int getTotalContentCount(int courseID) {
+        myFileManager.reloadFileList();
+        int count = 0;
+        RealmResults<CourseSection> courseSections = realm.where(CourseSection.class).equalTo("courseID", courseID).findAll();
+        for (CourseSection section : courseSections) {
+            List<Module> modules = section.getModules();
+            for (Module module : modules) {
+                if (module.isDownloadable())
+                    count += module.getContents().size();
+            }
+
+        }
+        return count;
+
+    }
+
+    @Override
+    public void onDownloadCompleted(String fileName) {
+        if (downloadCallback != null) {
+            downloadCallback.onCourseContentDownloaded();
+        }
+    }
+
+
     public interface DownloadCallback {
-        void onSuccess(Object object);
+        void onCourseDataDownloaded();
+
+        void onCourseContentDownloaded();
 
         void onFailure();
     }

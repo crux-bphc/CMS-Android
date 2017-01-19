@@ -1,11 +1,9 @@
 package crux.bphc.cms;
 
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -17,7 +15,6 @@ import helper.ModulesAdapter;
 import helper.MyFileManager;
 import io.realm.Realm;
 import io.realm.RealmResults;
-import set.Content;
 import set.CourseSection;
 import set.Module;
 
@@ -33,14 +30,13 @@ public class CourseModulesActivity extends AppCompatActivity {
     Realm realm;
     MyFileManager mFileManager;
     boolean newFileDownloaded = false;
-
+    String courseName = "";
 
     private void setDownloaded(String fileName) {
         myAdapter.notifyDataSetChanged();
         newFileDownloaded = true;
 
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +55,7 @@ public class CourseModulesActivity extends AppCompatActivity {
         RealmResults<CourseSection> sections = realm.where(CourseSection.class).equalTo("id", sectionID).findAll();
 
         setTitle(sections.first().getName());
-
+        courseName = MyFileManager.getCourseName(sections.first().getCourseID(), realm);
         modules = sections.first().getModules();
         if (modules.size() == 0) {
             findViewById(R.id.empty).setVisibility(View.VISIBLE);
@@ -67,7 +63,7 @@ public class CourseModulesActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 
-        myAdapter = new ModulesAdapter(this, mFileManager);
+        myAdapter = new ModulesAdapter(this, mFileManager, courseName);
         myAdapter.setModules(modules);
         recyclerView.setAdapter(myAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -77,36 +73,7 @@ public class CourseModulesActivity extends AppCompatActivity {
             @Override
             public boolean onClick(Object object, int position) {
                 if (object instanceof Module) {
-                    Module module = (Module) object;
-                    if (module.getModType() == Module.Type.URL) {
-                        if (module.getContents().size() > 0 && !module.getContents().get(0).getFileurl().isEmpty()) {
-                            MyFileManager.showInWebsite(CourseModulesActivity.this, module.getContents().get(0).getFileurl());
-                        }
-                    }
-                    //todo update
-                    else if (module.getContents() == null || module.getContents().size() == 0) {
-                        if (module.getModType() == Module.Type.FORUM || module.getModType() == Module.Type.LABEL) {
-                            if (module.getDescription() == null || module.getDescription().length() == 0) {
-                                return false;
-                            }
-                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(CourseModulesActivity.this);
-                            alertDialog.setMessage(Html.fromHtml(module.getDescription()));
-                            alertDialog.setNegativeButton("Close", null);
-                            alertDialog.show();
-                        } else
-
-                            MyFileManager.showInWebsite(CourseModulesActivity.this, module.getUrl());
-
-                    } else {
-                        for (Content content : module.getContents()) {
-                            if (!mFileManager.searchFile(content.getFilename(), false)) {
-                                mFileManager.downloadFile(content, module);
-                            } else {
-                                mFileManager.openFile(content.getFilename());
-                            }
-                        }
-                    }
-                    return true;
+                    return mFileManager.onClickAction((Module) object, courseName);
                 }
                 return false;
             }
@@ -116,7 +83,7 @@ public class CourseModulesActivity extends AppCompatActivity {
             @Override
             public void onDownloadCompleted(String fileName) {
                 setDownloaded(fileName);
-                mFileManager.openFile(fileName);
+                mFileManager.openFile(fileName,courseName);
             }
         });
 

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -35,7 +34,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import set.Content;
 import set.CourseSection;
 import set.Module;
 
@@ -50,7 +48,7 @@ public class CourseSectionFragment extends Fragment {
 
     private static final String TOKEN_KEY = "token";
     private static final String COURSE_ID_KEY = "id";
-    private static final int MODULE_ACIVITY = 101;
+    private static final int MODULE_ACTIVITY = 101;
     Realm realm;
     View empty;
     MyFileManager mFileManager;
@@ -59,6 +57,7 @@ public class CourseSectionFragment extends Fragment {
     private int courseId;
     private LinearLayout linearLayout;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private String courseName;
 
     public static CourseSectionFragment newInstance(String token, int courseId) {
         CourseSectionFragment courseSectionFragment = new CourseSectionFragment();
@@ -72,7 +71,7 @@ public class CourseSectionFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == MODULE_ACIVITY && resultCode == DATA_DOWNLOADED) {
+        if (requestCode == MODULE_ACTIVITY && resultCode == DATA_DOWNLOADED) {
 
             reloadSections();
         }
@@ -88,7 +87,7 @@ public class CourseSectionFragment extends Fragment {
             courseId = args.getInt(COURSE_ID_KEY);
         }
         realm = MyApplication.getInstance().getRealmInstance();
-        mFileManager = new MyFileManager(getContext());
+        mFileManager = new MyFileManager(getActivity());
         mFileManager.registerDownloadReceiver();
         courseSections = new ArrayList<>();
     }
@@ -103,6 +102,7 @@ public class CourseSectionFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 
+        courseName = MyFileManager.getCourseName(courseId, realm);
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
         linearLayout = (LinearLayout) view.findViewById(R.id.linearLayout);
         empty = view.findViewById(R.id.empty);
@@ -125,7 +125,7 @@ public class CourseSectionFragment extends Fragment {
             @Override
             public void onDownloadCompleted(String fileName) {
                 reloadSections();
-                mFileManager.openFile(fileName);
+                mFileManager.openFile(fileName,courseName);
             }
         });
 
@@ -233,7 +233,7 @@ public class CourseSectionFragment extends Fragment {
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), CourseModulesActivity.class);
                 intent.putExtra("id", section.getId());
-                startActivityForResult(intent, MODULE_ACIVITY);
+                startActivityForResult(intent, MODULE_ACTIVITY);
                 getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
         });
@@ -245,11 +245,11 @@ public class CourseSectionFragment extends Fragment {
         }
         RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
 
-        final ModulesAdapter myAdapter = new ModulesAdapter(getContext(), mFileManager);
+        final ModulesAdapter myAdapter = new ModulesAdapter(getContext(), mFileManager, courseName);
         myAdapter.setModules(section.getModules());
         recyclerView.setAdapter(myAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setNestedScrollingEnabled(true);
+        recyclerView.setNestedScrollingEnabled(false);
 
 //        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), RecyclerView.VERTICAL));
 
@@ -257,36 +257,7 @@ public class CourseSectionFragment extends Fragment {
             @Override
             public boolean onClick(Object object, int position) {
                 if (object instanceof Module) {
-                    Module module = (Module) object;
-                    if (module.getModType() == Module.Type.URL) {
-                        if (module.getContents().size() > 0 && !module.getContents().get(0).getFileurl().isEmpty()) {
-                            MyFileManager.showInWebsite(getActivity(), module.getContents().get(0).getFileurl());
-                        }
-                    }
-                    //todo update on click model
-                    else if (module.getContents() == null || module.getContents().size() == 0) {
-                        if (module.getModType() == Module.Type.FORUM || module.getModType() == Module.Type.LABEL) {
-                            if (module.getDescription() == null || module.getDescription().length() == 0) {
-                                return false;
-                            }
-                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
-                            alertDialog.setMessage(Html.fromHtml(module.getDescription()));
-                            alertDialog.setNegativeButton("Close", null);
-                            alertDialog.show();
-                        } else
-
-                            MyFileManager.showInWebsite(getActivity(), module.getUrl());
-
-                    } else {
-                        for (Content content : module.getContents()) {
-                            if (!mFileManager.searchFile(content.getFilename(), false)) {
-                                mFileManager.downloadFile(content, module);
-                            } else {
-                                mFileManager.openFile(content.getFilename());
-                            }
-                        }
-                    }
-                    return true;
+                    return mFileManager.onClickAction((Module) object, courseName);
                 }
                 return false;
             }

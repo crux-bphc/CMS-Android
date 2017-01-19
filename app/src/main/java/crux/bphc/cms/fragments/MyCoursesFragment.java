@@ -1,12 +1,9 @@
 package crux.bphc.cms.fragments;
 
 
-import android.app.DownloadManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -51,7 +48,6 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import set.Course;
-import set.CourseSection;
 
 import static android.content.Context.INPUT_METHOD_SERVICE;
 import static app.Constants.API_URL;
@@ -69,12 +65,11 @@ public class MyCoursesFragment extends Fragment {
     View empty;
     ImageView mFilterIcon;
     boolean isClearIconSet = false;
-    CourseDownloader courseDownloader;
     List<CourseDownloader.DownloadReq> requestedDownloads;
     String mSearchedText = "";
     private String TOKEN;
     private MyAdapter mAdapter;
-    BroadcastReceiver onComplete = new BroadcastReceiver() {
+   /* BroadcastReceiver onComplete = new BroadcastReceiver() {
         public void onReceive(Context ctxt, Intent intent) {
             for (CourseDownloader.DownloadReq downloadReq : requestedDownloads) {
                 if (courseDownloader.searchFile(downloadReq.getFileName())) {
@@ -83,14 +78,14 @@ public class MyCoursesFragment extends Fragment {
                             .setDownloadedFiles(courses.get(downloadReq.getPosition()).getDownloadedFiles() + 1);
                     if (courses.get(downloadReq.getPosition()).getDownloadedFiles() == courses.get(downloadReq.getPosition()).getTotalFiles()) {
                         courses.get(downloadReq.getPosition()).setDownloadStatus(-1);
-                        //todo notification all files downloaded for this course
+
                     }
                     mAdapter.notifyItemChanged(downloadReq.getPosition());
                     return;
                 }
             }
         }
-    };
+    };*/
 
     public MyCoursesFragment() {
         // Required empty public constructor
@@ -123,14 +118,14 @@ public class MyCoursesFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        getActivity().unregisterReceiver(onComplete);
+        /*getActivity().unregisterReceiver(onComplete);*/
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        getActivity().registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+       /* getActivity().registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));*/
 
         requestedDownloads = new ArrayList<>();
 
@@ -211,8 +206,7 @@ public class MyCoursesFragment extends Fragment {
                 makeRequest();
             }
         });
-        makeRequest();
-        courseDownloader = new CourseDownloader(getActivity());
+
 
         mAdapter.setDownloadClickListener(new ClickListener() {
             @Override
@@ -220,10 +214,45 @@ public class MyCoursesFragment extends Fragment {
                 final Course course = (Course) object;
                 if (course.getDownloadStatus() != -1)
                     return false;
-                courses.get(position).setDownloadStatus(0);
+                course.setDownloadStatus(0);
                 mAdapter.notifyItemChanged(position);
+                final CourseDownloader courseDownloader = new CourseDownloader(getActivity());
+                courseDownloader.setDownloadCallback(new CourseDownloader.DownloadCallback() {
+                    @Override
+                    public void onCourseDataDownloaded() {
+                        course.setDownloadedFiles(courseDownloader.getDownloadedContentCount(course.getId()));
+                        course.setTotalFiles(courseDownloader.getTotalContentCount(course.getId()));
+                        if (course.getTotalFiles() == course.getDownloadedFiles()) {
+                            Toast.makeText(getActivity(), "All files already downloaded", Toast.LENGTH_SHORT).show();
+                            course.setDownloadStatus(-1);
+                        } else {
+                            course.setDownloadStatus(1);
+                        }
+                        mAdapter.notifyItemChanged(position);
+                    }
 
-                courseDownloader.downloadCourseData(course.getCourseId(), new CourseDownloader.DownloadCallback() {
+                    @Override
+                    public void onCourseContentDownloaded() {
+                        course.setDownloadedFiles(course.getDownloadedFiles() + 1);
+
+                        if (course.getDownloadedFiles() == course.getTotalFiles()) {
+                            course.setDownloadStatus(-1);
+                            //todo notification all files downloaded for this course
+                        }
+                        mAdapter.notifyItemChanged(position);
+                    }
+
+                    @Override
+                    public void onFailure() {
+                        Toast.makeText(getActivity(), "Check your internet connection", Toast.LENGTH_SHORT).show();
+                        courses.get(position).setDownloadStatus(-1);
+                        mAdapter.notifyItemChanged(position);
+                    }
+                });
+                courseDownloader.downloadCourseData(course.getCourseId());
+
+                return true;
+                /*courseDownloader.downloadCourseData(course.getCourseId(), new CourseDownloader.DownloadCallback() {
                     @Override
                     public void onSuccess(Object object) {
 
@@ -268,12 +297,16 @@ public class MyCoursesFragment extends Fragment {
                         courses.get(position).setDownloadStatus(-1);
                         mAdapter.notifyItemChanged(position);
                     }
-                });
-                return true;
+                });*/
+
             }
         });
 
         checkEmpty();
+        if (courses.isEmpty()) {
+            mSwipeRefreshLayout.setRefreshing(true);
+            makeRequest();
+        }
     }
 
     private void checkEmpty() {
@@ -340,6 +373,7 @@ public class MyCoursesFragment extends Fragment {
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 System.out.println(t.toString());
                 //no internet connection
+                Toast.makeText(getActivity(), "Unable to connect to server!", Toast.LENGTH_SHORT).show();
                 mSwipeRefreshLayout.setRefreshing(false);
             }
         });
