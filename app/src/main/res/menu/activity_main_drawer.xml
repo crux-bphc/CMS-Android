@@ -8,6 +8,9 @@
             android:icon="@drawable/ic_book_multiple_variant"
             android:title="My Courses" />
         <item
+            android:id="@+id/site_news"
+            android:title="Site News" />
+        <item
             android:id="@+id/notifications"
             android:icon="@drawable/ic_bell"
             android:title="Notifications" />

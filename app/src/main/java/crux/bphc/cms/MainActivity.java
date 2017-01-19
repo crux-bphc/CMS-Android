@@ -28,6 +28,7 @@ import app.MyApplication;
 import crux.bphc.cms.fragments.MyCoursesFragment;
 import crux.bphc.cms.fragments.SearchCourseFragment;
 import helper.MyNotificationManager;
+import crux.bphc.cms.fragments.SiteNewsFragment;
 import helper.UserAccount;
 import io.realm.Realm;
 
@@ -153,6 +154,13 @@ public class MainActivity extends AppCompatActivity
         transaction.commit();
     }
 
+    private void setSiteNews() {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        SiteNewsFragment fragment = SiteNewsFragment.newInstance(Constants.TOKEN);
+        transaction.replace(R.id.content_main, fragment, "Site News");
+        transaction.commit();
+    }
+
     public void logout() {
         Realm realm = MyApplication.getInstance().getRealmInstance();
         realm.beginTransaction();
@@ -183,6 +191,9 @@ public class MainActivity extends AppCompatActivity
         switch (id) {
             case R.id.my_courses:
                 setHome();
+                break;
+            case R.id.site_news:
+                setSiteNews();
                 break;
             case R.id.course_search:
                 setCourseSearch();
