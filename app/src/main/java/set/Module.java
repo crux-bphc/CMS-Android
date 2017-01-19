@@ -1,7 +1,14 @@
 package set;
 
+import android.view.View;
+
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
+import crux.bphc.cms.R;
+import helper.MyFileManager;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
@@ -20,10 +27,10 @@ public class Module extends RealmObject {
     private String modicon, modname, modplural, description;
     private RealmList<Content> contents;
     @Ignore
-    private int modType;
+    private Type modType;
 
     public Module() {
-        modType = -1;
+        modType = Type.DEFAULT;
     }
 
 
@@ -58,29 +65,36 @@ public class Module extends RealmObject {
         this.description = description;
     }
 
-    public int getModType() {
-        if (modType == -1)
+    public Type getModType() {
+        if (modType == Type.DEFAULT)
             setModType();
         return modType;
     }
 
-    public void setModType(int modType) {
+    public void setModType(Type modType) {
         this.modType = modType;
     }
 
     private void setModType() {
         if (modname.equalsIgnoreCase("resource"))
-            modType = 0;
+            modType = Type.RESOURCE;
         else if (modname.equalsIgnoreCase("forum"))
-            modType = 1;
+            modType = Type.FORUM;
         else if (modname.equalsIgnoreCase("label"))
-            modType = 2;
+            modType = Type.LABEL;
         else if (modname.equalsIgnoreCase("assign"))
-            modType = 3;
+            modType = Type.ASSIGNMENT;
         else if (modname.equalsIgnoreCase("folder"))
-            modType = 4;
+            modType = Type.FOLDER;
+        else if (modname.equalsIgnoreCase("quiz"))
+            modType = Type.QUIZ;
+        else if (modname.equalsIgnoreCase("url"))
+            modType = Type.URL;
+        else if (modname.equalsIgnoreCase("page"))
+            modType = Type.PAGE;
+
         else
-            modType = 100;
+            modType = Type.DEFAULT;
 
     }
 
@@ -147,5 +161,84 @@ public class Module extends RealmObject {
 
     public void setContents(RealmList<Content> contents) {
         this.contents = contents;
+    }
+
+    public boolean hasResourceIcon() {
+        if(modType==Type.DEFAULT){
+            return false;
+        }
+        if(modType==Type.RESOURCE && contents.size()>0) {
+            switch (MyFileManager.getExtension(contents.get(0).getFilename())){
+                case "pdf":
+                case "xls":
+                case "xlsx":
+                case "doc":
+                case "docx":
+                case "ppt":
+                case "pptx":
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        return true;
+
+    }
+
+    /** should be used in association with {@link #hasResourceIcon()} or should be checked for -1
+     * @return resource id if icon available, else returns -1
+     */
+    public int getResourceIcon() {
+
+        switch (getModType()) {
+            //  , QUIZ, URL, PAGE, DEFAULT
+            case RESOURCE:
+                switch (MyFileManager.getExtension(getContents().get(0).getFilename())) {
+                    case "pdf":
+                        return(R.drawable.file_pdf);
+
+                    case "xls":
+                    case "xlsx":
+                        return(R.drawable.file_excel);
+
+                    case "doc":
+                    case "docx":
+                        return(R.drawable.file_word);
+
+                    case "ppt":
+                    case "pptx":
+                        return(R.drawable.file_powerpoint);
+
+                    default:
+                       return -1;
+                }
+
+            case DEFAULT:
+                return -1;
+
+            case ASSIGNMENT:
+                return(R.drawable.book);
+
+            case FOLDER:
+                return(R.drawable.folder);
+
+            case URL:
+                return(R.drawable.web);
+
+            case PAGE:
+                return(R.drawable.page);
+
+            case QUIZ:
+                return(R.drawable.quiz);
+
+            case FORUM:
+                return(R.drawable.forum);
+
+        }
+        return -1;
+    }
+
+    public static enum Type {
+        RESOURCE, FORUM, LABEL, ASSIGNMENT, FOLDER, QUIZ, URL, PAGE, DEFAULT
     }
 }

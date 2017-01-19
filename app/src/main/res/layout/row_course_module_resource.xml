@@ -15,8 +15,8 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_centerVertical="true"
-        android:padding="12dp"
-        android:src="@drawable/powerpoint" />
+        android:padding="8dp"
+        app:srcCompat="@drawable/file_powerpoint" />
 
     <ProgressBar
         android:id="@+id/progressBar"

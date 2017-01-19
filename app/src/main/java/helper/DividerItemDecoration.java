@@ -8,6 +8,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import crux.bphc.cms.R;
+import retrofit2.http.Path;
+
 public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
     private static final int[] ATTRS = new int[]{android.R.attr.listDivider};
@@ -33,6 +36,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
     @Override
     public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
         int left = parent.getLeft();
+
         int right = parent.getWidth() + parent.getLeft();
 
         int childCount = parent.getChildCount();
@@ -44,6 +48,11 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
             int top = child.getBottom() + params.bottomMargin;
             int bottom = top + divider.getIntrinsicHeight();
 
+            divider.setBounds(left, top, right, bottom);
+            divider.draw(c);
+
+            bottom = child.getTop() - params.topMargin;
+            top = bottom + divider.getIntrinsicHeight();
             divider.setBounds(left, top, right, bottom);
             divider.draw(c);
 

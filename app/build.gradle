@@ -2,16 +2,16 @@ apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 
 ext {
-    supportLibraryVersion = '24.2.0'
+    supportLibraryVersion = '25.0.0'
 }
 
 android {
-    compileSdkVersion 24
+    compileSdkVersion 25
     buildToolsVersion "24.0.2"
     defaultConfig {
         applicationId "crux.bphc.cms"
         minSdkVersion 16
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         vectorDrawables.useSupportLibrary = true
@@ -38,7 +38,7 @@ dependencies {
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.android.support:support-v4:24.2.1'
-    compile 'com.android.support:support-vector-drawable:24.2.1'
+    compile "com.android.support:support-v4:$supportLibraryVersion"
+    compile "com.android.support:support-vector-drawable:$supportLibraryVersion"
     testCompile 'junit:junit:4.12'
 }

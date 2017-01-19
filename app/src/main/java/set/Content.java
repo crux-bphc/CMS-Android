@@ -12,7 +12,6 @@ import io.realm.annotations.RealmClass;
 public class Content extends RealmObject {
     private String type, filename, filepath, fileurl;
     private int filesize;
-    @PrimaryKey
     private long timecreated;
     private long timemodified;
     private int sortorder;

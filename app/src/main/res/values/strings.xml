@@ -93,5 +93,6 @@
 
     <!-- Example settings for Notifications -->
     <string name="pref_header_notifications">Notifications</string>
+    <string name="lorem">Lorem ipsum dolor sit amet, tale omnis ei mei, falli utinam graeco ne has. Rationibus constituto comprehensam ius te, mel in nusquam delicatissimi. Ne ius quidam oportere, dicat soleat option mel ei, usu cu minim consetetur. Mei id electram dissentias, et augue patrioque interpretaris vel.</string>
 
 </resources>

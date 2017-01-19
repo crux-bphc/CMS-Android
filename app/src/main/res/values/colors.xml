@@ -3,4 +3,11 @@
     <color name="colorPrimary">#FF5722</color>
     <color name="colorPrimaryDark">#E64A19</color>
     <color name="colorAccent">#00bcd4</color>
+    <color name="alizarin">#e74c3c</color>
+    <color name="nephritis">#27ae60</color>
+    <color name="belize_hole">#2980b9</color>
+    <color name="pumpkin">#d35400</color>
+    <color name="orange">#f39c12</color>
+    <color name="midnight_blue">#2c3e50</color>
+    <color name="sunflower">#f1c40f</color>
 </resources>

@@ -1,7 +1,6 @@
 package crux.bphc.cms.service;
 
 import android.app.IntentService;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -11,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationCompat;
+import android.text.Html;
 import android.util.Log;
 
 import java.io.IOException;
@@ -85,30 +85,40 @@ public class NotificationService extends IntentService {
                     if (sectionList == null) {
                         return;
                     }
-                    for (CourseSection section : sectionList) {
-
-                        if (realm.where(CourseSection.class).equalTo("id", section.getId()).findFirst() == null) {
+                    //stop from generating notification if it is a new course
+                    if (realm.where(CourseSection.class).equalTo("courseID", course.getId()).findFirst() == null) {
+                        for (CourseSection section : sectionList) {
                             section.setCourseID(course.getId());
                             realm.beginTransaction();
                             realm.copyToRealmOrUpdate(section);
                             realm.commitTransaction();
-                            createNotifSectionAdded(section, course);
-                        } else {
-                            CourseSection realmSection =
-                                    realm.copyFromRealm(realm.where(CourseSection.class).equalTo("id", section.getId()).findFirst());
-                            for (Module module : section.getModules()) {
-                                if (!realmSection.getModules().contains(module)) {
-                                    createNotifModuleAdded(new NotificationSet(course, module));
+                        }
+                    } else {        //not a new course
+                        for (CourseSection section : sectionList) {
+
+                            if (realm.where(CourseSection.class).equalTo("id", section.getId()).findFirst() == null) {
+                                section.setCourseID(course.getId());
+                                realm.beginTransaction();
+                                realm.copyToRealmOrUpdate(section);
+                                realm.commitTransaction();
+                                createNotifSectionAdded(section, course);
+                            } else {
+                                CourseSection realmSection =
+                                        realm.copyFromRealm(realm.where(CourseSection.class).equalTo("id", section.getId()).findFirst());
+                                for (Module module : section.getModules()) {
+                                    if (!realmSection.getModules().contains(module)) {
+                                        createNotifModuleAdded(new NotificationSet(course, module));
+                                    }
+
                                 }
-
+                                section.setCourseID(course.getId());
+                                realm.beginTransaction();
+                                realm.where(CourseSection.class)
+                                        .equalTo("id", section.getId())
+                                        .findAll().deleteAllFromRealm();
+                                realm.copyToRealmOrUpdate(section);
+                                realm.commitTransaction();
                             }
-                            section.setCourseID(course.getId());
-                            realm.beginTransaction();
-                            realm.where(CourseSection.class)
-                                    .equalTo("id", section.getId())
-                                    .findAll().deleteAllFromRealm();
-                            realm.copyToRealmOrUpdate(section);
-                            realm.commitTransaction();
                         }
                     }
                 } else {
@@ -137,11 +147,11 @@ public class NotificationService extends IntentService {
 
             Intent intent = new Intent(this, LoginActivity.class);
             intent.putExtra("path", Uri.parse(Constants.getCourseURL(notificationSet.getCourse().getCourseId())));
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis() , intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(this)
                             .setSmallIcon(R.mipmap.ic_launcher)
-                            .setContentTitle("New Content in " + notificationSet.getCourse().getShortname())
+                            .setContentTitle("New Content in " + Html.fromHtml(notificationSet.getTitle()))
                             .setContentText(notificationSet.getContentText())
                             .setGroup(notificationSet.getGroupKey())
                             .setAutoCancel(true)
@@ -172,18 +182,18 @@ public class NotificationService extends IntentService {
             }
             if (groupedNotification.size() > 1) {
 
-                ArrayList<String> arrayLines=new ArrayList<>();
+                ArrayList<String> arrayLines = new ArrayList<>();
                 NotificationCompat.InboxStyle inbox = new NotificationCompat.InboxStyle();
                 for (StatusBarNotification activeSbn : groupedNotification) {
-                    ArrayList<String> previousLines= activeSbn.getNotification().extras.getStringArrayList("lines");
-                    if(previousLines==null || previousLines.isEmpty()) {
+                    ArrayList<String> previousLines = activeSbn.getNotification().extras.getStringArrayList("lines");
+                    if (previousLines == null || previousLines.isEmpty()) {
                         String stackNotificationLine = (String) activeSbn.getNotification().extras.get(NotificationCompat.EXTRA_TEXT);
                         if (stackNotificationLine != null) {
                             inbox.addLine(stackNotificationLine);
                             arrayLines.add(stackNotificationLine);
                         }
-                    }else{
-                        for(String string:previousLines) {
+                    } else {
+                        for (String string : previousLines) {
                             inbox.addLine(string);
                             arrayLines.add(string);
                         }
@@ -193,14 +203,14 @@ public class NotificationService extends IntentService {
 
                 Intent intent = new Intent(this, LoginActivity.class);
                 intent.putExtra("path", Uri.parse(Constants.getCourseURL(notificationSet.getCourse().getCourseId())));
-                PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis() , intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-                Bundle bundle=new Bundle();
-                bundle.putStringArrayList("lines",arrayLines);
+                Bundle bundle = new Bundle();
+                bundle.putStringArrayList("lines", arrayLines);
 
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-                builder.setContentTitle(notificationSet.getTitle())
-                        .setContentText((groupedNotification.size() + 1) + " new content added")
+                builder.setContentTitle(Html.fromHtml(notificationSet.getTitle()))
+                        .setContentText((arrayLines.size()) + " new content added")
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setStyle(inbox)
                         .setGroup(notificationSet.getGroupKey())

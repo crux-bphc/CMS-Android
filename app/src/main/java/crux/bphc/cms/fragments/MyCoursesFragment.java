@@ -15,6 +15,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -459,7 +460,7 @@ public class MyCoursesFragment extends Fragment {
 
 
             void bind(Course course) {
-                courseName.setText(course.getShortname());
+                courseName.setText(Html.fromHtml(course.getShortname()));
                 if (course.getDownloadStatus() == -1) {
                     progressBar.setVisibility(View.GONE);
                     downloadIcon.setVisibility(View.VISIBLE);

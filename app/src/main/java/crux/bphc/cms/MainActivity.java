@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
@@ -187,19 +188,20 @@ public class MainActivity extends AppCompatActivity
                 setCourseSearch();
                 break;
             case R.id.website:
-               /* CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+                CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
                 CustomTabsIntent customTabsIntent = builder.build();
-                customTabsIntent.launchUrl(this, Uri.parse(Constants.API_URL));*/
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.API_URL));
+                customTabsIntent.launchUrl(this, Uri.parse(Constants.API_URL));
+
+                /*Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.API_URL));
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.setPackage("com.android.chrome");
-                try {
+                intent.setPackage("com.android.chrome");*/
+                /*try {
                     startActivity(intent);
                 } catch (ActivityNotFoundException ex) {
                     // Chrome browser presumably not installed so allow user to choose instead
                     intent.setPackage(null);
                     startActivity(Intent.createChooser(intent, "Choose an application"));
-                }
+                }*/
 //                startActivity(browserIntent);
 
                 break;

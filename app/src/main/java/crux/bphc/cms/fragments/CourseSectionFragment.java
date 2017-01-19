@@ -1,23 +1,32 @@
 package crux.bphc.cms.fragments;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import app.MyApplication;
 import crux.bphc.cms.CourseModulesActivity;
 import crux.bphc.cms.R;
+import helper.ClickListener;
+import helper.ModulesAdapter;
 import helper.MoodleServices;
+import helper.MyFileManager;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
@@ -26,9 +35,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import set.Content;
 import set.CourseSection;
+import set.Module;
 
 import static app.Constants.API_URL;
+import static helper.MyFileManager.DATA_DOWNLOADED;
 
 /**
  * Created by siddhant on 12/21/16.
@@ -38,12 +50,15 @@ public class CourseSectionFragment extends Fragment {
 
     private static final String TOKEN_KEY = "token";
     private static final String COURSE_ID_KEY = "id";
+    private static final int MODULE_ACIVITY = 101;
     Realm realm;
-    ProgressDialog progressDialog;
     View empty;
+    MyFileManager mFileManager;
+    List<CourseSection> courseSections;
     private String TOKEN;
     private int courseId;
     private LinearLayout linearLayout;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     public static CourseSectionFragment newInstance(String token, int courseId) {
         CourseSectionFragment courseSectionFragment = new CourseSectionFragment();
@@ -55,6 +70,16 @@ public class CourseSectionFragment extends Fragment {
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == MODULE_ACIVITY && resultCode == DATA_DOWNLOADED) {
+
+            reloadSections();
+        }
+
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
@@ -63,6 +88,9 @@ public class CourseSectionFragment extends Fragment {
             courseId = args.getInt(COURSE_ID_KEY);
         }
         realm = MyApplication.getInstance().getRealmInstance();
+        mFileManager = new MyFileManager(getContext());
+        mFileManager.registerDownloadReceiver();
+        courseSections = new ArrayList<>();
     }
 
     @Nullable
@@ -75,33 +103,53 @@ public class CourseSectionFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
         linearLayout = (LinearLayout) view.findViewById(R.id.linearLayout);
         empty = view.findViewById(R.id.empty);
-        RealmResults<CourseSection> courseSections = realm
+        courseSections = realm.copyFromRealm(realm
                 .where(CourseSection.class)
                 .equalTo("courseID", courseId)
                 .findAll()
-                .sort("id", Sort.ASCENDING);
+                .sort("id", Sort.ASCENDING));
 
         if (courseSections.isEmpty()) {
-            progressDialog = new ProgressDialog(getActivity());
-            progressDialog.setMessage("Loading...");
-            progressDialog.setCancelable(false);
-            progressDialog.setCanceledOnTouchOutside(false);
-            progressDialog.show();
+            mSwipeRefreshLayout.setRefreshing(true);
+            sendRequest(courseId);
         }
         for (CourseSection section : courseSections) {
             addSection(section);
         }
 
-        sendRequest(courseId);
+//        sendRequest(courseId);
+        mFileManager.setCallback(new MyFileManager.Callback() {
+            @Override
+            public void onDownloadCompleted(String fileName) {
+                reloadSections();
+                mFileManager.openFile(fileName);
+            }
+        });
+
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mSwipeRefreshLayout.setRefreshing(true);
+                sendRequest(courseId);
+            }
+        });
+    }
+
+    private void reloadSections() {
+        mFileManager.reloadFileList();
+        linearLayout.removeAllViews();
+        for (CourseSection section : courseSections) {
+            addSection(section);
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (progressDialog != null)
-            progressDialog.dismiss();
+        mFileManager.unregisterDownloadReceiver();
     }
 
     private void sendRequest(final int courseId) {
@@ -117,15 +165,12 @@ public class CourseSectionFragment extends Fragment {
         courseCall.enqueue(new Callback<List<CourseSection>>() {
             @Override
             public void onResponse(Call<List<CourseSection>> call, Response<List<CourseSection>> response) {
-                if (progressDialog != null)
-                    progressDialog.dismiss();
 
                 empty.setVisibility(View.GONE);
 
                 final List<CourseSection> sectionList = response.body();
                 if (sectionList == null) {
                     //todo not registered, ask to register, change UI, show enroll button
-
                     return;
                 }
 
@@ -138,34 +183,36 @@ public class CourseSectionFragment extends Fragment {
                     public void execute(Realm realm) {
                         results.deleteAllFromRealm();
                         linearLayout.removeAllViews();
+                        courseSections.clear();
+
                         for (CourseSection section : sectionList) {
                             addSection(section);
                             section.setCourseID(courseId);
                             realm.copyToRealmOrUpdate(section);
-
+                            courseSections.add(section);
                         }
                     }
                 });
-
+                mSwipeRefreshLayout.setRefreshing(false);
 
             }
 
             @Override
             public void onFailure(Call<List<CourseSection>> call, Throwable t) {
                 //no internet connection
-                if (progressDialog != null) {
-                    progressDialog.hide();
+                if (courseSections.isEmpty()) {
                     empty.setVisibility(View.VISIBLE);
                     empty.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            progressDialog.show();
+                            mSwipeRefreshLayout.setRefreshing(true);
                             sendRequest(courseId);
                             linearLayout.setOnClickListener(null);
                         }
                     });
-
                 }
+                Toast.makeText(getActivity(), "Unable to connect to server!", Toast.LENGTH_SHORT).show();
+                mSwipeRefreshLayout.setRefreshing(false);
             }
         });
     }
@@ -173,21 +220,77 @@ public class CourseSectionFragment extends Fragment {
     private void addSection(final CourseSection section) {
         if (linearLayout == null || getActivity() == null)
             return;
+
+        if (section.getModules() == null || section.getModules().isEmpty()) {
+            return;
+        }
+
         View v = LayoutInflater.from(getActivity()).inflate(R.layout.row_course_section, linearLayout, false);
+
         ((TextView) v.findViewById(R.id.sectionName)).setText(section.getName());
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), CourseModulesActivity.class);
                 intent.putExtra("id", section.getId());
-                startActivity(intent);
+                startActivityForResult(intent, MODULE_ACIVITY);
                 getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
         });
         if (!section.getSummary().isEmpty()) {
-            v.findViewById(R.id.descriptionWrapper).setVisibility(View.VISIBLE);
-            ((TextView) v.findViewById(R.id.description)).setText(Html.fromHtml(section.getSummary()));
+            v.findViewById(R.id.description).setVisibility(View.VISIBLE);
+            Spanned htmlDescription = Html.fromHtml(section.getSummary().trim());
+            String descriptionWithOutExtraSpace = new String(htmlDescription.toString()).trim();
+            ((TextView) v.findViewById(R.id.description)).setText(htmlDescription.subSequence(0, descriptionWithOutExtraSpace.length()));
         }
+        RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
+
+        final ModulesAdapter myAdapter = new ModulesAdapter(getContext(), mFileManager);
+        myAdapter.setModules(section.getModules());
+        recyclerView.setAdapter(myAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setNestedScrollingEnabled(true);
+
+//        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), RecyclerView.VERTICAL));
+
+        myAdapter.setClickListener(new ClickListener() {
+            @Override
+            public boolean onClick(Object object, int position) {
+                if (object instanceof Module) {
+                    Module module = (Module) object;
+                    if (module.getModType() == Module.Type.URL) {
+                        if (module.getContents().size() > 0 && !module.getContents().get(0).getFileurl().isEmpty()) {
+                            MyFileManager.showInWebsite(getActivity(), module.getContents().get(0).getFileurl());
+                        }
+                    }
+                    //todo update on click model
+                    else if (module.getContents() == null || module.getContents().size() == 0) {
+                        if (module.getModType() == Module.Type.FORUM || module.getModType() == Module.Type.LABEL) {
+                            if (module.getDescription() == null || module.getDescription().length() == 0) {
+                                return false;
+                            }
+                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+                            alertDialog.setMessage(Html.fromHtml(module.getDescription()));
+                            alertDialog.setNegativeButton("Close", null);
+                            alertDialog.show();
+                        } else
+
+                            MyFileManager.showInWebsite(getActivity(), module.getUrl());
+
+                    } else {
+                        for (Content content : module.getContents()) {
+                            if (!mFileManager.searchFile(content.getFilename(), false)) {
+                                mFileManager.downloadFile(content, module);
+                            } else {
+                                mFileManager.openFile(content.getFilename());
+                            }
+                        }
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
         linearLayout.addView(v);
     }
 }
