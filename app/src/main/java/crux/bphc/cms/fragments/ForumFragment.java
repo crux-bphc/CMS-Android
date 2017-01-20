@@ -96,17 +96,7 @@ public class ForumFragment extends Fragment implements MyFileManager.Callback {
             View attachmentView = inflater.inflate(
                     R.layout.row_attachment_detail_site_news,
                     mAttachmentContainer);
-
-            TextView fileName = (TextView) attachmentView.findViewById(R.id.fileName);
-            fileName.setText(attachment.getFilename());
-
-            ImageView download = (ImageView) attachmentView.findViewById(R.id.downloadIcon);
-            if (mFileManager.searchFile(attachment.getFilename())) {
-                download.setImageResource(R.drawable.eye);
-            } else {
-                download.setImageResource(R.drawable.content_save);
-            }
-            download.setOnClickListener(new View.OnClickListener() {
+            attachmentView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (!mFileManager.searchFile(attachment.getFilename())) {
@@ -121,6 +111,16 @@ public class ForumFragment extends Fragment implements MyFileManager.Callback {
                     }
                 }
             });
+
+            TextView fileName = (TextView) attachmentView.findViewById(R.id.fileName);
+            fileName.setText(attachment.getFilename());
+
+            ImageView download = (ImageView) attachmentView.findViewById(R.id.downloadIcon);
+            if (mFileManager.searchFile(attachment.getFilename())) {
+                download.setImageResource(R.drawable.eye);
+            } else {
+                download.setImageResource(R.drawable.content_save);
+            }
         }
     }
 

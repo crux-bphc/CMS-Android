@@ -50,5 +50,9 @@
                 android:title="Settings" />
         </menu>
     </item>
+    <item
+        android:id="@+id/logout"
+        android:title="Logout" />
+
 
 </menu>

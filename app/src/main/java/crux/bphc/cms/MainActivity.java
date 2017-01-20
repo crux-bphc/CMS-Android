@@ -165,6 +165,24 @@ public class MainActivity extends AppCompatActivity
         transaction.commit();
     }
 
+    private AlertDialog askToLogout() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
+        alertDialog.setMessage("Are you sure you want to Logout?");
+        alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                logout();
+            }
+        });
+        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        return alertDialog.create();
+    }
+
     public void logout() {
         Realm realm = MyApplication.getInstance().getRealmInstance();
         realm.beginTransaction();
@@ -237,7 +255,9 @@ public class MainActivity extends AppCompatActivity
             case R.id.about:
                 startActivity(new Intent(this, InfoActivity.class));
                 break;
-
+            case R.id.logout:
+                askToLogout().show();
+                break;
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
