@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -19,15 +20,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import app.Constants;
 import app.MyApplication;
 import crux.bphc.cms.fragments.MyCoursesFragment;
 import crux.bphc.cms.fragments.SearchCourseFragment;
+import crux.bphc.cms.fragments.SiteNewsFragment;
 import helper.MyFileManager;
 import helper.MyNotificationManager;
-import crux.bphc.cms.fragments.SiteNewsFragment;
 import helper.UserAccount;
 import io.realm.Realm;
 
@@ -37,8 +39,8 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 1001;
-    MyCoursesFragment fragment;
     private UserAccount mUserAccount;
+    private Fragment fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +70,8 @@ public class MainActivity extends AppCompatActivity
         askPermission();
         MyNotificationManager.startNotificationServices(this);
         resolveDeepLink();
+        getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
     private void resolveDeepLink() {
@@ -142,22 +146,21 @@ public class MainActivity extends AppCompatActivity
     private void setHome() {
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        if (fragment == null)
-            fragment = MyCoursesFragment.newInstance(Constants.TOKEN);
+        fragment = MyCoursesFragment.newInstance(Constants.TOKEN);
         transaction.replace(R.id.content_main, fragment, "My Courses");
         transaction.commit();
     }
 
     private void setCourseSearch() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        SearchCourseFragment fragment = SearchCourseFragment.newInstance(Constants.TOKEN);
+        fragment = SearchCourseFragment.newInstance(Constants.TOKEN);
         transaction.replace(R.id.content_main, fragment, "Course Search");
         transaction.commit();
     }
 
     private void setSiteNews() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        SiteNewsFragment fragment = SiteNewsFragment.newInstance(Constants.TOKEN);
+        fragment = SiteNewsFragment.newInstance(Constants.TOKEN);
         transaction.replace(R.id.content_main, fragment, "Site News");
         transaction.commit();
     }
@@ -178,6 +181,8 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if (!(fragment instanceof MyCoursesFragment)) {
+            setHome();
         } else {
             super.onBackPressed();
         }
@@ -208,6 +213,7 @@ public class MainActivity extends AppCompatActivity
                                 getResources(), R.drawable.ic_clear_black_24dp));
                 CustomTabsIntent customTabsIntent = builder.build();
                 customTabsIntent.launchUrl(MainActivity.this, Uri.parse(Constants.API_URL));*/
+
                 startActivity(WebSiteActivity.getIntent(this, "CMS", API_URL + "my/"));
 
                 break;
@@ -220,7 +226,8 @@ public class MainActivity extends AppCompatActivity
                 final String appPackageName = BuildConfig.APPLICATION_ID;
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, "Check out the CMS App: https://play.google.com/store/apps/details?id=" + appPackageName);
+                sendIntent.putExtra(Intent.EXTRA_TEXT,
+                        "Check out the CMS App: https://play.google.com/store/apps/details?id=" + appPackageName);
                 sendIntent.setType("text/plain");
                 startActivity(sendIntent);
                 break;

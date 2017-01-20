@@ -3,16 +3,17 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:checked="true"
             android:id="@+id/my_courses"
+            android:checked="true"
             android:icon="@drawable/ic_book_multiple_variant"
             android:title="My Courses" />
-       <!-- <item
-            android:id="@+id/notifications"
-            android:icon="@drawable/ic_bell"
-            android:title="Notifications" />-->
+        <!-- <item
+             android:id="@+id/notifications"
+             android:icon="@drawable/ic_bell"
+             android:title="Notifications" />-->
         <item
             android:id="@+id/site_news"
+            android:icon="@drawable/ic_newspaper"
             android:title="Site News" />
         <item
             android:id="@+id/course_search"

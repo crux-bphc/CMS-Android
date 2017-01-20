@@ -69,23 +69,6 @@ public class MyCoursesFragment extends Fragment {
     String mSearchedText = "";
     private String TOKEN;
     private MyAdapter mAdapter;
-   /* BroadcastReceiver onComplete = new BroadcastReceiver() {
-        public void onReceive(Context ctxt, Intent intent) {
-            for (CourseDownloader.DownloadReq downloadReq : requestedDownloads) {
-                if (courseDownloader.searchFile(downloadReq.getFileName())) {
-                    requestedDownloads.remove(downloadReq);
-                    courses.get(downloadReq.getPosition())
-                            .setDownloadedFiles(courses.get(downloadReq.getPosition()).getDownloadedFiles() + 1);
-                    if (courses.get(downloadReq.getPosition()).getDownloadedFiles() == courses.get(downloadReq.getPosition()).getTotalFiles()) {
-                        courses.get(downloadReq.getPosition()).setDownloadStatus(-1);
-
-                    }
-                    mAdapter.notifyItemChanged(downloadReq.getPosition());
-                    return;
-                }
-            }
-        }
-    };*/
 
     public MyCoursesFragment() {
         // Required empty public constructor
@@ -111,21 +94,13 @@ public class MyCoursesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_my_courses, container, false);
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        /*getActivity().unregisterReceiver(onComplete);*/
-    }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-       /* getActivity().registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));*/
 
         requestedDownloads = new ArrayList<>();
 
@@ -237,6 +212,7 @@ public class MyCoursesFragment extends Fragment {
 
                         if (course.getDownloadedFiles() == course.getTotalFiles()) {
                             course.setDownloadStatus(-1);
+                            courseDownloader.unregisterReceiver();
                             //todo notification all files downloaded for this course
                         }
                         mAdapter.notifyItemChanged(position);
@@ -247,57 +223,12 @@ public class MyCoursesFragment extends Fragment {
                         Toast.makeText(getActivity(), "Check your internet connection", Toast.LENGTH_SHORT).show();
                         courses.get(position).setDownloadStatus(-1);
                         mAdapter.notifyItemChanged(position);
+                        courseDownloader.unregisterReceiver();
                     }
                 });
                 courseDownloader.downloadCourseData(course.getCourseId());
 
                 return true;
-                /*courseDownloader.downloadCourseData(course.getCourseId(), new CourseDownloader.DownloadCallback() {
-                    @Override
-                    public void onSuccess(Object object) {
-
-                        RealmResults<CourseSection> courseSections = realm.where(CourseSection.class).equalTo("courseID", course.getCourseId()).findAll();
-                        for (CourseSection section : courseSections) {
-                            courseDownloader.downloadSection(section, new CourseDownloader.DownloadCallback() {
-
-                                @Override
-                                public void onSuccess(Object object) {
-                                    if (object instanceof CourseDownloader.DownloadReq) {
-                                        CourseDownloader.DownloadReq downloadReq = (CourseDownloader.DownloadReq) object;
-                                        downloadReq.setPosition(position);
-                                        requestedDownloads.add(downloadReq);
-                                    }
-                                }
-
-                                @Override
-                                public void onFailure() {
-                                    int totalFiles = 0;
-                                    for (CourseDownloader.DownloadReq downloadReq : requestedDownloads) {
-
-                                        if (downloadReq.getPosition() == position) {
-                                            totalFiles++;
-                                        }
-                                    }
-                                    courses.get(position).setTotalFiles(totalFiles);
-                                    if (totalFiles == 0) {
-                                        Toast.makeText(getActivity(), "All files already downloaded", Toast.LENGTH_SHORT).show();
-                                        courses.get(position).setDownloadStatus(-1);
-                                    } else {
-                                        courses.get(position).setDownloadStatus(1);
-                                    }
-                                    mAdapter.notifyItemChanged(position);
-                                }
-                            });
-                        }
-                    }
-
-                    @Override
-                    public void onFailure() {
-                        Toast.makeText(getActivity(), "Check your internet connection", Toast.LENGTH_SHORT).show();
-                        courses.get(position).setDownloadStatus(-1);
-                        mAdapter.notifyItemChanged(position);
-                    }
-                });*/
 
             }
         });

@@ -156,6 +156,10 @@ public class CourseDownloader implements MyFileManager.Callback {
         }
     }
 
+    public void unregisterReceiver() {
+        myFileManager.unregisterDownloadReceiver();
+    }
+
 
     public interface DownloadCallback {
         void onCourseDataDownloaded();
