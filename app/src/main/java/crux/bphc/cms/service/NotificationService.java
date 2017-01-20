@@ -146,6 +146,7 @@ public class NotificationService extends IntentService {
         if (userAccount.isNotificationsEnabled()) {
 
             Intent intent = new Intent(this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP| Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra("path", Uri.parse(Constants.getCourseURL(notificationSet.getCourse().getCourseId())));
             PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
             NotificationCompat.Builder mBuilder =
@@ -202,6 +203,7 @@ public class NotificationService extends IntentService {
                 inbox.setSummaryText((arrayLines.size()) + " new content added");
 
                 Intent intent = new Intent(this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP| Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("path", Uri.parse(Constants.getCourseURL(notificationSet.getCourse().getCourseId())));
                 PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
