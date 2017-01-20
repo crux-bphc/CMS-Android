@@ -135,6 +135,8 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                         if (module.getContents() == null || module.getContents().size() == 0) {
                                             //todo open label/forum/etc in new activity
                                             // TODO: 19-01-2017 handle all types
+
+
                                             return;
                                         }
 

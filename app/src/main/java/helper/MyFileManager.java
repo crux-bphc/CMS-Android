@@ -10,7 +10,6 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.text.Html;
@@ -201,6 +200,9 @@ public class MyFileManager {
             if (module.getContents().size() > 0 && !module.getContents().get(0).getFileurl().isEmpty()) {
                 MyFileManager.showInWebsite(activity, module.getContents().get(0).getFileurl());
             }
+        }
+        if (module.getModType() == Module.Type.FORUM) {
+            MyFileManager.showInWebsite(activity,module.getUrl());
         }
         //todo update on click model
         else if (module.getContents() == null || module.getContents().size() == 0) {
