@@ -4,11 +4,13 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.CookieSyncManager;
 import android.webkit.JsResult;
@@ -34,7 +36,7 @@ public class WebSiteActivity extends AppCompatActivity {
     UserAccount userAccount;
     SwipeRefreshLayout swipeRefreshLayout;
     private String toLoadURL;
-    
+
     public static Intent getIntent(Context context, String title, String url) {
         Intent intent = new Intent(context, WebSiteActivity.class);
         intent.putExtra(PARAM1, title);
@@ -126,9 +128,12 @@ public class WebSiteActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId()==android.R.id.home){
+        if (item.getItemId() == android.R.id.home) {
             onBackPressed();
             return true;
+        } else if (item.getItemId() == R.id.action_open_in_browser) {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webview.getUrl()));
+            startActivity(browserIntent);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -143,6 +148,12 @@ public class WebSiteActivity extends AppCompatActivity {
                 "document.getElementById('password').value = '" + password + "';" +
                 "document.forms[0].submit(); };");
         Log.d(TAG, "Login attempted");
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.website_menu, menu);
+        return true;
     }
 
     private void setData() {

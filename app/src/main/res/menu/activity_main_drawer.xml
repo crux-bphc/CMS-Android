@@ -7,10 +7,10 @@
             android:id="@+id/my_courses"
             android:icon="@drawable/ic_book_multiple_variant"
             android:title="My Courses" />
-        <item
+       <!-- <item
             android:id="@+id/notifications"
             android:icon="@drawable/ic_bell"
-            android:title="Notifications" />
+            android:title="Notifications" />-->
         <item
             android:id="@+id/course_search"
             android:icon="@drawable/ic_magnify"

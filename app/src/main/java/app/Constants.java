@@ -10,14 +10,16 @@ public class Constants {
     public static final int PER_PAGE = 20; // Number of course search results in a page
     // used for intent from CourseSearch to CorseDetailActivity for CourseEnrolFrag
     public static final String COURSE_PARCEL_INTENT_KEY = "course_parcel";
+    public static final String GITHUB_URL = "https://github.com/CRUx-BPHC/CMS-Android/";
+    public static final String GITHUB_URL_ISSUE = GITHUB_URL + "issues/";
     public static String API_URL = "http://id.bits-hyderabad.ac.in/moodle/";
-    public static String LOGIN_URL = API_URL+"login/index.php";
-    public static String COURSE_URL = API_URL+"course/view.php";
+    public static String LOGIN_URL = API_URL + "login/index.php";
+    public static String COURSE_URL = API_URL + "course/view.php";
     public static String TOKEN;
     public static long INTERVAL = AlarmManager.INTERVAL_HOUR;
     public static long TRIGGER_AT = 10 * 1000;
 
     public static String getCourseURL(int courseId) {
-        return COURSE_URL+"?id="+courseId;
+        return COURSE_URL + "?id=" + courseId;
     }
 }

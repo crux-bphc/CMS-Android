@@ -25,6 +25,7 @@ import app.Constants;
 import app.MyApplication;
 import crux.bphc.cms.fragments.MyCoursesFragment;
 import crux.bphc.cms.fragments.SearchCourseFragment;
+import helper.MyFileManager;
 import helper.MyNotificationManager;
 import helper.UserAccount;
 import io.realm.Realm;
@@ -196,13 +197,29 @@ public class MainActivity extends AppCompatActivity
                                 getResources(), R.drawable.ic_clear_black_24dp));
                 CustomTabsIntent customTabsIntent = builder.build();
                 customTabsIntent.launchUrl(MainActivity.this, Uri.parse(Constants.API_URL));*/
-                startActivity(WebSiteActivity.getIntent(this, "CMS", API_URL+"my/"));
+                startActivity(WebSiteActivity.getIntent(this, "CMS", API_URL + "my/"));
 
                 break;
 
             case R.id.settings:
                 Intent intent1 = new Intent(this, SettingsActivity.class);
                 startActivity(intent1);
+                break;
+            case R.id.nav_share:
+                final String appPackageName = BuildConfig.APPLICATION_ID;
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, "Check out the CMS App: https://play.google.com/store/apps/details?id=" + appPackageName);
+                sendIntent.setType("text/plain");
+                startActivity(sendIntent);
+                break;
+            case R.id.issue:
+                MyFileManager.showInWebsite(this, Constants.GITHUB_URL_ISSUE);
+                break;
+            case R.id.about:
+                startActivity(new Intent(this, InfoActivity.class));
+                break;
+
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

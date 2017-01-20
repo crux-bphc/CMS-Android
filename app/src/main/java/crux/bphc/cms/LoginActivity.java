@@ -3,11 +3,12 @@ package crux.bphc.cms;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
@@ -40,7 +41,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 import set.Course;
 import set.CourseSection;
-import set.Module;
 
 import static app.Constants.API_URL;
 
@@ -55,6 +55,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mEmailView;
     private EditText mPasswordView;
     private ProgressDialog progressDialog;
+    private int toDownload = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,7 +110,6 @@ public class LoginActivity extends AppCompatActivity {
             finish();
         }
     }
-
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -169,7 +169,6 @@ public class LoginActivity extends AppCompatActivity {
 
         return password.length() >= 4;
     }
-
 
     private void showProgress(final boolean show, String message) {
         if (show)
@@ -233,7 +232,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(LoginActivity.this,"Unable to fetch course list",Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "Unable to fetch course list", Toast.LENGTH_SHORT).show();
                 checkLoggedIn();
 
 
@@ -242,11 +241,8 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private int toDownload=0;
-
-
     private void downloadCourseContents() {
-        showProgress(true,"Fetching course contents");
+        showProgress(true, "Fetching course contents");
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(API_URL)
@@ -256,8 +252,8 @@ public class LoginActivity extends AppCompatActivity {
 
         List<Course> courses = realm.copyFromRealm(realm.where(Course.class).findAll());
 
-        toDownload=courses.size();
-        if(toDownload==0){
+        toDownload = courses.size();
+        if (toDownload == 0) {
             checkLoggedIn();
             return;
         }
@@ -266,7 +262,7 @@ public class LoginActivity extends AppCompatActivity {
             courseCall.enqueue(new Callback<List<CourseSection>>() {
                 @Override
                 public void onResponse(Call<List<CourseSection>> call, Response<List<CourseSection>> response) {
-                    List<CourseSection> sectionList =  response.body();
+                    List<CourseSection> sectionList = response.body();
                     if (sectionList == null) {
                         return;
                     }
@@ -280,7 +276,7 @@ public class LoginActivity extends AppCompatActivity {
                         realm.commitTransaction();
                     }
                     toDownload--;
-                    if(toDownload==0){
+                    if (toDownload == 0) {
                         checkLoggedIn();
                     }
                 }
@@ -289,7 +285,7 @@ public class LoginActivity extends AppCompatActivity {
                 public void onFailure(Call<List<CourseSection>> call, Throwable t) {
                     userAccount.waitForInternetConnection(true);
                     toDownload--;
-                    if(toDownload==0){
+                    if (toDownload == 0) {
                         checkLoggedIn();
                     }
                 }
@@ -297,6 +293,20 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.login, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.activity_info) {
+            startActivity(new Intent(this, InfoActivity.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     private interface MoodleLogin {
         @GET("login/token.php?service=moodle_mobile_app")
