@@ -6,20 +6,19 @@
     android:layout_height="match_parent"
     android:layout_marginTop="8dp"
     android:padding="8dp"
-    android:clickable="true"
-    android:background="?attr/selectableItemBackground">
+    >
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:id="@+id/fileName"
-
         android:text="Time table changes-2 second sem"
         android:textSize="16sp"
         android:textColor="#000"/>
 
     <ImageView
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/downloadIcon" />

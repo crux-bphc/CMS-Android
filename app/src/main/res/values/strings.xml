@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CMS</string>
+    <string name="app_name">CMS BPHC</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Username</string>

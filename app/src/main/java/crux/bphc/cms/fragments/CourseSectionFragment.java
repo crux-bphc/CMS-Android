@@ -125,7 +125,7 @@ public class CourseSectionFragment extends Fragment {
             @Override
             public void onDownloadCompleted(String fileName) {
                 reloadSections();
-                mFileManager.openFile(fileName,courseName);
+                mFileManager.openFile(fileName, courseName);
             }
         });
 
@@ -136,6 +136,18 @@ public class CourseSectionFragment extends Fragment {
                 sendRequest(courseId);
             }
         });
+        checkEmpty();
+    }
+
+    private boolean checkEmpty() {
+        boolean isEmpty = true;
+        for (CourseSection courseSection : courseSections) {
+            if (!courseSection.getModules().isEmpty()) {
+                isEmpty = false;
+            }
+        }
+        ((TextView) empty).setText("No Course Data to display.\nTap to Reload");
+        return isEmpty;
     }
 
     private void reloadSections() {
@@ -201,6 +213,7 @@ public class CourseSectionFragment extends Fragment {
             public void onFailure(Call<List<CourseSection>> call, Throwable t) {
                 //no internet connection
                 if (courseSections.isEmpty()) {
+                    ((TextView) empty).setText("No internet connection.\nTap to retry");
                     empty.setVisibility(View.VISIBLE);
                     empty.setOnClickListener(new View.OnClickListener() {
                         @Override
