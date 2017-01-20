@@ -25,8 +25,6 @@ import static app.Constants.TOKEN;
  */
 
 public class CourseDownloader implements MyFileManager.Callback {
-    // TODO: 19-01-2017 rewrite using MyFileManager properly
-
     private DownloadCallback downloadCallback;
     private MyFileManager myFileManager;
     private Realm realm;

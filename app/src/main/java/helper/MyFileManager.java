@@ -24,6 +24,7 @@ import java.util.List;
 
 import app.Constants;
 import crux.bphc.cms.BuildConfig;
+import crux.bphc.cms.WebSiteActivity;
 import io.realm.Realm;
 import set.Content;
 import set.Course;
@@ -69,9 +70,11 @@ public class MyFileManager {
     }
 
     public static void showInWebsite(Activity activity, String url) {
-        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        activity.startActivity(WebSiteActivity.getIntent(activity, "CMS", url));
+
+        /*CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
         CustomTabsIntent customTabsIntent = builder.build();
-        customTabsIntent.launchUrl(activity, Uri.parse(url));
+        customTabsIntent.launchUrl(activity, Uri.parse(url));*/
     }
 
     public static String getCourseName(int courseId, Realm realm) {

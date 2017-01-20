@@ -39,7 +39,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         inflater = LayoutInflater.from(context);
         modules = new ArrayList<>();
         mFileManager = fileManager;
-        this.courseName=courseName;
+        this.courseName = courseName;
     }
 
 
@@ -70,13 +70,18 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.clickListener = clickListener;
     }
 
+    private boolean isNextLabel(int position) {
+        position++;
+        return modules.size() > position && modules.get(position).getModType() == Module.Type.LABEL;
+
+    }
 
     class ViewHolderResource extends RecyclerView.ViewHolder {
         TextView name;
         ImageView modIcon, download;
         int downloaded = -1;
         ProgressBar progressBar;
-        View iconWrapper;
+        View iconWrapper, topDivider, bottomDivider;
 
         ViewHolderResource(View itemView) {
             super(itemView);
@@ -85,6 +90,8 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             name = (TextView) itemView.findViewById(R.id.fileName);
             modIcon = (ImageView) itemView.findViewById(R.id.fileIcon);
             download = (ImageView) itemView.findViewById(R.id.download);
+            topDivider = itemView.findViewById(R.id.topDivider);
+            bottomDivider = itemView.findViewById(R.id.bottomDivider);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -120,7 +127,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                     case 0:
                                         if (module.getContents() != null)
                                             for (Content content : module.getContents()) {
-                                                mFileManager.openFile(content.getFilename(),courseName);
+                                                mFileManager.openFile(content.getFilename(), courseName);
 
                                             }
                                         break;
@@ -133,18 +140,18 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                                         for (Content content : module.getContents()) {
                                             Toast.makeText(context, "Downloading file - " + content.getFilename(), Toast.LENGTH_SHORT).show();
-                                            mFileManager.downloadFile(content, module,courseName);
+                                            mFileManager.downloadFile(content, module, courseName);
                                         }
                                         break;
                                     case 2:
                                         if (module.getContents() != null)
                                             for (Content content : module.getContents()) {
-                                                mFileManager.shareFile(content.getFilename(),courseName);
+                                                mFileManager.shareFile(content.getFilename(), courseName);
                                             }
 
                                 }
                             } else {
-                                mFileManager.downloadFile(module.getContents().get(0), module,courseName);
+                                mFileManager.downloadFile(module.getContents().get(0), module, courseName);
                             }
                         }
                     });
@@ -198,6 +205,18 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         }
                     });
                 }
+            }
+
+            if (isNextLabel(getLayoutPosition())) {
+                bottomDivider.setVisibility(View.GONE);
+            } else {
+                bottomDivider.setVisibility(View.VISIBLE);
+            }
+
+            if (module.getModType() == Module.Type.LABEL) {
+                topDivider.setVisibility(View.VISIBLE);
+            } else {
+                topDivider.setVisibility(View.GONE);
             }
 
         }

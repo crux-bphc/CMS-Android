@@ -1,14 +1,12 @@
 package crux.bphc.cms;
 
 import android.Manifest;
-import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
@@ -30,6 +28,8 @@ import crux.bphc.cms.fragments.SearchCourseFragment;
 import helper.MyNotificationManager;
 import helper.UserAccount;
 import io.realm.Realm;
+
+import static app.Constants.API_URL;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -188,26 +188,20 @@ public class MainActivity extends AppCompatActivity
                 setCourseSearch();
                 break;
             case R.id.website:
-                CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-                CustomTabsIntent customTabsIntent = builder.build();
-                customTabsIntent.launchUrl(this, Uri.parse(Constants.API_URL));
 
-                /*Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.API_URL));
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.setPackage("com.android.chrome");*/
-                /*try {
-                    startActivity(intent);
-                } catch (ActivityNotFoundException ex) {
-                    // Chrome browser presumably not installed so allow user to choose instead
-                    intent.setPackage(null);
-                    startActivity(Intent.createChooser(intent, "Choose an application"));
-                }*/
-//                startActivity(browserIntent);
+                /*CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+                builder.setToolbarColor(getResources().getColor(R.color.colorPrimary))
+                        .setShowTitle(true)
+                        .setCloseButtonIcon(BitmapFactory.decodeResource(
+                                getResources(), R.drawable.ic_clear_black_24dp));
+                CustomTabsIntent customTabsIntent = builder.build();
+                customTabsIntent.launchUrl(MainActivity.this, Uri.parse(Constants.API_URL));*/
+                startActivity(WebSiteActivity.getIntent(this, "CMS", API_URL+"my/"));
 
                 break;
 
-            case  R.id.settings:
-                Intent intent1=new Intent(this,SettingsActivity.class);
+            case R.id.settings:
+                Intent intent1 = new Intent(this, SettingsActivity.class);
                 startActivity(intent1);
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

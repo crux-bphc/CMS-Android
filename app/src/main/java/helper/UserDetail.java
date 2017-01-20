@@ -5,6 +5,7 @@ public class UserDetail {
     private String username, firstname, lastname, userpictureurl;
     private int userid;
     private String token;
+    private String password;
 
     public UserDetail(String username, String firstname, String lastname, String userpictureurl, String errorcode, int userid) {
         this.username = username;
@@ -13,6 +14,14 @@ public class UserDetail {
         this.userpictureurl = userpictureurl;
         this.errorcode = errorcode;
         this.userid = userid;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getUsername() {

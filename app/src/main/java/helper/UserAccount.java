@@ -11,7 +11,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class UserAccount {
 
-    private static final String MY_PREFS_NAME = "CMS.userAccount";
+    private static final String MY_PREFS_NAME = "CMS.userAccount2";
     private Context context;
 
     public UserAccount(Context context) {
@@ -42,6 +42,7 @@ public class UserAccount {
         editor.putString("lastname", userDetail.getLastname());
         editor.putString("userpictureurl", userDetail.getUserpictureurl());
         editor.putInt("userid", userDetail.getUserid());
+        editor.putString("password", userDetail.getPassword());
         editor.commit();
     }
 
@@ -53,6 +54,12 @@ public class UserAccount {
     public String getUsername() {
         SharedPreferences prefs = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
         return prefs.getString("username", "");
+
+    }
+
+    public String getPassword() {
+        SharedPreferences prefs = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        return prefs.getString("password", "");
 
     }
 
@@ -96,4 +103,6 @@ public class UserAccount {
         editor.putBoolean("notificationEnable", b);
         editor.commit();
     }
+
+
 }

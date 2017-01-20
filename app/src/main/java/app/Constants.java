@@ -11,6 +11,7 @@ public class Constants {
     // used for intent from CourseSearch to CorseDetailActivity for CourseEnrolFrag
     public static final String COURSE_PARCEL_INTENT_KEY = "course_parcel";
     public static String API_URL = "http://id.bits-hyderabad.ac.in/moodle/";
+    public static String LOGIN_URL = API_URL+"login/index.php";
     public static String COURSE_URL = API_URL+"course/view.php";
     public static String TOKEN;
     public static long INTERVAL = AlarmManager.INTERVAL_HOUR;

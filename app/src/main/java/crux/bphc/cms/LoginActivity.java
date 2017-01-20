@@ -360,6 +360,7 @@ public class LoginActivity extends AppCompatActivity {
 
                             userDetail.setUsername(email);
                             userDetail.setToken(loginDetail.token);
+                            userDetail.setPassword(password);
                             userAccount.setUser(userDetail);
                             getUserCourses();
 

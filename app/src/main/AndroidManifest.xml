@@ -91,6 +91,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="crux.bphc.cms.MainActivity" />
         </activity>
+        <activity android:name=".WebSiteActivity"></activity>
     </application>
 
 </manifest>

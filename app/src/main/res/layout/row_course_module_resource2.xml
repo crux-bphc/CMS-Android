@@ -4,8 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:background="?attr/selectableItemBackground">
+    android:background="?attr/selectableItemBackground"
+    android:orientation="horizontal">
 
     <RelativeLayout
         android:id="@+id/iconWrapper"
@@ -40,11 +40,19 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <View
+
+            android:id="@+id/topDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="horizontal">
+
 
             <TextView
                 android:id="@+id/fileName"
@@ -72,6 +80,7 @@
         </LinearLayout>
 
         <View
+            android:id="@+id/bottomDivider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/darker_gray" />
