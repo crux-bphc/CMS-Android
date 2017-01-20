@@ -19,7 +19,7 @@
     <!-- resources for course search functionality -->
     <string name="course_search_edit_text_hint">Enter Course Name</string>
     <string name="course_search_button">Search</string>
-    <string name="course_search_navigation_drawer">Courses</string>
+    <string name="course_search_navigation_drawer">Search Courses</string>
 
     <!-- resources for course enrol functionality -->
     <string name="course_enrol_category">Category</string>
@@ -92,6 +92,6 @@
     <!-- Example settings for Notifications -->
     <string name="pref_header_notifications">Notifications</string>
     <string name="lorem">Lorem ipsum dolor sit amet, tale omnis ei mei, falli utinam graeco ne has. Rationibus constituto comprehensam ius te, mel in nusquam delicatissimi. Ne ius quidam oportere, dicat soleat option mel ei, usu cu minim consetetur. Mei id electram dissentias, et augue patrioque interpretaris vel.</string>
-    <string name="app_info" >CMS (Moodle) is an open source project. This app provides live notifications on Course content addition and also many essential features.\n\nYou can visit the project on Github\n(click on the octocat icon)</string>
+    <string name="app_info" >CMS (Moodle) is an open source project. This app provides live notifications on Course content addition and also many essential features.\n\nYou can visit the project on Github to submit ideas for new features or report any bugs.(Issues tab)\n(click on the octocat icon)</string>
 
 </resources>
