@@ -136,7 +136,8 @@ public class ForumFragment extends Fragment implements MyFileManager.Callback {
         for (int i = 0; i < child; i++) {
             View childView = mAttachmentContainer.getChildAt(i);
             TextView fileNameTextView = (TextView) childView.findViewById(R.id.fileName);
-            if (fileNameTextView.getText().toString().equalsIgnoreCase(fileName)) {
+            if (fileNameTextView != null &&
+                    fileNameTextView.getText().toString().equalsIgnoreCase(fileName)) {
                 ImageView downloadIcon = (ImageView) childView.findViewById(R.id.downloadIcon);
                 downloadIcon.setImageResource(R.drawable.eye);
                 break;

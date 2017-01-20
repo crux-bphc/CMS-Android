@@ -150,7 +150,9 @@ public class SiteNewsFragment extends Fragment {
         mAdapter = new SiteNewsAdapter(mClickListener, dbDiscussions);
         mRecyclerView.setAdapter(mAdapter);
 
-        makeRequest();
+        if (dbDiscussions.isEmpty()) {
+            makeRequest();
+        }
     }
 
     private void makeRequest() {
