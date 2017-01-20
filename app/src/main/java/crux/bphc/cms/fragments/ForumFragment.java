@@ -1,48 +1,34 @@
 package crux.bphc.cms.fragments;
 
 
-import android.app.DownloadManager;
-import android.content.ActivityNotFoundException;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.FileProvider;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-
-import app.Constants;
 import app.MyApplication;
-import crux.bphc.cms.BuildConfig;
 import crux.bphc.cms.R;
+import helper.MyFileManager;
 import io.realm.Realm;
 import set.forum.Attachment;
 import set.forum.Discussion;
 
 
-public class ForumFragment extends Fragment {
+public class ForumFragment extends Fragment implements MyFileManager.Callback {
 
+    private static final String FOLDER_NAME = "Site News";
     private int id;
 
     private Realm realm;
+    private MyFileManager mFileManager;
 
     private ImageView mUserPic;
     private TextView mSubject;
@@ -83,6 +69,10 @@ public class ForumFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        mFileManager = new MyFileManager(getActivity());
+        mFileManager.registerDownloadReceiver();
+        mFileManager.setCallback(this);
+
         Discussion discussion = realm.where(Discussion.class).equalTo("id", id).findFirst();
 
         mUserPic = (ImageView) view.findViewById(R.id.user_pic);
@@ -94,7 +84,7 @@ public class ForumFragment extends Fragment {
         mUserName = (TextView) view.findViewById(R.id.user_name);
         mUserName.setText(discussion.getUserfullname());
 
-        mTimeModified= (TextView) view.findViewById(R.id.modified_time);
+        mTimeModified = (TextView) view.findViewById(R.id.modified_time);
         mTimeModified.setText(SiteNewsFragment.formatDate(discussion.getTimemodified()));
 
         mMessage = (TextView) view.findViewById(R.id.message);
@@ -102,7 +92,7 @@ public class ForumFragment extends Fragment {
 
         mAttachmentContainer = (LinearLayout) view.findViewById(R.id.attachments);
         LayoutInflater inflater = LayoutInflater.from(getContext());
-        for (final Attachment attachment: discussion.getAttachments()) {
+        for (final Attachment attachment : discussion.getAttachments()) {
             View attachmentView = inflater.inflate(
                     R.layout.row_attachment_detail_site_news,
                     mAttachmentContainer);
@@ -111,69 +101,46 @@ public class ForumFragment extends Fragment {
             fileName.setText(attachment.getFilename());
 
             ImageView download = (ImageView) attachmentView.findViewById(R.id.downloadIcon);
-            download.setImageResource(R.drawable.content_save);
+            if (mFileManager.searchFile(attachment.getFilename())) {
+                download.setImageResource(R.drawable.eye);
+            } else {
+                download.setImageResource(R.drawable.content_save);
+            }
             download.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (!searchFile(attachment.getFilename())) {
-                        downloadFile(attachment);
+                    if (!mFileManager.searchFile(attachment.getFilename())) {
+                        mFileManager.downloadFile(
+                                attachment.getFilename(),
+                                attachment.getFileurl(),
+                                "",
+                                FOLDER_NAME
+                        );
                     } else {
-                        openFile(attachment.getFilename());
+                        mFileManager.openFile(attachment.getFilename(), FOLDER_NAME);
                     }
                 }
             });
         }
     }
 
-    @NonNull
-    private String getExtension(String filename) {
-        return filename.substring(filename.lastIndexOf('.') + 1);
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mFileManager.unregisterDownloadReceiver();
     }
 
-    private void downloadFile(Attachment attachment) {
-        Toast.makeText(getContext(), "Downloading file - " + attachment.getFilename(), Toast.LENGTH_SHORT).show();
-        String url = attachment.getFileurl() + "?token=" + Constants.TOKEN;
-        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
-        request.setTitle(attachment.getFilename());
-
-        request.allowScanningByMediaScanner();
-        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-        request.setDestinationInExternalPublicDir(
-                Environment.DIRECTORY_DOWNLOADS,
-                attachment.getFilename());
-        DownloadManager manager = (DownloadManager) getActivity()
-                .getSystemService(Context.DOWNLOAD_SERVICE);
-
-        manager.enqueue(request);
-    }
-
-    public void openFile(String filename) {
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath(), filename);
-        Uri path = FileProvider.getUriForFile(getActivity(), BuildConfig.APPLICATION_ID + ".provider", file);
-        Intent pdfOpenintent = new Intent(Intent.ACTION_VIEW);
-        pdfOpenintent.setDataAndType(path, "application/" + getExtension(filename));
-        pdfOpenintent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        pdfOpenintent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        try {
-            startActivity(pdfOpenintent);
-        } catch (ActivityNotFoundException e) {
-            pdfOpenintent.setDataAndType(path, "application/*");
-            startActivity(Intent.createChooser(pdfOpenintent, "No Application found to open File - " + filename));
+    @Override
+    public void onDownloadCompleted(String fileName) {
+        int child = mAttachmentContainer.getChildCount();
+        for (int i = 0; i < child; i++) {
+            View childView = mAttachmentContainer.getChildAt(i);
+            TextView fileNameTextView = (TextView) childView.findViewById(R.id.fileName);
+            if (fileNameTextView.getText().toString().equalsIgnoreCase(fileName)) {
+                ImageView downloadIcon = (ImageView) childView.findViewById(R.id.downloadIcon);
+                downloadIcon.setImageResource(R.drawable.eye);
+                break;
+            }
         }
     }
-
-    private boolean searchFile(String fileName) {
-
-        File directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        List<String> fileList = Arrays.asList(directory.list());
-        if (fileList.size() == 0) {
-            return false;
-        }
-        if (fileList.contains(fileName)) {
-            Log.d("File found:", fileName);
-            return true;
-        }
-        return false;
-    }
-
 }

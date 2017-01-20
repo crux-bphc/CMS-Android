@@ -98,7 +98,7 @@ public class MyFileManager {
         downloadFile(content.getFilename(), content.getFileurl(), module.getDescription(), courseName);
     }
 
-    private void downloadFile(String fileName, String fileurl, String description, String courseName) {
+    public void downloadFile(String fileName, String fileurl, String description, String courseName) {
 
         String url = fileurl + "&token=" + Constants.TOKEN;
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
