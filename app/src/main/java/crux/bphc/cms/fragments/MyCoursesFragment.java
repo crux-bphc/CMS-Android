@@ -394,7 +394,7 @@ public class MyCoursesFragment extends Fragment {
                     public void onClick(View view) {
                         if (clickListener != null) {
                             int pos = getLayoutPosition();
-                            clickListener.onClick(courses.get(pos), pos);
+                            clickListener.onClick(mCourseList.get(pos), pos);
                         }
                     }
                 });

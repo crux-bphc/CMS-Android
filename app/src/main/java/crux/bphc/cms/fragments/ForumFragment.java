@@ -114,7 +114,8 @@ public class ForumFragment extends Fragment implements MyFileManager.Callback {
                                 attachment.getFilename(),
                                 attachment.getFileurl(),
                                 "",
-                                FOLDER_NAME
+                                FOLDER_NAME,
+                                true
                         );
                     } else {
                         mFileManager.openFile(attachment.getFilename(), FOLDER_NAME);
