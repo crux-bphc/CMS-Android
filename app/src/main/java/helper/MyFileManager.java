@@ -94,12 +94,16 @@ public class MyFileManager {
     }
 
     public void downloadFile(Content content, Module module, String courseName) {
-        downloadFile(content.getFilename(), content.getFileurl(), module.getDescription(), courseName);
+        downloadFile(content.getFilename(), content.getFileurl(), module.getDescription(), courseName, false);
     }
 
-    public void downloadFile(String fileName, String fileurl, String description, String courseName) {
-
-        String url = fileurl + "&token=" + Constants.TOKEN;
+    public void downloadFile(String fileName, String fileurl, String description, String courseName, boolean isForum) {
+        String url = "";
+        if (isForum) {
+            url = fileurl + "?token=" + Constants.TOKEN;
+        } else {
+            url = fileurl + "&token=" + Constants.TOKEN;
+        }
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
         request.setDescription(description);
         request.setTitle(fileName);
