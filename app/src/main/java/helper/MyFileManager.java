@@ -199,13 +199,12 @@ public class MyFileManager {
         if (module.getModType() == Module.Type.URL) {
             if (module.getContents().size() > 0 && !module.getContents().get(0).getFileurl().isEmpty()) {
                 MyFileManager.showInWebsite(activity, module.getContents().get(0).getFileurl());
+
             }
-        }
-        if (module.getModType() == Module.Type.FORUM) {
-            MyFileManager.showInWebsite(activity,module.getUrl());
-        }
-        //todo update on click model
-        else if (module.getContents() == null || module.getContents().size() == 0) {
+        } else if (module.getModType() == Module.Type.FORUM) {
+            MyFileManager.showInWebsite(activity, module.getUrl());
+
+        } else if (module.getContents() == null || module.getContents().size() == 0) {
             if (module.getModType() == Module.Type.FORUM || module.getModType() == Module.Type.LABEL) {
                 if (module.getDescription() == null || module.getDescription().length() == 0) {
                     return false;

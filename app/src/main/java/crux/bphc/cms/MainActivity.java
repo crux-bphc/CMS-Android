@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -144,7 +145,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setHome() {
-
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         fragment = MyCoursesFragment.newInstance(Constants.TOKEN);
         transaction.replace(R.id.content_main, fragment, "My Courses");
@@ -213,6 +213,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+        clearBackStack();
         int id = item.getItemId();
         switch (id) {
             case R.id.my_courses:
@@ -264,5 +265,11 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void clearBackStack() {
+        for(int i = 0; i < getSupportFragmentManager().getBackStackEntryCount(); ++i) {
+            getSupportFragmentManager().popBackStack();
+        }
     }
 }
