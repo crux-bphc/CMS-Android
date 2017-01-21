@@ -13,6 +13,9 @@ import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +27,7 @@ import helper.MoodleServices;
 import helper.UserAccount;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -65,74 +69,101 @@ public class NotificationService extends IntentService {
                 .baseUrl(API_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-
         MoodleServices moodleServices = retrofit.create(MoodleServices.class);
+
         RealmConfiguration config = new RealmConfiguration.Builder()
                 .deleteRealmIfMigrationNeeded()
                 .build();
-
-
         realm = Realm.getInstance(config);
-        List<Course> courses = realm.copyFromRealm(realm.where(Course.class).findAll());
+        
+        Call<ResponseBody> myCoursesListCall = moodleServices.getCourses(userAccount.getToken(), userAccount.getUserID());
 
-        for (final Course course : courses) {
+        try {
+            Response<ResponseBody> courseListResp = myCoursesListCall.execute();
+            String responseString = courseListResp.body().string();
+            if (responseString.contains("Invalid token")) {
+                logout();
+                return;
+            }
+            Gson gson = new Gson();
+            final List<Course> courses = gson
+                    .fromJson(responseString, new TypeToken<List<Course>>() {
+                    }.getType());
 
-            Call<List<CourseSection>> courseCall = moodleServices.getCourseContent(userAccount.getToken(), course.getId());
-            try {
-                Response response = courseCall.execute();
-                if (response.code() == 200) {
-                    List<CourseSection> sectionList = (List<CourseSection>) response.body();
-                    if (sectionList == null) {
-                        return;
-                    }
-                    //stop from generating notification if it is a new course
-                    if (realm.where(CourseSection.class).equalTo("courseID", course.getId()).findFirst() == null) {
-                        for (CourseSection section : sectionList) {
-                            section.setCourseID(course.getId());
-                            realm.beginTransaction();
-                            realm.copyToRealmOrUpdate(section);
-                            realm.commitTransaction();
+            realm.beginTransaction();
+            realm.where(Course.class).findAll().deleteAllFromRealm();
+            realm.copyToRealmOrUpdate(courses);
+            realm.commitTransaction();
+
+            for (final Course course : courses) {
+
+                Call<List<CourseSection>> courseCall = moodleServices.getCourseContent(userAccount.getToken(), course.getId());
+                try {
+                    Response response = courseCall.execute();
+                    if (response.code() == 200) {
+                        List<CourseSection> sectionList = (List<CourseSection>) response.body();
+                        if (sectionList == null) {
+                            return;
                         }
-                    } else {        //not a new course
-                        for (CourseSection section : sectionList) {
-
-                            if (realm.where(CourseSection.class).equalTo("id", section.getId()).findFirst() == null) {
+                        //stop from generating notification if it is a new course
+                        if (realm.where(CourseSection.class).equalTo("courseID", course.getId()).findFirst() == null) {
+                            for (CourseSection section : sectionList) {
                                 section.setCourseID(course.getId());
                                 realm.beginTransaction();
-                                realm.copyToRealmOrUpdate(section);
-                                realm.commitTransaction();
-                                createNotifSectionAdded(section, course);
-                            } else {
-                                CourseSection realmSection =
-                                        realm.copyFromRealm(realm.where(CourseSection.class).equalTo("id", section.getId()).findFirst());
-                                for (Module module : section.getModules()) {
-                                    if (!realmSection.getModules().contains(module)) {
-                                        createNotifModuleAdded(new NotificationSet(course, module));
-                                    }
-
-                                }
-                                section.setCourseID(course.getId());
-                                realm.beginTransaction();
-                                realm.where(CourseSection.class)
-                                        .equalTo("id", section.getId())
-                                        .findAll().deleteAllFromRealm();
                                 realm.copyToRealmOrUpdate(section);
                                 realm.commitTransaction();
                             }
+                        } else {        //not a new course
+                            for (CourseSection section : sectionList) {
+
+                                if (realm.where(CourseSection.class).equalTo("id", section.getId()).findFirst() == null) {
+                                    section.setCourseID(course.getId());
+                                    realm.beginTransaction();
+                                    realm.copyToRealmOrUpdate(section);
+                                    realm.commitTransaction();
+                                    createNotifSectionAdded(section, course);
+                                } else {
+                                    CourseSection realmSection =
+                                            realm.copyFromRealm(realm.where(CourseSection.class).equalTo("id", section.getId()).findFirst());
+                                    for (Module module : section.getModules()) {
+                                        if (!realmSection.getModules().contains(module)) {
+                                            createNotifModuleAdded(new NotificationSet(course, module));
+                                        }
+
+                                    }
+                                    section.setCourseID(course.getId());
+                                    realm.beginTransaction();
+                                    realm.where(CourseSection.class)
+                                            .equalTo("id", section.getId())
+                                            .findAll().deleteAllFromRealm();
+                                    realm.copyToRealmOrUpdate(section);
+                                    realm.commitTransaction();
+                                }
+                            }
                         }
+                    } else {
+                        userAccount.waitForInternetConnection(true);
+                        break;
                     }
-                } else {
+                } catch (IOException e) {
+                    e.printStackTrace();
                     userAccount.waitForInternetConnection(true);
                     break;
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-                userAccount.waitForInternetConnection(true);
-                break;
             }
-        }
-        realm.close();
+            realm.close();
+        } catch (IOException e) {
 
+        }
+
+    }
+
+    private void logout() {
+        realm.beginTransaction();
+        realm.deleteAll();
+        realm.commitTransaction();
+
+        userAccount.logout();
     }
 
     private void createNotifSectionAdded(CourseSection section, Course course) {
@@ -146,7 +177,7 @@ public class NotificationService extends IntentService {
         if (userAccount.isNotificationsEnabled()) {
 
             Intent intent = new Intent(this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP| Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra("path", Uri.parse(Constants.getCourseURL(notificationSet.getCourse().getCourseId())));
             PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
             NotificationCompat.Builder mBuilder =
@@ -203,7 +234,7 @@ public class NotificationService extends IntentService {
                 inbox.setSummaryText((arrayLines.size()) + " new content added");
 
                 Intent intent = new Intent(this, LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP| Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("path", Uri.parse(Constants.getCourseURL(notificationSet.getCourse().getCourseId())));
                 PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 

@@ -146,5 +146,6 @@ public class ForumFragment extends Fragment implements MyFileManager.Callback {
                 break;
             }
         }
+        mFileManager.openFile(fileName, FOLDER_NAME);
     }
 }

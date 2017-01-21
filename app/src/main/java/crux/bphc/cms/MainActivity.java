@@ -1,6 +1,7 @@
 package crux.bphc.cms;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -22,6 +23,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import app.Constants;
@@ -55,10 +57,19 @@ public class MainActivity extends AppCompatActivity
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                View view = getCurrentFocus();
+                if (view != null) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
+            }
+        };
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -73,6 +84,7 @@ public class MainActivity extends AppCompatActivity
         resolveDeepLink();
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
     }
 
     private void resolveDeepLink() {
@@ -133,7 +145,6 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_STORAGE) {
@@ -145,6 +156,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setHome() {
+        clearBackStack();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         fragment = MyCoursesFragment.newInstance(Constants.TOKEN);
         transaction.replace(R.id.content_main, fragment, "My Courses");
@@ -152,6 +164,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setCourseSearch() {
+        clearBackStack();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         fragment = SearchCourseFragment.newInstance(Constants.TOKEN);
         transaction.replace(R.id.content_main, fragment, "Course Search");
@@ -159,6 +172,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setSiteNews() {
+        clearBackStack();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         fragment = SiteNewsFragment.newInstance(Constants.TOKEN);
         transaction.replace(R.id.content_main, fragment, "Site News");
@@ -213,7 +227,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        clearBackStack();
+
         int id = item.getItemId();
         switch (id) {
             case R.id.my_courses:
@@ -253,7 +267,7 @@ public class MainActivity extends AppCompatActivity
                 startActivity(sendIntent);
                 break;
             case R.id.issue:
-                MyFileManager.showInWebsite(this, Constants.GITHUB_URL_ISSUE);
+                MyFileManager.showInWebsite(this, Constants.FEEDBACK_URL);
                 break;
             case R.id.about:
                 startActivity(new Intent(this, InfoActivity.class));

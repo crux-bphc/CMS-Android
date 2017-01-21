@@ -12,6 +12,7 @@ public class Constants {
     public static final String COURSE_PARCEL_INTENT_KEY = "course_parcel";
     public static final String GITHUB_URL = "https://github.com/CRUx-BPHC/CMS-Android/";
     public static final String GITHUB_URL_ISSUE = GITHUB_URL + "issues/";
+    public static final String FEEDBACK_URL = "https://goo.gl/forms/wKCukHQTCDCp7HsG3";//GITHUB_URL + "issues/";
     public static String API_URL = "http://id.bits-hyderabad.ac.in/moodle/";
     public static String LOGIN_URL = API_URL + "login/index.php";
     public static String COURSE_URL = API_URL + "course/view.php";

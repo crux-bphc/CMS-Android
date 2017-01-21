@@ -96,6 +96,7 @@ public class WebSiteActivity extends AppCompatActivity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 view.loadUrl(request.getUrl().toString());
+                swipeRefreshLayout.setRefreshing(true);
                 return true;
             }
 
@@ -147,6 +148,7 @@ public class WebSiteActivity extends AppCompatActivity {
                 "document.getElementById('username').value = '" + uname + "';" +
                 "document.getElementById('password').value = '" + password + "';" +
                 "document.forms[0].submit(); };");
+        swipeRefreshLayout.setRefreshing(true);
         Log.d(TAG, "Login attempted");
     }
 

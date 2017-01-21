@@ -52,6 +52,8 @@ public class SearchCourseFragment extends Fragment {
     private String mPreviousSearch = "";
     private SwipeRefreshLayout mSwipeToRefresh;
     private TextView empty;
+    private Call<CourseSearch> call;
+    private MoodleServices moodleServices;
 
     public SearchCourseFragment() {
         // Required empty public constructor
@@ -83,6 +85,14 @@ public class SearchCourseFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(API_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+
+        moodleServices = retrofit.create(MoodleServices.class);
 
         mSearchCourseAdapter = new SearchCourseAdapter(getActivity(), new ArrayList<Course>());
         mSearchCourseAdapter.setClickListener(new ClickListener() {
@@ -164,8 +174,8 @@ public class SearchCourseFragment extends Fragment {
 
     private void performSearch() {
         String searchText = mEditText.getText().toString().trim();
-        if(searchText.isEmpty()){
-            Toast.makeText(getActivity(),"Please enter a query to search",Toast.LENGTH_SHORT).show();
+        if (searchText.isEmpty()) {
+            Toast.makeText(getActivity(), "Please enter a query to search", Toast.LENGTH_SHORT).show();
             return;
         }
         mPreviousSearch = searchText;
@@ -173,19 +183,17 @@ public class SearchCourseFragment extends Fragment {
         mSearchCourseAdapter.clearCourses();
         mLoading = true;
         containsMore = true;
+        if (call != null) {
+            call.cancel();
+        }
         getSearchCourses(searchText);
     }
 
     private void getSearchCourses(final String searchString) {
         empty.setVisibility(View.GONE);
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(API_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
 
-        //UserAccount userAccount = new UserAccount(getActivity());
-        MoodleServices moodleServices = retrofit.create(MoodleServices.class);
-        Call<CourseSearch> call = moodleServices.getSearchedCourses(
+
+        call = moodleServices.getSearchedCourses(
                 TOKEN,
                 searchString,
                 page,
@@ -253,14 +261,14 @@ public class SearchCourseFragment extends Fragment {
         private List<Course> mCourses = new ArrayList<>();
         private ClickListener mClickListener;
 
-        public List<Course> getCourses() {
-            return mCourses;
-        }
-
         SearchCourseAdapter(Context context, List<Course> courses) {
             mContext = context;
             mLayoutInflater = LayoutInflater.from(mContext);
             mCourses = courses;
+        }
+
+        public List<Course> getCourses() {
+            return mCourses;
         }
 
         void setCourses(List<Course> courses) {

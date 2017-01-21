@@ -56,6 +56,7 @@ import static app.Constants.API_URL;
 public class MyCoursesFragment extends Fragment {
 
     private static final String ARG_PARAM1 = "param1";
+    private static final int COURSE_SECTION_ACTIVITY = 105;
     RecyclerView mRecyclerView;
     EditText mFilter;
     SwipeRefreshLayout mSwipeRefreshLayout;
@@ -97,6 +98,18 @@ public class MyCoursesFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_my_courses, container, false);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==COURSE_SECTION_ACTIVITY&& resultCode==CourseSectionFragment.COURSE_DELETED){
+            RealmResults<Course> result = realm.where(Course.class).findAll();
+            courses.clear();
+            courses = realm.copyFromRealm(result);
+//                    mAdapter.setCourses(courses);
+            filterMyCourses(mSearchedText);
+
+        }
+    }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -125,7 +138,7 @@ public class MyCoursesFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), CourseDetailActivity.class);
                 intent.putExtra("id", course.getCourseId());
                 intent.putExtra("course_name", course.getShortname());
-                startActivity(intent);
+                startActivityForResult(intent,COURSE_SECTION_ACTIVITY);
                 return true;
             }
         });

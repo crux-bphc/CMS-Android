@@ -34,6 +34,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import set.Course;
 import set.CourseSection;
 import set.Module;
 
@@ -49,6 +50,7 @@ public class CourseSectionFragment extends Fragment {
     private static final String TOKEN_KEY = "token";
     private static final String COURSE_ID_KEY = "id";
     private static final int MODULE_ACTIVITY = 101;
+    public static final int COURSE_DELETED = 102;
     Realm realm;
     View empty;
     MyFileManager mFileManager;
@@ -212,6 +214,17 @@ public class CourseSectionFragment extends Fragment {
             @Override
             public void onFailure(Call<List<CourseSection>> call, Throwable t) {
                 //no internet connection
+                if (t instanceof IllegalStateException) {
+                    //course unenrolled. delete course details, open enroll screen
+                    realm.beginTransaction();
+                    realm.where(Course.class).equalTo("id", courseId).findAll().deleteAllFromRealm();
+                    realm.where(CourseSection.class).equalTo("courseID", courseId).findAll().deleteAllFromRealm();
+                    realm.commitTransaction();
+                    Toast.makeText(getActivity(), "you have un-enrolled from the course", Toast.LENGTH_SHORT).show();
+                    getActivity().setResult(COURSE_DELETED);
+                    getActivity().finish();
+                    return;
+                }
                 if (courseSections.isEmpty()) {
                     ((TextView) empty).setText("No internet connection.\nTap to retry");
                     empty.setVisibility(View.VISIBLE);
