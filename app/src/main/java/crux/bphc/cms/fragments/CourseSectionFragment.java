@@ -266,7 +266,7 @@ public class CourseSectionFragment extends Fragment {
         if (!section.getSummary().isEmpty()) {
             v.findViewById(R.id.description).setVisibility(View.VISIBLE);
             Spanned htmlDescription = Html.fromHtml(section.getSummary().trim());
-            String descriptionWithOutExtraSpace = new String(htmlDescription.toString()).trim();
+            String descriptionWithOutExtraSpace = htmlDescription.toString().trim();
             ((TextView) v.findViewById(R.id.description)).setText(htmlDescription.subSequence(0, descriptionWithOutExtraSpace.length()));
         }
         RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);

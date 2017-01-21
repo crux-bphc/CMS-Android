@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -214,7 +215,9 @@ public class MyFileManager {
                     return false;
                 }
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(activity);
-                alertDialog.setMessage(Html.fromHtml(module.getDescription()));
+                Spanned htmlDescription = Html.fromHtml(module.getDescription());
+                String descriptionWithOutExtraSpace = htmlDescription.toString().trim();
+                alertDialog.setMessage(htmlDescription.subSequence(0, descriptionWithOutExtraSpace.length()));
                 alertDialog.setNegativeButton("Close", null);
                 alertDialog.show();
             } else

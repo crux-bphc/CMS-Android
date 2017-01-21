@@ -236,7 +236,7 @@ public class Module extends RealmObject {
     }
 
     public boolean isDownloadable() {
-        if (getContents() == null || getContents().size() == 0 || getModType() == Module.Type.URL) {
+        if (getContents() == null || getContents().size() == 0 || getModType() == Module.Type.URL || getModType()==Type.FORUM) {
             return false;
         }
         return true;

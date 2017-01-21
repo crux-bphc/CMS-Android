@@ -75,7 +75,7 @@ public class NotificationService extends IntentService {
                 .deleteRealmIfMigrationNeeded()
                 .build();
         realm = Realm.getInstance(config);
-        
+
         Call<ResponseBody> myCoursesListCall = moodleServices.getCourses(userAccount.getToken(), userAccount.getUserID());
 
         try {

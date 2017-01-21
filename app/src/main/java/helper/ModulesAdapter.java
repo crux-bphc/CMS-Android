@@ -104,7 +104,8 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 @Override
                 public boolean onLongClick(View view) {
                     final Module module = modules.get(getLayoutPosition());
-                    if (module.getContents() == null || module.getContents().size() == 0) {
+
+                    if (!module.isDownloadable()) {
                         return false;
                     }
                     AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
@@ -132,11 +133,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                             }
                                         break;
                                     case 1:
-                                        if (module.getContents() == null || module.getContents().size() == 0) {
-                                            //todo open label/forum/etc in new activity
-                                            // TODO: 19-01-2017 handle all types
-
-
+                                        if (!module.isDownloadable()) {
                                             return;
                                         }
 
