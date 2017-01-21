@@ -48,7 +48,7 @@ public class SiteNewsFragment extends Fragment {
 
     private static final String TOKEN_KEY = "token";
     private final int FORUM_ID = 1;
-    private final int PER_PAGE = 10;
+    private final int PER_PAGE = 20;
 
     private String TOKEN;
     private int page = 0;
