@@ -114,7 +114,7 @@ public class WebSiteActivity extends AppCompatActivity {
 
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                Toast.makeText(WebSiteActivity.this, "Your Internet Connection May not be active Or " + error, Toast.LENGTH_LONG).show();
+                Toast.makeText(WebSiteActivity.this, "Your Internet Connection May not be active", Toast.LENGTH_LONG).show();
                 swipeRefreshLayout.setRefreshing(false);
             }
 
