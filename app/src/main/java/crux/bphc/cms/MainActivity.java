@@ -11,7 +11,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -57,13 +56,13 @@ public class MainActivity extends AppCompatActivity
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 View view = getCurrentFocus();
                 if (view != null) {
-                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 }
             }
@@ -145,6 +144,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_STORAGE) {
@@ -267,7 +267,7 @@ public class MainActivity extends AppCompatActivity
                 startActivity(sendIntent);
                 break;
             case R.id.issue:
-                MyFileManager.showInWebsite(this, Constants.FEEDBACK_URL);
+                MyFileManager.showInWebsite(this, Constants.getFeedbackURL(mUserAccount.getFirstName(), mUserAccount.getUsername()));
                 break;
             case R.id.about:
                 startActivity(new Intent(this, InfoActivity.class));
@@ -282,7 +282,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void clearBackStack() {
-        for(int i = 0; i < getSupportFragmentManager().getBackStackEntryCount(); ++i) {
+        for (int i = 0; i < getSupportFragmentManager().getBackStackEntryCount(); ++i) {
             getSupportFragmentManager().popBackStack();
         }
     }
