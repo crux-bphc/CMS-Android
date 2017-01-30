@@ -206,9 +206,8 @@ public class MyFileManager {
                 MyFileManager.showInWebsite(activity, module.getContents().get(0).getFileurl());
 
             }
-        } else if (module.getModType() == Module.Type.FORUM) {
+        } else if (module.getModType() == Module.Type.FORUM || module.getModType() == Module.Type.PAGE) {
             MyFileManager.showInWebsite(activity, module.getUrl());
-
         } else if (module.getContents() == null || module.getContents().size() == 0) {
             if (module.getModType() == Module.Type.FORUM || module.getModType() == Module.Type.LABEL) {
                 if (module.getDescription() == null || module.getDescription().length() == 0) {
