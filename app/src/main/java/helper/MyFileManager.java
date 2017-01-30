@@ -82,6 +82,29 @@ public class MyFileManager {
         return course.getShortname();
     }
 
+    private String getApplicationType(String filename) {
+        String extension=getExtension(filename);
+        switch (extension) {
+            case "pdf":
+                return "pdf";
+
+            case "xls":
+            case "xlsx":
+                return "vnd.ms-excel";
+
+            case "doc":
+            case "docx":
+                return "msword";
+
+            case "ppt":
+            case "pptx":
+                return "vnd.ms-powerpoint";
+
+            default:
+                return extension;
+        }
+    }
+
     public void registerDownloadReceiver() {
         activity.registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
@@ -147,7 +170,7 @@ public class MyFileManager {
                 getFilePath(courseName, filename));
         Uri path = FileProvider.getUriForFile(activity, BuildConfig.APPLICATION_ID + ".provider", file);
         Intent pdfOpenintent = new Intent(Intent.ACTION_VIEW);
-        pdfOpenintent.setDataAndType(path, "application/" + getExtension(filename));
+        pdfOpenintent.setDataAndType(path, "application/" + getApplicationType(filename));
         pdfOpenintent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         pdfOpenintent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         try {
@@ -157,6 +180,7 @@ public class MyFileManager {
             activity.startActivity(Intent.createChooser(pdfOpenintent, "No Application found to open File - " + filename));
         }
     }
+
 
     public void shareFile(String filename, String courseName) {
         File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
