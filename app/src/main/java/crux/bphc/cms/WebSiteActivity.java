@@ -29,7 +29,7 @@ public class WebSiteActivity extends AppCompatActivity {
     private static final String PARAM1 = "title";
     private static final String PARAM2 = "loginURL";
     private static final String TAG = "WebsiteActivity.class";
-    private static final int MAX_LOGIN_ATTEMPTS = 2;
+    private static final int MAX_LOGIN_ATTEMPTS = 4;
     WebView webview;
     String title, loginURL;
     int loginAttempts = 0;

@@ -162,7 +162,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private boolean isEmailValid(String email) {
 
-        return email.startsWith("f20");
+        return !email.isEmpty(); //email.startsWith("f20");
     }
 
     private boolean isPasswordValid(String password) {
