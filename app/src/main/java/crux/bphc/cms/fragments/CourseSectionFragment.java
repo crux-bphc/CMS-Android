@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.MyApplication;
-import crux.bphc.cms.CourseModulesActivity;
 import crux.bphc.cms.R;
 import helper.ClickListener;
 import helper.ModulesAdapter;
@@ -47,10 +47,10 @@ import static helper.MyFileManager.DATA_DOWNLOADED;
 
 public class CourseSectionFragment extends Fragment {
 
+    public static final int COURSE_DELETED = 102;
     private static final String TOKEN_KEY = "token";
     private static final String COURSE_ID_KEY = "id";
     private static final int MODULE_ACTIVITY = 101;
-    public static final int COURSE_DELETED = 102;
     Realm realm;
     View empty;
     MyFileManager mFileManager;
@@ -142,14 +142,15 @@ public class CourseSectionFragment extends Fragment {
     }
 
     private boolean checkEmpty() {
-        boolean isEmpty = true;
         for (CourseSection courseSection : courseSections) {
             if (!courseSection.getModules().isEmpty()) {
-                isEmpty = false;
+                empty.setVisibility(View.GONE);
+                return false;
             }
         }
+        empty.setVisibility(View.VISIBLE);
         ((TextView) empty).setText("No Course Data to display.\nTap to Reload");
-        return isEmpty;
+        return true;
     }
 
     private void reloadSections() {
@@ -247,14 +248,15 @@ public class CourseSectionFragment extends Fragment {
         if (linearLayout == null || getActivity() == null)
             return;
 
-        if (section.getModules() == null || section.getModules().isEmpty()) {
+        if ((section.getModules() == null || section.getModules().isEmpty())
+                && (section.getSummary() == null || section.getSummary().isEmpty())) {
             return;
         }
 
         View v = LayoutInflater.from(getActivity()).inflate(R.layout.row_course_section, linearLayout, false);
 
         ((TextView) v.findViewById(R.id.sectionName)).setText(section.getName());
-        v.setOnClickListener(new View.OnClickListener() {
+        /*v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), CourseModulesActivity.class);
@@ -262,12 +264,15 @@ public class CourseSectionFragment extends Fragment {
                 startActivityForResult(intent, MODULE_ACTIVITY);
                 getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
-        });
+        });*/
         if (!section.getSummary().isEmpty()) {
             v.findViewById(R.id.description).setVisibility(View.VISIBLE);
-            Spanned htmlDescription = Html.fromHtml(section.getSummary().trim());
+            Spanned htmlDescription = Html.fromHtml(addToken(section.getSummary().trim()));
             String descriptionWithOutExtraSpace = htmlDescription.toString().trim();
-            ((TextView) v.findViewById(R.id.description)).setText(htmlDescription.subSequence(0, descriptionWithOutExtraSpace.length()));
+            TextView textView = (TextView) v.findViewById(R.id.description);
+            textView.setText(htmlDescription.subSequence(0, descriptionWithOutExtraSpace.length()));
+            textView.setMovementMethod(LinkMovementMethod.getInstance());
+            textView.setLinksClickable(true);
         }
         RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
 
@@ -289,5 +294,29 @@ public class CourseSectionFragment extends Fragment {
             }
         });
         linearLayout.addView(v);
+    }
+
+    private String addToken(String descriptionWithOutExtraSpace) {
+        int start = 0;
+        while (start != -1 && start < descriptionWithOutExtraSpace.length()) {
+            start = descriptionWithOutExtraSpace.indexOf("<a href=\"", start);
+            if (start == -1) {
+                break;
+            }
+            start += "<a href=\"".length();
+            int end = descriptionWithOutExtraSpace.indexOf("\"", start);
+            String oldhref = descriptionWithOutExtraSpace.substring(start, end);
+            String href = oldhref;
+            if (href.contains("?")) {
+                href = href.concat("&token=" + TOKEN);
+            } else {
+                href = href.concat("?token=" + TOKEN);
+            }
+            descriptionWithOutExtraSpace = descriptionWithOutExtraSpace.replace(oldhref, href);
+            end=descriptionWithOutExtraSpace.indexOf("\"", start);
+            start = end + 1;
+        }
+        return descriptionWithOutExtraSpace;
+
     }
 }

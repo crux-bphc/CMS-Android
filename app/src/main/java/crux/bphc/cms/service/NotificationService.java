@@ -1,24 +1,35 @@
 package crux.bphc.cms.service;
 
-import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.firebase.jobdispatcher.Constraint;
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+import com.firebase.jobdispatcher.GooglePlayDriver;
+import com.firebase.jobdispatcher.Job;
+import com.firebase.jobdispatcher.JobParameters;
+import com.firebase.jobdispatcher.JobService;
+import com.firebase.jobdispatcher.Lifetime;
+import com.firebase.jobdispatcher.RetryStrategy;
+import com.firebase.jobdispatcher.Trigger;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import app.Constants;
 import crux.bphc.cms.LoginActivity;
@@ -40,22 +51,53 @@ import set.NotificationSet;
 import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
 import static app.Constants.API_URL;
 
-public class NotificationService extends IntentService {
+public class NotificationService extends JobService {
+    private static final String JOB_TAG = "notification_job";
     UserAccount userAccount;
     Realm realm;
     NotificationManager mNotifyMgr;
-
-    public NotificationService() {
-        super("NotificationService");
-    }
+    boolean mJobRunning;
 
     public static void startService(Context context) {
-        Intent intent = new Intent(context, NotificationService.class);
-        context.startService(intent);
+        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
+        Toast.makeText(context, "Job scheduled", Toast.LENGTH_SHORT).show();
+        Job myJob = dispatcher.newJobBuilder()
+                .setService(NotificationService.class)
+                .setTag(JOB_TAG)
+                .setLifetime(Lifetime.FOREVER)
+                .setRecurring(true)
+                .setTrigger(Trigger.executionWindow(0, (int) TimeUnit.HOURS.toSeconds(1)))
+                .setReplaceCurrent(true)
+                .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
+                .setConstraints(
+                        Constraint.ON_ANY_NETWORK
+                )
+                .build();
+
+        dispatcher.schedule(myJob);
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
+    public boolean onStartJob(JobParameters job) {
+        mJobRunning = true;
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                mJobRunning = true;
+                onHandleIntent();
+                mJobRunning = false;
+            }
+        });
+
+        return mJobRunning;
+    }
+
+    @Override
+    public boolean onStopJob(JobParameters job) {
+        return !mJobRunning;
+    }
+
+    protected void onHandleIntent() {
         Log.d("service ", "started");
 
         userAccount = new UserAccount(this);
