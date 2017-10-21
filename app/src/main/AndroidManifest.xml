@@ -63,7 +63,7 @@
             </intent-filter>
         </service>
 
-       <!-- <receiver
+        <receiver
             android:name=".service.DeviceBootReceiver"
             android:enabled="true"
             android:exported="false"
@@ -72,12 +72,12 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".service.NetworkStateReceiver">
+       <!-- <receiver android:name=".service.NetworkStateReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
-        </receiver>-->
-
+        </receiver>
+-->
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.provider"

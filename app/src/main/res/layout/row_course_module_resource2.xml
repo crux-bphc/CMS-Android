@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
-    android:orientation="horizontal">
+    >
 
     <RelativeLayout
         android:id="@+id/iconWrapper"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
         android:background="?attr/selectableItemBackground"
         android:clickable="true"
         android:paddingBottom="8dp"
@@ -36,21 +35,22 @@
     </RelativeLayout>
 
     <LinearLayout
+        android:layout_toRightOf="@+id/iconWrapper"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <View
-
             android:id="@+id/topDivider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/darker_gray" />
 
         <LinearLayout
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
 
@@ -79,11 +79,16 @@
 
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/lorem"/>
         <View
             android:id="@+id/bottomDivider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/darker_gray" />
     </LinearLayout>
-</LinearLayout>
+</RelativeLayout>
 
