@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,7 +78,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     class ViewHolderResource extends RecyclerView.ViewHolder {
-        TextView name;
+        TextView name,description;
         ImageView modIcon, download;
         int downloaded = -1;
         ProgressBar progressBar;
@@ -92,6 +93,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             download = (ImageView) itemView.findViewById(R.id.download);
             topDivider = itemView.findViewById(R.id.topDivider);
             bottomDivider = itemView.findViewById(R.id.bottomDivider);
+            description= (TextView) itemView.findViewById(R.id.description);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -164,6 +166,14 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         void bind(Module module) {
             name.setText(Html.fromHtml(module.getName()));
+            if(module.getDescription()!=null && !module.getDescription().isEmpty()) {
+                Spanned htmlDescription = Html.fromHtml(module.getDescription());
+                String descriptionWithOutExtraSpace = htmlDescription.toString().trim();
+                description.setText(descriptionWithOutExtraSpace);
+                description.setVisibility(View.VISIBLE);
+            }else{
+                description.setVisibility(View.GONE);
+            }
             iconWrapper.setVisibility(View.VISIBLE);
             if (!module.isDownloadable()) {
                 download.setVisibility(View.GONE);
@@ -206,7 +216,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
             }
 
-            if (isNextLabel(getLayoutPosition())) {
+            if (isNextLabel(getLayoutPosition()) || getLayoutPosition()==modules.size()-1) {
                 bottomDivider.setVisibility(View.GONE);
             } else {
                 bottomDivider.setVisibility(View.VISIBLE);
