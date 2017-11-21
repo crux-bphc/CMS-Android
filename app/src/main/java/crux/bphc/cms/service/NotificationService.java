@@ -66,9 +66,9 @@ public class NotificationService extends JobService {
                 .setTag(JOB_TAG)
                 .setLifetime(Lifetime.FOREVER)
                 .setRecurring(true)
-                .setTrigger(Trigger.executionWindow(0, (int) TimeUnit.HOURS.toSeconds(1)))
+                .setTrigger(Trigger.executionWindow(10, (int) TimeUnit.HOURS.toSeconds(1)))
                 .setReplaceCurrent(true)
-                .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
+                .setRetryStrategy(RetryStrategy.DEFAULT_LINEAR)
                 .setConstraints(
                         Constraint.ON_ANY_NETWORK
                 )
@@ -122,6 +122,10 @@ public class NotificationService extends JobService {
 
         try {
             Response<ResponseBody> courseListResp = myCoursesListCall.execute();
+            if(courseListResp.code()!=200){
+                //mostly server Error
+                return;
+            }
             String responseString = courseListResp.body().string();
             if (responseString.contains("Invalid token")) {
                 logout();

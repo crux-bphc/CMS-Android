@@ -6,6 +6,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,6 +84,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         int downloaded = -1;
         ProgressBar progressBar;
         View iconWrapper, topDivider, bottomDivider;
+        View clickWrapper;
 
         ViewHolderResource(View itemView) {
             super(itemView);
@@ -94,7 +96,11 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             topDivider = itemView.findViewById(R.id.topDivider);
             bottomDivider = itemView.findViewById(R.id.bottomDivider);
             description= (TextView) itemView.findViewById(R.id.description);
-            itemView.setOnClickListener(new View.OnClickListener() {
+            clickWrapper=itemView.findViewById(R.id.clickWrapper);
+            description.setMovementMethod(LinkMovementMethod.getInstance());
+            description.setLinksClickable(true);
+
+            clickWrapper.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if (clickListener != null) {
@@ -102,7 +108,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     }
                 }
             });
-            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            clickWrapper.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
                     final Module module = modules.get(getLayoutPosition());
@@ -169,8 +175,8 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             if(module.getDescription()!=null && !module.getDescription().isEmpty()) {
                 Spanned htmlDescription = Html.fromHtml(module.getDescription());
                 String descriptionWithOutExtraSpace = htmlDescription.toString().trim();
-                description.setText(descriptionWithOutExtraSpace);
-                description.setVisibility(View.VISIBLE);
+                description.setText(htmlDescription.subSequence(0, descriptionWithOutExtraSpace.length()));
+
             }else{
                 description.setVisibility(View.GONE);
             }
