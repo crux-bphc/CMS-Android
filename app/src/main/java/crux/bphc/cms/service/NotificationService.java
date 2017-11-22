@@ -2,6 +2,9 @@ package crux.bphc.cms.service;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -59,26 +62,18 @@ public class NotificationService extends JobService {
     boolean mJobRunning;
 
     public static void startService(Context context) {
-        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
-        Toast.makeText(context, "Job scheduled", Toast.LENGTH_SHORT).show();
-        Job myJob = dispatcher.newJobBuilder()
-                .setService(NotificationService.class)
-                .setTag(JOB_TAG)
-                .setLifetime(Lifetime.FOREVER)
-                .setRecurring(true)
-                .setTrigger(Trigger.executionWindow(10, (int) TimeUnit.HOURS.toSeconds(1)))
-                .setReplaceCurrent(true)
-                .setRetryStrategy(RetryStrategy.DEFAULT_LINEAR)
-                .setConstraints(
-                        Constraint.ON_ANY_NETWORK
-                )
-                .build();
 
-        dispatcher.schedule(myJob);
+        ComponentName serviceComponent = new ComponentName(context, NotificationService.class);
+        JobInfo.Builder builder = new JobInfo.Builder(0, serviceComponent);
+        builder.setPeriodic(TimeUnit.HOURS.toMillis(1));
+        builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY); // require unmetered network
+        builder.setPersisted(true);
+        JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        jobScheduler.schedule(builder.build());
     }
 
     @Override
-    public boolean onStartJob(JobParameters job) {
+    public boolean onStartJob(final JobParameters job) {
         mJobRunning = true;
         AsyncTask.execute(new Runnable() {
             @Override
@@ -86,6 +81,8 @@ public class NotificationService extends JobService {
                 mJobRunning = true;
                 onHandleIntent();
                 mJobRunning = false;
+                jobFinished(job, false);
+
             }
         });
 
@@ -94,7 +91,7 @@ public class NotificationService extends JobService {
 
     @Override
     public boolean onStopJob(JobParameters job) {
-        return !mJobRunning;
+        return mJobRunning;
     }
 
     protected void onHandleIntent() {
