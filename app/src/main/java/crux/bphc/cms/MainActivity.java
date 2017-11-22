@@ -30,8 +30,8 @@ import app.MyApplication;
 import crux.bphc.cms.fragments.MyCoursesFragment;
 import crux.bphc.cms.fragments.SearchCourseFragment;
 import crux.bphc.cms.fragments.SiteNewsFragment;
+import crux.bphc.cms.service.NotificationService;
 import helper.MyFileManager;
-import helper.MyNotificationManager;
 import helper.UserAccount;
 import io.realm.Realm;
 
@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity
         fullName.setText(mUserAccount.getFirstName());
         setHome();
         askPermission();
-        MyNotificationManager.startNotificationServices(this);
+        NotificationService.startService(this);
         resolveDeepLink();
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
