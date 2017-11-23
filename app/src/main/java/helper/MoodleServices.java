@@ -6,7 +6,6 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
-import set.Course;
 import set.CourseSection;
 import set.enrol.SelfEnrol;
 import set.search.CourseSearch;
