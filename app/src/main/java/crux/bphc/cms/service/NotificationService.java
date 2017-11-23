@@ -1,5 +1,6 @@
 package crux.bphc.cms.service;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.job.JobInfo;
@@ -15,17 +16,9 @@ import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.firebase.jobdispatcher.Constraint;
-import com.firebase.jobdispatcher.FirebaseJobDispatcher;
-import com.firebase.jobdispatcher.GooglePlayDriver;
-import com.firebase.jobdispatcher.Job;
 import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
-import com.firebase.jobdispatcher.Lifetime;
-import com.firebase.jobdispatcher.RetryStrategy;
-import com.firebase.jobdispatcher.Trigger;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -59,7 +52,7 @@ public class NotificationService extends JobService {
     UserAccount userAccount;
     Realm realm;
     NotificationManager mNotifyMgr;
-    boolean mJobRunning;
+    private static boolean mJobRunning;
 
     public static void startService(Context context) {
 
@@ -75,18 +68,17 @@ public class NotificationService extends JobService {
     @Override
     public boolean onStartJob(final JobParameters job) {
         mJobRunning = true;
+        runAsForeground();
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
                 mJobRunning = true;
-                onHandleIntent();
-                mJobRunning = false;
-                jobFinished(job, false);
-
+                handleJob(job);
+                stopForeground(true);
             }
         });
 
-        return mJobRunning;
+        return true;
     }
 
     @Override
@@ -94,7 +86,21 @@ public class NotificationService extends JobService {
         return mJobRunning;
     }
 
-    protected void onHandleIntent() {
+    private void runAsForeground(){
+        Intent notificationIntent = new Intent(this, LoginActivity.class);
+        PendingIntent pendingIntent=PendingIntent.getActivity(this, 0,
+                notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Notification notification=new NotificationCompat.Builder(this)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentText("Searching for new content")
+                .setContentIntent(pendingIntent).build();
+
+        startForeground(1, notification);
+
+    }
+
+    protected void handleJob(JobParameters job) {
         Log.d("service ", "started");
 
         userAccount = new UserAccount(this);
@@ -102,7 +108,6 @@ public class NotificationService extends JobService {
         if (!userAccount.isLoggedIn()) {
             return;
         }
-
         mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(API_URL)
@@ -169,7 +174,9 @@ public class NotificationService extends JobService {
                                     CourseSection realmSection =
                                             realm.copyFromRealm(realm.where(CourseSection.class).equalTo("id", section.getId()).findFirst());
                                     for (Module module : section.getModules()) {
+                                        //TODO: 23-11-2017 add checker for new content ie created time or updated time if being returned from server in module/content
                                         if (!realmSection.getModules().contains(module)) {
+
                                             createNotifModuleAdded(new NotificationSet(course, module));
                                         }
 
@@ -195,8 +202,10 @@ public class NotificationService extends JobService {
                 }
             }
             realm.close();
+            mJobRunning = false;
+            jobFinished(job, false);
         } catch (IOException e) {
-
+            mJobRunning = true;
         }
 
     }

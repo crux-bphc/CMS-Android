@@ -20,7 +20,7 @@ public class UserAccount {
 
     public static int getNotifId(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
-        int id = prefs.getInt("notif", 1);
+        int id = prefs.getInt("notif", 2);
         SharedPreferences.Editor editor = prefs.edit();
 
         editor.putInt("notif", id + 1);
