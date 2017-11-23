@@ -5,6 +5,8 @@ import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,11 +79,12 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     class ViewHolderResource extends RecyclerView.ViewHolder {
-        TextView name;
+        TextView name,description;
         ImageView modIcon, download;
         int downloaded = -1;
         ProgressBar progressBar;
         View iconWrapper, topDivider, bottomDivider;
+        View clickWrapper;
 
         ViewHolderResource(View itemView) {
             super(itemView);
@@ -92,7 +95,12 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             download = (ImageView) itemView.findViewById(R.id.download);
             topDivider = itemView.findViewById(R.id.topDivider);
             bottomDivider = itemView.findViewById(R.id.bottomDivider);
-            itemView.setOnClickListener(new View.OnClickListener() {
+            description= (TextView) itemView.findViewById(R.id.description);
+            clickWrapper=itemView.findViewById(R.id.clickWrapper);
+            description.setMovementMethod(LinkMovementMethod.getInstance());
+            description.setLinksClickable(true);
+
+            clickWrapper.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if (clickListener != null) {
@@ -100,7 +108,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     }
                 }
             });
-            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            clickWrapper.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
                     final Module module = modules.get(getLayoutPosition());
@@ -164,6 +172,14 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         void bind(Module module) {
             name.setText(Html.fromHtml(module.getName()));
+            if(module.getDescription()!=null && !module.getDescription().isEmpty()) {
+                Spanned htmlDescription = Html.fromHtml(module.getDescription());
+                String descriptionWithOutExtraSpace = htmlDescription.toString().trim();
+                description.setText(htmlDescription.subSequence(0, descriptionWithOutExtraSpace.length()));
+
+            }else{
+                description.setVisibility(View.GONE);
+            }
             iconWrapper.setVisibility(View.VISIBLE);
             if (!module.isDownloadable()) {
                 download.setVisibility(View.GONE);
@@ -206,7 +222,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
             }
 
-            if (isNextLabel(getLayoutPosition())) {
+            if (isNextLabel(getLayoutPosition()) || getLayoutPosition()==modules.size()-1) {
                 bottomDivider.setVisibility(View.GONE);
             } else {
                 bottomDivider.setVisibility(View.VISIBLE);

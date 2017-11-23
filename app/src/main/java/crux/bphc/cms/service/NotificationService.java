@@ -1,11 +1,15 @@
 package crux.bphc.cms.service;
 
-import android.app.IntentService;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
@@ -13,12 +17,15 @@ import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.util.Log;
 
+import com.firebase.jobdispatcher.JobParameters;
+import com.firebase.jobdispatcher.JobService;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import app.Constants;
 import crux.bphc.cms.LoginActivity;
@@ -40,22 +47,60 @@ import set.NotificationSet;
 import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
 import static app.Constants.API_URL;
 
-public class NotificationService extends IntentService {
+public class NotificationService extends JobService {
+    private static final String JOB_TAG = "notification_job";
     UserAccount userAccount;
     Realm realm;
     NotificationManager mNotifyMgr;
-
-    public NotificationService() {
-        super("NotificationService");
-    }
+    private static boolean mJobRunning;
 
     public static void startService(Context context) {
-        Intent intent = new Intent(context, NotificationService.class);
-        context.startService(intent);
+
+        ComponentName serviceComponent = new ComponentName(context, NotificationService.class);
+        JobInfo.Builder builder = new JobInfo.Builder(0, serviceComponent);
+        builder.setPeriodic(TimeUnit.HOURS.toMillis(1));
+        builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY); // require unmetered network
+        builder.setPersisted(true);
+        JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        jobScheduler.schedule (builder.build());
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
+    public boolean onStartJob(final JobParameters job) {
+        mJobRunning = true;
+        runAsForeground();
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                mJobRunning = true;
+                handleJob(job);
+                stopForeground(true);
+            }
+        });
+
+        return true;
+    }
+
+    @Override
+    public boolean onStopJob(JobParameters job) {
+        return mJobRunning;
+    }
+
+    private void runAsForeground(){
+        Intent notificationIntent = new Intent(this, LoginActivity.class);
+        PendingIntent pendingIntent=PendingIntent.getActivity(this, 0,
+                notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Notification notification=new NotificationCompat.Builder(this)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentText("Searching for new content")
+                .setContentIntent(pendingIntent).build();
+
+        startForeground(1, notification);
+
+    }
+
+    protected void handleJob(JobParameters job) {
         Log.d("service ", "started");
 
         userAccount = new UserAccount(this);
@@ -63,7 +108,6 @@ public class NotificationService extends IntentService {
         if (!userAccount.isLoggedIn()) {
             return;
         }
-
         mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(API_URL)
@@ -80,6 +124,10 @@ public class NotificationService extends IntentService {
 
         try {
             Response<ResponseBody> courseListResp = myCoursesListCall.execute();
+            if(courseListResp.code()!=200){
+                //mostly server Error
+                return;
+            }
             String responseString = courseListResp.body().string();
             if (responseString.contains("Invalid token")) {
                 logout();
@@ -126,7 +174,9 @@ public class NotificationService extends IntentService {
                                     CourseSection realmSection =
                                             realm.copyFromRealm(realm.where(CourseSection.class).equalTo("id", section.getId()).findFirst());
                                     for (Module module : section.getModules()) {
+                                        //TODO: 23-11-2017 add checker for new content ie created time or updated time if being returned from server in module/content
                                         if (!realmSection.getModules().contains(module)) {
+
                                             createNotifModuleAdded(new NotificationSet(course, module));
                                         }
 
@@ -152,8 +202,10 @@ public class NotificationService extends IntentService {
                 }
             }
             realm.close();
+            mJobRunning = false;
+            jobFinished(job, false);
         } catch (IOException e) {
-
+            mJobRunning = true;
         }
 
     }

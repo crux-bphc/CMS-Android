@@ -31,6 +31,7 @@
     </LinearLayout>
 
     <TextView
+        android:visibility="gone"
         android:layout_marginTop="4dp"
         android:id="@+id/description"
         android:layout_width="wrap_content"
@@ -40,7 +41,7 @@
         android:text="@string/lorem"
         android:textColor="#000"
         android:textSize="16sp"
-        android:visibility="gone" />
+         />
 
     <android.support.v7.widget.RecyclerView
         android:paddingStart="8dp"
