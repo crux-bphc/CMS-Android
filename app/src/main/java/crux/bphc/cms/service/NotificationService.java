@@ -62,7 +62,7 @@ public class NotificationService extends JobService {
         builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY); // require unmetered network
         builder.setPersisted(true);
         JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        jobScheduler.schedule(builder.build());
+        jobScheduler.schedule (builder.build());
     }
 
     @Override
