@@ -3,14 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:animateLayoutChanges="true"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#fff">
 
     <LinearLayout
         android:background="?attr/selectableItemBackgroundBorderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingTop="8dp">
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
 
         <View
             android:layout_width="8dp"
@@ -31,6 +33,9 @@
     </LinearLayout>
 
     <TextView
+        android:autoLink="all"
+        android:clickable="true"
+        android:focusable="true"
         android:visibility="gone"
         android:layout_marginTop="4dp"
         android:id="@+id/description"
@@ -44,11 +49,11 @@
          />
 
     <android.support.v7.widget.RecyclerView
-        android:paddingStart="8dp"
+
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="8dp" />
+        />
 
 
 </LinearLayout>

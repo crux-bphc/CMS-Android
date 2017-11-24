@@ -208,7 +208,7 @@ public class CourseDataHandler {
         }
         return null;
     }
-    
+
     public void deleteCourse(int courseId) {
         Realm realm = Realm.getInstance(MyApplication.getRealmConfiguration());
         realm.beginTransaction();
