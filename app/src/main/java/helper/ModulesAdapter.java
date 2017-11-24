@@ -185,7 +185,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             iconWrapper.setVisibility(View.VISIBLE);
             if (!module.isDownloadable()) {
 //                download.setVisibility(View.GONE);
-                name.setTextColor(Color.parseColor("#000000"));
+//                name.setTextColor(Color.parseColor("#000000"));
             } else {
 //                download.setVisibility(View.VISIBLE);
                 List<Content> contents = module.getContents();
@@ -198,10 +198,10 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
                 if (downloaded == 1) {
 //                    download.setImageResource(R.drawable.eye);
-                    name.setTextColor(Color.parseColor("#4CAF50"));
+//                    name.setTextColor(Color.parseColor("#4CAF50"));
                 } else {
 //                    download.setImageResource(R.drawable.content_save);
-                    name.setTextColor(Color.parseColor("#000000"));
+//                    name.setTextColor(Color.parseColor("#000000"));
                 }
             }
             progressBar.setVisibility(View.GONE);

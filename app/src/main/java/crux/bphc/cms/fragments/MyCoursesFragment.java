@@ -61,7 +61,6 @@ public class MyCoursesFragment extends Fragment {
     EditText mFilter;
     SwipeRefreshLayout mSwipeRefreshLayout;
     List<Course> courses;
-
     View empty;
     ImageView mFilterIcon;
     boolean isClearIconSet = false;
@@ -347,7 +346,7 @@ public class MyCoursesFragment extends Fragment {
             View download;
             ImageView downloadIcon;
             ProgressBar progressBar;
-            TextView downloadText;
+            TextView downloadText,unreadCount;
 
 
             MyViewHolder(View itemView) {
@@ -357,6 +356,7 @@ public class MyCoursesFragment extends Fragment {
                 downloadText = (TextView) itemView.findViewById(R.id.downloadText);
                 progressBar = (ProgressBar) itemView.findViewById(R.id.progressBar);
                 downloadIcon = (ImageView) itemView.findViewById(R.id.downloadIcon);
+                unreadCount=(TextView) itemView.findViewById(R.id.unreadCount);
 
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -410,6 +410,9 @@ public class MyCoursesFragment extends Fragment {
                     else
                         downloadText.setText("Downloaded");
                 }
+                int count=courseDataHandler.getUnreadCount(course.getId());
+                unreadCount.setText(count+"");
+                unreadCount.setVisibility(count==0?View.GONE:View.VISIBLE);
             }
         }
 

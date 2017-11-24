@@ -229,4 +229,36 @@ public class CourseDataHandler {
         realm.close();
         return courseSections;
     }
+
+    public void markAllAsRead(List<CourseSection> courseSections) {
+        for(CourseSection courseSection:courseSections){
+            if(courseSection.getModules()!=null){
+                for(Module module:courseSection.getModules()){
+                    markAsRead(module.getId());
+                }
+            }
+        }
+    }
+
+    private void markAsRead(int moduleId) {
+        Realm realm = Realm.getInstance(MyApplication.getRealmConfiguration());
+        realm.beginTransaction();
+        realm.where(Module.class).equalTo("id",moduleId).findFirst().setNewContent(false);
+        realm.commitTransaction();
+    }
+
+    public int getUnreadCount(int id) {
+        int count=0;
+        List<CourseSection> courseSections= getCourseData(id);
+        for(CourseSection courseSection:courseSections){
+            if(courseSection.getModules()!=null){
+                for(Module module:courseSection.getModules()){
+                    if(module.isNewContent()){
+                        count++;
+                    }
+                }
+            }
+        }
+        return count;
+    }
 }

@@ -11,6 +11,9 @@ import android.text.Html;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -20,7 +23,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.Constants;
 import crux.bphc.cms.R;
+import crux.bphc.cms.WebSiteActivity;
 import helper.ClickListener;
 import helper.CourseDataHandler;
 import helper.CourseRequestHandler;
@@ -83,6 +88,7 @@ public class CourseSectionFragment extends Fragment {
         mFileManager = new MyFileManager(getActivity());
         mFileManager.registerDownloadReceiver();
         courseSections = new ArrayList<>();
+        setHasOptionsMenu(true);
     }
 
     @Nullable
@@ -279,5 +285,26 @@ public class CourseSectionFragment extends Fragment {
         }
         return descriptionWithOutExtraSpace;
 
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.course_details_menu, menu);
+        super.onCreateOptionsMenu(menu,inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId()==R.id.mark_all_as_read){
+            courseDataHandler.markAllAsRead(courseSections);
+            courseSections=courseDataHandler.getCourseData(courseId);
+            reloadSections();
+            Toast.makeText(getActivity(),"Marked all as read",Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        if(item.getItemId()==R.id.action_open_in_browser){
+            startActivity(WebSiteActivity.getIntent(getActivity(),courseName, Constants.getCourseURL(courseId)));
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
