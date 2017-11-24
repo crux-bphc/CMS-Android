@@ -36,11 +36,11 @@ import crux.bphc.cms.CourseDetailActivity;
 import crux.bphc.cms.MainActivity;
 import crux.bphc.cms.R;
 import helper.ClickListener;
+import helper.CourseDataHandler;
 import helper.CourseDownloader;
+import helper.CourseRequestHandler;
 import helper.MoodleServices;
 import helper.UserAccount;
-import io.realm.Realm;
-import io.realm.RealmResults;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -61,7 +61,6 @@ public class MyCoursesFragment extends Fragment {
     EditText mFilter;
     SwipeRefreshLayout mSwipeRefreshLayout;
     List<Course> courses;
-    Realm realm;
 
     View empty;
     ImageView mFilterIcon;
@@ -89,7 +88,7 @@ public class MyCoursesFragment extends Fragment {
         if (getArguments() != null) {
             TOKEN = getArguments().getString(ARG_PARAM1);
         }
-        realm = MyApplication.getInstance().getRealmInstance();
+        courseDataHandler = new CourseDataHandler(getActivity());
     }
 
     @Override
@@ -102,10 +101,7 @@ public class MyCoursesFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==COURSE_SECTION_ACTIVITY&& resultCode==CourseSectionFragment.COURSE_DELETED){
-            RealmResults<Course> result = realm.where(Course.class).findAll();
-            courses.clear();
-            courses = realm.copyFromRealm(result);
-//                    mAdapter.setCourses(courses);
+            courses=courseDataHandler.getCourseList();
             filterMyCourses(mSearchedText);
 
         }
@@ -117,12 +113,9 @@ public class MyCoursesFragment extends Fragment {
 
         requestedDownloads = new ArrayList<>();
 
-        RealmResults<Course> result = realm.where(Course.class).findAll();
-
         empty = view.findViewById(R.id.empty);
         courses = new ArrayList<>();
-        courses = realm.copyFromRealm(result);
-
+        courses = courseDataHandler.getCourseList();
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         mFilter = (EditText) view.findViewById(R.id.filterET);
@@ -260,63 +253,26 @@ public class MyCoursesFragment extends Fragment {
             empty.setVisibility(View.GONE);
         }
     }
-
+    CourseDataHandler courseDataHandler;
     private void makeRequest() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(API_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        System.out.println("Inside make request");
 
-        UserAccount userAccount = new UserAccount(getActivity());
+        CourseRequestHandler courseRequestHandler=new CourseRequestHandler(getActivity());
 
-        MoodleServices moodleServices = retrofit.create(MoodleServices.class);
 
-        Call<ResponseBody> courseCall = moodleServices.getCourses(TOKEN, userAccount.getUserID());
-        System.out.println(courseCall.request().url().toString());
 
-        courseCall.enqueue(new Callback<ResponseBody>() {
+        courseRequestHandler.getCourseList(new CourseRequestHandler.CallBack<List<Course>>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    String responseString = response.body().string();
-                    if (responseString.contains("Invalid token")) {
-                        ((MainActivity) getActivity()).logout();
-                        return;
-                    }
-                    Gson gson = new Gson();
-                    final List<Course> coursesList = gson
-                            .fromJson(responseString, new TypeToken<List<Course>>() {
-                            }.getType());
-
-                    courses.clear();
-                    courses.addAll(coursesList);
-//                    mAdapter.setCourses(courses);
-                    filterMyCourses(mSearchedText);
-                    System.out.println("number of courses in coursesList: " + coursesList.size());
-                    mSwipeRefreshLayout.setRefreshing(false);
-
-
-                    final RealmResults<Course> results = realm.where(Course.class).findAll();
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            results.deleteAllFromRealm();
-                            realm.copyToRealm(coursesList);
-                        }
-                    });
-                    checkEmpty();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-
+            public void onResponse(List<Course> courseList) {
+                courses.clear();
+                courses.addAll(courseList);
+                filterMyCourses(mSearchedText);
+                mSwipeRefreshLayout.setRefreshing(false);
+                courseDataHandler.setCourseList(courseList);
+                checkEmpty();
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                System.out.println(t.toString());
-                //no internet connection
+            public void onFailure(String message,Throwable t) {
                 Toast.makeText(getActivity(), "Unable to connect to server!", Toast.LENGTH_SHORT).show();
                 mSwipeRefreshLayout.setRefreshing(false);
             }

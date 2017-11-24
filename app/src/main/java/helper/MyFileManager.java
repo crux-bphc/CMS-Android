@@ -77,11 +77,6 @@ public class MyFileManager {
         customTabsIntent.launchUrl(activity, Uri.parse(url));*/
     }
 
-    public static String getCourseName(int courseId, Realm realm) {
-        Course course = realm.where(Course.class).equalTo("id", courseId).findFirst();
-        return course.getShortname();
-    }
-
     private String getApplicationType(String filename) {
         String extension=getExtension(filename);
         switch (extension) {

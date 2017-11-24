@@ -1,5 +1,8 @@
 package set;
 
+import com.google.gson.Gson;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.RealmList;
@@ -75,5 +78,10 @@ public class CourseSection extends RealmObject {
     public boolean equals(Object obj) {
 
         return obj instanceof CourseSection && ((CourseSection) obj).getId() == id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 }

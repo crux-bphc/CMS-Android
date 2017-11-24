@@ -46,45 +46,30 @@ public class CourseDownloader implements MyFileManager.Callback {
     }
 
     public void downloadCourseData(final int courseId) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(API_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
 
-        MoodleServices moodleServices = retrofit.create(MoodleServices.class);
-
-        Call<List<CourseSection>> courseCall = moodleServices.getCourseContent(TOKEN, courseId);
-
-        courseCall.enqueue(new Callback<List<CourseSection>>() {
+        CourseRequestHandler courseRequestHandler = new CourseRequestHandler(context);
+        final CourseDataHandler courseDataHandler=new CourseDataHandler(context);
+        courseRequestHandler.getCourseData(courseId, new CourseRequestHandler.CallBack<List<CourseSection>>() {
             @Override
-            public void onResponse(Call<List<CourseSection>> call, Response<List<CourseSection>> response) {
-                final List<CourseSection> sectionList = response.body();
+            public void onResponse(List<CourseSection> sectionList) {
                 if (sectionList == null) {
                     if (downloadCallback != null)
                         downloadCallback.onFailure();
                     return;
                 }
 
+                courseDataHandler.setCourseData(courseId,sectionList);
 
-                final RealmResults<CourseSection> results = realm.where(CourseSection.class).equalTo("courseID", courseId).findAll();
-                realm.beginTransaction();
-                results.deleteAllFromRealm();
-                for (CourseSection section : sectionList) {
-                    section.setCourseID(courseId);
-                    realm.copyToRealmOrUpdate(section);
-
-                }
-                realm.commitTransaction();
                 if (downloadCallback != null)
                     downloadCallback.onCourseDataDownloaded();
                 for (CourseSection section : sectionList) {
-                    downloadSection(section, MyFileManager.getCourseName(courseId, realm));
+                    downloadSection(section, CourseDataHandler.getCourseName(courseId));
                 }
 
             }
 
             @Override
-            public void onFailure(Call<List<CourseSection>> call, Throwable t) {
+            public void onFailure(String message, Throwable t) {
                 if (downloadCallback != null)
                     downloadCallback.onFailure();
             }

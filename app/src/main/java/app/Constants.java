@@ -33,4 +33,5 @@ public class Constants {
     public static String getCourseURL(int courseId) {
         return COURSE_URL + "?id=" + courseId;
     }
+
 }
