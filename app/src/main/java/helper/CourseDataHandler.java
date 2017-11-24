@@ -181,7 +181,7 @@ public class CourseDataHandler {
         if (realmModule == null) {  //new module as a whole
             return module;
         }
-        if(!realmModule.getDescription().equals(module.getDescription())){  //the description of module has changed
+        if(realmModule.getDescription()!=null && !realmModule.getDescription().equals(module.getDescription())){  //the description of module has changed
             return module;
         }
         module.setNewContent(realmModule.isNewContent());
@@ -208,17 +208,7 @@ public class CourseDataHandler {
         }
         return null;
     }
-
-   /* private Content getNewParts(Content content, Content realmContent) {
-        if (realmContent == null) {
-            return content;
-        }
-        if (content.getFileurl().equals(realmContent.getFileurl()) && content.getTimemodified() == realmContent.getTimemodified()) {
-            return null;
-        }
-        return content;
-    }*/
-
+    
     public void deleteCourse(int courseId) {
         Realm realm = Realm.getInstance(MyApplication.getRealmConfiguration());
         realm.beginTransaction();
