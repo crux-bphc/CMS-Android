@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity
         fullName.setText(mUserAccount.getFirstName());
         setHome();
         askPermission();
-        NotificationService.startService(this, false);
+        NotificationService.startService(this, true);
         resolveDeepLink();
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);

@@ -1,6 +1,7 @@
 package set;
 
 import io.realm.RealmObject;
+import io.realm.annotations.Index;
 
 /**
  * Created by harsu on 16-12-2016.
@@ -10,6 +11,7 @@ public class Content extends RealmObject {
     private String type, filename, filepath, fileurl;
     private int filesize;
     private long timecreated;
+    @Index
     private long timemodified;
     private int sortorder;
     private int userid;
@@ -29,18 +31,6 @@ public class Content extends RealmObject {
         this.sortorder = sortorder;
         this.userid = userid;
         this.author = author;
-    }
-
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof Content && ((Content) obj).getFileurl().equals(fileurl)
-                && ((Content) obj).getTimemodified() == timemodified;
-    }
-
-    @Override
-    public int hashCode() {
-        return (int) (fileurl.hashCode() + timemodified);
     }
 
     public String getType() {
