@@ -259,7 +259,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private class UserLoginTask {
+    private class UserLoginTask  {
         String email, password;
 
         UserLoginTask(String email, String password) {
@@ -268,6 +268,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         void execute() {
+            //todo change to an Async task and execute calls in Sync
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(API_URL)
                     .addConverterFactory(GsonConverterFactory.create())

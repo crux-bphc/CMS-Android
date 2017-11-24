@@ -77,7 +77,7 @@ public class CourseDataHandler {
     /**
      * @param courseId      courseId for which the sectionList data is given
      * @param sectionList sectionList data
-     * @return parts of section data structure which has new contents.
+     * @return parts of section data structure which has new contents or null if userAccount is not logged in.
      */
     public List<CourseSection> setCourseData(@NonNull int courseId, @NonNull List<CourseSection> sectionList) {
         if(!userAccount.isLoggedIn()){

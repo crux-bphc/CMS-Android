@@ -202,7 +202,7 @@ public class MyFileManager {
 
     private String getPathExtension(String courseName) {
         return File.separator + CMS
-                + File.separator + courseName;
+                + File.separator + courseName.replaceAll("/","_");
     }
 
     public void reloadFileList() {

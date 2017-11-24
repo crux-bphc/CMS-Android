@@ -123,6 +123,7 @@ public class NotificationService extends JobService {
         }
         courseDataHandler.setCourseList(courseList);
         List<Course> courses = courseDataHandler.getCourseList();
+        List<Course> newCourses=courseDataHandler.setCourseList(courses);
 
         for (final Course course : courses) {
             List<CourseSection> courseSections = courseRequestHandler.getCourseData(course);
@@ -132,7 +133,7 @@ public class NotificationService extends JobService {
             }
             List<CourseSection> newPartsInSection = courseDataHandler.setCourseData(course.getCourseId(), courseSections);
 
-            if (newPartsInSection != courseSections) {//stop from generating notification if it is a new course
+            if (!newCourses.contains(course) && newPartsInSection != courseSections) {//stop from generating notification if it is a new course
                 for (CourseSection section : newPartsInSection)
                     createNotifSectionAdded(section, course);
                 // TODO: 24-11-2017 check notification generator
