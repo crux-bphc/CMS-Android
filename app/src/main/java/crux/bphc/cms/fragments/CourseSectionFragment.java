@@ -42,7 +42,7 @@ import static app.Constants.API_URL;
 import static helper.MyFileManager.DATA_DOWNLOADED;
 
 /**
- * Created by siddhant on 12/21/16.
+ * Created by SKrPl on 12/21/16.
  */
 
 public class CourseSectionFragment extends Fragment {
