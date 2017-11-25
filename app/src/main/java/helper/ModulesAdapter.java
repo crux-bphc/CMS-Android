@@ -29,7 +29,7 @@ import set.Module;
 
 public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-
+    CourseDataHandler courseDataHandler;
     private MyFileManager mFileManager;
     private Context context;
     private LayoutInflater inflater;
@@ -43,6 +43,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         modules = new ArrayList<>();
         mFileManager = fileManager;
         this.courseName = courseName;
+        courseDataHandler = new CourseDataHandler(context);
     }
 
 
@@ -85,7 +86,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         int downloaded = -1;
         ProgressBar progressBar;
         View iconWrapper, topDivider, bottomDivider;
-        View clickWrapper,textWrapper;
+        View clickWrapper, textWrapper;
 
         ViewHolderResource(View itemView) {
             super(itemView);
@@ -98,7 +99,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             bottomDivider = itemView.findViewById(R.id.bottomDivider);
             description = (TextView) itemView.findViewById(R.id.description);
             clickWrapper = itemView.findViewById(R.id.clickWrapper);
-            textWrapper=itemView.findViewById(R.id.textWrapper);
+            textWrapper = itemView.findViewById(R.id.textWrapper);
             description.setMovementMethod(LinkMovementMethod.getInstance());
             description.setLinksClickable(true);
 
@@ -108,6 +109,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     if (clickListener != null) {
                         clickListener.onClick(modules.get(getLayoutPosition()), getLayoutPosition());
                     }
+                    markAsRead(modules.get(getLayoutPosition()), getLayoutPosition());
                 }
             });
             more.setOnClickListener(new View.OnClickListener() {
@@ -161,15 +163,22 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         }
                     });
                     alertDialog.show();
+                    markAsRead(modules.get(getLayoutPosition()), getLayoutPosition());
                 }
             });
             progressBar = (ProgressBar) itemView.findViewById(R.id.progressBar);
         }
 
+        private void markAsRead(Module module, int position) {
+            courseDataHandler.markAsRead(module.getId());
+            modules.get(position).setNewContent(false);
+            notifyItemChanged(position);
+        }
+
         void bind(Module module) {
-            if(module.isNewContent()){
+            if (module.isNewContent()) {
                 itemView.setBackgroundColor(Color.parseColor("#E1F5FE"));
-            }else{
+            } else {
                 itemView.setBackgroundColor(Color.WHITE);
             }
 
@@ -238,7 +247,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             } else {
                 topDivider.setVisibility(View.GONE);
             }
-            more.setVisibility(module.isDownloadable()?View.VISIBLE:View.GONE);
+            more.setVisibility(module.isDownloadable() ? View.VISIBLE : View.INVISIBLE);
 
         }
     }

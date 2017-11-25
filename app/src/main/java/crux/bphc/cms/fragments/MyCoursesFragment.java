@@ -99,7 +99,7 @@ public class MyCoursesFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==COURSE_SECTION_ACTIVITY&& resultCode==CourseSectionFragment.COURSE_DELETED){
+        if(requestCode==COURSE_SECTION_ACTIVITY){
             courses=courseDataHandler.getCourseList();
             filterMyCourses(mSearchedText);
 

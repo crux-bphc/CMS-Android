@@ -124,16 +124,6 @@ public class CourseDataHandler {
                     if (newPartInSection != null) {
                         newPartsInSections.add(newPartInSection);
                     }
-                    /*CourseSection trimmedSection = deepCopy(section, CourseSection.class);
-                    for (Module module : section.getModules()) {
-                        //TODO: 23-11-2017 add checker for new content ie created time or updated time if being returned from server in module/content
-                        if (realmSection.getModules().contains(module)) {
-                            trimmedSection.getModules().remove(module);
-                            //remove a module from section if it was already in database.
-                            //todo nest for contents as well.
-                            //todo write a better filter using new Java
-                        }
-                    }*/
                     section.setCourseID(courseId);
                     realm.beginTransaction();
                     realm.where(CourseSection.class)
@@ -240,7 +230,7 @@ public class CourseDataHandler {
         }
     }
 
-    private void markAsRead(int moduleId) {
+    public void markAsRead(int moduleId) {
         Realm realm = Realm.getInstance(MyApplication.getRealmConfiguration());
         realm.beginTransaction();
         realm.where(Module.class).equalTo("id",moduleId).findFirst().setNewContent(false);
