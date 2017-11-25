@@ -20,8 +20,6 @@ import android.text.Html;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -44,7 +42,7 @@ public class NotificationService extends JobService {
     UserAccount userAccount;
     NotificationManager mNotifyMgr;
 
-    public static void startService(Context context,boolean replace) {
+    public static void startService(Context context, boolean replace) {
 
         ComponentName serviceComponent = new ComponentName(context, NotificationService.class);
         JobInfo.Builder builder = new JobInfo.Builder(0, serviceComponent);
@@ -54,10 +52,10 @@ public class NotificationService extends JobService {
 
         JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
-        if(!replace){
-            List<JobInfo> jobInfos= jobScheduler.getAllPendingJobs();
-            for(JobInfo jobInfo:jobInfos){
-                if(jobInfo.getId()==0){
+        if (!replace) {
+            List<JobInfo> jobInfos = jobScheduler.getAllPendingJobs();
+            for (JobInfo jobInfo : jobInfos) {
+                if (jobInfo.getId() == 0) {
                     return;
                 }
             }
@@ -105,8 +103,11 @@ public class NotificationService extends JobService {
         Log.d("service ", "started");
 
         userAccount = new UserAccount(this);
-        userAccount.waitForInternetConnection(false);
         if (!userAccount.isLoggedIn()) {
+            JobScheduler jobScheduler = (JobScheduler) this.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+            if (jobScheduler != null) {
+                jobScheduler.cancelAll();
+            }
             return;
         }
 
@@ -117,13 +118,13 @@ public class NotificationService extends JobService {
         List<Course> courseList = courseRequestHandler.getCourseList();
 
         if (courseList == null) {
-            UserUtils.checkTokenValidity();
+            UserUtils.checkTokenValidity(this);
             jobFinished(job, true);
             return;
         }
         courseDataHandler.setCourseList(courseList);
         List<Course> courses = courseDataHandler.getCourseList();
-        List<Course> newCourses=courseDataHandler.setCourseList(courses);
+        List<Course> newCourses = courseDataHandler.setCourseList(courses);
 
         for (final Course course : courses) {
             List<CourseSection> courseSections = courseRequestHandler.getCourseData(course);

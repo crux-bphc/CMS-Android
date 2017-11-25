@@ -1,6 +1,7 @@
 package crux.bphc.cms;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import helper.UserAccount;
 import helper.UserDetail;
 import helper.UserUtils;
 import io.realm.Realm;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -188,11 +190,17 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void getUserCourses() {
-        new CourseDataRetriever().execute();
+        new CourseDataRetriever(this).execute();
 
     }
 
     class CourseDataRetriever extends AsyncTask<Void,Integer,Boolean>{
+
+        Context mContext;
+
+        public CourseDataRetriever(Context mContext) {
+            this.mContext = mContext;
+        }
 
         @Override
         protected void onProgressUpdate(Integer... values) {
@@ -211,7 +219,7 @@ public class LoginActivity extends AppCompatActivity {
             publishProgress(1);
             List<Course> courseList = courseRequests.getCourseList();
             if (courseList == null) {
-                UserUtils.checkTokenValidity();
+                UserUtils.checkTokenValidity(mContext);
                 return null;
             }
             courseDataHandler.setCourseList(courseList);
@@ -249,12 +257,15 @@ public class LoginActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private interface MoodleLogin {
+    public static interface MoodleLogin {
         @GET("login/token.php?service=moodle_mobile_app")
         Call<LoginDetail> login(@Query("username") String username, @Query("password") String password);
 
         @GET("webservice/rest/server.php?wsfunction=core_webservice_get_site_info&moodlewsrestformat=json")
         Call<UserDetail> fetchUserDetail(@Query("wstoken") String token);
+
+        @GET("webservice/rest/server.php?wsfunction=core_webservice_get_site_info&moodlewsrestformat=json")
+        Call<ResponseBody> checkToken(@Query("wstoken") String token);
 
     }
 

@@ -81,18 +81,6 @@ public class UserAccount {
         editor.apply();
     }
 
-    public void waitForInternetConnection(boolean b) {
-        SharedPreferences.Editor editor = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
-        editor.putBoolean("internet", b);
-        editor.commit();
-    }
-
-    public boolean waitForInternetConnection() {
-        SharedPreferences prefs = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
-        return prefs.getBoolean("internet", false);
-
-    }
-
     public boolean isNotificationsEnabled() {
         SharedPreferences prefs = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
         return prefs.getBoolean("notificationEnable", true);
