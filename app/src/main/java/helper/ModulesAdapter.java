@@ -2,6 +2,8 @@ package helper;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -28,7 +30,7 @@ import set.Module;
 
 public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-
+    CourseDataHandler courseDataHandler;
     private MyFileManager mFileManager;
     private Context context;
     private LayoutInflater inflater;
@@ -42,6 +44,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         modules = new ArrayList<>();
         mFileManager = fileManager;
         this.courseName = courseName;
+        courseDataHandler = new CourseDataHandler(context);
     }
 
 
@@ -79,12 +82,12 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     class ViewHolderResource extends RecyclerView.ViewHolder {
-        TextView name,description;
-        ImageView modIcon, download;
+        TextView name, description;
+        ImageView modIcon, more;
         int downloaded = -1;
         ProgressBar progressBar;
         View iconWrapper, topDivider, bottomDivider;
-        View clickWrapper;
+        View clickWrapper, textWrapper,downloadIcon;
 
         ViewHolderResource(View itemView) {
             super(itemView);
@@ -92,11 +95,13 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             iconWrapper = itemView.findViewById(R.id.iconWrapper);
             name = (TextView) itemView.findViewById(R.id.fileName);
             modIcon = (ImageView) itemView.findViewById(R.id.fileIcon);
-            download = (ImageView) itemView.findViewById(R.id.download);
+            more = (ImageView) itemView.findViewById(R.id.more);
             topDivider = itemView.findViewById(R.id.topDivider);
             bottomDivider = itemView.findViewById(R.id.bottomDivider);
-            description= (TextView) itemView.findViewById(R.id.description);
-            clickWrapper=itemView.findViewById(R.id.clickWrapper);
+            description = (TextView) itemView.findViewById(R.id.description);
+            clickWrapper = itemView.findViewById(R.id.clickWrapper);
+            textWrapper = itemView.findViewById(R.id.textWrapper);
+            downloadIcon=itemView.findViewById(R.id.downloadButton);
             description.setMovementMethod(LinkMovementMethod.getInstance());
             description.setLinksClickable(true);
 
@@ -106,16 +111,13 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     if (clickListener != null) {
                         clickListener.onClick(modules.get(getLayoutPosition()), getLayoutPosition());
                     }
+                    markAsRead(modules.get(getLayoutPosition()), getLayoutPosition());
                 }
             });
-            clickWrapper.setOnLongClickListener(new View.OnLongClickListener() {
+            more.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public boolean onLongClick(View view) {
+                public void onClick(View v) {
                     final Module module = modules.get(getLayoutPosition());
-
-                    if (!module.isDownloadable()) {
-                        return false;
-                    }
                     AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
                     alertDialog.setTitle(module.getName());
                     final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1);
@@ -163,28 +165,45 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         }
                     });
                     alertDialog.show();
-                    return true;
-
+                    markAsRead(modules.get(getLayoutPosition()), getLayoutPosition());
                 }
             });
             progressBar = (ProgressBar) itemView.findViewById(R.id.progressBar);
         }
 
+        private void markAsRead(Module module, int position) {
+            courseDataHandler.markAsRead(module.getId());
+            modules.get(position).setNewContent(false);
+            notifyItemChanged(position);
+        }
+
         void bind(Module module) {
+            if (module.isNewContent()) {
+                itemView.setBackgroundColor(Color.parseColor("#E0F7FA"));
+//                name.setTypeface(null, Typeface.BOLD);
+//                name.setTextColor(Color.parseColor("#000000"));
+            } else {
+                itemView.setBackgroundColor(Color.WHITE);
+//                name.setTypeface(null, Typeface.NORMAL);
+//                name.setTextColor(Color.parseColor("#808080"));
+            }
+
             name.setText(Html.fromHtml(module.getName()));
-            if(module.getDescription()!=null && !module.getDescription().isEmpty()) {
+            if (module.getDescription() != null && !module.getDescription().isEmpty()) {
                 Spanned htmlDescription = Html.fromHtml(module.getDescription());
                 String descriptionWithOutExtraSpace = htmlDescription.toString().trim();
                 description.setText(htmlDescription.subSequence(0, descriptionWithOutExtraSpace.length()));
 
-            }else{
+            } else {
                 description.setVisibility(View.GONE);
             }
             iconWrapper.setVisibility(View.VISIBLE);
             if (!module.isDownloadable()) {
-                download.setVisibility(View.GONE);
+//                download.setVisibility(View.GONE);
+//                name.setTextColor(Color.parseColor("#000000"));
+                downloadIcon.setVisibility(View.GONE);
             } else {
-                download.setVisibility(View.VISIBLE);
+//                download.setVisibility(View.VISIBLE);
                 List<Content> contents = module.getContents();
                 downloaded = 1;
                 for (Content content : contents) {
@@ -194,9 +213,13 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     }
                 }
                 if (downloaded == 1) {
-                    download.setImageResource(R.drawable.eye);
+//                    download.setImageResource(R.drawable.eye);
+//                    name.setTextColor(Color.parseColor("#4CAF50"));
+                    downloadIcon.setVisibility(View.GONE);
                 } else {
-                    download.setImageResource(R.drawable.content_save);
+//                    download.setImageResource(R.drawable.content_save);
+//                    name.setTextColor(Color.parseColor("#000000"));
+                    downloadIcon.setVisibility(View.VISIBLE);
                 }
             }
             progressBar.setVisibility(View.GONE);
@@ -222,7 +245,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
             }
 
-            if (isNextLabel(getLayoutPosition()) || getLayoutPosition()==modules.size()-1) {
+            if (isNextLabel(getLayoutPosition()) || getLayoutPosition() == modules.size() - 1) {
                 bottomDivider.setVisibility(View.GONE);
             } else {
                 bottomDivider.setVisibility(View.VISIBLE);
@@ -233,6 +256,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             } else {
                 topDivider.setVisibility(View.GONE);
             }
+            more.setVisibility(module.isDownloadable() ? View.VISIBLE : View.GONE);
 
         }
     }

@@ -24,10 +24,12 @@ public class Module extends RealmObject {
     @Ignore
     private Type modType;
 
+    private boolean isNewContent;
+
     public Module() {
         modType = Type.DEFAULT;
+        isNewContent =false;
     }
-
 
     public Module(int id, String url, String name, int instance, String modicon, String modname, String modplural, String description, RealmList<Content> contents) {
         this.id = id;
@@ -40,6 +42,14 @@ public class Module extends RealmObject {
         this.description = description;
         this.contents = contents;
         setModType();
+    }
+
+    public boolean isNewContent() {
+        return isNewContent;
+    }
+
+    public void setNewContent(boolean newContent) {
+        isNewContent = newContent;
     }
 
     @Override
