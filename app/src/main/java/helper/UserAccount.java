@@ -11,7 +11,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class UserAccount {
 
-    private static final String MY_PREFS_NAME = "CMS.userAccount2";
+    private static final String MY_PREFS_NAME = "CMS.userAccount3";
     private Context context;
 
     public UserAccount(Context context) {
