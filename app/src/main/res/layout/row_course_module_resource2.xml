@@ -4,8 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-
-    >
+    android:clipChildren="false">
 
     <RelativeLayout
         android:id="@+id/iconWrapper"
@@ -14,7 +13,7 @@
         android:paddingBottom="8dp"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
-        android:paddingTop="8dp">
+        android:paddingTop="0dp">
 
         <ImageView
             android:id="@+id/fileIcon"
@@ -33,25 +32,28 @@
     </RelativeLayout>
 
     <LinearLayout
-        android:layout_toRightOf="@+id/iconWrapper"
+        android:id="@+id/textWrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/iconWrapper"
+        android:clipChildren="false"
         android:orientation="vertical">
 
         <View
+            android:background="@android:color/darker_gray"
             android:id="@+id/topDivider"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
+            android:layout_height="1dp" />
 
         <LinearLayout
             android:id="@+id/clickWrapper"
-            android:background="?attr/selectableItemBackground"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:background="?attr/selectableItemBackground"
+            android:clipChildren="false"
+            android:orientation="horizontal"
+            android:paddingBottom="6dp"
+            android:paddingTop="6dp">
 
 
             <TextView
@@ -64,18 +66,33 @@
                 android:layout_weight="1"
                 android:paddingBottom="8dp"
                 android:paddingTop="8dp"
+                android:textColor="#4CAF50"
                 android:text="Assignment 1"
-                android:textColor="#000"
                 android:textSize="18sp" />
 
             <ImageView
-                android:id="@+id/download"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:id="@+id/downloadButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_gravity="center_vertical"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="10dp"
+                app:srcCompat="@drawable/download" />
+
+            <ImageView
+                android:id="@+id/more"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="8dp"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
                 android:padding="10dp"
                 android:tint="#000"
-                app:srcCompat="@drawable/content_save" />
+                app:srcCompat="@drawable/dots_horizontal" />
 
         </LinearLayout>
 
@@ -83,12 +100,19 @@
             android:id="@+id/description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/lorem"/>
+            android:layout_marginBottom="8dp"
+            android:autoLink="all"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:text="@string/lorem" />
+
         <View
             android:id="@+id/bottomDivider"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
+            android:background="@android:color/darker_gray"
+            android:layout_height="1dp" />
     </LinearLayout>
 </RelativeLayout>
 

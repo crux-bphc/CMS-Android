@@ -26,14 +26,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import app.Constants;
-import app.MyApplication;
 import crux.bphc.cms.fragments.MyCoursesFragment;
 import crux.bphc.cms.fragments.SearchCourseFragment;
 import crux.bphc.cms.fragments.SiteNewsFragment;
 import crux.bphc.cms.service.NotificationService;
 import helper.MyFileManager;
 import helper.UserAccount;
-import io.realm.Realm;
+import helper.UserUtils;
 
 import static app.Constants.API_URL;
 
@@ -79,7 +78,7 @@ public class MainActivity extends AppCompatActivity
         fullName.setText(mUserAccount.getFirstName());
         setHome();
         askPermission();
-        NotificationService.startService(this);
+        NotificationService.startService(this, false);
         resolveDeepLink();
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -87,28 +86,25 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void resolveDeepLink() {
-        Uri path = getIntent().getParcelableExtra("path");
-        if (path == null) {
-            return;
-        }
-        String pathString = path.toString();
-        if (pathString.contains("view.php")) {
-            String[] ids = pathString.split("=");
-            try {
-                int id = Integer.parseInt(ids[ids.length - 1]);
-                if (id == 1) {
-                    //todo open site news
-                } else {
-                    Intent intent = new Intent(this, CourseDetailActivity.class);
-                    intent.putExtra("id", id);
-                    startActivity(intent);
+        String pathString = getIntent().getStringExtra("path");
+        if (pathString != null) {
+            if (pathString.contains("view.php")) {
+                String[] ids = pathString.split("=");
+                try {
+                    int id = Integer.parseInt(ids[ids.length - 1]);
+                    if (id == 1) {
+                        //todo open site news
+                    } else {
+                        Intent intent = new Intent(this, CourseDetailActivity.class);
+                        intent.putExtra("id", id);
+                        startActivity(intent);
+                        return;
+                    }
+
+                } catch (NumberFormatException e) {
+
                 }
-
-            } catch (NumberFormatException e) {
-
             }
-
-
         }
     }
 
@@ -198,12 +194,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void logout() {
-        Realm realm = MyApplication.getInstance().getRealmInstance();
-        realm.beginTransaction();
-        realm.deleteAll();
-        realm.commitTransaction();
-        UserAccount userAccount = new UserAccount(this);
-        userAccount.logout();
+        UserUtils.logout(this);
         startActivity(new Intent(this, LoginActivity.class));
         finish();
     }

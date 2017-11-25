@@ -18,10 +18,13 @@ public class MyApplication extends Application {
         super.onCreate();
         mInstance = this;
         Realm.init(this);
-        RealmConfiguration config = new RealmConfiguration.Builder()
+        realm = Realm.getInstance(getRealmConfiguration());
+    }
+
+    public static RealmConfiguration getRealmConfiguration(){
+        return new RealmConfiguration.Builder()
                 .deleteRealmIfMigrationNeeded()
                 .build();
-        realm = Realm.getInstance(config);
     }
 
     @Override

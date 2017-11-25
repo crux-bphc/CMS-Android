@@ -11,6 +11,9 @@ import android.text.Html;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -20,25 +23,17 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.MyApplication;
+import app.Constants;
 import crux.bphc.cms.R;
+import crux.bphc.cms.WebSiteActivity;
 import helper.ClickListener;
+import helper.CourseDataHandler;
+import helper.CourseRequestHandler;
 import helper.ModulesAdapter;
-import helper.MoodleServices;
 import helper.MyFileManager;
-import io.realm.Realm;
-import io.realm.RealmResults;
-import io.realm.Sort;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-import set.Course;
 import set.CourseSection;
 import set.Module;
 
-import static app.Constants.API_URL;
 import static helper.MyFileManager.DATA_DOWNLOADED;
 
 /**
@@ -51,10 +46,11 @@ public class CourseSectionFragment extends Fragment {
     private static final String TOKEN_KEY = "token";
     private static final String COURSE_ID_KEY = "id";
     private static final int MODULE_ACTIVITY = 101;
-    Realm realm;
+
     View empty;
     MyFileManager mFileManager;
     List<CourseSection> courseSections;
+    CourseDataHandler courseDataHandler;
     private String TOKEN;
     private int courseId;
     private LinearLayout linearLayout;
@@ -88,10 +84,11 @@ public class CourseSectionFragment extends Fragment {
             TOKEN = args.getString(TOKEN_KEY);
             courseId = args.getInt(COURSE_ID_KEY);
         }
-        realm = MyApplication.getInstance().getRealmInstance();
+        courseDataHandler = new CourseDataHandler(getActivity());
         mFileManager = new MyFileManager(getActivity());
         mFileManager.registerDownloadReceiver();
         courseSections = new ArrayList<>();
+        setHasOptionsMenu(true);
     }
 
     @Nullable
@@ -104,15 +101,11 @@ public class CourseSectionFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 
-        courseName = MyFileManager.getCourseName(courseId, realm);
+        courseName = CourseDataHandler.getCourseName(courseId);
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
         linearLayout = (LinearLayout) view.findViewById(R.id.linearLayout);
         empty = view.findViewById(R.id.empty);
-        courseSections = realm.copyFromRealm(realm
-                .where(CourseSection.class)
-                .equalTo("courseID", courseId)
-                .findAll()
-                .sort("id", Sort.ASCENDING));
+        courseSections = courseDataHandler.getCourseData(courseId);
 
         if (courseSections.isEmpty()) {
             mSwipeRefreshLayout.setRefreshing(true);
@@ -168,59 +161,33 @@ public class CourseSectionFragment extends Fragment {
     }
 
     private void sendRequest(final int courseId) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(API_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
 
-        MoodleServices moodleServices = retrofit.create(MoodleServices.class);
-
-        Call<List<CourseSection>> courseCall = moodleServices.getCourseContent(TOKEN, courseId);
-        System.out.println(courseCall.request().url().toString());
-        courseCall.enqueue(new Callback<List<CourseSection>>() {
+        CourseRequestHandler courseRequestHandler = new CourseRequestHandler(getActivity());
+        courseRequestHandler.getCourseData(courseId, new CourseRequestHandler.CallBack<List<CourseSection>>() {
             @Override
-            public void onResponse(Call<List<CourseSection>> call, Response<List<CourseSection>> response) {
-
+            public void onResponse(List<CourseSection> sectionList) {
                 empty.setVisibility(View.GONE);
 
-                final List<CourseSection> sectionList = response.body();
                 if (sectionList == null) {
                     //todo not registered, ask to register, change UI, show enroll button
                     return;
                 }
+                linearLayout.removeAllViews();
+                courseSections.clear();
+                courseDataHandler.setCourseData(courseId, sectionList);
 
-                final RealmResults<CourseSection> results = realm
-                        .where(CourseSection.class)
-                        .equalTo("courseID", courseId)
-                        .findAll();
-                realm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        results.deleteAllFromRealm();
-                        linearLayout.removeAllViews();
-                        courseSections.clear();
-
-                        for (CourseSection section : sectionList) {
-                            addSection(section);
-                            section.setCourseID(courseId);
-                            realm.copyToRealmOrUpdate(section);
-                            courseSections.add(section);
-                        }
-                    }
-                });
+                for (CourseSection section : sectionList) {
+                    courseSections.add(section);
+                    addSection(section);
+                }
                 mSwipeRefreshLayout.setRefreshing(false);
-
             }
 
             @Override
-            public void onFailure(Call<List<CourseSection>> call, Throwable t) {
-                //no internet connection
+            public void onFailure(String message, Throwable t) {
                 if (t instanceof IllegalStateException) {
                     //course unenrolled. delete course details, open enroll screen
-                    realm.beginTransaction();
-                    realm.where(Course.class).equalTo("id", courseId).findAll().deleteAllFromRealm();
-                    realm.where(CourseSection.class).equalTo("courseID", courseId).findAll().deleteAllFromRealm();
-                    realm.commitTransaction();
+                    courseDataHandler.deleteCourse(courseId);
                     Toast.makeText(getActivity(), "you have un-enrolled from the course", Toast.LENGTH_SHORT).show();
                     getActivity().setResult(COURSE_DELETED);
                     getActivity().finish();
@@ -313,10 +280,31 @@ public class CourseSectionFragment extends Fragment {
                 href = href.concat("?token=" + TOKEN);
             }
             descriptionWithOutExtraSpace = descriptionWithOutExtraSpace.replace(oldhref, href);
-            end=descriptionWithOutExtraSpace.indexOf("\"", start);
+            end = descriptionWithOutExtraSpace.indexOf("\"", start);
             start = end + 1;
         }
         return descriptionWithOutExtraSpace;
 
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.course_details_menu, menu);
+        super.onCreateOptionsMenu(menu,inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId()==R.id.mark_all_as_read){
+            courseDataHandler.markAllAsRead(courseSections);
+            courseSections=courseDataHandler.getCourseData(courseId);
+            reloadSections();
+            Toast.makeText(getActivity(),"Marked all as read",Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        if(item.getItemId()==R.id.action_open_in_browser){
+            startActivity(WebSiteActivity.getIntent(getActivity(),courseName, Constants.getCourseURL(courseId)));
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

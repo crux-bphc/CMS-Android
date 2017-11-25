@@ -1,7 +1,9 @@
 package crux.bphc.cms;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -18,19 +20,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
 import java.util.List;
 
-import app.MyApplication;
-import helper.MoodleServices;
+import helper.CourseDataHandler;
+import helper.CourseRequestHandler;
 import helper.UserAccount;
 import helper.UserDetail;
+import helper.UserUtils;
 import io.realm.Realm;
-import io.realm.RealmResults;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -52,6 +51,8 @@ public class LoginActivity extends AppCompatActivity {
 
     UserAccount userAccount;
     Realm realm;
+    CourseRequestHandler courseRequests;
+    CourseDataHandler courseDataHandler;
     private EditText mEmailView;
     private EditText mPasswordView;
     private ProgressDialog progressDialog;
@@ -78,6 +79,8 @@ public class LoginActivity extends AppCompatActivity {
                 return false;
             }
         });
+        courseRequests = new CourseRequestHandler(this);
+        courseDataHandler = new CourseDataHandler(this);
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -105,7 +108,7 @@ public class LoginActivity extends AppCompatActivity {
         if (userAccount.isLoggedIn()) {
             Intent intent = new Intent(this, MainActivity.class);
             if (getIntent().getParcelableExtra("path") != null)
-                intent.putExtra("path", getIntent().getParcelableExtra("path"));
+                intent.putExtra("path",getIntent().getParcelableExtra("path").toString());
             startActivity(intent);
             finish();
         }
@@ -187,109 +190,55 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void getUserCourses() {
-        showProgress(true, "Fetching courses list");
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(API_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        realm = MyApplication.getInstance().getRealmInstance();
-
-        MoodleServices moodleServices = retrofit.create(MoodleServices.class);
-
-        Call<ResponseBody> courseCall = moodleServices.getCourses(userAccount.getToken(), userAccount.getUserID());
-        System.out.println(courseCall.request().url().toString());
-
-        courseCall.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    String responseString = response.body().string();
-                    if (responseString.contains("Invalid token")) {
-                        return;
-                    }
-                    Gson gson = new Gson();
-                    final List<Course> coursesList = gson
-                            .fromJson(responseString, new TypeToken<List<Course>>() {
-                            }.getType());
-
-
-                    final RealmResults<Course> results = realm.where(Course.class).findAll();
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            results.deleteAllFromRealm();
-                            realm.copyToRealm(coursesList);
-                            downloadCourseContents();
-                        }
-                    });
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(LoginActivity.this, "Unable to fetch course list", Toast.LENGTH_SHORT).show();
-                checkLoggedIn();
-
-
-            }
-        });
+        new CourseDataRetriever(this).execute();
 
     }
 
-    private void downloadCourseContents() {
-        showProgress(true, "Fetching course contents");
+    class CourseDataRetriever extends AsyncTask<Void,Integer,Boolean>{
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(API_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        MoodleServices moodleServices = retrofit.create(MoodleServices.class);
+        Context mContext;
 
-        List<Course> courses = realm.copyFromRealm(realm.where(Course.class).findAll());
-
-        toDownload = courses.size();
-        if (toDownload == 0) {
-            checkLoggedIn();
-            return;
+        public CourseDataRetriever(Context mContext) {
+            this.mContext = mContext;
         }
-        for (final Course course : courses) {
-            Call<List<CourseSection>> courseCall = moodleServices.getCourseContent(userAccount.getToken(), course.getId());
-            courseCall.enqueue(new Callback<List<CourseSection>>() {
-                @Override
-                public void onResponse(Call<List<CourseSection>> call, Response<List<CourseSection>> response) {
-                    List<CourseSection> sectionList = response.body();
-                    if (sectionList == null) {
-                        return;
-                    }
-                    for (CourseSection section : sectionList) {
-                        section.setCourseID(course.getId());
-                        realm.beginTransaction();
-                        realm.where(CourseSection.class)
-                                .equalTo("id", section.getId())
-                                .findAll().deleteAllFromRealm();
-                        realm.copyToRealmOrUpdate(section);
-                        realm.commitTransaction();
-                    }
-                    toDownload--;
-                    if (toDownload == 0) {
-                        checkLoggedIn();
-                    }
-                }
 
-                @Override
-                public void onFailure(Call<List<CourseSection>> call, Throwable t) {
-                    userAccount.waitForInternetConnection(true);
-                    toDownload--;
-                    if (toDownload == 0) {
-                        checkLoggedIn();
-                    }
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            if (values.length > 0) {
+                if (values[values.length - 1] == 1) {
+                    showProgress(true, "Fetching courses list");
+                } else if (values[values.length - 1] == 2) {
+                    showProgress(true, "Fetching course contents");
                 }
-            });
+            }
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            publishProgress(1);
+            List<Course> courseList = courseRequests.getCourseList();
+            if (courseList == null) {
+                UserUtils.checkTokenValidity(mContext);
+                return null;
+            }
+            courseDataHandler.setCourseList(courseList);
+            publishProgress(2);
+            List<Course> courses = courseDataHandler.getCourseList();
+
+            for (final Course course : courses) {
+                List<CourseSection> courseSections = courseRequests.getCourseData(course);
+                if (courseSections == null) {
+                    continue;
+                }
+                courseDataHandler.setCourseData(course.getCourseId(), courseSections);
+            }
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Boolean bool) {
+            super.onPostExecute(bool);
+            checkLoggedIn();
         }
     }
 
@@ -308,16 +257,19 @@ public class LoginActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private interface MoodleLogin {
+    public static interface MoodleLogin {
         @GET("login/token.php?service=moodle_mobile_app")
         Call<LoginDetail> login(@Query("username") String username, @Query("password") String password);
 
         @GET("webservice/rest/server.php?wsfunction=core_webservice_get_site_info&moodlewsrestformat=json")
         Call<UserDetail> fetchUserDetail(@Query("wstoken") String token);
 
+        @GET("webservice/rest/server.php?wsfunction=core_webservice_get_site_info&moodlewsrestformat=json")
+        Call<ResponseBody> checkToken(@Query("wstoken") String token);
+
     }
 
-    private class UserLoginTask {
+    private class UserLoginTask  {
         String email, password;
 
         UserLoginTask(String email, String password) {
@@ -326,6 +278,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         void execute() {
+            //todo change to an Async task and execute calls in Sync
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(API_URL)
                     .addConverterFactory(GsonConverterFactory.create())

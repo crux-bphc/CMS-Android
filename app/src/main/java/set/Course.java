@@ -20,7 +20,7 @@ public class Course extends RealmObject {
     private int enrolledusercount;
     private String shortname, fullname, summary, format;
 
-    public Course(int id,  int enrolledusercount, String shortname, String fullname, String summary, String format) {
+    public Course(int id, int enrolledusercount, String shortname, String fullname, String summary, String format) {
         this.id = id;
         this.enrolledusercount = enrolledusercount;
         this.shortname = shortname;
@@ -33,12 +33,12 @@ public class Course extends RealmObject {
     }
 
     public Course(set.search.Course course) {
-        this.id=course.getId();
-        enrolledusercount=0;
-        shortname=course.getShortname();
-        fullname=course.getFullname();
-        summary=course.getSummary();
-        format="";
+        this.id = course.getId();
+        enrolledusercount = 0;
+        shortname = course.getShortname();
+        fullname = course.getFullname();
+        summary = course.getSummary();
+        format = "";
 
     }
 
@@ -119,5 +119,13 @@ public class Course extends RealmObject {
         this.fullname = fullname;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Course && ((Course) obj).getId() == id;
+    }
 
+    @Override
+    public int hashCode() {
+        return id;
+    }
 }

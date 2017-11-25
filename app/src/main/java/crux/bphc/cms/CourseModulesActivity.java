@@ -11,6 +11,7 @@ import java.util.List;
 
 import app.MyApplication;
 import helper.ClickListener;
+import helper.CourseDataHandler;
 import helper.ModulesAdapter;
 import helper.MyFileManager;
 import io.realm.Realm;
@@ -55,7 +56,7 @@ public class CourseModulesActivity extends AppCompatActivity {
         RealmResults<CourseSection> sections = realm.where(CourseSection.class).equalTo("id", sectionID).findAll();
 
         setTitle(sections.first().getName());
-        courseName = MyFileManager.getCourseName(sections.first().getCourseID(), realm);
+        courseName = CourseDataHandler.getCourseName(sections.first().getCourseID());
         modules = sections.first().getModules();
         if (modules.size() == 0) {
             findViewById(R.id.empty).setVisibility(View.VISIBLE);

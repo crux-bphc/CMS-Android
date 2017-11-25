@@ -4,7 +4,9 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.job.JobInfo;
+import android.app.job.JobParameters;
 import android.app.job.JobScheduler;
+import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -17,12 +19,6 @@ import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.util.Log;
 
-import com.firebase.jobdispatcher.JobParameters;
-import com.firebase.jobdispatcher.JobService;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -30,39 +26,42 @@ import java.util.concurrent.TimeUnit;
 import app.Constants;
 import crux.bphc.cms.LoginActivity;
 import crux.bphc.cms.R;
-import helper.MoodleServices;
+import helper.CourseDataHandler;
+import helper.CourseRequestHandler;
 import helper.UserAccount;
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import helper.UserUtils;
 import set.Course;
 import set.CourseSection;
 import set.Module;
 import set.NotificationSet;
 
 import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
-import static app.Constants.API_URL;
 
 public class NotificationService extends JobService {
-    private static final String JOB_TAG = "notification_job";
-    UserAccount userAccount;
-    Realm realm;
-    NotificationManager mNotifyMgr;
     private static boolean mJobRunning;
+    UserAccount userAccount;
+    NotificationManager mNotifyMgr;
 
-    public static void startService(Context context) {
+    public static void startService(Context context, boolean replace) {
 
         ComponentName serviceComponent = new ComponentName(context, NotificationService.class);
         JobInfo.Builder builder = new JobInfo.Builder(0, serviceComponent);
         builder.setPeriodic(TimeUnit.HOURS.toMillis(1));
         builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY); // require unmetered network
         builder.setPersisted(true);
+
         JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        jobScheduler.schedule (builder.build());
+
+        if (!replace) {
+            List<JobInfo> jobInfos = jobScheduler.getAllPendingJobs();
+            for (JobInfo jobInfo : jobInfos) {
+                if (jobInfo.getId() == 0) {
+                    return;
+                }
+            }
+        }
+
+        jobScheduler.schedule(builder.build());
     }
 
     @Override
@@ -86,12 +85,12 @@ public class NotificationService extends JobService {
         return mJobRunning;
     }
 
-    private void runAsForeground(){
+    private void runAsForeground() {
         Intent notificationIntent = new Intent(this, LoginActivity.class);
-        PendingIntent pendingIntent=PendingIntent.getActivity(this, 0,
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
                 notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Notification notification=new NotificationCompat.Builder(this)
+        Notification notification = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentText("Searching for new content")
                 .setContentIntent(pendingIntent).build();
@@ -104,118 +103,48 @@ public class NotificationService extends JobService {
         Log.d("service ", "started");
 
         userAccount = new UserAccount(this);
-        userAccount.waitForInternetConnection(false);
         if (!userAccount.isLoggedIn()) {
+            JobScheduler jobScheduler = (JobScheduler) this.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+            if (jobScheduler != null) {
+                jobScheduler.cancelAll();
+            }
             return;
         }
+
+        CourseDataHandler courseDataHandler = new CourseDataHandler(this);
+        CourseRequestHandler courseRequestHandler = new CourseRequestHandler(this);
         mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(API_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        MoodleServices moodleServices = retrofit.create(MoodleServices.class);
 
-        RealmConfiguration config = new RealmConfiguration.Builder()
-                .deleteRealmIfMigrationNeeded()
-                .build();
-        realm = Realm.getInstance(config);
+        List<Course> courseList = courseRequestHandler.getCourseList();
 
-        Call<ResponseBody> myCoursesListCall = moodleServices.getCourses(userAccount.getToken(), userAccount.getUserID());
-
-        try {
-            Response<ResponseBody> courseListResp = myCoursesListCall.execute();
-            if(courseListResp.code()!=200){
-                //mostly server Error
-                return;
-            }
-            String responseString = courseListResp.body().string();
-            if (responseString.contains("Invalid token")) {
-                logout();
-                return;
-            }
-            Gson gson = new Gson();
-            final List<Course> courses = gson
-                    .fromJson(responseString, new TypeToken<List<Course>>() {
-                    }.getType());
-
-            realm.beginTransaction();
-            realm.where(Course.class).findAll().deleteAllFromRealm();
-            realm.copyToRealmOrUpdate(courses);
-            realm.commitTransaction();
-
-            for (final Course course : courses) {
-
-                Call<List<CourseSection>> courseCall = moodleServices.getCourseContent(userAccount.getToken(), course.getId());
-                try {
-                    Response response = courseCall.execute();
-                    if (response.code() == 200) {
-                        List<CourseSection> sectionList = (List<CourseSection>) response.body();
-                        if (sectionList == null) {
-                            return;
-                        }
-                        //stop from generating notification if it is a new course
-                        if (realm.where(CourseSection.class).equalTo("courseID", course.getId()).findFirst() == null) {
-                            for (CourseSection section : sectionList) {
-                                section.setCourseID(course.getId());
-                                realm.beginTransaction();
-                                realm.copyToRealmOrUpdate(section);
-                                realm.commitTransaction();
-                            }
-                        } else {        //not a new course
-                            for (CourseSection section : sectionList) {
-
-                                if (realm.where(CourseSection.class).equalTo("id", section.getId()).findFirst() == null) {
-                                    section.setCourseID(course.getId());
-                                    realm.beginTransaction();
-                                    realm.copyToRealmOrUpdate(section);
-                                    realm.commitTransaction();
-                                    createNotifSectionAdded(section, course);
-                                } else {
-                                    CourseSection realmSection =
-                                            realm.copyFromRealm(realm.where(CourseSection.class).equalTo("id", section.getId()).findFirst());
-                                    for (Module module : section.getModules()) {
-                                        //TODO: 23-11-2017 add checker for new content ie created time or updated time if being returned from server in module/content
-                                        if (!realmSection.getModules().contains(module)) {
-
-                                            createNotifModuleAdded(new NotificationSet(course, module));
-                                        }
-
-                                    }
-                                    section.setCourseID(course.getId());
-                                    realm.beginTransaction();
-                                    realm.where(CourseSection.class)
-                                            .equalTo("id", section.getId())
-                                            .findAll().deleteAllFromRealm();
-                                    realm.copyToRealmOrUpdate(section);
-                                    realm.commitTransaction();
-                                }
-                            }
-                        }
-                    } else {
-                        userAccount.waitForInternetConnection(true);
-                        break;
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    userAccount.waitForInternetConnection(true);
-                    break;
-                }
-            }
-            realm.close();
-            mJobRunning = false;
-            jobFinished(job, false);
-        } catch (IOException e) {
-            mJobRunning = true;
+        if (courseList == null) {
+            UserUtils.checkTokenValidity(this);
+            jobFinished(job, true);
+            return;
         }
+        courseDataHandler.setCourseList(courseList);
+        List<Course> courses = courseDataHandler.getCourseList();
+        List<Course> newCourses = courseDataHandler.setCourseList(courses);
 
+        for (final Course course : courses) {
+            List<CourseSection> courseSections = courseRequestHandler.getCourseData(course);
+            if (courseSections == null) {
+                continue;
+            }
+            List<CourseSection> newPartsInSection = courseDataHandler.setCourseData(course.getCourseId(), courseSections);
+
+            if (!newCourses.contains(course) && newPartsInSection != courseSections) {//stop from generating notification if it is a new course
+                for (CourseSection section : newPartsInSection)
+                    createNotifSectionAdded(section, course);
+            }
+
+        }
+        mJobRunning = false;
+        jobFinished(job, false);
     }
 
     private void logout() {
-        realm.beginTransaction();
-        realm.deleteAll();
-        realm.commitTransaction();
-
-        userAccount.logout();
+        UserUtils.logout(this);
     }
 
     private void createNotifSectionAdded(CourseSection section, Course course) {
@@ -248,10 +177,6 @@ public class NotificationService extends JobService {
 
 
         }
-
-        /*realm.beginTransaction();
-        realm.copyToRealmOrUpdate(notificationSet);
-        realm.commitTransaction();*/
     }
 
 

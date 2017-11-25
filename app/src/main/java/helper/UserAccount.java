@@ -11,7 +11,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class UserAccount {
 
-    private static final String MY_PREFS_NAME = "CMS.userAccount2";
+    private static final String MY_PREFS_NAME = "CMS.userAccount3";
     private Context context;
 
     public UserAccount(Context context) {
@@ -79,18 +79,6 @@ public class UserAccount {
         SharedPreferences.Editor editor = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
         editor.clear();
         editor.apply();
-    }
-
-    public void waitForInternetConnection(boolean b) {
-        SharedPreferences.Editor editor = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
-        editor.putBoolean("internet", b);
-        editor.commit();
-    }
-
-    public boolean waitForInternetConnection() {
-        SharedPreferences prefs = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
-        return prefs.getBoolean("internet", false);
-
     }
 
     public boolean isNotificationsEnabled() {
