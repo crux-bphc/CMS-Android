@@ -411,8 +411,8 @@ public class MyCoursesFragment extends Fragment {
                         downloadText.setText("Downloaded");
                 }
                 int count=courseDataHandler.getUnreadCount(course.getId());
-                unreadCount.setText(count+"");
-                unreadCount.setVisibility(count==0?View.GONE:View.VISIBLE);
+                unreadCount.setText(Integer.toString(count));
+                unreadCount.setVisibility(count==0?View.INVISIBLE:View.VISIBLE);
             }
         }
 

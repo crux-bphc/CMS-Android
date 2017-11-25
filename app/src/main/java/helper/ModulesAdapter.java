@@ -3,6 +3,7 @@ package helper;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -86,7 +87,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         int downloaded = -1;
         ProgressBar progressBar;
         View iconWrapper, topDivider, bottomDivider;
-        View clickWrapper, textWrapper;
+        View clickWrapper, textWrapper,downloadIcon;
 
         ViewHolderResource(View itemView) {
             super(itemView);
@@ -100,6 +101,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             description = (TextView) itemView.findViewById(R.id.description);
             clickWrapper = itemView.findViewById(R.id.clickWrapper);
             textWrapper = itemView.findViewById(R.id.textWrapper);
+            downloadIcon=itemView.findViewById(R.id.downloadButton);
             description.setMovementMethod(LinkMovementMethod.getInstance());
             description.setLinksClickable(true);
 
@@ -177,9 +179,13 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         void bind(Module module) {
             if (module.isNewContent()) {
-                itemView.setBackgroundColor(Color.parseColor("#E1F5FE"));
+                itemView.setBackgroundColor(Color.parseColor("#E0F7FA"));
+//                name.setTypeface(null, Typeface.BOLD);
+//                name.setTextColor(Color.parseColor("#000000"));
             } else {
                 itemView.setBackgroundColor(Color.WHITE);
+//                name.setTypeface(null, Typeface.NORMAL);
+//                name.setTextColor(Color.parseColor("#808080"));
             }
 
             name.setText(Html.fromHtml(module.getName()));
@@ -195,6 +201,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             if (!module.isDownloadable()) {
 //                download.setVisibility(View.GONE);
 //                name.setTextColor(Color.parseColor("#000000"));
+                downloadIcon.setVisibility(View.GONE);
             } else {
 //                download.setVisibility(View.VISIBLE);
                 List<Content> contents = module.getContents();
@@ -208,9 +215,11 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if (downloaded == 1) {
 //                    download.setImageResource(R.drawable.eye);
 //                    name.setTextColor(Color.parseColor("#4CAF50"));
+                    downloadIcon.setVisibility(View.GONE);
                 } else {
 //                    download.setImageResource(R.drawable.content_save);
 //                    name.setTextColor(Color.parseColor("#000000"));
+                    downloadIcon.setVisibility(View.VISIBLE);
                 }
             }
             progressBar.setVisibility(View.GONE);
@@ -247,7 +256,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             } else {
                 topDivider.setVisibility(View.GONE);
             }
-            more.setVisibility(module.isDownloadable() ? View.VISIBLE : View.INVISIBLE);
+            more.setVisibility(module.isDownloadable() ? View.VISIBLE : View.GONE);
 
         }
     }
