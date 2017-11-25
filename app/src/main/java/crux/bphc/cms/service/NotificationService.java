@@ -128,7 +128,6 @@ public class NotificationService extends JobService {
         for (final Course course : courses) {
             List<CourseSection> courseSections = courseRequestHandler.getCourseData(course);
             if (courseSections == null) {
-                UserUtils.checkTokenValidity();
                 continue;
             }
             List<CourseSection> newPartsInSection = courseDataHandler.setCourseData(course.getCourseId(), courseSections);

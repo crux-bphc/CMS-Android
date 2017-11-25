@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity
         fullName.setText(mUserAccount.getFirstName());
         setHome();
         askPermission();
-        NotificationService.startService(this, false);
+        NotificationService.startService(this, true);
         resolveDeepLink();
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -86,9 +86,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void resolveDeepLink() {
-        Uri path = getIntent().getParcelableExtra("path");
-        if (path != null) {
-            String pathString = path.toString();
+        String pathString = getIntent().getStringExtra("path");
+        if (pathString != null) {
             if (pathString.contains("view.php")) {
                 String[] ids = pathString.split("=");
                 try {

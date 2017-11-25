@@ -106,7 +106,7 @@ public class LoginActivity extends AppCompatActivity {
         if (userAccount.isLoggedIn()) {
             Intent intent = new Intent(this, MainActivity.class);
             if (getIntent().getParcelableExtra("path") != null)
-                intent.putExtra("path", getIntent().getParcelableExtra("path"));
+                intent.putExtra("path",getIntent().getParcelableExtra("path").toString());
             startActivity(intent);
             finish();
         }
@@ -221,7 +221,6 @@ public class LoginActivity extends AppCompatActivity {
             for (final Course course : courses) {
                 List<CourseSection> courseSections = courseRequests.getCourseData(course);
                 if (courseSections == null) {
-                    UserUtils.checkTokenValidity();
                     continue;
                 }
                 courseDataHandler.setCourseData(course.getCourseId(), courseSections);
