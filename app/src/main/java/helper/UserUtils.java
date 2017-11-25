@@ -22,5 +22,6 @@ public class UserUtils {
 
     public static void checkTokenValidity() {
         //todo implement token validity call, and auto logout logic implementation
+        //auto logout logic, finish current activity. clear back stack. start login activity
     }
 }

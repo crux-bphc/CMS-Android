@@ -113,9 +113,6 @@ public class CourseDataHandler {
                 if (realm.where(CourseSection.class).equalTo("id", section.getId()).findFirst() == null) {
                     //whole section is new
                     section.setCourseID(courseId);
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(section);
-                    realm.commitTransaction();
                     newPartsInSections.add(section);
                 } else {
                     CourseSection realmSection =
@@ -125,15 +122,14 @@ public class CourseDataHandler {
                         newPartsInSections.add(newPartInSection);
                     }
                     section.setCourseID(courseId);
-                    realm.beginTransaction();
-                    realm.where(CourseSection.class)
-                            .equalTo("id", section.getId())
-                            .findAll().deleteAllFromRealm();
-                    realm.copyToRealmOrUpdate(section);
-                    realm.commitTransaction();
                     // newPartsInSections.add(trimmedSection);
                 }
             }
+
+            realm.beginTransaction();
+            realm.where(CourseSection.class).equalTo("courseID",courseId).findAll().deleteAllFromRealm();
+            realm.copyToRealmOrUpdate(sectionList);
+            realm.commitTransaction();
         }
         realm.close();
         return newPartsInSections;
