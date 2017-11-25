@@ -27,6 +27,12 @@ public class MyApplication extends Application {
                 .build();
     }
 
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        if (!realm.isClosed()) realm.close();
+    }
+
     public Realm getRealmInstance() {
         return realm;
     }
