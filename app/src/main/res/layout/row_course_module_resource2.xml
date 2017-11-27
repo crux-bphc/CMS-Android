@@ -40,10 +40,10 @@
         android:orientation="vertical">
 
         <View
-            android:background="@android:color/darker_gray"
             android:id="@+id/topDivider"
             android:layout_width="match_parent"
-            android:layout_height="1dp" />
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray" />
 
         <LinearLayout
             android:id="@+id/clickWrapper"
@@ -65,8 +65,8 @@
                 android:layout_weight="1"
                 android:paddingBottom="8dp"
                 android:paddingTop="8dp"
-                android:textColor="#000"
                 android:text="Assignment 1"
+                android:textColor="#000"
                 android:textSize="16sp" />
 
             <ImageView
@@ -111,8 +111,8 @@
         <View
             android:id="@+id/bottomDivider"
             android:layout_width="match_parent"
-            android:background="@android:color/darker_gray"
-            android:layout_height="1dp" />
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray" />
     </LinearLayout>
 </RelativeLayout>
 
