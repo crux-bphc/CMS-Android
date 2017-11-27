@@ -3,7 +3,6 @@ package helper;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -83,11 +82,11 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     class ViewHolderResource extends RecyclerView.ViewHolder {
         TextView name, description;
-        ImageView modIcon, more;
+        ImageView modIcon, more, downloadIcon;
         int downloaded = -1;
         ProgressBar progressBar;
         View iconWrapper, topDivider, bottomDivider;
-        View clickWrapper, textWrapper,downloadIcon;
+        View clickWrapper, textWrapper;
 
         ViewHolderResource(View itemView) {
             super(itemView);
@@ -101,72 +100,66 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             description = (TextView) itemView.findViewById(R.id.description);
             clickWrapper = itemView.findViewById(R.id.clickWrapper);
             textWrapper = itemView.findViewById(R.id.textWrapper);
-            downloadIcon=itemView.findViewById(R.id.downloadButton);
+            downloadIcon = itemView.findViewById(R.id.downloadButton);
             description.setMovementMethod(LinkMovementMethod.getInstance());
             description.setLinksClickable(true);
 
-            clickWrapper.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (clickListener != null) {
-                        clickListener.onClick(modules.get(getLayoutPosition()), getLayoutPosition());
-                    }
-                    markAsRead(modules.get(getLayoutPosition()), getLayoutPosition());
+            downloadIcon.setOnClickListener(view -> {
+                if (clickListener != null) {
+                    clickListener.onClick(modules.get(getLayoutPosition()), getLayoutPosition());
                 }
+                markAsRead(modules.get(getLayoutPosition()), getLayoutPosition());
             });
-            more.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    final Module module = modules.get(getLayoutPosition());
-                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
-                    alertDialog.setTitle(module.getName());
-                    final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1);
-                    if (downloaded == 1) {
-                        arrayAdapter.add("View");
-                        arrayAdapter.add("Re-Download");
-                        arrayAdapter.add("Share");
-                    } else {
-                        arrayAdapter.add("Download");
-                    }
-
-                    alertDialog.setNegativeButton("Cancel", null);
-                    alertDialog.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            if (downloaded == 1) {
-                                switch (i) {
-                                    case 0:
-                                        if (module.getContents() != null)
-                                            for (Content content : module.getContents()) {
-                                                mFileManager.openFile(content.getFilename(), courseName);
-
-                                            }
-                                        break;
-                                    case 1:
-                                        if (!module.isDownloadable()) {
-                                            return;
-                                        }
-
-                                        for (Content content : module.getContents()) {
-                                            Toast.makeText(context, "Downloading file - " + content.getFilename(), Toast.LENGTH_SHORT).show();
-                                            mFileManager.downloadFile(content, module, courseName);
-                                        }
-                                        break;
-                                    case 2:
-                                        if (module.getContents() != null)
-                                            for (Content content : module.getContents()) {
-                                                mFileManager.shareFile(content.getFilename(), courseName);
-                                            }
-
-                                }
-                            } else {
-                                mFileManager.downloadFile(module.getContents().get(0), module, courseName);
-                            }
-                        }
-                    });
-                    alertDialog.show();
-                    markAsRead(modules.get(getLayoutPosition()), getLayoutPosition());
+            more.setOnClickListener(v -> {
+                final Module module = modules.get(getLayoutPosition());
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+                alertDialog.setTitle(module.getName());
+                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1);
+                if (downloaded == 1) {
+                    arrayAdapter.add("View");
+                    arrayAdapter.add("Re-Download");
+                    arrayAdapter.add("Share");
+                } else {
+                    arrayAdapter.add("Download");
                 }
+
+                alertDialog.setNegativeButton("Cancel", null);
+                alertDialog.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if (downloaded == 1) {
+                            switch (i) {
+                                case 0:
+                                    if (module.getContents() != null)
+                                        for (Content content : module.getContents()) {
+                                            mFileManager.openFile(content.getFilename(), courseName);
+
+                                        }
+                                    break;
+                                case 1:
+                                    if (!module.isDownloadable()) {
+                                        return;
+                                    }
+
+                                    for (Content content : module.getContents()) {
+                                        Toast.makeText(context, "Downloading file - " + content.getFilename(), Toast.LENGTH_SHORT).show();
+                                        mFileManager.downloadFile(content, module, courseName);
+                                    }
+                                    break;
+                                case 2:
+                                    if (module.getContents() != null)
+                                        for (Content content : module.getContents()) {
+                                            mFileManager.shareFile(content.getFilename(), courseName);
+                                        }
+
+                            }
+                        } else {
+                            mFileManager.downloadFile(module.getContents().get(0), module, courseName);
+                        }
+                    }
+                });
+                alertDialog.show();
+                markAsRead(modules.get(getLayoutPosition()), getLayoutPosition());
             });
             progressBar = (ProgressBar) itemView.findViewById(R.id.progressBar);
         }
@@ -201,7 +194,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             if (!module.isDownloadable()) {
 //                download.setVisibility(View.GONE);
 //                name.setTextColor(Color.parseColor("#000000"));
-                downloadIcon.setVisibility(View.GONE);
+                downloadIcon.setImageResource(R.drawable.eye);
             } else {
 //                download.setVisibility(View.VISIBLE);
                 List<Content> contents = module.getContents();
@@ -215,11 +208,11 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if (downloaded == 1) {
 //                    download.setImageResource(R.drawable.eye);
 //                    name.setTextColor(Color.parseColor("#4CAF50"));
-                    downloadIcon.setVisibility(View.GONE);
+                    downloadIcon.setImageResource(R.drawable.eye);
                 } else {
 //                    download.setImageResource(R.drawable.content_save);
 //                    name.setTextColor(Color.parseColor("#000000"));
-                    downloadIcon.setVisibility(View.VISIBLE);
+                    downloadIcon.setImageResource(R.drawable.download);
                 }
             }
             progressBar.setVisibility(View.GONE);

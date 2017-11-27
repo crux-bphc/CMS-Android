@@ -49,7 +49,6 @@
             android:id="@+id/clickWrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
             android:clipChildren="false"
             android:orientation="horizontal"
             android:paddingBottom="6dp"
@@ -66,19 +65,20 @@
                 android:layout_weight="1"
                 android:paddingBottom="8dp"
                 android:paddingTop="8dp"
-                android:textColor="#4CAF50"
+                android:textColor="#000"
                 android:text="Assignment 1"
-                android:textSize="18sp" />
+                android:textSize="16sp" />
 
             <ImageView
                 android:id="@+id/downloadButton"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_gravity="center_vertical"
                 android:background="?android:selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
-                android:padding="10dp"
+                android:padding="14dp"
+                android:tint="#000"
                 app:srcCompat="@drawable/download" />
 
             <ImageView
@@ -91,7 +91,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:padding="10dp"
-                android:tint="#000"
+                android:tint="#808080"
                 app:srcCompat="@drawable/dots_horizontal" />
 
         </LinearLayout>

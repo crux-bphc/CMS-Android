@@ -165,7 +165,7 @@ public class NotificationService extends JobService {
                     new NotificationCompat.Builder(this)
                             .setSmallIcon(R.mipmap.ic_launcher)
                             .setContentTitle("New Content in " + Html.fromHtml(notificationSet.getTitle()))
-                            .setContentText(notificationSet.getContentText())
+                            .setContentText(Html.fromHtml( notificationSet.getContentText()))
                             .setGroup(notificationSet.getGroupKey())
                             .setAutoCancel(true)
                             .setContentIntent(pendingIntent);
