@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -79,6 +80,21 @@ public class LoginActivity extends AppCompatActivity {
                 return false;
             }
         });
+        //for showing or hiding the password
+        final ImageView iv=(ImageView)findViewById(R.id.show_password);
+        iv.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mPasswordView.getInputType()==129) {
+                    mPasswordView.setInputType(InputType.TYPE_CLASS_TEXT);
+                    iv.setImageResource(R.drawable.eye_off);
+                }
+                else if(mPasswordView.getInputType()==InputType.TYPE_CLASS_TEXT){
+                    mPasswordView.setInputType(129);
+                    iv.setImageResource(R.drawable.eye);
+                }
+            }
+        });
         courseRequests = new CourseRequestHandler(this);
         courseDataHandler = new CourseDataHandler(this);
 
@@ -124,7 +140,6 @@ public class LoginActivity extends AppCompatActivity {
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
-
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
