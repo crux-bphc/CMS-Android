@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity
 
     public void logout() {
         UserUtils.logout(this);
-        startActivity(new Intent(this, LoginActivity.class));
+        startActivity(new Intent(this, TokenActivity.class));
         finish();
     }
 

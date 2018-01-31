@@ -41,6 +41,7 @@ import helper.CourseDownloader;
 import helper.CourseRequestHandler;
 import helper.MoodleServices;
 import helper.UserAccount;
+import helper.UserUtils;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -116,10 +117,10 @@ public class MyCoursesFragment extends Fragment {
         courses = new ArrayList<>();
         courses = courseDataHandler.getCourseList();
 
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
-        mFilter = (EditText) view.findViewById(R.id.filterET);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
-        mFilterIcon = (ImageView) view.findViewById(R.id.filterIcon);
+        mRecyclerView = view.findViewById(R.id.recyclerView);
+        mFilter = view.findViewById(R.id.filterET);
+        mSwipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+        mFilterIcon = view.findViewById(R.id.filterIcon);
 
         mAdapter = new MyAdapter(getActivity(), courses);
         mAdapter.setClickListener(new ClickListener() {
@@ -252,13 +253,10 @@ public class MyCoursesFragment extends Fragment {
             empty.setVisibility(View.GONE);
         }
     }
+
     CourseDataHandler courseDataHandler;
     private void makeRequest() {
-
         CourseRequestHandler courseRequestHandler=new CourseRequestHandler(getActivity());
-
-
-
         courseRequestHandler.getCourseList(new CourseRequestHandler.CallBack<List<Course>>() {
             @Override
             public void onResponse(List<Course> courseList) {
@@ -272,11 +270,18 @@ public class MyCoursesFragment extends Fragment {
 
             @Override
             public void onFailure(String message,Throwable t) {
-                Toast.makeText(getActivity(), "Unable to connect to server!", Toast.LENGTH_SHORT).show();
                 mSwipeRefreshLayout.setRefreshing(false);
+                if (t.getMessage().contains("Invalid token")) {
+                    Toast.makeText(
+                            getActivity(),
+                            "Invalid token! Probably your token was reset.",
+                            Toast.LENGTH_SHORT).show();
+                    UserUtils.logoutAndClearBackStack(getActivity());
+                    return;
+                }
+                Toast.makeText(getActivity(), "Unable to connect to server!", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
     private void filterMyCourses(String searchedText) {

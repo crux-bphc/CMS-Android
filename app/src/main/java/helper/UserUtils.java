@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import app.MyApplication;
 import crux.bphc.cms.LoginActivity;
+import crux.bphc.cms.TokenActivity;
 import io.realm.Realm;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -28,7 +29,6 @@ public class UserUtils {
         realm.beginTransaction();
         realm.deleteAll();
         realm.commitTransaction();
-        realm.close();
         UserAccount userAccount = new UserAccount(context);
         userAccount.logout();
     }
@@ -69,12 +69,12 @@ public class UserUtils {
         }
     }
 
-    private static void logoutAndClearBackStack(Context context) {
+    public static void logoutAndClearBackStack(Context context) {
 
         logout(context);
         if (context instanceof Activity) {
             ((Activity) context).finishAffinity();
-            context.startActivity(new Intent(context, LoginActivity.class));
+            context.startActivity(new Intent(context, TokenActivity.class));
             Toast.makeText(context, "Please re-login to continue.", Toast.LENGTH_SHORT).show();
         }
     }

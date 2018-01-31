@@ -34,7 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:background="@drawable/rounded_border_edittext"
+            android:background="@drawable/rounded_border_edit_text"
             android:hint="@string/prompt_email"
             android:inputType="textEmailAddress"
             android:maxLines="1"
@@ -48,7 +48,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:background="@drawable/rounded_border_edittext">
+            android:background="@drawable/rounded_border_edit_text">
 
             <EditText
                 android:id="@+id/password"
@@ -102,7 +102,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_margin="16dp"
-        android:text="Powered By CRUx"
+        android:text="Powered By Crux"
         android:textColor="#fff"
         android:textSize="18sp"
         android:textStyle="bold" />

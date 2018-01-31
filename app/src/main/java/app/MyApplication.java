@@ -6,6 +6,7 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
 public class MyApplication extends Application {
+
     private static MyApplication mInstance;
     private Realm realm;
 
@@ -21,7 +22,7 @@ public class MyApplication extends Application {
         realm = Realm.getInstance(getRealmConfiguration());
     }
 
-    public static RealmConfiguration getRealmConfiguration(){
+    public static RealmConfiguration getRealmConfiguration() {
         return new RealmConfiguration.Builder()
                 .deleteRealmIfMigrationNeeded()
                 .build();

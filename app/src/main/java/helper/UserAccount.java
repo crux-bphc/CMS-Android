@@ -40,7 +40,7 @@ public class UserAccount {
         editor.putString("token", userDetail.getToken());
         editor.putString("firstname", userDetail.getFirstname());
         editor.putString("lastname", userDetail.getLastname());
-        editor.putString("userpictureurl", userDetail.getUserpictureurl());
+        editor.putString("userpictureurl", userDetail.getUserPictureUrl());
         editor.putInt("userid", userDetail.getUserid());
         editor.putString("password", userDetail.getPassword());
         editor.commit();
