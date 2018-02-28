@@ -105,7 +105,7 @@ public class LoginActivity extends AppCompatActivity {
         ImageView bitsLogo, background;
         background = (ImageView) findViewById(R.id.background);
         bitsLogo = (ImageView) findViewById(R.id.bitsLogo);
-        Picasso.with(this).load(R.drawable.bitslogo).into(bitsLogo);
+        Picasso.with(this).load(R.drawable.bits_logo).into(bitsLogo);
         Picasso.with(this).load(R.drawable.intro_bg).into(background);
     }
     //for hiding/showing password
@@ -194,8 +194,6 @@ public class LoginActivity extends AppCompatActivity {
         else
             progressDialog.hide();
         progressDialog.setMessage(message);
-        // mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-
     }
 
     @Override
@@ -272,7 +270,7 @@ public class LoginActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public static interface MoodleLogin {
+    public interface MoodleLogin {
         @GET("login/token.php?service=moodle_mobile_app")
         Call<LoginDetail> login(@Query("username") String username, @Query("password") String password);
 

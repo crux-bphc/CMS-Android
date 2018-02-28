@@ -1,17 +1,21 @@
 package helper;
 
+import com.google.gson.annotations.SerializedName;
+
 public class UserDetail {
     public String errorcode;
-    private String username, firstname, lastname, userpictureurl;
+    private String username, firstname, lastname;
+    @SerializedName("userpictureurl")
+    private String userPictureUrl;
     private int userid;
     private String token;
     private String password;
 
-    public UserDetail(String username, String firstname, String lastname, String userpictureurl, String errorcode, int userid) {
+    public UserDetail(String username, String firstname, String lastname, String userPictureUrl, String errorcode, int userid) {
         this.username = username;
         this.firstname = firstname;
         this.lastname = lastname;
-        this.userpictureurl = userpictureurl;
+        this.userPictureUrl = userPictureUrl;
         this.errorcode = errorcode;
         this.userid = userid;
     }
@@ -40,8 +44,8 @@ public class UserDetail {
         return lastname;
     }
 
-    public String getUserpictureurl() {
-        return userpictureurl;
+    public String getUserPictureUrl() {
+        return userPictureUrl;
     }
 
     public int getUserid() {

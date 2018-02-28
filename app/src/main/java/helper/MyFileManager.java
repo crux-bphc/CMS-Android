@@ -70,7 +70,11 @@ public class MyFileManager {
     }
 
     public static void showInWebsite(Activity activity, String url) {
-        activity.startActivity(WebSiteActivity.getIntent(activity, "CMS", url));
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(url));
+        activity.startActivity(intent);
+
+        //activity.startActivity(WebSiteActivity.getIntent(activity, "CMS", url));
 
         /*CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
         CustomTabsIntent customTabsIntent = builder.build();
