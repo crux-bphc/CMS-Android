@@ -2,12 +2,18 @@ package helper;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -15,8 +21,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import set.Content;
 import set.Course;
 import set.CourseSection;
+import set.Module;
 
 import static app.Constants.API_URL;
 
@@ -120,7 +128,8 @@ public class CourseRequestHandler {
             if (response.code() != 200) {
                 return null;
             }
-            return (List<CourseSection>) response.body();
+            List<CourseSection> resolvedSameNames = resolve(response.body());
+            return resolvedSameNames;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -133,7 +142,7 @@ public class CourseRequestHandler {
         courseCall.enqueue(new Callback<List<CourseSection>>() {
             @Override
             public void onResponse(Call<List<CourseSection>> call, Response<List<CourseSection>> response) {
-                List<CourseSection> sectionList = response.body();
+                List<CourseSection> sectionList = resolve(response.body());
                 if (callBack != null) {
                     callBack.onResponse(sectionList);
                 }
@@ -148,6 +157,49 @@ public class CourseRequestHandler {
         });
     }
 
+
+    private List<CourseSection> resolve(Object response){
+        List<CourseSection> courseSections = (List<CourseSection>) response;
+        List<Content> contents = new ArrayList<>();
+        for(CourseSection courseSection : courseSections){
+            for (Module module : courseSection.getModules()){
+                if(module.getContents()!=null){
+                    contents.addAll(module.getContents());
+                }
+            }
+        }
+
+        Set<Content> set = new HashSet<>();
+        for(int i =0; i<contents.size(); i++){
+            if(!set.add(contents.get(i))){
+                changeName(contents.get(i));
+                set.add(contents.get(i));
+            }
+        }
+
+        return courseSections;
+    }
+
+    private void changeName(Content content){
+        String fileName = content.getFilename();
+        String newFileName = fileName;
+        if(!(fileName.lastIndexOf('.')==-1 && fileName.lastIndexOf(')')==-1)){
+
+            int lastIndex = fileName.lastIndexOf('(');
+            if(lastIndex == -1){
+                newFileName = fileName.substring(0, fileName.lastIndexOf('.')) + "(1)" + fileName.substring(fileName.lastIndexOf('.'));
+            }else {
+                String fileNum = fileName.substring(lastIndex+1, fileName.lastIndexOf(')'));
+                try{
+                    int count = Integer.parseInt(fileNum);
+                    newFileName = fileName.substring(0,lastIndex+1) + ++count + fileName.substring(fileName.lastIndexOf(')'));
+                }catch (Exception e){
+                    newFileName = fileName;
+                }
+            }
+        }
+        content.setFilename(newFileName);
+    }
 
     public interface CallBack<T> {
 
