@@ -24,7 +24,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import app.Constants;
-import crux.bphc.cms.LoginActivity;
+import crux.bphc.cms.CourseDetailActivity;
+import crux.bphc.cms.MainActivity;
 import crux.bphc.cms.R;
 import helper.CourseDataHandler;
 import helper.CourseRequestHandler;
@@ -86,7 +87,7 @@ public class NotificationService extends JobService {
     }
 
     private void runAsForeground() {
-        Intent notificationIntent = new Intent(this, LoginActivity.class);
+        Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
                 notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -157,9 +158,9 @@ public class NotificationService extends JobService {
 
         if (userAccount.isNotificationsEnabled()) {
 
-            Intent intent = new Intent(this, LoginActivity.class);
+            Intent intent = new Intent(this, CourseDetailActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            intent.putExtra("path", Uri.parse(Constants.getCourseURL(notificationSet.getCourseID())));
+            intent.putExtra("id", notificationSet.getCourseID());
             PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(this)
@@ -210,9 +211,9 @@ public class NotificationService extends JobService {
                 }
                 inbox.setSummaryText((arrayLines.size()) + " new content added");
 
-                Intent intent = new Intent(this, LoginActivity.class);
+                Intent intent = new Intent(this, CourseDetailActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                intent.putExtra("path", Uri.parse(Constants.getCourseURL(notificationSet.getCourseID())));
+                intent.putExtra("id", notificationSet.getCourseID());
                 PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
                 Bundle bundle = new Bundle();
