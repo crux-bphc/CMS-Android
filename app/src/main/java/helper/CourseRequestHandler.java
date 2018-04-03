@@ -3,8 +3,10 @@ package helper;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
@@ -29,6 +31,7 @@ public class CourseRequestHandler {
 
     public static final String INVALID_TOKEN = "Invalid token";
     public static final String NETWORK_ERROR = "Network error";
+    public static final String ACCESS_EXCEPTION = "accessexception";
     UserAccount userAccount;
     Context context;
     MoodleServices moodleServices;
@@ -53,10 +56,19 @@ public class CourseRequestHandler {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
+                    if (response.body() == null) {
+                        return;
+                    }
                     String responseString = response.body().string();
                     if (responseString.contains(INVALID_TOKEN)) {
                         if (callBack != null) {
-                            callBack.onFailure(INVALID_TOKEN,new Throwable(INVALID_TOKEN));
+                            callBack.onFailure(INVALID_TOKEN, new Throwable(INVALID_TOKEN));
+                        }
+                        return;
+                    }
+                    if (responseString.contains(ACCESS_EXCEPTION)) {
+                        if (callBack != null) {
+                            callBack.onFailure(ACCESS_EXCEPTION, new Throwable(ACCESS_EXCEPTION));
                         }
                         return;
                     }
@@ -76,7 +88,11 @@ public class CourseRequestHandler {
                 } catch (IOException e) {
                     e.printStackTrace();
                     if (callBack != null) {
-                        callBack.onFailure(e.getMessage(),new Throwable(e.getMessage()));
+                        callBack.onFailure(e.getMessage(), new Throwable(e.getMessage()));
+                    }
+                } catch (JsonSyntaxException jse) {
+                    if (callBack != null) {
+                        callBack.onFailure(jse.getMessage(), new Throwable(jse.getMessage()));
                     }
                 }
             }
@@ -84,7 +100,7 @@ public class CourseRequestHandler {
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 if (callBack != null) {
-                    callBack.onFailure(NETWORK_ERROR,t);
+                    callBack.onFailure(NETWORK_ERROR, t);
                 }
             }
         });
@@ -94,7 +110,7 @@ public class CourseRequestHandler {
     /**
      * Fetches all user enrolled courses from the Moodle server
      */
-    public List<Course> getCourseList() {
+    public List<Course> getCourseList(Context context) {
 
         Call<ResponseBody> courseListCall = moodleServices.getCourses(userAccount.getToken(), userAccount.getUserID());
 
@@ -113,6 +129,11 @@ public class CourseRequestHandler {
                     }.getType());
 
         } catch (IOException e) {
+            if (context != null)
+                Toast.makeText(context, "Unable to connect to the Internet", Toast.LENGTH_SHORT).show();
+        } catch (JsonSyntaxException jse) {
+            if (context != null)
+                Toast.makeText(context, "Malformed json. Maybe your token was reset!", Toast.LENGTH_SHORT).show();
         }
         return null;
     }
@@ -147,7 +168,7 @@ public class CourseRequestHandler {
             @Override
             public void onFailure(Call<List<CourseSection>> call, Throwable t) {
                 if (callBack != null) {
-                    callBack.onFailure(t.getMessage(),t);
+                    callBack.onFailure(t.getMessage(), t);
                 }
             }
         });

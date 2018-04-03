@@ -178,7 +178,7 @@ public class NotificationService extends JobService {
         mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         // fetches list of enrolled courses from server
-        List<Course> courseList = courseRequestHandler.getCourseList();
+        List<Course> courseList = courseRequestHandler.getCourseList((Context) null);
 
         if (courseList == null) {
             UserUtils.checkTokenValidity(this);
