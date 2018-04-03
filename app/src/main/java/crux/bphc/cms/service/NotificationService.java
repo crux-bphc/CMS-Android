@@ -108,6 +108,8 @@ public class NotificationService extends JobService {
             if (jobScheduler != null) {
                 jobScheduler.cancelAll();
             }
+            mJobRunning = false;
+            jobFinished(job, false);
             return;
         }
 
