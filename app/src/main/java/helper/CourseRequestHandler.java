@@ -1,8 +1,8 @@
 package helper;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -10,7 +10,10 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -18,8 +21,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import set.Content;
 import set.Course;
 import set.CourseSection;
+import set.Module;
 
 import static app.Constants.API_URL;
 
@@ -142,11 +147,12 @@ public class CourseRequestHandler {
 
         Call<List<CourseSection>> courseCall = moodleServices.getCourseContent(userAccount.getToken(), course.getId());
         try {
-            Response response = courseCall.execute();
+            Response<List<CourseSection>> response = courseCall.execute();
             if (response.code() != 200) {
                 return null;
             }
-            return (List<CourseSection>) response.body();
+            List<CourseSection> responseCourseSections = response.body();
+            return resolve(responseCourseSections);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -158,8 +164,9 @@ public class CourseRequestHandler {
         Call<List<CourseSection>> courseCall = moodleServices.getCourseContent(userAccount.getToken(), courseId);
         courseCall.enqueue(new Callback<List<CourseSection>>() {
             @Override
-            public void onResponse(Call<List<CourseSection>> call, Response<List<CourseSection>> response) {
-                List<CourseSection> sectionList = response.body();
+            public void onResponse(@NonNull Call<List<CourseSection>> call, @NonNull Response<List<CourseSection>> response) {
+                List<CourseSection> responseCourseSections = response.body();
+                List<CourseSection> sectionList = resolve(responseCourseSections);
                 if (callBack != null) {
                     callBack.onResponse(sectionList);
                 }
@@ -174,6 +181,53 @@ public class CourseRequestHandler {
         });
     }
 
+    //This method resolves the names of files with same names
+    private List<CourseSection> resolve(List<CourseSection> courseSections) {
+        List<Content> contents = new ArrayList<>();
+        for(CourseSection courseSection : courseSections) {
+            for (Module module : courseSection.getModules()) {
+                List<Content> currContents = module.getContents();
+                if(currContents!=null) {
+                    contents.addAll(currContents);
+                }
+            }
+        }
+
+        Set<Content> set = new TreeSet<>((c1, c2) -> c1.getFilename().compareTo(c2.getFilename()));
+        for(Content c : contents) {
+            while(!set.add(c)) {
+                changeName(c);
+            }
+        }
+
+        return courseSections;
+    }
+
+    private void changeName(Content content) {
+        String fileName = content.getFilename();
+        String newFileName = fileName;
+        //Makes sure that the string fileName contains an extension
+        if(!(fileName.lastIndexOf('.') == -1)) {
+            int lastIndex = fileName.lastIndexOf('(');
+            //if '(' is not there in the fileName adds '(1)' else increments the value in the brackets.
+            if(lastIndex == -1) {
+                newFileName = fileName.substring(0, fileName.lastIndexOf('.')) +
+                        "(1)" +
+                        fileName.substring(fileName.lastIndexOf('.'));
+            }else {
+                String fileNum = fileName.substring(lastIndex + 1, fileName.lastIndexOf(')'));
+                try {
+                    int count = Integer.parseInt(fileNum);
+                    newFileName = fileName.substring(0,lastIndex + 1) +
+                            ++count +
+                            fileName.substring(fileName.lastIndexOf(')'));
+                }catch (NumberFormatException e) {
+                    newFileName = fileName;
+                }
+            }
+        }
+        content.setFilename(newFileName);
+    }
 
     public interface CallBack<T> {
 
