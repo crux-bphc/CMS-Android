@@ -171,9 +171,8 @@ public class CourseRequestHandler {
 
         Set<Content> set = new HashSet<>();
         for(int i =0; i<contents.size(); i++){
-            if(!set.add(contents.get(i))){
+            while(!set.add(contents.get(i))){
                 changeName(contents.get(i));
-                set.add(contents.get(i));
             }
         }
 
