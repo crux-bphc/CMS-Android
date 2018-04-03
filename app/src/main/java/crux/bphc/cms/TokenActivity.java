@@ -102,6 +102,15 @@ public class TokenActivity extends AppCompatActivity {
                     return;
                 }
 
+                if (responseString.contains("accessexception")) {
+                    Toast.makeText(
+                            TokenActivity.this,
+                            "Please provide the Moodle Mobile web service Token",
+                            Toast.LENGTH_SHORT).show();
+                    showProgress(false, "");
+                    return;
+                }
+
                 if (responseString.length() > 0) {
                     UserDetail userDetail = new Gson().fromJson(responseString, UserDetail.class);
                     userDetail.setToken(token);
@@ -178,7 +187,7 @@ public class TokenActivity extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Void... voids) {
             publishProgress(1);
-            List<Course> courseList = courseRequests.getCourseList();
+            List<Course> courseList = courseRequests.getCourseList(context);
             if (courseList == null) {
                 UserUtils.checkTokenValidity(context);
                 return null;

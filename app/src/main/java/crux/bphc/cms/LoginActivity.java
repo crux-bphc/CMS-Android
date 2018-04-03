@@ -230,7 +230,7 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Void... voids) {
             publishProgress(1);
-            List<Course> courseList = courseRequests.getCourseList();
+            List<Course> courseList = courseRequests.getCourseList(mContext);
             if (courseList == null) {
                 UserUtils.checkTokenValidity(mContext);
                 return null;
