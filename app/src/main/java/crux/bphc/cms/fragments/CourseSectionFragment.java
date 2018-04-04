@@ -120,7 +120,6 @@ public class CourseSectionFragment extends Fragment {
             @Override
             public void onDownloadCompleted(String fileName) {
                 reloadSections();
-                mFileManager.openFile(fileName, courseName);
             }
         });
 
