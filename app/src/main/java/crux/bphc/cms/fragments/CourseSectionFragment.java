@@ -1,6 +1,7 @@
 package crux.bphc.cms.fragments;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -8,14 +9,18 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,6 +60,7 @@ public class CourseSectionFragment extends Fragment {
     private LinearLayout linearLayout;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private String courseName;
+    private int maxDescriptionLines = 3;
 
     public static CourseSectionFragment newInstance(String token, int courseId) {
         CourseSectionFragment courseSectionFragment = new CourseSectionFragment();
@@ -238,6 +244,8 @@ public class CourseSectionFragment extends Fragment {
             textView.setText(htmlDescription.subSequence(0, descriptionWithOutExtraSpace.length()));
             textView.setMovementMethod(LinkMovementMethod.getInstance());
             textView.setLinksClickable(true);
+            textView.setTag(textView.getText());
+            makeTextViewResizable(textView, maxDescriptionLines, "Show More", true);
         }
         RecyclerView recyclerView = v.findViewById(R.id.recyclerView);
 
@@ -282,6 +290,79 @@ public class CourseSectionFragment extends Fragment {
             start = end + 1;
         }
         return descriptionWithOutExtraSpace;
+
+    }
+
+    public  void makeTextViewResizable(final TextView description, final int maxLine, final String expandText, final boolean viewMore) {
+
+        if (description.getTag() == null) {
+            description.setTag(description.getText());
+        }
+        ViewTreeObserver vto = description.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+
+
+            @Override
+            public void onGlobalLayout() {
+                String text;
+                int lineEndIndex;
+                ViewTreeObserver obs = description.getViewTreeObserver();
+                obs.removeOnGlobalLayoutListener(this);
+                if (maxLine == 0) {
+                    text = expandText;
+                } else if (maxLine>0 && description.getLineCount() > maxLine) {
+                    lineEndIndex = description.getLayout().getLineEnd(maxLine - 1);
+                    text = description.getText().subSequence(0, lineEndIndex) + "\n" + expandText;
+                } else if(description.getLineCount() <= maxLine) {
+                    text = description.getText().toString();
+                } else {
+                    lineEndIndex = description.getLayout().getLineEnd(description.getLayout().getLineCount() - 1);
+                    text = description.getText().subSequence(0, lineEndIndex) + "\n" + expandText;
+                }
+                description.setText(text);
+                description.setMovementMethod(LinkMovementMethod.getInstance());
+                description.setText(
+                        addClickablePartTextViewResizable(description.getText().toString(), description, expandText,
+                                viewMore), TextView.BufferType.SPANNABLE);
+            }
+        });
+
+    }
+
+    private SpannableStringBuilder addClickablePartTextViewResizable(
+            final String spannedString, final TextView description, final String spanableText, final boolean viewMore) {
+
+        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(spannedString);
+
+        if (spannedString.contains(spanableText)) {
+            spannableStringBuilder.setSpan(new ClickableSpan() {
+
+                @Override
+                public void onClick(View widget) {
+
+                    description.setLayoutParams(description.getLayoutParams());
+                    description.setText(description.getTag().toString(), TextView.BufferType.SPANNABLE);
+                    description.invalidate();
+                    if (viewMore) {
+                        makeTextViewResizable(description, -1, "Show Less", false);
+                    } else {
+                        makeTextViewResizable(description, maxDescriptionLines, "Show More", true);
+                    }
+
+                }
+
+                @Override
+                public void updateDrawState(TextPaint textpaint) {
+                    super.updateDrawState(textpaint);
+                    textpaint.setColor(getResources().getColor(R.color.colorAccent));
+                    textpaint.setUnderlineText(false);
+                    textpaint.setFakeBoldText(true);
+                }
+            }, spannedString.indexOf(spanableText), spannedString.indexOf(spanableText) + spanableText.length(), 0);
+
+        }
+        description.setHighlightColor(Color.TRANSPARENT);
+        return spannableStringBuilder;
 
     }
 
