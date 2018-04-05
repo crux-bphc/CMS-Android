@@ -108,10 +108,11 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if (clickListener != null) {
                     clickListener.onClick(modules.get(getLayoutPosition()), getLayoutPosition());
                 }
-                markAsRead(modules.get(getLayoutPosition()), getLayoutPosition());
+                markAsReadandUnread(modules.get(getLayoutPosition()), getLayoutPosition(),false);
             });
             more.setOnClickListener(v -> {
                 final Module module = modules.get(getLayoutPosition());
+                final int position = getLayoutPosition();
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
                 alertDialog.setTitle(module.getName());
                 final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1);
@@ -119,8 +120,10 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     arrayAdapter.add("View");
                     arrayAdapter.add("Re-Download");
                     arrayAdapter.add("Share");
+                    arrayAdapter.add("Mark as Unread");
                 } else {
                     arrayAdapter.add("Download");
+                    arrayAdapter.add("Mark as Unread");
                 }
 
                 alertDialog.setNegativeButton("Cancel", null);
@@ -151,22 +154,32 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                         for (Content content : module.getContents()) {
                                             mFileManager.shareFile(content.getFilename(), courseName);
                                         }
+                                        break;
+                                case 3:
+                                    markAsReadandUnread(module,position,true);
+
 
                             }
                         } else {
-                            mFileManager.downloadFile(module.getContents().get(0), module, courseName);
+                            switch (i) {
+                                case 0:
+                                    mFileManager.downloadFile(module.getContents().get(0), module, courseName);
+                                case 1:
+                                    markAsReadandUnread(module,position,true);
+                            }
+
                         }
                     }
                 });
                 alertDialog.show();
-                markAsRead(modules.get(getLayoutPosition()), getLayoutPosition());
+                markAsReadandUnread(modules.get(getLayoutPosition()), getLayoutPosition(),false);
             });
             progressBar = (ProgressBar) itemView.findViewById(R.id.progressBar);
         }
 
-        private void markAsRead(Module module, int position) {
-            courseDataHandler.markAsRead(module.getId());
-            modules.get(position).setNewContent(false);
+        private void markAsReadandUnread(Module module, int position, boolean isNewContent) {
+            courseDataHandler.markAsReadandUnread(module.getId(),isNewContent);
+            modules.get(position).setNewContent(isNewContent);
             notifyItemChanged(position);
         }
 

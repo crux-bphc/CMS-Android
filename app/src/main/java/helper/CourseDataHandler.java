@@ -220,17 +220,18 @@ public class CourseDataHandler {
         for(CourseSection courseSection:courseSections){
             if(courseSection.getModules()!=null){
                 for(Module module:courseSection.getModules()){
-                    markAsRead(module.getId());
+                    markAsReadandUnread(module.getId(),false);
                 }
             }
         }
     }
 
-    public void markAsRead(int moduleId) {
+    public void markAsReadandUnread(int moduleId, boolean isNewContent) {
         Realm realm = Realm.getInstance(MyApplication.getRealmConfiguration());
         realm.beginTransaction();
-        realm.where(Module.class).equalTo("id",moduleId).findFirst().setNewContent(false);
+        realm.where(Module.class).equalTo("id",moduleId).findFirst().setNewContent(isNewContent);
         realm.commitTransaction();
+        realm.close();
     }
 
     public int getUnreadCount(int id) {
