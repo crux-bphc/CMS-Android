@@ -85,7 +85,7 @@ public class CourseSectionFragment extends Fragment {
             courseId = args.getInt(COURSE_ID_KEY);
         }
         courseDataHandler = new CourseDataHandler(getActivity());
-        mFileManager = new MyFileManager(getActivity());
+        mFileManager = new MyFileManager(getActivity(),CourseDataHandler.getCourseName(courseId));
         mFileManager.registerDownloadReceiver();
         courseSections = new ArrayList<>();
         setHasOptionsMenu(true);

@@ -197,7 +197,8 @@ public class MyCoursesFragment extends Fragment {
                     return false;
                 course.setDownloadStatus(0);
                 mAdapter.notifyItemChanged(position);
-                final CourseDownloader courseDownloader = new CourseDownloader(getActivity());
+                final CourseDownloader courseDownloader = new CourseDownloader(getActivity(),
+                        CourseDataHandler.getCourseName(course.getId()));
                 courseDownloader.setDownloadCallback(new CourseDownloader.DownloadCallback() {
                     @Override
                     public void onCourseDataDownloaded() {
