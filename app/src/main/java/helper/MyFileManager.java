@@ -164,6 +164,21 @@ public class MyFileManager {
         return false;
     }
 
+    public boolean searchFile(String courseName, String fileName) {
+        //if courseName is empty check sb folders
+        if (fileList == null) {
+            reloadFileList(courseName);
+            if (fileList.size() == 0) {
+                return false;
+            }
+        }
+        if (fileList.contains(fileName)) {
+            Log.d("File found:", fileName);
+            return true;
+        }
+        return false;
+    }
+
     public void openFile(String filename, String courseName) {
         File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath(),
                 getFilePath(courseName, filename));
@@ -221,6 +236,15 @@ public class MyFileManager {
             }
         }
 
+    }
+
+    public void reloadFileList(String coureName){
+        fileList = new ArrayList<>();
+        File courseDirec = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
+                + File.separator + CMS + File.separator + coureName);
+        if (courseDirec.isDirectory()) {
+            fileList.addAll(Arrays.asList(courseDirec.list()));
+        }
     }
 
     public boolean onClickAction(Module module, String courseName) {

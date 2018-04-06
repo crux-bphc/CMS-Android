@@ -200,7 +200,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 List<Content> contents = module.getContents();
                 downloaded = 1;
                 for (Content content : contents) {
-                    if (!mFileManager.searchFile(content.getFilename())) {
+                    if (!mFileManager.searchFile(courseName, content.getFilename())) {
                         downloaded = 0;
                         break;
                     }
