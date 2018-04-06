@@ -4,6 +4,7 @@ package crux.bphc.cms.fragments;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -49,6 +50,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import set.Course;
+import set.CourseSection;
 
 import static android.content.Context.INPUT_METHOD_SERVICE;
 import static app.Constants.API_URL;
@@ -263,9 +265,7 @@ public class MyCoursesFragment extends Fragment {
                 courses.clear();
                 courses.addAll(courseList);
                 filterMyCourses(mSearchedText);
-                mSwipeRefreshLayout.setRefreshing(false);
-                courseDataHandler.setCourseList(courseList);
-                checkEmpty();
+                updateCourseContent(courses);
             }
 
             @Override
@@ -282,6 +282,40 @@ public class MyCoursesFragment extends Fragment {
                 Toast.makeText(getActivity(), "Unable to connect to server!", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void updateCourseContent (List<Course> courses) {
+        List<Course> newCourses = courseDataHandler.setCourseList(courses);
+        CourseRequestHandler courseRequestHandler = new CourseRequestHandler(getActivity());
+        for (Course course : courses) {
+            courseRequestHandler.getCourseData(course.getCourseId(),
+                    new CourseRequestHandler.CallBack<List<CourseSection>>() {
+                        @Override
+                        public void onResponse(List<CourseSection> responseObject) {
+                            int coursesUpdated = 0;
+                            List<CourseSection> newPartsInSections = courseDataHandler.setCourseData(course.getCourseId(), responseObject);
+                            if(!newCourses.contains(course) && newPartsInSections != responseObject) {
+                                if(newPartsInSections.size() > 0) {
+                                    coursesUpdated++;
+                                }
+                            }
+                            String message;
+                            if(coursesUpdated == 0)
+                                message = getString(R.string.upToDate);
+                            else
+                                message = getResources().getQuantityString(R.plurals.noOfCoursesUpdated, coursesUpdated, coursesUpdated);
+                            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                            mSwipeRefreshLayout.setRefreshing(false);
+                            checkEmpty();
+                        }
+
+                        @Override
+                        public void onFailure(String message, Throwable t) {
+                            mSwipeRefreshLayout.setRefreshing(false);
+                            Toast.makeText(getActivity(), "Unable to update", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
     }
 
     private void filterMyCourses(String searchedText) {
@@ -422,6 +456,7 @@ public class MyCoursesFragment extends Fragment {
         }
 
     }
+
 
 
 }

@@ -90,6 +90,13 @@
         <item>3</item>
     </string-array>
 
+    <plurals name="noOfCoursesUpdated">
+        <item quantity="one">%d Course updated</item>
+        <item quantity="other">%d Courses updated</item>
+    </plurals>
+
+    <string name="upToDate">Everything is up to date</string>
+
 
     <!-- Example settings for Notifications -->
     <string name="pref_header_notifications">Notifications</string>
