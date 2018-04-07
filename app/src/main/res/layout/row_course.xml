@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             >
 
-            <TextView
+            <helper.CustomTextView
                 android:id="@+id/courseName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -4,7 +4,6 @@ package crux.bphc.cms.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +15,7 @@ import com.squareup.picasso.Picasso;
 
 import app.MyApplication;
 import crux.bphc.cms.R;
+import helper.CustomTextView;
 import helper.MyFileManager;
 import io.realm.Realm;
 import set.forum.Attachment;
@@ -34,7 +34,7 @@ public class ForumFragment extends Fragment implements MyFileManager.Callback {
     private TextView mSubject;
     private TextView mUserName;
     private TextView mTimeModified;
-    private TextView mMessage;
+    private CustomTextView mMessage;
     private LinearLayout mAttachmentContainer;
 
     public ForumFragment() {
@@ -87,8 +87,8 @@ public class ForumFragment extends Fragment implements MyFileManager.Callback {
         mTimeModified = (TextView) view.findViewById(R.id.modified_time);
         mTimeModified.setText(SiteNewsFragment.formatDate(discussion.getTimemodified()));
 
-        mMessage = (TextView) view.findViewById(R.id.message);
-        mMessage.setText(Html.fromHtml(discussion.getMessage()));
+        mMessage = view.findViewById(R.id.message);
+        mMessage.setText(discussion.getMessage());
 
         mAttachmentContainer = (LinearLayout) view.findViewById(R.id.attachments);
         LayoutInflater inflater = LayoutInflater.from(getContext());
