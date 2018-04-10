@@ -1,9 +1,8 @@
 package helper;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
-import android.support.v7.app.AlertDialog;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
@@ -11,11 +10,9 @@ import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -24,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import crux.bphc.cms.R;
+import crux.bphc.cms.fragments.MoreOptionsFragment;
 import set.Content;
 import set.Module;
 
@@ -111,55 +109,9 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 markAsRead(modules.get(getLayoutPosition()), getLayoutPosition());
             });
             more.setOnClickListener(v -> {
-                final Module module = modules.get(getLayoutPosition());
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
-                alertDialog.setTitle(module.getName());
-                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1);
-                if (downloaded == 1) {
-                    arrayAdapter.add("View");
-                    arrayAdapter.add("Re-Download");
-                    arrayAdapter.add("Share");
-                } else {
-                    arrayAdapter.add("Download");
-                }
-
-                alertDialog.setNegativeButton("Cancel", null);
-                alertDialog.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        if (downloaded == 1) {
-                            switch (i) {
-                                case 0:
-                                    if (module.getContents() != null)
-                                        for (Content content : module.getContents()) {
-                                            mFileManager.openFile(content.getFilename(), courseName);
-
-                                        }
-                                    break;
-                                case 1:
-                                    if (!module.isDownloadable()) {
-                                        return;
-                                    }
-
-                                    for (Content content : module.getContents()) {
-                                        Toast.makeText(context, "Downloading file - " + content.getFilename(), Toast.LENGTH_SHORT).show();
-                                        mFileManager.downloadFile(content, module, courseName);
-                                    }
-                                    break;
-                                case 2:
-                                    if (module.getContents() != null)
-                                        for (Content content : module.getContents()) {
-                                            mFileManager.shareFile(content.getFilename(), courseName);
-                                        }
-
-                            }
-                        } else {
-                            mFileManager.downloadFile(module.getContents().get(0), module, courseName);
-                        }
-                    }
-                });
-                alertDialog.show();
-                markAsRead(modules.get(getLayoutPosition()), getLayoutPosition());
+               MoreOptionsFragment moreOptionsFragment = MoreOptionsFragment.newInstance(downloaded,courseName,modules.get(getLayoutPosition()).getId());
+               moreOptionsFragment.show(((FragmentActivity)context).getSupportFragmentManager(),moreOptionsFragment.getTag());
+               markAsRead(modules.get(getLayoutPosition()), getLayoutPosition());
             });
             progressBar = (ProgressBar) itemView.findViewById(R.id.progressBar);
         }
