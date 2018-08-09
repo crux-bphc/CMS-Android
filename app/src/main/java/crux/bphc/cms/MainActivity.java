@@ -1,17 +1,22 @@
 package crux.bphc.cms;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -35,6 +40,8 @@ import helper.UserAccount;
 import helper.UserUtils;
 
 import static app.Constants.API_URL;
+import static crux.bphc.cms.service.NotificationService.NOTIFICATION_CHANNEL_SERVICE;
+import static crux.bphc.cms.service.NotificationService.NOTIFICATION_CHANNEL_UPDATES;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -78,11 +85,35 @@ public class MainActivity extends AppCompatActivity
         fullName.setText(mUserAccount.getFirstName());
         setHome();
         askPermission();
+        createNotificationChannels(); // initialize channels before starting background service
         NotificationService.startService(this, false);
         resolveDeepLink();
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
+    }
+
+
+    // Create channels for devices running Oreo and above; Can be safely called even if channel exists
+    void createNotificationChannels() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Create the "Background Service" channel, which has low importance
+            NotificationChannel service = new NotificationChannel(NOTIFICATION_CHANNEL_SERVICE,
+                    "Background Service",
+                    NotificationManager.IMPORTANCE_LOW);
+            service.setDescription("A low priority channel that informs the user when data is being synced.");
+
+            // Create the "Updates" channel which has the default importance level
+            NotificationChannel updates = new NotificationChannel(NOTIFICATION_CHANNEL_UPDATES,
+                    "New Content",
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            updates.setDescription("Primary channel that relays all content updates.");
+
+            NotificationManager nm = getSystemService(NotificationManager.class);
+            // create both channels
+            nm.createNotificationChannel(service);
+            nm.createNotificationChannel(updates);
+        }
     }
 
     private void resolveDeepLink() {

@@ -1,6 +1,6 @@
 package crux.bphc.cms.service;
 
-import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.job.JobInfo;
@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -43,12 +44,14 @@ public class NotificationService extends JobService {
     UserAccount userAccount;
     NotificationManager mNotifyMgr;
 
-    public static void startService(Context context, boolean replace) {
+    public static final String NOTIFICATION_CHANNEL_SERVICE = "channel_service";
+    public static final String NOTIFICATION_CHANNEL_UPDATES = "channel_content_updates";
 
+    public static void startService(Context context, boolean replace) {
         ComponentName serviceComponent = new ComponentName(context, NotificationService.class);
         JobInfo.Builder builder = new JobInfo.Builder(0, serviceComponent);
         builder.setPeriodic(TimeUnit.HOURS.toMillis(1));
-        builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY); // require unmetered network
+        builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY); // require un-metered network
         builder.setPersisted(true);
 
         JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
@@ -91,12 +94,14 @@ public class NotificationService extends JobService {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
                 notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Notification notification = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentText("Searching for new content")
-                .setContentIntent(pendingIntent).build();
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_SERVICE)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentText("Searching for new content")
+                        .setContentIntent(pendingIntent)
+                        .setPriority(NotificationCompat.PRIORITY_LOW);
 
-        startForeground(1, notification);
+        startForeground(1, builder.build());
 
     }
 
@@ -162,21 +167,22 @@ public class NotificationService extends JobService {
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra("path", Uri.parse(Constants.getCourseURL(notificationSet.getCourseID())));
             PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            // channel ID is ignored for below Oreo
             NotificationCompat.Builder mBuilder =
-                    new NotificationCompat.Builder(this)
+                    new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_UPDATES)
                             .setSmallIcon(R.mipmap.ic_launcher)
-                            .setContentTitle("New Content in " + Html.fromHtml(notificationSet.getTitle()))
-                            .setContentText(Html.fromHtml( notificationSet.getContentText()))
+                            .setContentTitle("New Content in " + parseHtml(notificationSet.getTitle()))
+                            .setContentText(parseHtml(notificationSet.getContentText()))
                             .setGroup(notificationSet.getGroupKey())
                             .setAutoCancel(true)
-                            .setContentIntent(pendingIntent);
+                            .setContentIntent(pendingIntent)
+                            .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
 
             mNotifyMgr.notify(notificationSet.getGroupKey(), UserAccount.getNotifId(this), mBuilder.build());
 
             groupNotifications(notificationSet);
-
-
         }
     }
 
@@ -219,17 +225,20 @@ public class NotificationService extends JobService {
                 Bundle bundle = new Bundle();
                 bundle.putStringArrayList("lines", arrayLines);
 
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-                builder.setContentTitle(Html.fromHtml(notificationSet.getTitle()))
-                        .setContentText((arrayLines.size()) + " new content added")
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setStyle(inbox)
-                        .setGroup(notificationSet.getGroupKey())
-                        .setGroupSummary(true)
-                        .setAutoCancel(true)
-                        .setVisibility(VISIBILITY_PUBLIC)
-                        .setContentIntent(pendingIntent)
-                        .addExtras(bundle);
+                // channelID ignored below Oreo
+                NotificationCompat.Builder builder =
+                        new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_UPDATES)
+                                .setContentTitle(parseHtml(notificationSet.getTitle()))
+                                .setContentText((arrayLines.size()) + " new content added")
+                                .setSmallIcon(R.mipmap.ic_launcher)
+                                .setStyle(inbox)
+                                .setGroup(notificationSet.getGroupKey())
+                                .setGroupSummary(true)
+                                .setAutoCancel(true)
+                                .setVisibility(VISIBILITY_PUBLIC)
+                                .setContentIntent(pendingIntent)
+                                .addExtras(bundle)
+                                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
                 for (StatusBarNotification statusBarNotification : groupedNotification)
                     mNotifyMgr.cancel(statusBarNotification.getId());
@@ -246,5 +255,13 @@ public class NotificationService extends JobService {
         }
     }
 
-
+    // wrapper to use the correct version of Html.fromHtml method
+    Spanned parseHtml(String content) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            return Html.fromHtml(content, Html.FROM_HTML_MODE_LEGACY);
+        } else {
+            //noinspection deprecation
+            return Html.fromHtml(content);
+        }
+    }
 }
