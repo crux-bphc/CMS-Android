@@ -311,6 +311,7 @@ public class MyCoursesFragment extends Fragment {
 
                         @Override
                         public void onFailure(String message, Throwable t) {
+                            mSwipeRefreshLayout.setRefreshing(false);
                             Toast.makeText(getActivity(), "Unable to update", Toast.LENGTH_SHORT).show();
                         }
                     });
