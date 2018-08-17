@@ -47,31 +47,61 @@ public class NotificationService extends JobService {
     public static final String NOTIFICATION_CHANNEL_SERVICE = "channel_service";
     public static final String NOTIFICATION_CHANNEL_UPDATES = "channel_content_updates";
 
-    public static void startService(Context context, boolean replace) {
-        ComponentName serviceComponent = new ComponentName(context, NotificationService.class);
-        JobInfo.Builder builder = new JobInfo.Builder(0, serviceComponent);
-        builder.setPeriodic(TimeUnit.HOURS.toMillis(1));
-        builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY); // require un-metered network
-        builder.setPersisted(true);
+    public static final int CMS_JOB_ID = 0;
 
+    /**
+     * Static helper method called in order to build and start the repeating job.
+     * NOT called by the service itself.
+     */
+    public static void startService(Context context, boolean replace) {
+         /*
+         * Build JobInfo object. Job will run once per hour, on any type of network,
+         * and persist across reboots.
+         *
+         * By using JobScheduler, the method `onStartJob` will be executed taking into consideration
+         * Doze mode etc.
+         *
+         * This particular periodic job will execute exactly once within a 1 hour period,
+         * but may do so at any time, not necessarily at the end of it. The exact time of execution
+         * is subject to the optimizations of the Android OS based on other scheduled jobs, idle time etc.
+         */
+        ComponentName serviceComponent = new ComponentName(context, NotificationService.class);
+        JobInfo.Builder builder = new JobInfo.Builder(CMS_JOB_ID, serviceComponent)
+                .setPeriodic(TimeUnit.MINUTES.toMillis(15)) // TODO set back to 1 hour
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setPersisted(true);
+
+        // Get an instance of the system JobScheduler service.
         JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
+        /*
+        * If the replace flag is false, check if the Job has already been scheduled.
+        * Do nothing if it is queued, else schedule the job.
+        */
         if (!replace) {
+            // unsure about this NullPointer warning. This method never returns null acc to docs.
             List<JobInfo> jobInfos = jobScheduler.getAllPendingJobs();
             for (JobInfo jobInfo : jobInfos) {
-                if (jobInfo.getId() == 0) {
+                if (jobInfo.getId() == CMS_JOB_ID) {
                     return;
                 }
             }
         }
 
+        // Pass our job to the JobScheduler in order to queue it.
         jobScheduler.schedule(builder.build());
     }
 
+    /**
+     * The method that is called when the Job executes; called on the Main thread by default.
+     */
     @Override
     public boolean onStartJob(final JobParameters job) {
         mJobRunning = true;
+
         runAsForeground();
+
+        // Call our course update operation on a different thread
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
@@ -81,14 +111,32 @@ public class NotificationService extends JobService {
             }
         });
 
+        /*
+         * Return boolean that answers the question: "Is your program still doing work?"
+         *
+         * Returning true implies the wakelock needs to be held, since processing is being done
+         * (usually in some other thread). If all work is completed here itself, false can be returned.
+         */
         return true;
     }
 
+    /**
+     * Called if the job is interrupted in between due to change in parameters, or other factors.
+     *
+     * @return true if this job should be rescheduled; false if it can be ignored.
+     *
+     * This rescheduling is separate from any periodic conditions specified when building the Job,
+     * and improper handling would cause unnecessary repeats.
+     * Default rescheduling strategy should be exponential backoff.
+     */
     @Override
     public boolean onStopJob(JobParameters job) {
         return mJobRunning;
     }
 
+    /**
+     * Helper method that makes this a Foreground Service by passing a notification.
+     */
     private void runAsForeground() {
         Intent notificationIntent = new Intent(this, TokenActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
@@ -105,7 +153,12 @@ public class NotificationService extends JobService {
 
     }
 
+    /**
+     * Method which handles the bulk of the logic. Checks updates in each of the user's enrolled
+     * courses, and accordingly creates grouped notifications.
+     */
     protected void handleJob(JobParameters job) {
+        // TODO pendingIntent is not opening properly
         Log.d("service ", "started");
 
         userAccount = new UserAccount(this);
