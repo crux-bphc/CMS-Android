@@ -51,8 +51,10 @@ public class CourseDataHandler {
     }
 
     /**
+     * Deletes old course data in the Realm Db and inserts the passed courses.
+     *
      * @param courseList the list of new courses to be replaced in db.
-     * @return new Courses as compared from previously stored database.
+     * @return the Courses that weren't already present in the db.
      */
     public List<Course> setCourseList(List<Course> courseList) {
         if (!userAccount.isLoggedIn()) {
@@ -61,16 +63,17 @@ public class CourseDataHandler {
         List<Course> newCourses = new ArrayList<>();
         Realm realm = Realm.getInstance(MyApplication.getRealmConfiguration());
 
-
+        // Check if course present in db, else add to newCourses
         for (Course course : courseList) {
             if (realm.where(Course.class).equalTo("id", course.getId()).findFirst() == null) {
                 newCourses.add(course);
             }
         }
+
         realm.beginTransaction();
         final RealmResults<Course> results = realm.where(Course.class).findAll();
-        results.deleteAllFromRealm();
-        realm.copyToRealm(courseList);
+        results.deleteAllFromRealm(); // delete all existing courses
+        realm.copyToRealm(courseList); // add all the passed courses
         realm.commitTransaction();
         realm.close();
         return newCourses;

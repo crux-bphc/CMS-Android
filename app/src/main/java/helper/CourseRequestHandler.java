@@ -87,7 +87,7 @@ public class CourseRequestHandler {
 
 
     /**
-     * Sync call for getting user Courses
+     * Fetches all user enrolled courses from the Moodle server
      */
     public List<Course> getCourseList() {
 
