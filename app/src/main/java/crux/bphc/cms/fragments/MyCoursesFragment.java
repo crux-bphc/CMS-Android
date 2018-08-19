@@ -71,6 +71,7 @@ public class MyCoursesFragment extends Fragment {
     String mSearchedText = "";
     private String TOKEN;
     private MyAdapter mAdapter;
+    private int coursesUpdated;
 
     public MyCoursesFragment() {
         // Required empty public constructor
@@ -133,7 +134,7 @@ public class MyCoursesFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), CourseDetailActivity.class);
                 intent.putExtra("id", course.getCourseId());
                 intent.putExtra("course_name", course.getShortname());
-                startActivityForResult(intent,COURSE_SECTION_ACTIVITY);
+                startActivityForResult(intent, COURSE_SECTION_ACTIVITY);
                 return true;
             }
         });
@@ -257,8 +258,9 @@ public class MyCoursesFragment extends Fragment {
     }
 
     CourseDataHandler courseDataHandler;
+
     private void makeRequest() {
-        CourseRequestHandler courseRequestHandler=new CourseRequestHandler(getActivity());
+        CourseRequestHandler courseRequestHandler = new CourseRequestHandler(getActivity());
         courseRequestHandler.getCourseList(new CourseRequestHandler.CallBack<List<Course>>() {
             @Override
             public void onResponse(List<Course> courseList) {
@@ -269,7 +271,7 @@ public class MyCoursesFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(String message,Throwable t) {
+            public void onFailure(String message, Throwable t) {
                 mSwipeRefreshLayout.setRefreshing(false);
                 if (t.getMessage().contains("Invalid token")) {
                     Toast.makeText(
@@ -284,35 +286,37 @@ public class MyCoursesFragment extends Fragment {
         });
     }
 
-    private void updateCourseContent (List<Course> courses) {
-        List<Course> newCourses = courseDataHandler.setCourseList(courses);
+    private void updateCourseContent(List<Course> courses) {
+        courseDataHandler.setCourseList(courses);
         CourseRequestHandler courseRequestHandler = new CourseRequestHandler(getActivity());
+        coursesUpdated = 0;
         for (Course course : courses) {
             courseRequestHandler.getCourseData(course.getCourseId(),
                     new CourseRequestHandler.CallBack<List<CourseSection>>() {
                         @Override
                         public void onResponse(List<CourseSection> responseObject) {
-                            int coursesUpdated = 0;
-                            List<CourseSection> newPartsInSections = courseDataHandler.setCourseData(course.getCourseId(), responseObject);
-                            if(!newCourses.contains(course) && newPartsInSections != responseObject) {
-                                if(newPartsInSections.size() > 0) {
-                                    coursesUpdated++;
-                                }
+                            List<CourseSection> newPartsinSections = courseDataHandler.setCourseData(course.getCourseId(), responseObject);
+                            if (newPartsinSections.size() > 0) {
+                                coursesUpdated++;
                             }
-                            String message;
-                            if(coursesUpdated == 0)
-                                message = getString(R.string.upToDate);
-                            else
-                                message = getResources().getQuantityString(R.plurals.noOfCoursesUpdated, coursesUpdated, coursesUpdated);
-                            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-                            mSwipeRefreshLayout.setRefreshing(false);
-                            checkEmpty();
+                            //Refresh the recycler view for the last course
+                            if (course.getCourseId() == courses.get(courses.size() - 1).getCourseId()) {
+                                mSwipeRefreshLayout.setRefreshing(false);
+                                mRecyclerView.getAdapter().notifyDataSetChanged();
+                                String message;
+                                if (coursesUpdated == 0) {
+                                    message = getString(R.string.upToDate);
+                                } else {
+                                    message = getResources().getQuantityString(R.plurals.noOfCoursesUpdated, coursesUpdated, coursesUpdated);
+                                }
+                                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                            }
+
                         }
 
                         @Override
                         public void onFailure(String message, Throwable t) {
                             mSwipeRefreshLayout.setRefreshing(false);
-                            Toast.makeText(getActivity(), "Unable to update", Toast.LENGTH_SHORT).show();
                         }
                     });
         }
@@ -456,7 +460,6 @@ public class MyCoursesFragment extends Fragment {
         }
 
     }
-
 
 
 }
