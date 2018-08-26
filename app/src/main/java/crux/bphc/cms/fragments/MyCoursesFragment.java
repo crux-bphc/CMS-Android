@@ -290,6 +290,7 @@ public class MyCoursesFragment extends Fragment {
         courseDataHandler.setCourseList(courses);
         CourseRequestHandler courseRequestHandler = new CourseRequestHandler(getActivity());
         coursesUpdated = 0;
+        if(courses.size() == 0) mSwipeRefreshLayout.setRefreshing(false);
         for (Course course : courses) {
             courseRequestHandler.getCourseData(course.getCourseId(),
                     new CourseRequestHandler.CallBack<List<CourseSection>>() {

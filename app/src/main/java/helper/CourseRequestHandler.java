@@ -2,6 +2,7 @@ package helper;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -60,6 +61,10 @@ public class CourseRequestHandler {
                         return;
                     }
                     Gson gson = new Gson();
+
+                    // TODO shouldn't crash for empty course list, but it did once
+                    // User wasn't registered in any courses. Bug could not be replicated.
+                    // Refer to Issue on Github for details.
                     final List<Course> coursesList = gson
                             .fromJson(responseString, new TypeToken<List<Course>>() {
                             }.getType());
@@ -94,7 +99,7 @@ public class CourseRequestHandler {
         Call<ResponseBody> courseListCall = moodleServices.getCourses(userAccount.getToken(), userAccount.getUserID());
 
         try {
-            Response<ResponseBody> courseListResp = courseListCall.execute();
+            Response<ResponseBody> courseListResp = courseListCall.execute(); // sync call
             if (courseListResp.code() != 200) {
                 return null;
             }
