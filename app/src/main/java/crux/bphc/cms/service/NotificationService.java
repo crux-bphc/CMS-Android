@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
+import android.text.SpannableString;
 import android.text.Spanned;
 import android.util.Log;
 
@@ -54,7 +55,7 @@ public class NotificationService extends JobService {
      * NOT called by the service itself.
      */
     public static void startService(Context context, boolean replace) {
-         /*
+        /*
          * Build JobInfo object. Job will run once per hour, on any type of network,
          * and persist across reboots.
          *
@@ -75,9 +76,9 @@ public class NotificationService extends JobService {
         JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
         /*
-        * If the replace flag is false, check if the Job has already been scheduled.
-        * Do nothing if it is queued, else schedule the job.
-        */
+         * If the replace flag is false, check if the Job has already been scheduled.
+         * Do nothing if it is queued, else schedule the job.
+         */
         if (!replace) {
             // the null pointer warning is in case jobScheduler is null, which happens for API < 21
             List<JobInfo> jobInfos = jobScheduler.getAllPendingJobs();
@@ -124,7 +125,7 @@ public class NotificationService extends JobService {
      * Called if the job is interrupted in between due to change in parameters, or other factors.
      *
      * @return true if this job should be rescheduled; false if the fail can be ignored.
-     *
+     * <p>
      * This rescheduling is separate from any periodic conditions specified when building the Job,
      * and improper handling would cause unnecessary repeats.
      * Default rescheduling strategy should be exponential backoff.
@@ -222,7 +223,7 @@ public class NotificationService extends JobService {
         if (userAccount.isNotificationsEnabled()) {
 
             Intent intent = new Intent(this, TokenActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra("path", Uri.parse(Constants.getCourseURL(notificationSet.getCourseID())));
             PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -261,9 +262,11 @@ public class NotificationService extends JobService {
                 for (StatusBarNotification activeSbn : groupedNotification) {
                     ArrayList<String> previousLines = activeSbn.getNotification().extras.getStringArrayList("lines");
                     if (previousLines == null || previousLines.isEmpty()) {
-                        // TODO keep getting crashes around here
-                        // cause "java.lang.ClassCastException: android.text.SpannableString cannot be cast to java.lang.String"
-                        String stackNotificationLine = (String) activeSbn.getNotification().extras.get(NotificationCompat.EXTRA_TEXT);
+                        String stackNotificationLine = null;
+                        SpannableString notifSpannableString = (SpannableString) activeSbn.getNotification().extras.get(NotificationCompat.EXTRA_TEXT);
+                        if (notifSpannableString != null) {
+                            stackNotificationLine = notifSpannableString.toString();
+                        }
                         if (stackNotificationLine != null) {
                             inbox.addLine(stackNotificationLine);
                             arrayLines.add(stackNotificationLine);
@@ -278,7 +281,7 @@ public class NotificationService extends JobService {
                 inbox.setSummaryText((arrayLines.size()) + " new content added");
 
                 Intent intent = new Intent(this, TokenActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("path", Uri.parse(Constants.getCourseURL(notificationSet.getCourseID())));
                 PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
