@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +26,7 @@ import java.util.Locale;
 import app.MyApplication;
 import crux.bphc.cms.R;
 import helper.ClickListener;
+import helper.CustomTextView;
 import helper.MoodleServices;
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -323,7 +323,7 @@ public class SiteNewsFragment extends Fragment {
             private TextView mSubject;
             private TextView mUserName;
             private TextView mModifiedTime;
-            private TextView mMessage;
+            private CustomTextView mMessage;
 
             public SiteNewsViewHolder(View itemView) {
                 super(itemView);
@@ -339,7 +339,7 @@ public class SiteNewsFragment extends Fragment {
                 mSubject = (TextView) itemView.findViewById(R.id.subject);
                 mUserName = (TextView) itemView.findViewById(R.id.user_name);
                 mModifiedTime = (TextView) itemView.findViewById(R.id.modified_time);
-                mMessage = (TextView) itemView.findViewById(R.id.message);
+                mMessage = itemView.findViewById(R.id.message);
             }
 
             public void bind(Discussion discussion) {
@@ -347,7 +347,7 @@ public class SiteNewsFragment extends Fragment {
                 mSubject.setText(discussion.getSubject());
                 mUserName.setText(discussion.getUserfullname());
                 mModifiedTime.setText(formatDate(discussion.getTimemodified()));
-                mMessage.setText(Html.fromHtml(discussion.getMessage()));
+                mMessage.setText(discussion.getMessage());
             }
         }
     }
