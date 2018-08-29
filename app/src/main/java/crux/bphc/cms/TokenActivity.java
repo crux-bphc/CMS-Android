@@ -15,6 +15,7 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.List;
 
+import app.Constants;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -65,7 +66,7 @@ public class TokenActivity extends AppCompatActivity {
 
     @OnClick(R.id.instructions)
     void onClickInstructions() {
-        String preferencesUrl = "http://id.bits-hyderabad.ac.in/moodle/user/preferences.php";
+        String preferencesUrl = Constants.API_URL + "user/preferences.php";
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(preferencesUrl));
         startActivity(intent);
