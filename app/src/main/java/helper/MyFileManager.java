@@ -10,11 +10,15 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import java.io.File;
@@ -24,10 +28,9 @@ import java.util.List;
 
 import app.Constants;
 import crux.bphc.cms.BuildConfig;
-import crux.bphc.cms.WebSiteActivity;
-import io.realm.Realm;
+import crux.bphc.cms.R;
+import crux.bphc.cms.fragments.ForumFragment;
 import set.Content;
-import set.Course;
 import set.Module;
 
 /**
@@ -229,10 +232,16 @@ public class MyFileManager {
                 MyFileManager.showInWebsite(activity, module.getContents().get(0).getFileurl());
 
             }
-        } else if (module.getModType() == Module.Type.FORUM || module.getModType() == Module.Type.PAGE) {
+        } else if (module.getModType() == Module.Type.PAGE){
             MyFileManager.showInWebsite(activity, module.getUrl());
+        } else if (module.getModType() == Module.Type.FORUM ) {
+            Fragment siteNewsFragment = ForumFragment.newInstance(Constants.TOKEN, module.getInstance());
+            FragmentTransaction fragmentTransaction = ((AppCompatActivity)activity).getSupportFragmentManager().beginTransaction()
+                    .addToBackStack(null)
+                    .replace(R.id.course_section_enrol_container, siteNewsFragment, "Announcements");
+            fragmentTransaction.commit();
         } else if (module.getContents() == null || module.getContents().size() == 0) {
-            if (module.getModType() == Module.Type.FORUM || module.getModType() == Module.Type.LABEL) {
+            if (module.getModType() == Module.Type.LABEL) {
                 if (module.getDescription() == null || module.getDescription().length() == 0) {
                     return false;
                 }

@@ -12,7 +12,7 @@
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:context="crux.bphc.cms.fragments.SiteNewsFragment"
+            tools:context="crux.bphc.cms.fragments.ForumFragment"
             android:layout_margin="8dp">
 
             <LinearLayout
