@@ -18,6 +18,9 @@
 
     <string name="action_settings">Settings</string>
 
+    <!-- Forum posts -->
+    <string name="no_posts_to_display">No Forum posts to display</string>
+
     <!-- resources for course search functionality -->
     <string name="course_search_edit_text_hint">Enter Course Name</string>
     <string name="course_search_button">Search</string>

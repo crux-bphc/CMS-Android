@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -61,6 +62,10 @@ public class SiteNewsFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private TextView mEmptyView;
+
+    private MoodleServices moodleServices;
+
 
     public SiteNewsFragment() {
         // Required empty public constructor
@@ -94,6 +99,8 @@ public class SiteNewsFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        mEmptyView = view.findViewById(R.id.tv_empty);
+
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -101,7 +108,7 @@ public class SiteNewsFragment extends Fragment {
                 page = 0;
                 mLoading = false;
                 mRemaining = true;
-                makeRequest();
+                makeFirstRequest();
             }
         });
 
@@ -139,32 +146,84 @@ public class SiteNewsFragment extends Fragment {
                 if (!mLoading) {
                     if (visible + visibleRowIndex >= total) {
                         mLoading = true;
-                        makeRequest();
+                        if (mRemaining) makeNextRequest();
                     }
                 }
             }
         });
 
-        RealmResults<Discussion> results = realm.where(Discussion.class).findAll();
-        List<Discussion> dbDiscussions = realm.copyFromRealm(results);
-        mAdapter = new SiteNewsAdapter(mClickListener, dbDiscussions);
-        mRecyclerView.setAdapter(mAdapter);
-
-        if (dbDiscussions.isEmpty()) {
-            makeRequest();
-        }
-    }
-
-    private void makeRequest() {
-        if (!mRemaining)
-            return;
-
+        // Instantiate retrofit instance for sending requests
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(API_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        MoodleServices moodleServices = retrofit.create(MoodleServices.class);
+        moodleServices = retrofit.create(MoodleServices.class);
 
+        mAdapter = new SiteNewsAdapter(mClickListener, new ArrayList<>());
+        mRecyclerView.setAdapter(mAdapter);
+
+        makeFirstRequest();
+    }
+
+    private void makeFirstRequest() {
+        mSwipeRefreshLayout.setRefreshing(true);
+        Call<SiteNews> call = moodleServices.getForumDiscussions(TOKEN, FORUM_ID, 0, PER_PAGE);
+        call.enqueue(new Callback<SiteNews>() {
+            @Override
+            public void onResponse(Call<SiteNews> call, Response<SiteNews> response) {
+                List<Discussion> discussions = response.body().getDiscussions();
+
+                if (discussions.size() == 0) {
+                    mRemaining = false;
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    mEmptyView.setVisibility(View.VISIBLE);
+                } else {
+                    mEmptyView.setVisibility(View.GONE);
+                    mAdapter.clearDiscussions();
+                    mAdapter.addDiscussions(discussions);
+
+                    // reset cached data
+                    final RealmResults<Discussion> results = realm.where(Discussion.class).findAll();
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            results.deleteAllFromRealm();
+                            realm.copyToRealm(mAdapter.getDiscussions());
+                        }
+                    });
+
+                    page++;
+                    mLoading = false;
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    // avoid an additional request
+                    if(discussions.size() < PER_PAGE) mRemaining = false;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SiteNews> call, Throwable t) {
+                System.out.println(t.toString());
+                mLoading = false;
+                mSwipeRefreshLayout.setRefreshing(false);
+                
+                // Load and display cached discussion data from database, if present
+                // Do not attempt to load new pages unless manual refresh
+                mRemaining = false;
+                RealmResults<Discussion> results = realm.where(Discussion.class).findAll();
+                List<Discussion> dbDiscussions = realm.copyFromRealm(results);
+                if (dbDiscussions.size() == 0) {
+                    mEmptyView.setVisibility(View.VISIBLE);
+                    Toast.makeText(getContext(), "No cached data. Check connection and refresh", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "Loading cached data. Refresh for latest", Toast.LENGTH_SHORT).show();
+                    mAdapter.clearDiscussions();
+                    mAdapter.addDiscussions(dbDiscussions);
+                }
+            }
+        });
+    }
+
+    private void makeNextRequest() {
         mSwipeRefreshLayout.setRefreshing(true);
         Call<SiteNews> call = moodleServices.getForumDiscussions(TOKEN, FORUM_ID, page, PER_PAGE);
         call.enqueue(new Callback<SiteNews>() {
@@ -176,7 +235,6 @@ public class SiteNewsFragment extends Fragment {
                     mRemaining = false;
                     mSwipeRefreshLayout.setRefreshing(false);
                 } else {
-                    mAdapter.clearDiscussions();
                     mAdapter.addDiscussions(discussions);
 
                     final RealmResults<Discussion> results = realm.where(Discussion.class).findAll();
@@ -191,6 +249,8 @@ public class SiteNewsFragment extends Fragment {
                     page++;
                     mLoading = false;
                     mSwipeRefreshLayout.setRefreshing(false);
+                    // avoid an additional request
+                    if(discussions.size() < PER_PAGE) mRemaining = false;
                 }
             }
 

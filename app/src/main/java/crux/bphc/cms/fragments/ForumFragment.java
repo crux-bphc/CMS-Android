@@ -92,6 +92,9 @@ public class ForumFragment extends Fragment implements MyFileManager.Callback {
 
         mAttachmentContainer = (LinearLayout) view.findViewById(R.id.attachments);
         LayoutInflater inflater = LayoutInflater.from(getContext());
+
+        if(discussion.getAttachments().size() == 0) mAttachmentContainer.setVisibility(View.GONE);
+
         for (final Attachment attachment : discussion.getAttachments()) {
             View attachmentView = inflater.inflate(
                     R.layout.row_attachment_detail_site_news,

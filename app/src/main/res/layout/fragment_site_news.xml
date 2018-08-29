@@ -15,4 +15,13 @@
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
+    <TextView
+        android:id="@+id/tv_empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="@string/no_posts_to_display"
+        android:visibility="gone"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
 </FrameLayout>
