@@ -30,13 +30,13 @@ public class CourseDownloader implements MyFileManager.Callback {
     private Realm realm;
     private Context context;
 
-    public CourseDownloader(Activity activity) {
+    public CourseDownloader(Activity activity, String courseName) {
         this.context = activity;
         RealmConfiguration config = new RealmConfiguration.Builder()
                 .deleteRealmIfMigrationNeeded()
                 .build();
         realm = Realm.getInstance(config);
-        myFileManager = new MyFileManager(activity);
+        myFileManager = new MyFileManager(activity, courseName);
         myFileManager.registerDownloadReceiver();
         myFileManager.setCallback(this);
     }

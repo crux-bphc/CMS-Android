@@ -41,6 +41,7 @@ public class MyFileManager {
     private Activity activity;
     private ArrayList<String> requestedDownloads;
     private Callback callback;
+    private String courseDirecName;
     private BroadcastReceiver onComplete = new BroadcastReceiver() {
         public void onReceive(Context ctxt, Intent intent) {
             int i = 0;
@@ -63,6 +64,11 @@ public class MyFileManager {
         requestedDownloads = new ArrayList<>();
     }
 
+    public MyFileManager(Activity activity, String courseDirecName) {
+        this.activity = activity;
+        requestedDownloads = new ArrayList<>();
+        this.courseDirecName = courseDirecName;
+    }
 
     @NonNull
     public static String getExtension(String filename) {
@@ -211,16 +217,11 @@ public class MyFileManager {
 
     public void reloadFileList() {
         fileList = new ArrayList<>();
-        File cmsDirec = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
-                + File.separator + CMS);
-        if (cmsDirec.isDirectory()) {
-            for (File courseDir : cmsDirec.listFiles()) {
-                if (courseDir.isDirectory()) {
-                    fileList.addAll(Arrays.asList(courseDir.list()));
-                }
-            }
+        File courseDirec = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
+                + File.separator + CMS + File.separator + courseDirecName);
+        if (courseDirec.isDirectory()) {
+            fileList.addAll(Arrays.asList(courseDirec.list()));
         }
-
     }
 
     public boolean onClickAction(Module module, String courseName) {

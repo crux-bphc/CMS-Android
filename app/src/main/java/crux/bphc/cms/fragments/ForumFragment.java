@@ -69,7 +69,7 @@ public class ForumFragment extends Fragment implements MyFileManager.Callback {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mFileManager = new MyFileManager(getActivity());
+        mFileManager = new MyFileManager(getActivity(),FOLDER_NAME);
         mFileManager.registerDownloadReceiver();
         mFileManager.setCallback(this);
 
