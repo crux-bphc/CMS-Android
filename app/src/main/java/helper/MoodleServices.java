@@ -9,7 +9,7 @@ import retrofit2.http.Query;
 import set.CourseSection;
 import set.enrol.SelfEnrol;
 import set.search.CourseSearch;
-import set.forum.SiteNews;
+import set.forum.ForumData;
 
 /**
  * Created by harsu on 16-12-2016.
@@ -41,8 +41,8 @@ public interface MoodleServices {
     Call<SelfEnrol> selfEnrolUserInCourse(@Query("wstoken") String token, @Query("courseid") int courseId);
 
     @GET("webservice/rest/server.php?wsfunction=mod_forum_get_forum_discussions_paginated&moodlewsrestformat=json&forumid=1&sortby=timemodified&sortdirection=DESC")
-    Call<SiteNews> getForumDiscussions(@Query("wstoken") String token,
-                                       @Query("forumid") int forumid,
-                                       @Query("page") int page,
-                                       @Query("perpage") int perpage);
+    Call<ForumData> getForumDiscussions(@Query("wstoken") String token,
+                                        @Query("forumid") int forumid,
+                                        @Query("page") int page,
+                                        @Query("perpage") int perpage);
 }

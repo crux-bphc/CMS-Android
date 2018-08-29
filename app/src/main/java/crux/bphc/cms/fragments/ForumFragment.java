@@ -4,56 +4,93 @@ package crux.bphc.cms.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Locale;
+
 import app.MyApplication;
 import crux.bphc.cms.R;
-import helper.MyFileManager;
+import helper.ClickListener;
+import helper.MoodleServices;
 import io.realm.Realm;
-import set.forum.Attachment;
+import io.realm.RealmResults;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 import set.forum.Discussion;
+import set.forum.ForumData;
 
+import static app.Constants.API_URL;
 
-public class ForumFragment extends Fragment implements MyFileManager.Callback {
+/**
+ * A simple {@link Fragment} subclass.
+ * Use the {@link ForumFragment#newInstance} factory method to
+ * create an instance of this fragment.
+ */
+public class ForumFragment extends Fragment {
 
-    private static final String FOLDER_NAME = "Site News";
-    private int id;
+    private static final String TOKEN_KEY = "token";
+    public static final String FORUM_ID_KEY = "forum_id";
+    private int FORUM_ID = 1;
+    private final int PER_PAGE = 20;
 
+    private String TOKEN;
+    private int page = 0;
+    private boolean mLoading = false;
+    private boolean mRemaining = true;
+
+    private ForumAdapter mAdapter;
+    private ClickListener mClickListener;
     private Realm realm;
-    private MyFileManager mFileManager;
 
-    private ImageView mUserPic;
-    private TextView mSubject;
-    private TextView mUserName;
-    private TextView mTimeModified;
-    private TextView mMessage;
-    private LinearLayout mAttachmentContainer;
+    private RecyclerView mRecyclerView;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private TextView mEmptyView;
+
+    private MoodleServices moodleServices;
+
 
     public ForumFragment() {
         // Required empty public constructor
     }
 
-    public static ForumFragment newInstance(int id) {
+    public static ForumFragment newInstance(String token, int forumId) {
         ForumFragment fragment = new ForumFragment();
         Bundle args = new Bundle();
-        args.putInt("id", id);
+        args.putString(TOKEN_KEY, token);
+        args.putInt(FORUM_ID_KEY, forumId);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public static ForumFragment newInstance(String token) {
+        return newInstance(token, 1);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            id = getArguments().getInt("id");
+            TOKEN = getArguments().getString(TOKEN_KEY);
+            FORUM_ID = getArguments().getInt(FORUM_ID_KEY);
         }
         realm = MyApplication.getInstance().getRealmInstance();
     }
@@ -62,93 +99,267 @@ public class ForumFragment extends Fragment implements MyFileManager.Callback {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_forum, container, false);
+        return inflater.inflate(R.layout.fragment_site_news, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mFileManager = new MyFileManager(getActivity());
-        mFileManager.registerDownloadReceiver();
-        mFileManager.setCallback(this);
+        mEmptyView = view.findViewById(R.id.tv_empty);
 
-        Discussion discussion = realm.where(Discussion.class).equalTo("id", id).findFirst();
-
-        mUserPic = (ImageView) view.findViewById(R.id.user_pic);
-        Picasso.with(getContext()).load(discussion.getUserpictureurl()).into(mUserPic);
-
-        mSubject = (TextView) view.findViewById(R.id.subject);
-        mSubject.setText(discussion.getSubject());
-
-        mUserName = (TextView) view.findViewById(R.id.user_name);
-        mUserName.setText(discussion.getUserfullname());
-
-        mTimeModified = (TextView) view.findViewById(R.id.modified_time);
-        mTimeModified.setText(SiteNewsFragment.formatDate(discussion.getTimemodified()));
-
-        mMessage = (TextView) view.findViewById(R.id.message);
-        mMessage.setText(Html.fromHtml(discussion.getMessage()));
-
-        mAttachmentContainer = (LinearLayout) view.findViewById(R.id.attachments);
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-
-        if(discussion.getAttachments().size() == 0) mAttachmentContainer.setVisibility(View.GONE);
-
-        for (final Attachment attachment : discussion.getAttachments()) {
-            View attachmentView = inflater.inflate(
-                    R.layout.row_attachment_detail_site_news,
-                    mAttachmentContainer);
-
-            TextView fileName = (TextView) attachmentView.findViewById(R.id.fileName);
-            fileName.setText(attachment.getFilename());
-
-            ImageView download = (ImageView) attachmentView.findViewById(R.id.downloadIcon);
-            if (mFileManager.searchFile(attachment.getFilename())) {
-                download.setImageResource(R.drawable.eye);
-            } else {
-                download.setImageResource(R.drawable.content_save);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                page = 0;
+                mLoading = false;
+                mRemaining = true;
+                makeFirstRequest();
             }
-            download.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (!mFileManager.searchFile(attachment.getFilename())) {
-                        mFileManager.downloadFile(
-                                attachment.getFilename(),
-                                attachment.getFileurl(),
-                                "",
-                                FOLDER_NAME,
-                                true
-                        );
-                    } else {
-                        mFileManager.openFile(attachment.getFilename(), FOLDER_NAME);
+        });
+
+        mClickListener = new ClickListener() {
+            @Override
+            public boolean onClick(Object object, int position) {
+                Discussion discussion = (Discussion) object;
+                DiscussionFragment fragment = DiscussionFragment.newInstance(discussion.getId());
+                FragmentTransaction transaction = getActivity()
+                        .getSupportFragmentManager()
+                        .beginTransaction();
+                transaction.addToBackStack(null);
+                transaction.replace(((ViewGroup)getView().getParent()).getId(), fragment, "SiteNewsDetail");
+                transaction.commit();
+                return true;
+            }
+        };
+
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.site_news);
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int visible = layoutManager.getChildCount();
+                int total = layoutManager.getItemCount();
+                int visibleRowIndex = layoutManager.findFirstVisibleItemPosition();
+
+                if (!mLoading) {
+                    if (visible + visibleRowIndex >= total) {
+                        mLoading = true;
+                        if (mRemaining) makeNextRequest();
                     }
                 }
-            });
+            }
+        });
 
+        // Instantiate retrofit instance for sending requests
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(API_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        moodleServices = retrofit.create(MoodleServices.class);
 
+        mAdapter = new ForumAdapter(mClickListener, new ArrayList<>());
+        mRecyclerView.setAdapter(mAdapter);
+
+        makeFirstRequest();
+    }
+
+    private void makeFirstRequest() {
+        mSwipeRefreshLayout.setRefreshing(true);
+        Call<ForumData> call = moodleServices.getForumDiscussions(TOKEN, FORUM_ID, 0, PER_PAGE);
+        call.enqueue(new Callback<ForumData>() {
+            @Override
+            public void onResponse(Call<ForumData> call, Response<ForumData> response) {
+                List<Discussion> discussions = response.body().getDiscussions();
+
+                for(Discussion discussion : discussions) {
+                    discussion.setForumId(FORUM_ID);
+                }
+
+                if (discussions.size() == 0) {
+                    mRemaining = false;
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    mEmptyView.setVisibility(View.VISIBLE);
+                } else {
+                    mEmptyView.setVisibility(View.GONE);
+                    mAdapter.clearDiscussions();
+                    mAdapter.addDiscussions(discussions);
+
+                    // reset cached data
+                    final RealmResults<Discussion> results = realm.where(Discussion.class).equalTo("forumId", FORUM_ID).findAll();
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            results.deleteAllFromRealm();
+                            realm.copyToRealm(mAdapter.getDiscussions());
+                        }
+                    });
+
+                    page++;
+                    mLoading = false;
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    // avoid an additional request
+                    if(discussions.size() < PER_PAGE) mRemaining = false;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ForumData> call, Throwable t) {
+                System.out.println(t.toString());
+                mLoading = false;
+                mSwipeRefreshLayout.setRefreshing(false);
+                
+                // Load and display cached discussion data from database, if present
+                // Do not attempt to load new pages unless manual refresh
+                mRemaining = false;
+                RealmResults<Discussion> results = realm.where(Discussion.class).equalTo("forumId", FORUM_ID).findAll();
+                List<Discussion> dbDiscussions = realm.copyFromRealm(results);
+                if (dbDiscussions.size() == 0) {
+                    mEmptyView.setVisibility(View.VISIBLE);
+                    Toast.makeText(getContext(), "No cached data. Check connection and refresh", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "Loading cached data. Refresh for latest", Toast.LENGTH_SHORT).show();
+                    mAdapter.clearDiscussions();
+                    mAdapter.addDiscussions(dbDiscussions);
+                }
+            }
+        });
+    }
+
+    private void makeNextRequest() {
+        mSwipeRefreshLayout.setRefreshing(true);
+        Call<ForumData> call = moodleServices.getForumDiscussions(TOKEN, FORUM_ID, page, PER_PAGE);
+        call.enqueue(new Callback<ForumData>() {
+            @Override
+            public void onResponse(Call<ForumData> call, Response<ForumData> response) {
+                List<Discussion> discussions = response.body().getDiscussions();
+
+                if (discussions.size() == 0) {
+                    mRemaining = false;
+                    mSwipeRefreshLayout.setRefreshing(false);
+                } else {
+                    mAdapter.addDiscussions(discussions);
+
+                    final RealmResults<Discussion> results = realm.where(Discussion.class).findAll();
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            results.deleteAllFromRealm();
+                            realm.copyToRealm(mAdapter.getDiscussions());
+                        }
+                    });
+
+                    page++;
+                    mLoading = false;
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    // avoid an additional request
+                    if(discussions.size() < PER_PAGE) mRemaining = false;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ForumData> call, Throwable t) {
+                System.out.println(t.toString());
+                mLoading = false;
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        });
+    }
+
+    public static  String formatDate(int seconds) {
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTimeInMillis((long)seconds*1000);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        String month = cal.getDisplayName(
+                Calendar.MONTH,
+                Calendar.SHORT,
+                Locale.getDefault());
+        int year = cal.get(Calendar.YEAR);
+        return String.valueOf(day) + " " + month + ", " + String.valueOf(year);
+    }
+
+    private class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.SiteNewsViewHolder> {
+
+        private List<Discussion> mDiscussions = new ArrayList<>();
+        private ClickListener mClickListener;
+
+        public ForumAdapter(ClickListener clickListener, List<Discussion> discussions) {
+            mClickListener = clickListener;
+            mDiscussions = discussions;
         }
-    }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mFileManager.unregisterDownloadReceiver();
-    }
+        public void addDiscussions(List<Discussion> discussions) {
+            mDiscussions.addAll(discussions);
+            notifyDataSetChanged();
+        }
 
-    @Override
-    public void onDownloadCompleted(String fileName) {
-        int child = mAttachmentContainer.getChildCount();
-        for (int i = 0; i < child; i++) {
-            View childView = mAttachmentContainer.getChildAt(i);
-            TextView fileNameTextView = (TextView) childView.findViewById(R.id.fileName);
-            if (fileNameTextView != null &&
-                    fileNameTextView.getText().toString().equalsIgnoreCase(fileName)) {
-                ImageView downloadIcon = (ImageView) childView.findViewById(R.id.downloadIcon);
-                downloadIcon.setImageResource(R.drawable.eye);
-                break;
+        public List<Discussion> getDiscussions() {
+            return mDiscussions;
+        }
+
+        public void clearDiscussions() {
+            mDiscussions.clear();
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public SiteNewsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            return new SiteNewsViewHolder(inflater.inflate(R.layout.row_site_news, parent, false));
+        }
+
+        @Override
+        public void onBindViewHolder(SiteNewsViewHolder holder, int position) {
+            Discussion discussion = mDiscussions.get(position);
+            holder.bind(discussion);
+        }
+
+        @Override
+        public int getItemCount() {
+            return mDiscussions.size();
+        }
+
+
+        public class SiteNewsViewHolder extends RecyclerView.ViewHolder {
+
+            private ImageView mUserPic;
+            private TextView mSubject;
+            private TextView mUserName;
+            private TextView mModifiedTime;
+            private TextView mMessage;
+
+            public SiteNewsViewHolder(View itemView) {
+                super(itemView);
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int position = getLayoutPosition();
+                        mClickListener.onClick(mDiscussions.get(position), position);
+                    }
+                });
+
+                mUserPic = (ImageView) itemView.findViewById(R.id.user_pic);
+                mSubject = (TextView) itemView.findViewById(R.id.subject);
+                mUserName = (TextView) itemView.findViewById(R.id.user_name);
+                mModifiedTime = (TextView) itemView.findViewById(R.id.modified_time);
+                mMessage = (TextView) itemView.findViewById(R.id.message);
+            }
+
+            public void bind(Discussion discussion) {
+                Picasso.with(getContext()).load(discussion.getUserpictureurl()).into(mUserPic);
+                mSubject.setText(discussion.getSubject());
+                mUserName.setText(discussion.getUserfullname());
+                mModifiedTime.setText(formatDate(discussion.getTimemodified()));
+                mMessage.setText(Html.fromHtml(discussion.getMessage()));
             }
         }
-        mFileManager.openFile(fileName, FOLDER_NAME);
     }
 }

@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,8 +14,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -33,7 +30,7 @@ import android.widget.TextView;
 import app.Constants;
 import crux.bphc.cms.fragments.MyCoursesFragment;
 import crux.bphc.cms.fragments.SearchCourseFragment;
-import crux.bphc.cms.fragments.SiteNewsFragment;
+import crux.bphc.cms.fragments.ForumFragment;
 import crux.bphc.cms.service.NotificationService;
 import helper.MyFileManager;
 import helper.UserAccount;
@@ -201,7 +198,7 @@ public class MainActivity extends AppCompatActivity
     private void setSiteNews() {
         clearBackStack();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        fragment = SiteNewsFragment.newInstance(Constants.TOKEN);
+        fragment = ForumFragment.newInstance(Constants.TOKEN);
         transaction.replace(R.id.content_main, fragment, "Site News");
         transaction.commit();
     }

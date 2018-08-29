@@ -17,6 +17,7 @@ public class Discussion extends RealmObject {
     private int discussion;
     private int parent;
     private int userid;
+    private int forumId;
     private String subject;
     private String message;
 
@@ -98,6 +99,11 @@ public class Discussion extends RealmObject {
 
     public boolean isPinned() {
         return pinned;
+    }
+
+
+    public void setForumId(int forumId) {
+        this.forumId = forumId;
     }
 
     private String attachment;
