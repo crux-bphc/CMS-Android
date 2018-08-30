@@ -106,7 +106,6 @@ public class MyCoursesFragment extends Fragment {
         if(requestCode==COURSE_SECTION_ACTIVITY){
             courses=courseDataHandler.getCourseList();
             filterMyCourses(mSearchedText);
-
         }
     }
 
@@ -266,6 +265,7 @@ public class MyCoursesFragment extends Fragment {
             public void onResponse(List<Course> courseList) {
                 courses.clear();
                 courses.addAll(courseList);
+                checkEmpty();
                 filterMyCourses(mSearchedText);
                 updateCourseContent(courses);
             }

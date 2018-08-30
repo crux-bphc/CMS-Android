@@ -248,7 +248,7 @@ public class ForumFragment extends Fragment {
                 } else {
                     mAdapter.addDiscussions(discussions);
 
-                    final RealmResults<Discussion> results = realm.where(Discussion.class).findAll();
+                    final RealmResults<Discussion> results = realm.where(Discussion.class).equalTo("forumId", FORUM_ID).findAll();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
