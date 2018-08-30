@@ -259,17 +259,7 @@ public class MainActivity extends AppCompatActivity
                 setCourseSearch();
                 break;
             case R.id.website:
-
-                /*CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-                builder.setToolbarColor(getResources().getColor(R.color.colorPrimary))
-                        .setShowTitle(true)
-                        .setCloseButtonIcon(BitmapFactory.decodeResource(
-                                getResources(), R.drawable.ic_clear_black_24dp));
-                CustomTabsIntent customTabsIntent = builder.build();
-                customTabsIntent.launchUrl(MainActivity.this, Uri.parse(Constants.API_URL));*/
-
-                startActivity(WebSiteActivity.getIntent(this, "CMS", API_URL + "my/"));
-
+                MyFileManager.showInWebsite(this, API_URL+"my/");
                 break;
 
             case R.id.settings:

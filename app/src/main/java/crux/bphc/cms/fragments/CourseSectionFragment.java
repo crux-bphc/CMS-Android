@@ -25,7 +25,6 @@ import java.util.List;
 
 import app.Constants;
 import crux.bphc.cms.R;
-import crux.bphc.cms.WebSiteActivity;
 import helper.ClickListener;
 import helper.CourseDataHandler;
 import helper.CourseRequestHandler;
@@ -302,7 +301,7 @@ public class CourseSectionFragment extends Fragment {
             return true;
         }
         if(item.getItemId()==R.id.action_open_in_browser){
-            startActivity(WebSiteActivity.getIntent(getActivity(),courseName, Constants.getCourseURL(courseId)));
+            MyFileManager.showInWebsite(getActivity(), Constants.getCourseURL(courseId));
         }
         return super.onOptionsItemSelected(item);
     }

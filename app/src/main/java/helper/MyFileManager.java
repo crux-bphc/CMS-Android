@@ -76,12 +76,6 @@ public class MyFileManager {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(url));
         activity.startActivity(intent);
-
-        //activity.startActivity(WebSiteActivity.getIntent(activity, "CMS", url));
-
-        /*CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-        CustomTabsIntent customTabsIntent = builder.build();
-        customTabsIntent.launchUrl(activity, Uri.parse(url));*/
     }
 
     private String getApplicationType(String filename) {
