@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -38,6 +39,7 @@ import set.CourseSection;
 import set.Module;
 import set.NotificationSet;
 
+import static android.support.v4.app.NotificationCompat.PRIORITY_DEFAULT;
 import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
 
 public class NotificationService extends JobService {
@@ -227,96 +229,32 @@ public class NotificationService extends JobService {
             intent.putExtra("path", Uri.parse(Constants.getCourseURL(notificationSet.getCourseID())));
             PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+            NotificationCompat.Builder groupBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_UPDATES)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setGroup(notificationSet.getGroupKey())
+                    .setGroupSummary(true)
+                    .setAutoCancel(true)
+                    .setContentIntent(pendingIntent)
+                    .setPriority(PRIORITY_DEFAULT);
+
             // channel ID is ignored for below Oreo
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_UPDATES)
                             .setSmallIcon(R.mipmap.ic_launcher)
-                            .setContentTitle("New Content in " + parseHtml(notificationSet.getTitle()))
+                            .setContentTitle(parseHtml(notificationSet.getTitle()))
                             .setContentText(parseHtml(notificationSet.getContentText()))
                             .setGroup(notificationSet.getGroupKey())
+                            .setGroupSummary(false)
                             .setAutoCancel(true)
                             .setContentIntent(pendingIntent)
                             .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
 
-            mNotifyMgr.notify(notificationSet.getGroupKey(), UserAccount.getNotifId(this), mBuilder.build());
-
-            groupNotifications(notificationSet);
+            mNotifyMgr.notify(notificationSet.getCourseID(), groupBuilder.build() );
+            mNotifyMgr.notify(notificationSet.getModId(), mBuilder.build());
         }
     }
 
-
-    private boolean groupNotifications(NotificationSet notificationSet) {
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            ArrayList<StatusBarNotification> groupedNotification = new ArrayList<>();
-            for (StatusBarNotification statusBarNotification : mNotifyMgr.getActiveNotifications()) {
-                if (statusBarNotification.getTag() != null && statusBarNotification.getTag().equalsIgnoreCase(notificationSet.getGroupKey())) {
-                    groupedNotification.add(statusBarNotification);
-                }
-            }
-            if (groupedNotification.size() > 1) {
-
-                ArrayList<String> arrayLines = new ArrayList<>();
-                NotificationCompat.InboxStyle inbox = new NotificationCompat.InboxStyle();
-                for (StatusBarNotification activeSbn : groupedNotification) {
-                    ArrayList<String> previousLines = activeSbn.getNotification().extras.getStringArrayList("lines");
-                    if (previousLines == null || previousLines.isEmpty()) {
-                        String stackNotificationLine = null;
-                        SpannableString notifSpannableString = (SpannableString) activeSbn.getNotification().extras.get(NotificationCompat.EXTRA_TEXT);
-                        if (notifSpannableString != null) {
-                            stackNotificationLine = notifSpannableString.toString();
-                        }
-                        if (stackNotificationLine != null) {
-                            inbox.addLine(stackNotificationLine);
-                            arrayLines.add(stackNotificationLine);
-                        }
-                    } else {
-                        for (String string : previousLines) {
-                            inbox.addLine(string);
-                            arrayLines.add(string);
-                        }
-                    }
-                }
-                inbox.setSummaryText((arrayLines.size()) + " new content added");
-
-                Intent intent = new Intent(this, TokenActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("path", Uri.parse(Constants.getCourseURL(notificationSet.getCourseID())));
-                PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                Bundle bundle = new Bundle();
-                bundle.putStringArrayList("lines", arrayLines);
-
-                // channelID ignored below Oreo
-                NotificationCompat.Builder builder =
-                        new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_UPDATES)
-                                .setContentTitle(parseHtml(notificationSet.getTitle()))
-                                .setContentText((arrayLines.size()) + " new content added")
-                                .setSmallIcon(R.mipmap.ic_launcher)
-                                .setStyle(inbox)
-                                .setGroup(notificationSet.getGroupKey())
-                                .setGroupSummary(true)
-                                .setAutoCancel(true)
-                                .setVisibility(VISIBILITY_PUBLIC)
-                                .setContentIntent(pendingIntent)
-                                .addExtras(bundle)
-                                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-                for (StatusBarNotification statusBarNotification : groupedNotification)
-                    mNotifyMgr.cancel(statusBarNotification.getId());
-                mNotifyMgr.notify(notificationSet.getGroupKey(), groupedNotification.get(0).getId(), builder.build());
-
-                return true;
-
-            } else {
-                return false;
-            }
-
-        } else {
-            return false;
-        }
-    }
 
     // wrapper to use the correct version of Html.fromHtml method
     Spanned parseHtml(String content) {
