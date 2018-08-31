@@ -18,16 +18,6 @@ public class UserAccount {
         this.context = context;
     }
 
-    public static int getNotifId(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
-        int id = prefs.getInt("notif", 2);
-        SharedPreferences.Editor editor = prefs.edit();
-
-        editor.putInt("notif", id + 1);
-        editor.commit();
-
-        return id;
-    }
 
     public boolean isLoggedIn() {
         SharedPreferences prefs = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
