@@ -16,6 +16,7 @@ import com.squareup.picasso.Picasso;
 
 import app.MyApplication;
 import crux.bphc.cms.R;
+import helper.HtmlTextView;
 import helper.MyFileManager;
 import io.realm.Realm;
 import set.forum.Attachment;
@@ -34,7 +35,7 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
     private TextView mSubject;
     private TextView mUserName;
     private TextView mTimeModified;
-    private TextView mMessage;
+    private HtmlTextView mMessage;
     private LinearLayout mAttachmentContainer;
 
     public DiscussionFragment() {
@@ -87,8 +88,8 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
         mTimeModified = (TextView) view.findViewById(R.id.modified_time);
         mTimeModified.setText(ForumFragment.formatDate(discussion.getTimemodified()));
 
-        mMessage = (TextView) view.findViewById(R.id.message);
-        mMessage.setText(Html.fromHtml(discussion.getMessage()));
+        mMessage = (HtmlTextView) view.findViewById(R.id.message);
+        mMessage.setText(discussion.getMessage());
 
         mAttachmentContainer = (LinearLayout) view.findViewById(R.id.attachments);
         LayoutInflater inflater = LayoutInflater.from(getContext());

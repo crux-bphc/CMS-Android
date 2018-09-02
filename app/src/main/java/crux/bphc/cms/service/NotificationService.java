@@ -1,6 +1,5 @@
 package crux.bphc.cms.service;
 
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.job.JobInfo;
@@ -12,22 +11,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
-import android.os.Bundle;
-import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.text.Html;
-import android.text.SpannableString;
-import android.text.Spanned;
 import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import app.Constants;
-import crux.bphc.cms.LoginActivity;
 import crux.bphc.cms.R;
 import crux.bphc.cms.TokenActivity;
 import helper.CourseDataHandler;
@@ -40,7 +30,7 @@ import set.Module;
 import set.NotificationSet;
 
 import static android.support.v4.app.NotificationCompat.PRIORITY_DEFAULT;
-import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
+import static helper.HtmlTextView.parseHtml;
 
 public class NotificationService extends JobService {
     private static boolean mJobRunning;
@@ -230,17 +220,6 @@ public class NotificationService extends JobService {
 
             mNotifyMgr.notify(notificationSet.getCourseID(), groupBuilder.build() );
             mNotifyMgr.notify(notificationSet.getModId(), mBuilder.build());
-        }
-    }
-
-
-    // wrapper to use the correct version of Html.fromHtml method
-    Spanned parseHtml(String content) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return Html.fromHtml(content, Html.FROM_HTML_MODE_LEGACY);
-        } else {
-            //noinspection deprecation
-            return Html.fromHtml(content);
         }
     }
 }

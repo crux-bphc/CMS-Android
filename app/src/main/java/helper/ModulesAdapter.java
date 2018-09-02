@@ -81,7 +81,8 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     class ViewHolderResource extends RecyclerView.ViewHolder {
-        TextView name, description;
+        HtmlTextView name;
+        TextView description;
         ImageView modIcon, more, downloadIcon;
         int downloaded = -1;
         ProgressBar progressBar;
@@ -92,7 +93,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             super(itemView);
 
             iconWrapper = itemView.findViewById(R.id.iconWrapper);
-            name = (TextView) itemView.findViewById(R.id.fileName);
+            name = (HtmlTextView) itemView.findViewById(R.id.fileName);
             modIcon = (ImageView) itemView.findViewById(R.id.fileIcon);
             more = (ImageView) itemView.findViewById(R.id.more);
             topDivider = itemView.findViewById(R.id.topDivider);
@@ -194,7 +195,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 //                name.setTextColor(Color.parseColor("#808080"));
             }
 
-            name.setText(Html.fromHtml(module.getName()));
+            name.setText(module.getName());
             if (module.getDescription() != null && !module.getDescription().isEmpty()) {
                 Spanned htmlDescription = Html.fromHtml(module.getDescription());
                 String descriptionWithOutExtraSpace = htmlDescription.toString().trim();

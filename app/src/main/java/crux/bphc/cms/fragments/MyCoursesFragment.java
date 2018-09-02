@@ -40,6 +40,7 @@ import helper.ClickListener;
 import helper.CourseDataHandler;
 import helper.CourseDownloader;
 import helper.CourseRequestHandler;
+import helper.HtmlTextView;
 import helper.MoodleServices;
 import helper.UserAccount;
 import helper.UserUtils;
@@ -386,7 +387,7 @@ public class MyCoursesFragment extends Fragment {
 
         class MyViewHolder extends RecyclerView.ViewHolder {
 
-            TextView courseName;
+            HtmlTextView courseName;
             View download;
             ImageView downloadIcon;
             ProgressBar progressBar;
@@ -395,7 +396,7 @@ public class MyCoursesFragment extends Fragment {
 
             MyViewHolder(View itemView) {
                 super(itemView);
-                courseName = (TextView) itemView.findViewById(R.id.courseName);
+                courseName = (HtmlTextView) itemView.findViewById(R.id.courseName);
                 download = itemView.findViewById(R.id.download);
                 downloadText = (TextView) itemView.findViewById(R.id.downloadText);
                 progressBar = (ProgressBar) itemView.findViewById(R.id.progressBar);
@@ -438,7 +439,7 @@ public class MyCoursesFragment extends Fragment {
 
 
             void bind(Course course) {
-                courseName.setText(Html.fromHtml(course.getShortname()));
+                courseName.setText(course.getShortname());
                 if (course.getDownloadStatus() == -1) {
                     progressBar.setVisibility(View.GONE);
                     downloadIcon.setVisibility(View.VISIBLE);
