@@ -102,15 +102,12 @@ public class NotificationService extends JobService {
     public boolean onStartJob(final JobParameters job) {
         mJobRunning = true;
 
-        runAsForeground();
-
         // Call our course update operation on a different thread
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
                 mJobRunning = true;
                 handleJob(job);
-                stopForeground(true);
             }
         });
 
@@ -136,26 +133,7 @@ public class NotificationService extends JobService {
     public boolean onStopJob(JobParameters job) {
         return mJobRunning;
     }
-
-    /**
-     * Helper method that makes this a Foreground Service by passing a notification.
-     */
-    private void runAsForeground() {
-        Intent notificationIntent = new Intent(this, TokenActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-                notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_SERVICE)
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentText("Searching for new content")
-                        .setContentIntent(pendingIntent)
-                        .setPriority(NotificationCompat.PRIORITY_LOW);
-
-        startForeground(1, builder.build());
-
-    }
-
+    
     /**
      * Method which handles the bulk of the logic. Checks updates in each of the user's enrolled
      * courses, and accordingly creates grouped notifications.
