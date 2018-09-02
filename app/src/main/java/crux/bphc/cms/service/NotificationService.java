@@ -236,7 +236,7 @@ public class NotificationService extends JobService {
 
     // wrapper to use the correct version of Html.fromHtml method
     Spanned parseHtml(String content) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return Html.fromHtml(content, Html.FROM_HTML_MODE_LEGACY);
         } else {
             //noinspection deprecation
