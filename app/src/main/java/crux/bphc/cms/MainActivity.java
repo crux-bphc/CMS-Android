@@ -37,8 +37,8 @@ import helper.UserAccount;
 import helper.UserUtils;
 
 import static app.Constants.API_URL;
-import static crux.bphc.cms.service.NotificationService.NOTIFICATION_CHANNEL_SERVICE;
 import static crux.bphc.cms.service.NotificationService.NOTIFICATION_CHANNEL_UPDATES;
+import static crux.bphc.cms.service.NotificationService.NOTIFICATION_CHANNEL_UPDATES_BUNDLE;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -94,17 +94,18 @@ public class MainActivity extends AppCompatActivity
     // Create channels for devices running Oreo and above; Can be safely called even if channel exists
     void createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Create the "Background Service" channel, which has low importance
-            NotificationChannel service = new NotificationChannel(NOTIFICATION_CHANNEL_SERVICE,
-                    "Background Service",
-                    NotificationManager.IMPORTANCE_LOW);
-            service.setDescription("A low priority channel that informs the user when data is being synced.");
+            // Create the "Updates Bundle" channel, which is channel for summary notifications that bundles thr
+            // individual notifications
+            NotificationChannel service = new NotificationChannel(NOTIFICATION_CHANNEL_UPDATES_BUNDLE,
+                    "New Content Bundle",
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            service.setDescription("A default priority channel that bundles all the notifications");
 
-            // Create the "Updates" channel which has the default importance level
+            // Create the "Updates" channel which has the low importance level
             NotificationChannel updates = new NotificationChannel(NOTIFICATION_CHANNEL_UPDATES,
                     "New Content",
-                    NotificationManager.IMPORTANCE_DEFAULT);
-            updates.setDescription("Primary channel that relays all content updates.");
+                    NotificationManager.IMPORTANCE_LOW);
+            updates.setDescription("All low importance channel that relays all the updates.");
 
             NotificationManager nm = getSystemService(NotificationManager.class);
             // create both channels

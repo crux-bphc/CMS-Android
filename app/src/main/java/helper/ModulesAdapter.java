@@ -165,6 +165,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             switch (i) {
                                 case 0:
                                     mFileManager.downloadFile(module.getContents().get(0), module, courseName);
+                                    break;
                                 case 1:
                                     markAsReadandUnread(module,position,true);
                             }

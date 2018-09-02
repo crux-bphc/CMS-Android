@@ -37,7 +37,7 @@ public class NotificationService extends JobService {
     UserAccount userAccount;
     NotificationManager mNotifyMgr;
 
-    public static final String NOTIFICATION_CHANNEL_SERVICE = "channel_service";
+    public static final String NOTIFICATION_CHANNEL_UPDATES_BUNDLE = "channel_content_updates_bundle";
     public static final String NOTIFICATION_CHANNEL_UPDATES = "channel_content_updates";
 
     public static final int CMS_JOB_ID = 0;
@@ -197,13 +197,14 @@ public class NotificationService extends JobService {
             intent.putExtra("path", Uri.parse(Constants.getCourseURL(notificationSet.getCourseID())));
             PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-            NotificationCompat.Builder groupBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_UPDATES)
+            NotificationCompat.Builder groupBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_UPDATES_BUNDLE)
                     .setSmallIcon(R.mipmap.ic_launcher)
                     .setGroup(notificationSet.getGroupKey())
                     .setGroupSummary(true)
                     .setAutoCancel(true)
                     .setContentIntent(pendingIntent)
-                    .setPriority(PRIORITY_DEFAULT);
+                    .setPriority(PRIORITY_DEFAULT)
+                    .setOnlyAlertOnce(true);
 
             // channel ID is ignored for below Oreo
             NotificationCompat.Builder mBuilder =
@@ -217,8 +218,10 @@ public class NotificationService extends JobService {
                             .setContentIntent(pendingIntent)
                             .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
+            // Notify the summary notification for post nougat devices only
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                mNotifyMgr.notify(notificationSet.getCourseID(), groupBuilder.build() );
 
-            mNotifyMgr.notify(notificationSet.getCourseID(), groupBuilder.build() );
             mNotifyMgr.notify(notificationSet.getModId(), mBuilder.build());
         }
     }
