@@ -14,7 +14,7 @@ This is the Android version of the CMS BPHC app. The app uses standard Moodle en
 5. Notifications for new content
 
 ## Contributing
-You can contribute by submitting an issue, or by picking an existing one from the list and sending a PR. Ensure that the branch underlying the PR is up-to-date with latest changes.
+You can contribute by submitting an issue, or by picking an existing one from the list and sending a PR. Ensure that the branch underlying the PR is up-to-date with latest changes. Contributors must ensure they add any significant changes to the [changelog](CHANGELOG.md) in the same PR itself.
 
 All changes must be made on top of a new branch forked off the `development` branch. The `master` branch is only updated when a new release is made.
 
