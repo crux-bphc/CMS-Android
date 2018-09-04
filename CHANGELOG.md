@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 * 'Announcements' and other forum modules can now be viewed in-app.
 * Custom `TextView` to display HTML content, rather than parsing each time.
 * Support for multiple files within a course to have the same file name.
+* "Show More/Less" option for longer descriptions.
 
 ### Changed
 * Swipe to refresh on 'My Courses' syncs changes in all courses. Only refreshed list of courses earlier.

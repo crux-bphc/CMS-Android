@@ -60,7 +60,7 @@ public class CourseSectionFragment extends Fragment {
     private LinearLayout linearLayout;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private String courseName;
-    private int maxDescriptionLines = 3;
+    private int maxDescriptionLines = 5;
 
     public static CourseSectionFragment newInstance(String token, int courseId) {
         CourseSectionFragment courseSectionFragment = new CourseSectionFragment();
