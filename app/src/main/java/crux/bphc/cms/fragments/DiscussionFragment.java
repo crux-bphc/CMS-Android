@@ -24,7 +24,7 @@ import set.forum.Discussion;
 
 public class DiscussionFragment extends Fragment implements MyFileManager.Callback {
 
-    private static final String FOLDER_NAME = "Site News";
+    private  String mFolderName;
     private int id;
 
     private Realm realm;
@@ -41,10 +41,11 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
         // Required empty public constructor
     }
 
-    public static DiscussionFragment newInstance(int id) {
+    public static DiscussionFragment newInstance(int id, String folderName) {
         DiscussionFragment fragment = new DiscussionFragment();
         Bundle args = new Bundle();
         args.putInt("id", id);
+        args.putString("folderName", folderName);
         fragment.setArguments(args);
         return fragment;
     }
@@ -54,6 +55,7 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             id = getArguments().getInt("id");
+            mFolderName = getArguments().getString("folderName");
         }
         realm = MyApplication.getInstance().getRealmInstance();
     }
@@ -117,11 +119,11 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
                                 attachment.getFilename(),
                                 attachment.getFileurl(),
                                 "",
-                                FOLDER_NAME,
+                                mFolderName,
                                 true
                         );
                     } else {
-                        mFileManager.openFile(attachment.getFilename(), FOLDER_NAME);
+                        mFileManager.openFile(attachment.getFilename(), mFolderName);
                     }
                 }
             });
@@ -149,6 +151,6 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
                 break;
             }
         }
-        mFileManager.openFile(fileName, FOLDER_NAME);
+        mFileManager.openFile(fileName, mFolderName);
     }
 }

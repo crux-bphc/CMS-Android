@@ -49,10 +49,12 @@ public class ForumFragment extends Fragment {
 
     private static final String TOKEN_KEY = "token";
     public static final String FORUM_ID_KEY = "forum_id";
-    private int FORUM_ID = 1;
+    public static final String COURSE_NAME_KEY = "courseName";
     private final int PER_PAGE = 20;
 
     private String TOKEN;
+    private int FORUM_ID = 1;
+    private String COURSE_NAME;
     private int page = 0;
     private boolean mLoading = false;
     private boolean mRemaining = true;
@@ -72,17 +74,18 @@ public class ForumFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static ForumFragment newInstance(String token, int forumId) {
+    public static ForumFragment newInstance(String token, int forumId, String courseName) {
         ForumFragment fragment = new ForumFragment();
         Bundle args = new Bundle();
         args.putString(TOKEN_KEY, token);
         args.putInt(FORUM_ID_KEY, forumId);
+        args.putString(COURSE_NAME_KEY, courseName);
         fragment.setArguments(args);
         return fragment;
     }
 
     public static ForumFragment newInstance(String token) {
-        return newInstance(token, 1);
+        return newInstance(token, 1, "Site News");
     }
 
     @Override
@@ -91,6 +94,7 @@ public class ForumFragment extends Fragment {
         if (getArguments() != null) {
             TOKEN = getArguments().getString(TOKEN_KEY);
             FORUM_ID = getArguments().getInt(FORUM_ID_KEY);
+            COURSE_NAME = getArguments().getString(COURSE_NAME_KEY);
         }
         realm = MyApplication.getInstance().getRealmInstance();
     }
@@ -123,7 +127,7 @@ public class ForumFragment extends Fragment {
             @Override
             public boolean onClick(Object object, int position) {
                 Discussion discussion = (Discussion) object;
-                DiscussionFragment fragment = DiscussionFragment.newInstance(discussion.getId());
+                DiscussionFragment fragment = DiscussionFragment.newInstance(discussion.getId(), COURSE_NAME);
                 FragmentTransaction transaction = getActivity()
                         .getSupportFragmentManager()
                         .beginTransaction();
