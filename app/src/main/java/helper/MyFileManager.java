@@ -43,6 +43,7 @@ public class MyFileManager {
     private Activity activity;
     private ArrayList<String> requestedDownloads;
     private Callback callback;
+    private String courseDirName;
     private BroadcastReceiver onComplete = new BroadcastReceiver() {
         public void onReceive(Context ctxt, Intent intent) {
             int i = 0;
@@ -60,9 +61,10 @@ public class MyFileManager {
         }
     };
 
-    public MyFileManager(Activity activity) {
+    public MyFileManager(Activity activity, String courseDirName) {
         this.activity = activity;
         requestedDownloads = new ArrayList<>();
+        this.courseDirName = courseDirName;
     }
 
 
@@ -207,16 +209,11 @@ public class MyFileManager {
 
     public void reloadFileList() {
         fileList = new ArrayList<>();
-        File cmsDirec = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
-                + File.separator + CMS);
-        if (cmsDirec.isDirectory()) {
-            for (File courseDir : cmsDirec.listFiles()) {
-                if (courseDir.isDirectory()) {
-                    fileList.addAll(Arrays.asList(courseDir.list()));
-                }
-            }
+        File courseDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
+                + File.separator + CMS + File.separator + courseDirName);
+        if (courseDir.isDirectory()) {
+            fileList.addAll(Arrays.asList(courseDir.list()));
         }
-
     }
 
     public boolean onClickAction(Module module, String courseName) {

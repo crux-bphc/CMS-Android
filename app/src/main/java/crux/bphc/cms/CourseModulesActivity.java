@@ -48,7 +48,6 @@ public class CourseModulesActivity extends AppCompatActivity {
             return;
         }
 
-        mFileManager = new MyFileManager(this);
         realm = MyApplication.getInstance().getRealmInstance();
         setContentView(R.layout.activity_course_modules);
 
@@ -57,6 +56,7 @@ public class CourseModulesActivity extends AppCompatActivity {
 
         setTitle(sections.first().getName());
         courseName = CourseDataHandler.getCourseName(sections.first().getCourseID());
+        mFileManager = new MyFileManager(this, courseName);
         modules = sections.first().getModules();
         if (modules.size() == 0) {
             findViewById(R.id.empty).setVisibility(View.VISIBLE);

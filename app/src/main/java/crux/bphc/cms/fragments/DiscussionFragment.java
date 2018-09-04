@@ -71,7 +71,7 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mFileManager = new MyFileManager(getActivity());
+        mFileManager = new MyFileManager(getActivity(), mFolderName);
         mFileManager.registerDownloadReceiver();
         mFileManager.setCallback(this);
 
