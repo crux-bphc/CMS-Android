@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -115,6 +116,7 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
                 @Override
                 public void onClick(View v) {
                     if (!mFileManager.searchFile(attachment.getFilename())) {
+                        Toast.makeText(getActivity(), "Downloading file - " + attachment.getFilename(), Toast.LENGTH_SHORT).show();
                         mFileManager.downloadFile(
                                 attachment.getFilename(),
                                 attachment.getFileurl(),
