@@ -185,7 +185,7 @@ public class NotificationService extends JobService {
 
     private void createNotifSectionAdded(CourseSection section, Course course) {
         for (Module module : section.getModules()) {
-            createNotifModuleAdded(new NotificationSet(course, module));
+            createNotifModuleAdded(new NotificationSet(course, section ,module));
         }
     }
 
@@ -200,6 +200,10 @@ public class NotificationService extends JobService {
 
             NotificationCompat.Builder groupBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_UPDATES_BUNDLE)
                     .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentText(notificationSet.getCourseName())
+                    .setStyle(new NotificationCompat.InboxStyle()
+                                    .setBigContentTitle(notificationSet.getCourseName())
+                                    .setSummaryText(notificationSet.getCourseName()))
                     .setGroup(notificationSet.getGroupKey())
                     .setGroupSummary(true)
                     .setAutoCancel(true)
@@ -211,17 +215,26 @@ public class NotificationService extends JobService {
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_UPDATES)
                             .setSmallIcon(R.mipmap.ic_launcher)
-                            .setContentTitle(parseHtml(notificationSet.getTitle()))
-                            .setContentText(parseHtml(notificationSet.getContentText()))
                             .setGroup(notificationSet.getGroupKey())
                             .setGroupSummary(false)
                             .setAutoCancel(true)
                             .setContentIntent(pendingIntent)
                             .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-            // Notify the summary notification for post nougat devices only
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                mBuilder.setContentTitle(parseHtml(notificationSet.getSectionName()))
+                        .setContentText(parseHtml(notificationSet.getContentText()))
+                        .setStyle( new NotificationCompat.InboxStyle()
+                                .setSummaryText(notificationSet.getCourseName())
+                                .addLine(notificationSet.getContentText()));
+                // Notify the summary notification for post nougat devices only
                 mNotifyMgr.notify(notificationSet.getCourseID(), groupBuilder.build() );
+            } else {
+                mBuilder.setContentTitle(parseHtml(notificationSet.getCourseName()))
+                        .setContentText(parseHtml(notificationSet.getContentText()));
+            }
+
 
             mNotifyMgr.notify(notificationSet.getModId(), mBuilder.build());
         }
