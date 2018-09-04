@@ -15,6 +15,7 @@ public class NotificationSet implements RealmModel {
     private int modId;
     private int courseID;
     private String courseName;
+    private String sectionName;
     private String moduleName;
 
     public NotificationSet() {
@@ -47,6 +48,14 @@ public class NotificationSet implements RealmModel {
         this.courseName = courseName;
     }
 
+    public String getSectionName() {
+        return sectionName;
+    }
+
+    public void setSectionName(String sectionName) {
+        this.sectionName = sectionName;
+    }
+
     public String getModuleName() {
         return moduleName;
     }
@@ -55,9 +64,10 @@ public class NotificationSet implements RealmModel {
         this.moduleName = moduleName;
     }
 
-    public NotificationSet(Course course, Module module) {
+    public NotificationSet(Course course, CourseSection section, Module module) {
         this.courseID = course.getId();
         this.courseName = course.getShortname();
+        this.sectionName = section.getName();
         this.modId = module.getId();
         this.moduleName = module.getName();
     }
