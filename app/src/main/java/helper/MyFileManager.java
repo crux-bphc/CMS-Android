@@ -228,7 +228,7 @@ public class MyFileManager {
         } else if (module.getModType() == Module.Type.PAGE) {
             MyFileManager.showInWebsite(activity, module.getUrl());
         } else if (module.getModType() == Module.Type.FORUM) {
-            Fragment forumFragment = ForumFragment.newInstance(Constants.TOKEN, module.getInstance());
+            Fragment forumFragment = ForumFragment.newInstance(Constants.TOKEN, module.getInstance(), courseName);
             FragmentTransaction fragmentTransaction = ((AppCompatActivity) activity).getSupportFragmentManager().beginTransaction()
                     .addToBackStack(null)
                     .replace(R.id.course_section_enrol_container, forumFragment, "Announcements");
