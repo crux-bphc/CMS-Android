@@ -18,7 +18,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
 import java.io.File;
@@ -79,7 +78,7 @@ public class MyFileManager {
     }
 
     private String getApplicationType(String filename) {
-        String extension=getExtension(filename);
+        String extension = getExtension(filename);
         switch (extension) {
             case "pdf":
                 return "pdf";
@@ -203,7 +202,7 @@ public class MyFileManager {
 
     private String getPathExtension(String courseName) {
         return File.separator + CMS
-                + File.separator + courseName.replaceAll("/","_");
+                + File.separator + courseName.replaceAll("/", "_");
     }
 
     public void reloadFileList() {
@@ -226,13 +225,13 @@ public class MyFileManager {
                 MyFileManager.showInWebsite(activity, module.getContents().get(0).getFileurl());
 
             }
-        } else if (module.getModType() == Module.Type.PAGE){
+        } else if (module.getModType() == Module.Type.PAGE) {
             MyFileManager.showInWebsite(activity, module.getUrl());
-        } else if (module.getModType() == Module.Type.FORUM ) {
-            Fragment siteNewsFragment = ForumFragment.newInstance(Constants.TOKEN, module.getInstance());
-            FragmentTransaction fragmentTransaction = ((AppCompatActivity)activity).getSupportFragmentManager().beginTransaction()
+        } else if (module.getModType() == Module.Type.FORUM) {
+            Fragment forumFragment = ForumFragment.newInstance(Constants.TOKEN, module.getInstance());
+            FragmentTransaction fragmentTransaction = ((AppCompatActivity) activity).getSupportFragmentManager().beginTransaction()
                     .addToBackStack(null)
-                    .replace(R.id.course_section_enrol_container, siteNewsFragment, "Announcements");
+                    .replace(R.id.course_section_enrol_container, forumFragment, "Announcements");
             fragmentTransaction.commit();
         } else if (module.getContents() == null || module.getContents().size() == 0) {
             if (module.getModType() == Module.Type.LABEL) {
@@ -263,6 +262,6 @@ public class MyFileManager {
     }
 
     public interface Callback {
-        public void onDownloadCompleted(String fileName);
+        void onDownloadCompleted(String fileName);
     }
 }

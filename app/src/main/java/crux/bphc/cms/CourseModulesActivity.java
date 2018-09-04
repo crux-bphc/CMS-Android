@@ -62,7 +62,7 @@ public class CourseModulesActivity extends AppCompatActivity {
             findViewById(R.id.empty).setVisibility(View.VISIBLE);
         }
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
 
         myAdapter = new ModulesAdapter(this, mFileManager, courseName);
         myAdapter.setModules(modules);
@@ -84,7 +84,7 @@ public class CourseModulesActivity extends AppCompatActivity {
             @Override
             public void onDownloadCompleted(String fileName) {
                 setDownloaded(fileName);
-                mFileManager.openFile(fileName,courseName);
+                mFileManager.openFile(fileName, courseName);
             }
         });
 

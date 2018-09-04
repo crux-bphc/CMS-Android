@@ -15,7 +15,7 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        final SwitchCompat notificationsSwitch = (SwitchCompat) findViewById(R.id.notificationsSwitch);
+        final SwitchCompat notificationsSwitch = findViewById(R.id.notificationsSwitch);
 
         final UserAccount userAccount = new UserAccount(this);
         notificationsSwitch.setChecked(userAccount.isNotificationsEnabled());

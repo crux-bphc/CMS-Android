@@ -28,9 +28,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import app.Constants;
+import crux.bphc.cms.fragments.ForumFragment;
 import crux.bphc.cms.fragments.MyCoursesFragment;
 import crux.bphc.cms.fragments.SearchCourseFragment;
-import crux.bphc.cms.fragments.ForumFragment;
 import crux.bphc.cms.service.NotificationService;
 import helper.MyFileManager;
 import helper.UserAccount;
@@ -51,13 +51,13 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         mUserAccount = new UserAccount(this);
         Constants.TOKEN = mUserAccount.getToken();
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
             @Override
@@ -72,12 +72,12 @@ public class MainActivity extends AppCompatActivity
         };
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         View headerView = navigationView.getHeaderView(0);
-        TextView username = (TextView) headerView.findViewById(R.id.username);
-        TextView fullName = (TextView) headerView.findViewById(R.id.firstname);
+        TextView username = headerView.findViewById(R.id.username);
+        TextView fullName = headerView.findViewById(R.id.firstname);
         username.setText(mUserAccount.getUsername());
         fullName.setText(mUserAccount.getFirstName());
         setHome();
@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else if (getSupportFragmentManager().getBackStackEntryCount() != 0) {
@@ -260,7 +260,7 @@ public class MainActivity extends AppCompatActivity
                 setCourseSearch();
                 break;
             case R.id.website:
-                MyFileManager.showInWebsite(this, API_URL+"my/");
+                MyFileManager.showInWebsite(this, API_URL + "my/");
                 break;
 
             case R.id.settings:
@@ -286,7 +286,7 @@ public class MainActivity extends AppCompatActivity
                 askToLogout().show();
                 break;
         }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }

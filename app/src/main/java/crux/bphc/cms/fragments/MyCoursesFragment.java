@@ -4,7 +4,6 @@ package crux.bphc.cms.fragments;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,7 +12,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
-import android.text.Html;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,36 +23,21 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.MyApplication;
 import crux.bphc.cms.CourseDetailActivity;
-import crux.bphc.cms.MainActivity;
 import crux.bphc.cms.R;
 import helper.ClickListener;
 import helper.CourseDataHandler;
 import helper.CourseDownloader;
 import helper.CourseRequestHandler;
 import helper.HtmlTextView;
-import helper.MoodleServices;
-import helper.UserAccount;
 import helper.UserUtils;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import set.Course;
 import set.CourseSection;
 
 import static android.content.Context.INPUT_METHOD_SERVICE;
-import static app.Constants.API_URL;
 
 
 public class MyCoursesFragment extends Fragment {
@@ -104,8 +87,8 @@ public class MyCoursesFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==COURSE_SECTION_ACTIVITY){
-            courses=courseDataHandler.getCourseList();
+        if (requestCode == COURSE_SECTION_ACTIVITY) {
+            courses = courseDataHandler.getCourseList();
             filterMyCourses(mSearchedText);
         }
     }
@@ -291,7 +274,7 @@ public class MyCoursesFragment extends Fragment {
         courseDataHandler.setCourseList(courses);
         CourseRequestHandler courseRequestHandler = new CourseRequestHandler(getActivity());
         coursesUpdated = 0;
-        if(courses.size() == 0) mSwipeRefreshLayout.setRefreshing(false);
+        if (courses.size() == 0) mSwipeRefreshLayout.setRefreshing(false);
         for (Course course : courses) {
             courseRequestHandler.getCourseData(course.getCourseId(),
                     new CourseRequestHandler.CallBack<List<CourseSection>>() {
@@ -391,17 +374,17 @@ public class MyCoursesFragment extends Fragment {
             View download;
             ImageView downloadIcon;
             ProgressBar progressBar;
-            TextView downloadText,unreadCount;
+            TextView downloadText, unreadCount;
 
 
             MyViewHolder(View itemView) {
                 super(itemView);
-                courseName = (HtmlTextView) itemView.findViewById(R.id.courseName);
+                courseName = itemView.findViewById(R.id.courseName);
                 download = itemView.findViewById(R.id.download);
-                downloadText = (TextView) itemView.findViewById(R.id.downloadText);
-                progressBar = (ProgressBar) itemView.findViewById(R.id.progressBar);
-                downloadIcon = (ImageView) itemView.findViewById(R.id.downloadIcon);
-                unreadCount=(TextView) itemView.findViewById(R.id.unreadCount);
+                downloadText = itemView.findViewById(R.id.downloadText);
+                progressBar = itemView.findViewById(R.id.progressBar);
+                downloadIcon = itemView.findViewById(R.id.downloadIcon);
+                unreadCount = itemView.findViewById(R.id.unreadCount);
 
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -455,9 +438,9 @@ public class MyCoursesFragment extends Fragment {
                     else
                         downloadText.setText("Downloaded");
                 }
-                int count=courseDataHandler.getUnreadCount(course.getId());
+                int count = courseDataHandler.getUnreadCount(course.getId());
                 unreadCount.setText(Integer.toString(count));
-                unreadCount.setVisibility(count==0?View.INVISIBLE:View.VISIBLE);
+                unreadCount.setVisibility(count == 0 ? View.INVISIBLE : View.VISIBLE);
             }
         }
 

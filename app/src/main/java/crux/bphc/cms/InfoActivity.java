@@ -16,7 +16,7 @@ public class InfoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info);
-        ImageView imageView = (ImageView) findViewById(R.id.image);
+        ImageView imageView = findViewById(R.id.image);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

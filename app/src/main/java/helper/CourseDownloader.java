@@ -8,17 +8,9 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import set.Content;
 import set.CourseSection;
 import set.Module;
-
-import static app.Constants.API_URL;
-import static app.Constants.TOKEN;
 
 /**
  * Created by harsu on 21-12-2016.
@@ -48,7 +40,7 @@ public class CourseDownloader implements MyFileManager.Callback {
     public void downloadCourseData(final int courseId) {
 
         CourseRequestHandler courseRequestHandler = new CourseRequestHandler(context);
-        final CourseDataHandler courseDataHandler=new CourseDataHandler(context);
+        final CourseDataHandler courseDataHandler = new CourseDataHandler(context);
         courseRequestHandler.getCourseData(courseId, new CourseRequestHandler.CallBack<List<CourseSection>>() {
             @Override
             public void onResponse(List<CourseSection> sectionList) {
@@ -58,7 +50,7 @@ public class CourseDownloader implements MyFileManager.Callback {
                     return;
                 }
 
-                courseDataHandler.setCourseData(courseId,sectionList);
+                courseDataHandler.setCourseData(courseId, sectionList);
 
                 if (downloadCallback != null)
                     downloadCallback.onCourseDataDownloaded();

@@ -1,5 +1,5 @@
 package helper;
 
 public interface ClickListener {
-       public boolean onClick(Object object, int position);
-    }
+    boolean onClick(Object object, int position);
+}

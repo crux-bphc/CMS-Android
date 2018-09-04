@@ -106,12 +106,12 @@ public class SearchCourseFragment extends Fragment {
             }
         });
 
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.searched_courses);
-        empty = (TextView) view.findViewById(R.id.empty);
+        mRecyclerView = view.findViewById(R.id.searched_courses);
+        empty = view.findViewById(R.id.empty);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
 
-        mSwipeToRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
-        mEditText = (EditText) view.findViewById(R.id.course_search_edit_text);
+        mSwipeToRefresh = view.findViewById(R.id.swipeRefreshLayout);
+        mEditText = view.findViewById(R.id.course_search_edit_text);
         mButton = view.findViewById(R.id.course_search_button);
 
         mRecyclerView.setLayoutManager(layoutManager);
@@ -318,7 +318,7 @@ public class SearchCourseFragment extends Fragment {
 
             SearchCourseViewHolder(View itemView) {
                 super(itemView);
-                mSearchCourseDisplayName = (TextView) itemView.findViewById(R.id.search_course_display_name);
+                mSearchCourseDisplayName = itemView.findViewById(R.id.search_course_display_name);
 
                 mSearchCourseDisplayName.setOnClickListener(new View.OnClickListener() {
                     @Override

@@ -8,7 +8,6 @@ import android.widget.Toast;
 import java.io.IOException;
 
 import app.MyApplication;
-import crux.bphc.cms.LoginActivity;
 import crux.bphc.cms.TokenActivity;
 import io.realm.Realm;
 import okhttp3.ResponseBody;
@@ -45,9 +44,9 @@ public class UserUtils {
                 .baseUrl(API_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        LoginActivity.MoodleLogin moodleLogin = retrofit.create(LoginActivity.MoodleLogin.class);
+        MoodleServices moodleServices = retrofit.create(MoodleServices.class);
 
-        Call<ResponseBody> userDetailCall = moodleLogin.checkToken(userAccount.getToken());
+        Call<ResponseBody> userDetailCall = moodleServices.checkToken(userAccount.getToken());
         try {
             //todo check token validity checker logic
             //auto logout logic, finish current activity. clear back stack. start login activity

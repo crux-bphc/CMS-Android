@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -36,7 +36,8 @@ import set.CourseSection;
 
 public class TokenActivity extends AppCompatActivity {
 
-    @BindView(R.id.token) EditText tokenEditText;
+    @BindView(R.id.token)
+    EditText tokenEditText;
 
     private ProgressDialog progressDialog;
     private Toast toast = null;
@@ -158,7 +159,7 @@ public class TokenActivity extends AppCompatActivity {
         }
     }
 
-    class CourseDataRetriever extends AsyncTask<Void,Integer,Boolean> {
+    class CourseDataRetriever extends AsyncTask<Void, Integer, Boolean> {
 
         private Context context;
         private CourseDataHandler courseDataHandler;
@@ -206,6 +207,7 @@ public class TokenActivity extends AppCompatActivity {
             }
             return null;
         }
+
         @Override
         protected void onPostExecute(Boolean bool) {
             super.onPostExecute(bool);

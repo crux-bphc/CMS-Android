@@ -81,15 +81,15 @@ public class CourseEnrolFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mCourseDisplayName = (TextView) view.findViewById(R.id.course_enrol_course_display_name);
+        mCourseDisplayName = view.findViewById(R.id.course_enrol_course_display_name);
         mCourseDisplayName.setText(course.getDisplayname());
 
-        mCourseCategory = (TextView) view.findViewById(R.id.course_enrol_course_category);
+        mCourseCategory = view.findViewById(R.id.course_enrol_course_category);
         mCourseCategory.setText(course.getCategoryname());
 
-        mTeachers = (LinearLayout) view.findViewById(R.id.course_enrol_teachers);
+        mTeachers = view.findViewById(R.id.course_enrol_teachers);
         List<Contact> teachers = course.getContacts();
-        TextView noTeacherInfo = (TextView) view.findViewById(R.id.course_enrol_teacher_no_info);
+        TextView noTeacherInfo = view.findViewById(R.id.course_enrol_teacher_no_info);
         if (teachers.size() == 0 || teachers == null) {
             noTeacherInfo.setVisibility(View.VISIBLE);
         } else {
@@ -105,7 +105,7 @@ public class CourseEnrolFragment extends Fragment {
             }
         }
 
-        mEnrolButton = (Button) view.findViewById(R.id.course_enrol_enrol_button);
+        mEnrolButton = view.findViewById(R.id.course_enrol_enrol_button);
         mEnrolButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -167,7 +167,7 @@ public class CourseEnrolFragment extends Fragment {
                     CourseSectionFragment courseSectionFragment = CourseSectionFragment
                             .newInstance(TOKEN, course.getId());
                     set.Course courseSet = new set.Course(course);
-                    
+
                     Realm realm = MyApplication.getInstance().getRealmInstance();
                     realm.beginTransaction();
                     realm.copyToRealmOrUpdate(courseSet);

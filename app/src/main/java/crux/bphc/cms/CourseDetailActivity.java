@@ -14,7 +14,6 @@ import app.MyApplication;
 import crux.bphc.cms.fragments.CourseEnrolFragment;
 import crux.bphc.cms.fragments.CourseSectionFragment;
 import io.realm.Realm;
-import io.realm.RealmResults;
 import set.Course;
 import set.search.Contact;
 
@@ -39,7 +38,7 @@ public class CourseDetailActivity extends AppCompatActivity {
 
         realm = MyApplication.getInstance().getRealmInstance();
         fragmentManager = getSupportFragmentManager();
-        mCourseEnrolContainer = (FrameLayout) findViewById(R.id.course_section_enrol_container);
+        mCourseEnrolContainer = findViewById(R.id.course_section_enrol_container);
 
         Intent intent = getIntent();
 
@@ -53,12 +52,12 @@ public class CourseDetailActivity extends AppCompatActivity {
             courseId = mEnrolCourse.getId();
         }
 
-        course =  realm
+        course = realm
                 .where(Course.class)
                 .equalTo("id", courseId)
                 .findFirst();
 
-        if (course == null ) {
+        if (course == null) {
             System.out.println("receivedCourseId: " + courseId);
             contacts = mEnrolCourse.getContacts();
             setCourseEnrol();

@@ -8,8 +8,8 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 import set.CourseSection;
 import set.enrol.SelfEnrol;
-import set.search.CourseSearch;
 import set.forum.ForumData;
+import set.search.CourseSearch;
 
 /**
  * Created by harsu on 16-12-2016.
@@ -19,11 +19,15 @@ public interface MoodleServices {
     /**
      * User's data like username, first name, last name, full name, userId is obtained.
      * Returns {@link UserDetail} object as string.
+     *
      * @param token
      * @return
      */
     @GET("webservice/rest/server.php?wsfunction=core_webservice_get_site_info&moodlewsrestformat=json")
     Call<ResponseBody> fetchUserDetail(@Query("wstoken") String token);
+
+    @GET("webservice/rest/server.php?wsfunction=core_webservice_get_site_info&moodlewsrestformat=json")
+    Call<ResponseBody> checkToken(@Query("wstoken") String token);
 
     @GET("webservice/rest/server.php?wsfunction=core_enrol_get_users_courses&moodlewsrestformat=json")
     Call<ResponseBody> getCourses(@Query("wstoken") String token, @Query("userid") int userID);

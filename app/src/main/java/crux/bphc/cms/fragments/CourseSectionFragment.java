@@ -101,8 +101,8 @@ public class CourseSectionFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 
         courseName = CourseDataHandler.getCourseName(courseId);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
-        linearLayout = (LinearLayout) view.findViewById(R.id.linearLayout);
+        mSwipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+        linearLayout = view.findViewById(R.id.linearLayout);
         empty = view.findViewById(R.id.empty);
         courseSections = courseDataHandler.getCourseData(courseId);
 
@@ -234,12 +234,12 @@ public class CourseSectionFragment extends Fragment {
             v.findViewById(R.id.description).setVisibility(View.VISIBLE);
             Spanned htmlDescription = Html.fromHtml(addToken(section.getSummary().trim()));
             String descriptionWithOutExtraSpace = htmlDescription.toString().trim();
-            TextView textView = (TextView) v.findViewById(R.id.description);
+            TextView textView = v.findViewById(R.id.description);
             textView.setText(htmlDescription.subSequence(0, descriptionWithOutExtraSpace.length()));
             textView.setMovementMethod(LinkMovementMethod.getInstance());
             textView.setLinksClickable(true);
         }
-        RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = v.findViewById(R.id.recyclerView);
 
         final ModulesAdapter myAdapter = new ModulesAdapter(getContext(), mFileManager, courseName);
         myAdapter.setModules(section.getModules());
@@ -288,19 +288,19 @@ public class CourseSectionFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.course_details_menu, menu);
-        super.onCreateOptionsMenu(menu,inflater);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId()==R.id.mark_all_as_read){
+        if (item.getItemId() == R.id.mark_all_as_read) {
             courseDataHandler.markAllAsRead(courseSections);
-            courseSections=courseDataHandler.getCourseData(courseId);
+            courseSections = courseDataHandler.getCourseData(courseId);
             reloadSections();
-            Toast.makeText(getActivity(),"Marked all as read",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Marked all as read", Toast.LENGTH_SHORT).show();
             return true;
         }
-        if(item.getItemId()==R.id.action_open_in_browser){
+        if (item.getItemId() == R.id.action_open_in_browser) {
             MyFileManager.showInWebsite(getActivity(), Constants.getCourseURL(courseId));
         }
         return super.onOptionsItemSelected(item);

@@ -28,7 +28,7 @@ public class Module extends RealmObject {
 
     public Module() {
         modType = Type.DEFAULT;
-        isNewContent =false;
+        isNewContent = false;
     }
 
     public Module(int id, String url, String name, int instance, String modicon, String modname, String modplural, String description, RealmList<Content> contents) {
@@ -246,13 +246,10 @@ public class Module extends RealmObject {
     }
 
     public boolean isDownloadable() {
-        if (getContents() == null || getContents().size() == 0 || getModType() == Module.Type.URL || getModType() == Type.FORUM || getModType() == Type.PAGE) {
-            return false;
-        }
-        return true;
+        return getContents() != null && getContents().size() != 0 && getModType() != Type.URL && getModType() != Type.FORUM && getModType() != Type.PAGE;
     }
 
-    public static enum Type {
+    public enum Type {
         RESOURCE, FORUM, LABEL, ASSIGNMENT, FOLDER, QUIZ, URL, PAGE, DEFAULT
     }
 }

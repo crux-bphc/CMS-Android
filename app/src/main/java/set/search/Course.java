@@ -9,7 +9,7 @@ import java.util.List;
  * Created by siddhant on 12/17/16.
  */
 
-public class Course implements Parcelable{
+public class Course implements Parcelable {
 
     private int id;
     private String fullname, displayname, shortname;

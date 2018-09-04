@@ -56,7 +56,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        return new ViewHolderResource(inflater.inflate(R.layout.row_course_module_resource2, parent, false));
+        return new ViewHolderResource(inflater.inflate(R.layout.row_course_module_resource, parent, false));
     }
 
     @Override
@@ -93,12 +93,12 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             super(itemView);
 
             iconWrapper = itemView.findViewById(R.id.iconWrapper);
-            name = (HtmlTextView) itemView.findViewById(R.id.fileName);
-            modIcon = (ImageView) itemView.findViewById(R.id.fileIcon);
-            more = (ImageView) itemView.findViewById(R.id.more);
+            name = itemView.findViewById(R.id.fileName);
+            modIcon = itemView.findViewById(R.id.fileIcon);
+            more = itemView.findViewById(R.id.more);
             topDivider = itemView.findViewById(R.id.topDivider);
             bottomDivider = itemView.findViewById(R.id.bottomDivider);
-            description = (TextView) itemView.findViewById(R.id.description);
+            description = itemView.findViewById(R.id.description);
             clickWrapper = itemView.findViewById(R.id.clickWrapper);
             textWrapper = itemView.findViewById(R.id.textWrapper);
             downloadIcon = itemView.findViewById(R.id.downloadButton);
@@ -109,7 +109,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if (clickListener != null) {
                     clickListener.onClick(modules.get(getLayoutPosition()), getLayoutPosition());
                 }
-                markAsReadandUnread(modules.get(getLayoutPosition()), getLayoutPosition(),false);
+                markAsReadandUnread(modules.get(getLayoutPosition()), getLayoutPosition(), false);
             });
             more.setOnClickListener(v -> {
                 final Module module = modules.get(getLayoutPosition());
@@ -155,9 +155,9 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                         for (Content content : module.getContents()) {
                                             mFileManager.shareFile(content.getFilename(), courseName);
                                         }
-                                        break;
+                                    break;
                                 case 3:
-                                    markAsReadandUnread(module,position,true);
+                                    markAsReadandUnread(module, position, true);
 
 
                             }
@@ -167,20 +167,20 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                     mFileManager.downloadFile(module.getContents().get(0), module, courseName);
                                     break;
                                 case 1:
-                                    markAsReadandUnread(module,position,true);
+                                    markAsReadandUnread(module, position, true);
                             }
 
                         }
                     }
                 });
                 alertDialog.show();
-                markAsReadandUnread(modules.get(getLayoutPosition()), getLayoutPosition(),false);
+                markAsReadandUnread(modules.get(getLayoutPosition()), getLayoutPosition(), false);
             });
-            progressBar = (ProgressBar) itemView.findViewById(R.id.progressBar);
+            progressBar = itemView.findViewById(R.id.progressBar);
         }
 
         private void markAsReadandUnread(Module module, int position, boolean isNewContent) {
-            courseDataHandler.markAsReadandUnread(module.getId(),isNewContent);
+            courseDataHandler.markAsReadandUnread(module.getId(), isNewContent);
             modules.get(position).setNewContent(isNewContent);
             notifyItemChanged(position);
         }

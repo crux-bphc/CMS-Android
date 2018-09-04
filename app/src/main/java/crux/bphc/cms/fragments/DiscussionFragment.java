@@ -4,7 +4,6 @@ package crux.bphc.cms.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,7 +62,7 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_forum, container, false);
+        return inflater.inflate(R.layout.fragment_discussion, container, false);
     }
 
     @Override
@@ -76,35 +75,35 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
 
         Discussion discussion = realm.where(Discussion.class).equalTo("id", id).findFirst();
 
-        mUserPic = (ImageView) view.findViewById(R.id.user_pic);
+        mUserPic = view.findViewById(R.id.user_pic);
         Picasso.with(getContext()).load(discussion.getUserpictureurl()).into(mUserPic);
 
-        mSubject = (TextView) view.findViewById(R.id.subject);
+        mSubject = view.findViewById(R.id.subject);
         mSubject.setText(discussion.getSubject());
 
-        mUserName = (TextView) view.findViewById(R.id.user_name);
+        mUserName = view.findViewById(R.id.user_name);
         mUserName.setText(discussion.getUserfullname());
 
-        mTimeModified = (TextView) view.findViewById(R.id.modified_time);
+        mTimeModified = view.findViewById(R.id.modified_time);
         mTimeModified.setText(ForumFragment.formatDate(discussion.getTimemodified()));
 
-        mMessage = (HtmlTextView) view.findViewById(R.id.message);
+        mMessage = view.findViewById(R.id.message);
         mMessage.setText(discussion.getMessage());
 
-        mAttachmentContainer = (LinearLayout) view.findViewById(R.id.attachments);
+        mAttachmentContainer = view.findViewById(R.id.attachments);
         LayoutInflater inflater = LayoutInflater.from(getContext());
 
-        if(discussion.getAttachments().size() == 0) mAttachmentContainer.setVisibility(View.GONE);
+        if (discussion.getAttachments().size() == 0) mAttachmentContainer.setVisibility(View.GONE);
 
         for (final Attachment attachment : discussion.getAttachments()) {
             View attachmentView = inflater.inflate(
-                    R.layout.row_attachment_detail_site_news,
+                    R.layout.row_attachment_detail_forum,
                     mAttachmentContainer);
 
-            TextView fileName = (TextView) attachmentView.findViewById(R.id.fileName);
+            TextView fileName = attachmentView.findViewById(R.id.fileName);
             fileName.setText(attachment.getFilename());
 
-            ImageView download = (ImageView) attachmentView.findViewById(R.id.downloadIcon);
+            ImageView download = attachmentView.findViewById(R.id.downloadIcon);
             if (mFileManager.searchFile(attachment.getFilename())) {
                 download.setImageResource(R.drawable.eye);
             } else {
@@ -142,10 +141,10 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
         int child = mAttachmentContainer.getChildCount();
         for (int i = 0; i < child; i++) {
             View childView = mAttachmentContainer.getChildAt(i);
-            TextView fileNameTextView = (TextView) childView.findViewById(R.id.fileName);
+            TextView fileNameTextView = childView.findViewById(R.id.fileName);
             if (fileNameTextView != null &&
                     fileNameTextView.getText().toString().equalsIgnoreCase(fileName)) {
-                ImageView downloadIcon = (ImageView) childView.findViewById(R.id.downloadIcon);
+                ImageView downloadIcon = childView.findViewById(R.id.downloadIcon);
                 downloadIcon.setImageResource(R.drawable.eye);
                 break;
             }

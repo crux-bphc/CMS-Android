@@ -130,7 +130,7 @@ public class CourseDataHandler {
             }
 
             realm.beginTransaction();
-            realm.where(CourseSection.class).equalTo("courseID",courseId).findAll().deleteAllFromRealm();
+            realm.where(CourseSection.class).equalTo("courseID", courseId).findAll().deleteAllFromRealm();
             realm.copyToRealmOrUpdate(sectionList);
             realm.commitTransaction();
         }
@@ -170,7 +170,7 @@ public class CourseDataHandler {
         if (realmModule == null) {  //new module as a whole
             return module;
         }
-        if(realmModule.getDescription()!=null && !realmModule.getDescription().equals(module.getDescription())){  //the description of module has changed
+        if (realmModule.getDescription() != null && !realmModule.getDescription().equals(module.getDescription())) {  //the description of module has changed
             return module;
         }
         module.setNewContent(realmModule.isNewContent());
@@ -220,10 +220,10 @@ public class CourseDataHandler {
     }
 
     public void markAllAsRead(List<CourseSection> courseSections) {
-        for(CourseSection courseSection:courseSections){
-            if(courseSection.getModules()!=null){
-                for(Module module:courseSection.getModules()){
-                    markAsReadandUnread(module.getId(),false);
+        for (CourseSection courseSection : courseSections) {
+            if (courseSection.getModules() != null) {
+                for (Module module : courseSection.getModules()) {
+                    markAsReadandUnread(module.getId(), false);
                 }
             }
         }
@@ -232,18 +232,18 @@ public class CourseDataHandler {
     public void markAsReadandUnread(int moduleId, boolean isNewContent) {
         Realm realm = Realm.getInstance(MyApplication.getRealmConfiguration());
         realm.beginTransaction();
-        realm.where(Module.class).equalTo("id",moduleId).findFirst().setNewContent(isNewContent);
+        realm.where(Module.class).equalTo("id", moduleId).findFirst().setNewContent(isNewContent);
         realm.commitTransaction();
         realm.close();
     }
 
     public int getUnreadCount(int id) {
-        int count=0;
-        List<CourseSection> courseSections= getCourseData(id);
-        for(CourseSection courseSection:courseSections){
-            if(courseSection.getModules()!=null){
-                for(Module module:courseSection.getModules()){
-                    if(module.isNewContent()){
+        int count = 0;
+        List<CourseSection> courseSections = getCourseData(id);
+        for (CourseSection courseSection : courseSections) {
+            if (courseSection.getModules() != null) {
+                for (Module module : courseSection.getModules()) {
+                    if (module.isNewContent()) {
                         count++;
                     }
                 }

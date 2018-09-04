@@ -15,18 +15,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <!--<activity
-            android:name=".LoginActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>-->
-
         <activity
             android:name=".TokenActivity"
             android:label="@string/app_name"
@@ -52,41 +40,12 @@
         <activity
             android:name=".CourseModulesActivity"
             android:screenOrientation="portrait" />
-        <!--
-        <activity
-            android:name=".DeepLinkActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait">
-            <intent-filter android:label="@string/app_name">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                &lt;!&ndash; Accepts URIs that begin with "http://www.example.com/gizmos” &ndash;&gt;
-                <data
-                    android:host="id.bits-hyderabad.ac.in"
-                    android:pathPrefix="/moodle"
-                    android:scheme="http" />
-            </intent-filter>
-        </activity>
-        -->
 
         <service
             android:name=".service.NotificationService"
             android:exported="true"
-            android:permission="android.permission.BIND_JOB_SERVICE"/>
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
-        <!--
-        <receiver
-            android:name=".service.DeviceBootReceiver"
-            android:enabled="true"
-            android:exported="false"
-            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-        -->
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.provider"

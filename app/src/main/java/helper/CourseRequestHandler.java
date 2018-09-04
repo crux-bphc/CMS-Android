@@ -184,18 +184,18 @@ public class CourseRequestHandler {
     //This method resolves the names of files with same names
     private List<CourseSection> resolve(List<CourseSection> courseSections) {
         List<Content> contents = new ArrayList<>();
-        for(CourseSection courseSection : courseSections) {
+        for (CourseSection courseSection : courseSections) {
             for (Module module : courseSection.getModules()) {
                 List<Content> currContents = module.getContents();
-                if(currContents!=null) {
+                if (currContents != null) {
                     contents.addAll(currContents);
                 }
             }
         }
 
         Set<Content> set = new TreeSet<>((c1, c2) -> c1.getFilename().compareTo(c2.getFilename()));
-        for(Content c : contents) {
-            while(!set.add(c)) {
+        for (Content c : contents) {
+            while (!set.add(c)) {
                 changeName(c);
             }
         }
@@ -207,21 +207,21 @@ public class CourseRequestHandler {
         String fileName = content.getFilename();
         String newFileName = fileName;
         //Makes sure that the string fileName contains an extension
-        if(!(fileName.lastIndexOf('.') == -1)) {
+        if (!(fileName.lastIndexOf('.') == -1)) {
             int lastIndex = fileName.lastIndexOf('(');
             //if '(' is not there in the fileName adds '(1)' else increments the value in the brackets.
-            if(lastIndex == -1) {
+            if (lastIndex == -1) {
                 newFileName = fileName.substring(0, fileName.lastIndexOf('.')) +
                         "(1)" +
                         fileName.substring(fileName.lastIndexOf('.'));
-            }else {
+            } else {
                 String fileNum = fileName.substring(lastIndex + 1, fileName.lastIndexOf(')'));
                 try {
                     int count = Integer.parseInt(fileNum);
-                    newFileName = fileName.substring(0,lastIndex + 1) +
+                    newFileName = fileName.substring(0, lastIndex + 1) +
                             ++count +
                             fileName.substring(fileName.lastIndexOf(')'));
-                }catch (NumberFormatException e) {
+                } catch (NumberFormatException e) {
                     newFileName = fileName;
                 }
             }
@@ -231,8 +231,8 @@ public class CourseRequestHandler {
 
     public interface CallBack<T> {
 
-        public void onResponse(T responseObject);
+        void onResponse(T responseObject);
 
-        public void onFailure(String message, Throwable t);
+        void onFailure(String message, Throwable t);
     }
 }

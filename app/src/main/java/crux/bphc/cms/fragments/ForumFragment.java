@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -100,7 +99,7 @@ public class ForumFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_site_news, container, false);
+        return inflater.inflate(R.layout.fragment_forum, container, false);
     }
 
     @Override
@@ -109,7 +108,7 @@ public class ForumFragment extends Fragment {
 
         mEmptyView = view.findViewById(R.id.tv_empty);
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
+        mSwipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -129,13 +128,13 @@ public class ForumFragment extends Fragment {
                         .getSupportFragmentManager()
                         .beginTransaction();
                 transaction.addToBackStack(null);
-                transaction.replace(((ViewGroup)getView().getParent()).getId(), fragment, "SiteNewsDetail");
+                transaction.replace(((ViewGroup) getView().getParent()).getId(), fragment, "ForumDetail");
                 transaction.commit();
                 return true;
             }
         };
 
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.site_news);
+        mRecyclerView = view.findViewById(R.id.site_news);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -181,7 +180,7 @@ public class ForumFragment extends Fragment {
             public void onResponse(Call<ForumData> call, Response<ForumData> response) {
                 List<Discussion> discussions = response.body().getDiscussions();
 
-                for(Discussion discussion : discussions) {
+                for (Discussion discussion : discussions) {
                     discussion.setForumId(FORUM_ID);
                 }
 
@@ -208,7 +207,7 @@ public class ForumFragment extends Fragment {
                     mLoading = false;
                     mSwipeRefreshLayout.setRefreshing(false);
                     // avoid an additional request
-                    if(discussions.size() < PER_PAGE) mRemaining = false;
+                    if (discussions.size() < PER_PAGE) mRemaining = false;
                 }
             }
 
@@ -217,7 +216,7 @@ public class ForumFragment extends Fragment {
                 System.out.println(t.toString());
                 mLoading = false;
                 mSwipeRefreshLayout.setRefreshing(false);
-                
+
                 // Load and display cached discussion data from database, if present
                 // Do not attempt to load new pages unless manual refresh
                 mRemaining = false;
@@ -262,7 +261,7 @@ public class ForumFragment extends Fragment {
                     mLoading = false;
                     mSwipeRefreshLayout.setRefreshing(false);
                     // avoid an additional request
-                    if(discussions.size() < PER_PAGE) mRemaining = false;
+                    if (discussions.size() < PER_PAGE) mRemaining = false;
                 }
             }
 
@@ -275,9 +274,9 @@ public class ForumFragment extends Fragment {
         });
     }
 
-    public static  String formatDate(int seconds) {
+    public static String formatDate(int seconds) {
         GregorianCalendar cal = new GregorianCalendar();
-        cal.setTimeInMillis((long)seconds*1000);
+        cal.setTimeInMillis((long) seconds * 1000);
         int day = cal.get(Calendar.DAY_OF_MONTH);
         String month = cal.getDisplayName(
                 Calendar.MONTH,
@@ -287,7 +286,7 @@ public class ForumFragment extends Fragment {
         return String.valueOf(day) + " " + month + ", " + String.valueOf(year);
     }
 
-    private class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.SiteNewsViewHolder> {
+    private class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.ForumViewHolder> {
 
         private List<Discussion> mDiscussions = new ArrayList<>();
         private ClickListener mClickListener;
@@ -312,13 +311,13 @@ public class ForumFragment extends Fragment {
         }
 
         @Override
-        public SiteNewsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public ForumViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            return new SiteNewsViewHolder(inflater.inflate(R.layout.row_site_news, parent, false));
+            return new ForumViewHolder(inflater.inflate(R.layout.row_forum, parent, false));
         }
 
         @Override
-        public void onBindViewHolder(SiteNewsViewHolder holder, int position) {
+        public void onBindViewHolder(ForumViewHolder holder, int position) {
             Discussion discussion = mDiscussions.get(position);
             holder.bind(discussion);
         }
@@ -329,7 +328,7 @@ public class ForumFragment extends Fragment {
         }
 
 
-        public class SiteNewsViewHolder extends RecyclerView.ViewHolder {
+        public class ForumViewHolder extends RecyclerView.ViewHolder {
 
             private ImageView mUserPic;
             private TextView mSubject;
@@ -337,7 +336,7 @@ public class ForumFragment extends Fragment {
             private TextView mModifiedTime;
             private HtmlTextView mMessage;
 
-            public SiteNewsViewHolder(View itemView) {
+            public ForumViewHolder(View itemView) {
                 super(itemView);
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -347,11 +346,11 @@ public class ForumFragment extends Fragment {
                     }
                 });
 
-                mUserPic = (ImageView) itemView.findViewById(R.id.user_pic);
-                mSubject = (TextView) itemView.findViewById(R.id.subject);
-                mUserName = (TextView) itemView.findViewById(R.id.user_name);
-                mModifiedTime = (TextView) itemView.findViewById(R.id.modified_time);
-                mMessage = (HtmlTextView) itemView.findViewById(R.id.message);
+                mUserPic = itemView.findViewById(R.id.user_pic);
+                mSubject = itemView.findViewById(R.id.subject);
+                mUserName = itemView.findViewById(R.id.user_name);
+                mModifiedTime = itemView.findViewById(R.id.modified_time);
+                mMessage = itemView.findViewById(R.id.message);
             }
 
             public void bind(Discussion discussion) {

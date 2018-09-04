@@ -7,7 +7,7 @@ import android.os.Parcelable;
  * Created by siddhant on 12/17/16.
  */
 
-public class Contact implements Parcelable{
+public class Contact implements Parcelable {
 
     private int id;
     private String fullname;
