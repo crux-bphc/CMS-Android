@@ -28,3 +28,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 * Improper condition while checking if a course is newly added.
 * Repeated crashes while syncing updates.
 * Bug in SiteNews pagination where only the latest page is displayed and cached.
+* Files list for course was being generated using entire CMS directory.
+* Added a missing Toast when starting file download from a forum attachment.
