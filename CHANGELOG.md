@@ -3,8 +3,11 @@
 All notable changes to the project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standards.
+Dates are in `yyyy-mm-dd`.
 
 ## Unreleased
+
+## Version 1.4.0 (verCode 7). 2018-09-05
 ### Added
 * 'Mark as unread' option for modules in a course
 * Notification Channel support for Oreo and above.
