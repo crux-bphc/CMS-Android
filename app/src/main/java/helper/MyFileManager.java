@@ -114,6 +114,7 @@ public class MyFileManager {
         this.callback = callback;
     }
 
+    // TODO check if the courseName params of these methods are needed, since we're passing it in constructor anyway
     public void downloadFile(Content content, Module module, String courseName) {
         downloadFile(content.getFilename(), content.getFileurl(), module.getDescription(), courseName, false);
     }
@@ -210,7 +211,7 @@ public class MyFileManager {
     public void reloadFileList() {
         fileList = new ArrayList<>();
         File courseDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
-                + File.separator + CMS + File.separator + courseDirName);
+        + getPathExtension(courseDirName));
         if (courseDir.isDirectory()) {
             fileList.addAll(Arrays.asList(courseDir.list()));
         }
