@@ -16,6 +16,7 @@ public class Constants {
     public static String API_URL = "https://td.bits-hyderabad.ac.in/moodle/";
     public static String LOGIN_URL = API_URL + "login/index.php";
     public static String COURSE_URL = API_URL + "course/view.php";
+    public static String LOGIN_HELP_URL = "https://docs.google.com/document/d/1FUMAdVXCWhrnFT18LpYdeIMwlWPAnOezRweKOE-CRtA/edit";
     public static String TOKEN;
     public static long INTERVAL = AlarmManager.INTERVAL_HOUR;
     public static long TRIGGER_AT = 10 * 1000;

@@ -27,23 +27,39 @@
             android:layout_marginBottom="56dp"
             android:src="@drawable/bits_logo" />
 
-        <Button
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/instructions"
-            android:padding="12dp"
-            android:background="@color/colorAccent"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:typeface="monospace"
-            android:text="@string/get_token" />
+            android:layout_height="wrap_content">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:id="@+id/instructions"
+                android:padding="12dp"
+                android:background="@color/colorAccent"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:text="@string/get_token" />
+
+            <ImageView
+                android:id="@+id/login_help"
+                android:src="@drawable/help"
+                android:layout_marginStart="8dp"
+                android:layout_gravity="center"
+                android:layout_width="48dp"
+                android:layout_height="48dp" />
+
+        </LinearLayout>
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/token"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:padding="12dp"
             android:background="@drawable/rounded_border_edit_text"
             android:inputType="text"

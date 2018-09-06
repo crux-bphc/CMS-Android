@@ -65,6 +65,12 @@ public class TokenActivity extends AppCompatActivity {
         courseRequestHandler = new CourseRequestHandler(this);
     }
 
+    @OnClick(R.id.login_help)
+    void onClickHelp() {
+        Intent viewIntent = new Intent("android.intent.action.VIEW", Uri.parse(Constants.LOGIN_HELP_URL));
+        startActivity(viewIntent);
+    }
+
     @OnClick(R.id.instructions)
     void onClickInstructions() {
         String preferencesUrl = Constants.API_URL + "user/preferences.php";
