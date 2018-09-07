@@ -33,6 +33,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import set.Course;
 import set.CourseSection;
+import set.Module;
+import set.forum.Discussion;
 
 public class TokenActivity extends AppCompatActivity {
 
@@ -208,6 +210,19 @@ public class TokenActivity extends AppCompatActivity {
                 List<CourseSection> courseSections = courseRequests.getCourseData(course);
                 if (courseSections == null) {
                     continue;
+                }
+                for (CourseSection courseSection : courseSections) {
+                    List<Module> modules = courseSection.getModules();
+                    for (Module module : modules) {
+                        if (module.getModType() == Module.Type.FORUM) {
+                            List<Discussion> discussions = courseRequestHandler.getForumDiscussions(module.getInstance());
+                            if (discussions == null) continue;
+                            for (Discussion d : discussions) {
+                                d.setForumId(module.getInstance());
+                            }
+                            courseDataHandler.setForumDiscussions(module.getInstance(), discussions);
+                        }
+                    }
                 }
                 courseDataHandler.setCourseData(course.getCourseId(), courseSections);
             }

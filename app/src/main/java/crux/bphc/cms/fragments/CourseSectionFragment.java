@@ -37,6 +37,7 @@ import helper.ModulesAdapter;
 import helper.MyFileManager;
 import set.CourseSection;
 import set.Module;
+import set.forum.Discussion;
 
 import static helper.MyFileManager.DATA_DOWNLOADED;
 
@@ -176,6 +177,28 @@ public class CourseSectionFragment extends Fragment {
                     //todo not registered, ask to register, change UI, show enroll button
                     return;
                 }
+                for (CourseSection courseSection : sectionList) {
+                    List<Module> modules = courseSection.getModules();
+                    for (Module module : modules) {
+                        if (module.getModType() == Module.Type.FORUM) {
+                            courseRequestHandler.getForumDiscussions(module.getInstance(), new CourseRequestHandler.CallBack<List<Discussion>>() {
+                                @Override
+                                public void onResponse(List<Discussion> responseObject) {
+                                    for (Discussion d : responseObject) {
+                                        d.setForumId(module.getInstance());
+                                    }
+                                    List<Discussion> newDiscussions = courseDataHandler.setForumDiscussions(module.getInstance(), responseObject);
+                                    if (newDiscussions.size() > 0) courseDataHandler.markAsReadandUnread(module.getId(), true);
+                                }
+
+                                @Override
+                                public void onFailure(String message, Throwable t) {
+                                    mSwipeRefreshLayout.setRefreshing(false);
+                                }
+                            });
+                        }
+                    }
+                }
                 linearLayout.removeAllViews();
                 courseSections.clear();
                 courseDataHandler.setCourseData(courseId, sectionList);
@@ -293,7 +316,7 @@ public class CourseSectionFragment extends Fragment {
 
     }
 
-    public  void makeTextViewResizable(final TextView description, final int maxLine, final String expandText, final boolean viewMore) {
+    public void makeTextViewResizable(final TextView description, final int maxLine, final String expandText, final boolean viewMore) {
 
         if (description.getTag() == null) {
             description.setTag(description.getText());
@@ -310,10 +333,10 @@ public class CourseSectionFragment extends Fragment {
                 obs.removeOnGlobalLayoutListener(this);
                 if (maxLine == 0) {
                     text = expandText;
-                } else if (maxLine>0 && description.getLineCount() > maxLine) {
+                } else if (maxLine > 0 && description.getLineCount() > maxLine) {
                     lineEndIndex = description.getLayout().getLineEnd(maxLine - 1);
                     text = description.getText().subSequence(0, lineEndIndex) + "\n" + expandText;
-                } else if(description.getLineCount() <= maxLine) {
+                } else if (description.getLineCount() <= maxLine) {
                     text = description.getText().toString();
                 } else {
                     lineEndIndex = description.getLayout().getLineEnd(description.getLayout().getLineCount() - 1);
