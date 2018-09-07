@@ -25,6 +25,8 @@ import set.Content;
 import set.Course;
 import set.CourseSection;
 import set.Module;
+import set.forum.Discussion;
+import set.forum.ForumData;
 
 import static app.Constants.API_URL;
 
@@ -179,6 +181,23 @@ public class CourseRequestHandler {
                 }
             }
         });
+    }
+
+
+    public List<Discussion> getForumDiscussions(int moduleId) {
+        Call<ForumData>  callForumData = moodleServices.getForumDiscussions(userAccount.getToken(), moduleId, 0, 0);
+        try{
+            Response<ForumData> response = callForumData.execute();
+            if(response.code() != 200) {
+                return null;
+            }
+            ForumData forumData = response.body();
+            if(forumData == null) return null;
+            return forumData.getDiscussions();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     //This method resolves the names of files with same names

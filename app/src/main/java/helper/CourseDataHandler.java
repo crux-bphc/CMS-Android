@@ -2,6 +2,7 @@ package helper;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -17,6 +18,7 @@ import set.Content;
 import set.Course;
 import set.CourseSection;
 import set.Module;
+import set.forum.Discussion;
 
 /**
  * Created by Harshit Agarwal on 24-11-2017.
@@ -196,6 +198,28 @@ public class CourseDataHandler {
             return newModule;
         }
         return null;
+    }
+
+    public List<Discussion> setForumDiscussions(int forumId, List<Discussion> discussions) {
+        if (!userAccount.isLoggedIn()) {
+            return null;
+        }
+        List<Discussion> newDiscussions = new ArrayList<>();
+        Realm realm = Realm.getInstance(MyApplication.getRealmConfiguration());
+
+        for (Discussion discussion : discussions) {
+            if (realm.where(Discussion.class).equalTo("id", discussion.getId()).findFirst() == null) {
+                newDiscussions.add(discussion);
+            }
+        }
+        realm.beginTransaction();
+        final RealmResults<Discussion> results = realm.where(Discussion.class).equalTo("forumId", forumId).findAll();
+        results.deleteAllFromRealm();
+        realm.copyToRealm(discussions);
+        realm.commitTransaction();
+        realm.close();
+        return newDiscussions;
+
     }
 
     public void deleteCourse(int courseId) {
