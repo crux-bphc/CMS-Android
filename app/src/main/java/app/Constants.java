@@ -1,7 +1,5 @@
 package app;
 
-import android.app.AlarmManager;
-
 /**
  * Created by harsu on 16-12-2016.
  */
@@ -18,8 +16,6 @@ public class Constants {
     public static String COURSE_URL = API_URL + "course/view.php";
     public static String LOGIN_HELP_URL = "https://docs.google.com/document/d/1FUMAdVXCWhrnFT18LpYdeIMwlWPAnOezRweKOE-CRtA/edit";
     public static String TOKEN;
-    public static long INTERVAL = AlarmManager.INTERVAL_HOUR;
-    public static long TRIGGER_AT = 10 * 1000;
 
     public static String getFeedbackURL(String username, String id) {
         id += "@hyderabad.bits-pilani.ac.in";

@@ -29,6 +29,7 @@ import set.Course;
 import set.CourseSection;
 import set.Module;
 import set.NotificationSet;
+import set.forum.Discussion;
 
 import static android.support.v4.app.NotificationCompat.PRIORITY_DEFAULT;
 import static helper.HtmlTextView.parseHtml;
@@ -124,7 +125,7 @@ public class NotificationService extends JobService {
     public boolean onStopJob(JobParameters job) {
         return mJobRunning;
     }
-    
+
     /**
      * Method which handles the bulk of the logic. Checks updates in each of the user's enrolled
      * courses, and accordingly creates grouped notifications.
@@ -168,12 +169,28 @@ public class NotificationService extends JobService {
                 continue;
             }
 
+
             // update the sections of the course, and get new parts
             // Since new course notifications are skipped, default modules like "Announcements" will not get a notif
             List<CourseSection> newPartsInSection = courseDataHandler.setCourseData(course.getCourseId(), courseSections);
 
             // Generate notifications only if it is not a new course
             if (!newCourses.contains(course)) {
+                for (CourseSection courseSection : courseSections) {
+                    List<Module> modules = courseSection.getModules();
+                    for (Module module : modules) {
+                        if (module.getModType() == Module.Type.FORUM) {
+                            List<Discussion> discussions = courseRequestHandler.getForumDiscussions(module.getInstance());
+                            for(Discussion d : discussions) {
+                                d.setForumId(module.getInstance());
+                            }
+                            List<Discussion> newDiscussions = courseDataHandler.setForumDiscussions(module.getInstance(), discussions);
+                            for (Discussion discussion : newDiscussions) {
+                                createNotifModuleAdded(new NotificationSet(course, module, discussion));
+                            }
+                        }
+                    }
+                }
                 for (CourseSection section : newPartsInSection)
                     createNotifSectionAdded(section, course);
             }
@@ -185,7 +202,7 @@ public class NotificationService extends JobService {
 
     private void createNotifSectionAdded(CourseSection section, Course course) {
         for (Module module : section.getModules()) {
-            createNotifModuleAdded(new NotificationSet(course, section ,module));
+            createNotifModuleAdded(new NotificationSet(course, section, module));
         }
     }
 
@@ -195,15 +212,15 @@ public class NotificationService extends JobService {
 
             Intent intent = new Intent(this, TokenActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra("path", Uri.parse(Constants.getCourseURL(notificationSet.getCourseID())));
+            intent.putExtra("path", Uri.parse(Constants.getCourseURL(notificationSet.getBundleID())));
             PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             NotificationCompat.Builder groupBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_UPDATES_BUNDLE)
                     .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentText(notificationSet.getCourseName())
+                    .setContentText(notificationSet.getNotifSummary())
                     .setStyle(new NotificationCompat.InboxStyle()
-                                    .setBigContentTitle(notificationSet.getCourseName())
-                                    .setSummaryText(notificationSet.getCourseName()))
+                            .setBigContentTitle(notificationSet.getNotifSummary())
+                            .setSummaryText(notificationSet.getNotifSummary()))
                     .setGroup(notificationSet.getGroupKey())
                     .setGroupSummary(true)
                     .setAutoCancel(true)
@@ -223,20 +240,20 @@ public class NotificationService extends JobService {
 
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                mBuilder.setContentTitle(parseHtml(notificationSet.getSectionName()))
+                mBuilder.setContentTitle(parseHtml(notificationSet.getNotifTitle()))
                         .setContentText(parseHtml(notificationSet.getContentText()))
-                        .setStyle( new NotificationCompat.InboxStyle()
-                                .setSummaryText(notificationSet.getCourseName())
+                        .setStyle(new NotificationCompat.InboxStyle()
+                                .setSummaryText(notificationSet.getNotifSummary())
                                 .addLine(notificationSet.getContentText()));
                 // Notify the summary notification for post nougat devices only
-                mNotifyMgr.notify(notificationSet.getCourseID(), groupBuilder.build() );
+                mNotifyMgr.notify(notificationSet.getBundleID(), groupBuilder.build());
             } else {
-                mBuilder.setContentTitle(parseHtml(notificationSet.getCourseName()))
+                mBuilder.setContentTitle(parseHtml(notificationSet.getNotifSummary()))
                         .setContentText(parseHtml(notificationSet.getContentText()));
             }
 
 
-            mNotifyMgr.notify(notificationSet.getModId(), mBuilder.build());
+            mNotifyMgr.notify(notificationSet.getUniqueId(), mBuilder.build());
         }
     }
 }

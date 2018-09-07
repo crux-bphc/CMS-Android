@@ -3,6 +3,7 @@ package set;
 import io.realm.RealmModel;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.RealmClass;
+import set.forum.Discussion;
 
 /**
  * Created by harsu on 18-01-2017.
@@ -12,82 +13,91 @@ import io.realm.annotations.RealmClass;
 public class NotificationSet implements RealmModel {
 
     @PrimaryKey
-    private int modId;
-    private int courseID;
-    private String courseName;
-    private String sectionName;
-    private String moduleName;
+    private int uniqueId;
+    private int bundleID;
+    private String notifSummary;
+    private String notifTitle;
+    private String notifContext;
 
     public NotificationSet() {
     }
 
     public NotificationSet(int courseID, String courseName, int modId, String moduleName) {
-        this.courseID = courseID;
-        this.courseName = courseName;
-        this.modId = modId;
-        this.moduleName = moduleName;
+        this.bundleID = courseID;
+        this.notifSummary = courseName;
+        this.uniqueId = modId;
+        this.notifContext = moduleName;
     }
 
-    public int getModId() {
-        return modId;
+    public int getUniqueId() {
+        return uniqueId;
     }
 
-    public int getCourseID() {
-        return courseID;
+    public int getBundleID() {
+        return bundleID;
     }
 
-    public void setCourseID(int courseID) {
-        this.courseID = courseID;
+
+    public void setBundleID(int bundleID) {
+        this.bundleID = bundleID;
     }
 
-    public String getCourseName() {
-        return courseName;
+    public String getNotifSummary() {
+        return notifSummary;
     }
 
-    public void setCourseName(String courseName) {
-        this.courseName = courseName;
+    public void setNotifSummary(String notifSummary) {
+        this.notifSummary = notifSummary;
     }
 
-    public String getSectionName() {
-        return sectionName;
+    public String getNotifTitle() {
+        return notifTitle;
     }
 
-    public void setSectionName(String sectionName) {
-        this.sectionName = sectionName;
+    public void setNotifTitle(String notifTitle) {
+        this.notifTitle = notifTitle;
     }
 
-    public String getModuleName() {
-        return moduleName;
+    public String getNotifContext() {
+        return notifContext;
     }
 
-    public void setModuleName(String moduleName) {
-        this.moduleName = moduleName;
+    public void setNotifContext(String notifContext) {
+        this.notifContext = notifContext;
     }
 
     public NotificationSet(Course course, CourseSection section, Module module) {
-        this.courseID = course.getId();
-        this.courseName = course.getShortname();
-        this.sectionName = section.getName();
-        this.modId = module.getId();
-        this.moduleName = module.getName();
+        this.bundleID = course.getId();
+        this.notifSummary = course.getShortname();
+        this.notifTitle = section.getName();
+        this.uniqueId = module.getId();
+        this.notifContext = module.getName();
+    }
+
+    public NotificationSet(Course course, Module module, Discussion discussion) {
+        this.bundleID = course.getId();
+        this.notifSummary = course.getShortname();
+        this.notifTitle = module.getName();
+        this.notifContext = discussion.getName();
+        this.uniqueId = discussion.getId();
     }
 
 
-    public void setModId(int modId) {
-        this.modId = modId;
+    public void setUniqueId(int uniqueId) {
+        this.uniqueId = uniqueId;
     }
 
 
     public String getTitle() {
-        return courseName;
+        return notifSummary;
     }
 
     public String getGroupKey() {
-        return courseName;
+        return notifSummary;
 
     }
 
     public String getContentText() {
-        return moduleName;
+        return notifContext;
     }
 }

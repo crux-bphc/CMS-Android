@@ -184,15 +184,14 @@ public class ForumFragment extends Fragment {
             public void onResponse(Call<ForumData> call, Response<ForumData> response) {
                 List<Discussion> discussions = response.body().getDiscussions();
 
-                for (Discussion discussion : discussions) {
-                    discussion.setForumId(FORUM_ID);
-                }
-
                 if (discussions.size() == 0) {
                     mRemaining = false;
                     mSwipeRefreshLayout.setRefreshing(false);
                     mEmptyView.setVisibility(View.VISIBLE);
                 } else {
+                    for (Discussion discussion : discussions) {
+                        discussion.setForumId(FORUM_ID);
+                    }
                     mEmptyView.setVisibility(View.GONE);
                     mAdapter.clearDiscussions();
                     mAdapter.addDiscussions(discussions);
@@ -250,6 +249,9 @@ public class ForumFragment extends Fragment {
                     mRemaining = false;
                     mSwipeRefreshLayout.setRefreshing(false);
                 } else {
+                    for (Discussion discussion : discussions) {
+                        discussion.setForumId(FORUM_ID);
+                    }
                     mAdapter.addDiscussions(discussions);
 
                     final RealmResults<Discussion> results = realm.where(Discussion.class).equalTo("forumId", FORUM_ID).findAll();
