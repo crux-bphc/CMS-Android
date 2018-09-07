@@ -185,19 +185,40 @@ public class CourseRequestHandler {
 
 
     public List<Discussion> getForumDiscussions(int moduleId) {
-        Call<ForumData>  callForumData = moodleServices.getForumDiscussions(userAccount.getToken(), moduleId, 0, 0);
-        try{
+        Call<ForumData> callForumData = moodleServices.getForumDiscussions(userAccount.getToken(), moduleId, 0, 0);
+        try {
             Response<ForumData> response = callForumData.execute();
-            if(response.code() != 200) {
+            if (response.code() != 200) {
                 return null;
             }
             ForumData forumData = response.body();
-            if(forumData == null) return null;
+            if (forumData == null) return null;
             return forumData.getDiscussions();
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+
+    public void getForumDiscussions(int moduleId, @Nullable final CallBack<List<Discussion>> callBack) {
+        Call<ForumData> call = moodleServices.getForumDiscussions(userAccount.getToken(), moduleId, 0, 0);
+        call.enqueue(new Callback<ForumData>() {
+            @Override
+            public void onResponse(Call<ForumData> call, Response<ForumData> response) {
+                List<Discussion> discussions = response.body().getDiscussions();
+                if (callBack != null) {
+                    callBack.onResponse(discussions);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ForumData> call, Throwable t) {
+                if (callBack != null) {
+                    callBack.onFailure(NETWORK_ERROR, t);
+                }
+            }
+        });
     }
 
     //This method resolves the names of files with same names

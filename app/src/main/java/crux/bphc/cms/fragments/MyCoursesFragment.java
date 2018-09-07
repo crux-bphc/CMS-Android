@@ -36,6 +36,8 @@ import helper.HtmlTextView;
 import helper.UserUtils;
 import set.Course;
 import set.CourseSection;
+import set.Module;
+import set.forum.Discussion;
 
 import static android.content.Context.INPUT_METHOD_SERVICE;
 
@@ -281,6 +283,29 @@ public class MyCoursesFragment extends Fragment {
                     new CourseRequestHandler.CallBack<List<CourseSection>>() {
                         @Override
                         public void onResponse(List<CourseSection> responseObject) {
+                            for (CourseSection courseSection : responseObject) {
+                                List<Module> modules = courseSection.getModules();
+                                for (Module module : modules) {
+                                    if (module.getModType() == Module.Type.FORUM) {
+                                        courseRequestHandler.getForumDiscussions(module.getInstance(), new CourseRequestHandler.CallBack<List<Discussion>>() {
+                                            @Override
+                                            public void onResponse(List<Discussion> responseObject) {
+                                                for (Discussion d : responseObject) {
+                                                    d.setForumId(module.getInstance());
+                                                }
+                                                List<Discussion> newDiscussions = courseDataHandler.setForumDiscussions(module.getInstance(), responseObject);
+                                                if (newDiscussions.size() > 0)
+                                                    courseDataHandler.markAsReadandUnread(module.getId(), true);
+                                            }
+
+                                            @Override
+                                            public void onFailure(String message, Throwable t) {
+                                                mSwipeRefreshLayout.setRefreshing(false);
+                                            }
+                                        });
+                                    }
+                                }
+                            }
                             List<CourseSection> newPartsinSections = courseDataHandler.setCourseData(course.getCourseId(), responseObject);
                             if (newPartsinSections.size() > 0) {
                                 coursesUpdated++;

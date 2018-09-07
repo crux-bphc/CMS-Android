@@ -181,10 +181,12 @@ public class NotificationService extends JobService {
                     for (Module module : modules) {
                         if (module.getModType() == Module.Type.FORUM) {
                             List<Discussion> discussions = courseRequestHandler.getForumDiscussions(module.getInstance());
-                            for(Discussion d : discussions) {
+                            if (discussions == null) continue;
+                            for (Discussion d : discussions) {
                                 d.setForumId(module.getInstance());
                             }
                             List<Discussion> newDiscussions = courseDataHandler.setForumDiscussions(module.getInstance(), discussions);
+                            if(newDiscussions.size() > 0)  courseDataHandler.markAsReadandUnread(module.getId(), true);
                             for (Discussion discussion : newDiscussions) {
                                 createNotifModuleAdded(new NotificationSet(course, module, discussion));
                             }
