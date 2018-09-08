@@ -6,10 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 Dates are in `yyyy-mm-dd`.
 
 ## Unreleased
-### Added
-* Notifications for forum posts
 
-## Version 1.4.0 (verCode 7). 2018-09-05
+## Version 1.4.1 (verCode 8), 2018-09-08
+### Added
+* Notifications for forum posts.
+* "Help" button with instructions on logging in using a Token.
+
+### Changed
+* `API_URL` from `http` to `https`. This fixes the Cleartext traffic exceptions on Android 9.
+
+### Fixed
+* Course names weren't sanitized to proper directory names before passing to `searchFile`, causing a bug where downloaded files couldn't be found.
+
+## Version 1.4.0 (verCode 7), 2018-09-05
 ### Added
 * 'Mark as unread' option for modules in a course
 * Notification Channel support for Oreo and above.
@@ -21,7 +30,7 @@ Dates are in `yyyy-mm-dd`.
 
 ### Changed
 * Swipe to refresh on 'My Courses' syncs changes in all courses. Only refreshed list of courses earlier.
-* API served URL changed from "https://id.bits-hyderabad.ac.in/moodle/" to "https://td.bits-hyderabad.ac.in/moodle/"
+* API served URL changed from "http://id.bits-hyderabad.ac.in/moodle/" to "http://td.bits-hyderabad.ac.in/moodle/"
 * Notifications are 'bundled' with a group summary for Android Nougat and above. For lower APIs, each notification is shown separately.
 * Refactored `SiteNewsFragment` to `ForumFragment` that supports any forum based on the `forumid` parameter. The older `ForumFragment` is now `DiscussionFragment`.
 
