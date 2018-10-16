@@ -70,6 +70,7 @@ public class TokenActivity extends AppCompatActivity {
     @OnClick(R.id.login_help)
     void onClickHelp() {
         Intent viewIntent = new Intent("android.intent.action.VIEW", Uri.parse(Constants.LOGIN_HELP_URL));
+        dismissProgress();
         startActivity(viewIntent);
     }
 
@@ -148,6 +149,12 @@ public class TokenActivity extends AppCompatActivity {
             progressDialog.hide();
         progressDialog.setMessage(message);
     }
+    
+    private void dismissProgress() {
+        if(progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+    }
 
     private void getUserCourses() {
         new CourseDataRetriever(this, courseRequestHandler, courseDataHandler).execute();
@@ -162,6 +169,7 @@ public class TokenActivity extends AppCompatActivity {
                         getIntent().getParcelableExtra("path").toString()
                 );
             }
+            dismissProgress();
             startActivity(intent);
             finish();
         }
