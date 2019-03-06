@@ -55,13 +55,13 @@ public class TokenActivity extends AppCompatActivity {
         setContentView(R.layout.activity_token);
         ButterKnife.bind(this);
 
+        progressDialog = new ProgressDialog(this);
+
         userAccount = new UserAccount(this);
         checkLoggedIn();
 
         Retrofit retrofit = APIClient.getRetrofitInstance();
         moodleServices = retrofit.create(MoodleServices.class);
-
-        progressDialog = new ProgressDialog(this);
 
         courseDataHandler = new CourseDataHandler(this);
         courseRequestHandler = new CourseRequestHandler(this);
