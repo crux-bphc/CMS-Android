@@ -7,9 +7,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -57,6 +55,11 @@ class MyCoursesFragment : Fragment() {
                 mAdapter.filterCoursesByName(courses, searchCourseET.text.toString())
         }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onStart() {
         super.onStart()
         requireActivity().title = "My Courses"
@@ -67,6 +70,37 @@ class MyCoursesFragment : Fragment() {
         realm = Realm.getDefaultInstance()
         return inflater.inflate(R.layout.fragment_my_courses, container, false)
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.my_courses_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.mark_all_as_read -> {
+                val courses = courseDataHandler.courseList
+                CoroutineScope(Dispatchers.Default).launch {
+                    val realm = Realm.getDefaultInstance()
+                    val courseDataHandler = CourseDataHandler(requireContext(), realm)
+
+                    for (course in courses) {
+                        val sections = courseDataHandler.getCourseData(course.courseId)
+                        courseDataHandler.markAllAsRead(sections)
+                    }
+
+                    realm.close()
+                    CoroutineScope(Dispatchers.Main).launch {
+                        Toast.makeText(requireActivity(), "Marked all as read", Toast.LENGTH_SHORT).show()
+                        mAdapter.courses = this@MyCoursesFragment.courseDataHandler.courseList
+                    }
+                }
+                true
+            }
+            else -> false
+        }
+    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
