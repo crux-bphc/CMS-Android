@@ -3,6 +3,7 @@ package helper;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -11,6 +12,7 @@ import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +29,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.MyApplication;
 import crux.bphc.cms.R;
 import set.Content;
 import set.Module;
@@ -119,7 +122,14 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             more.setOnClickListener(v -> {
                 final Module module = modules.get(getLayoutPosition());
                 final int position = getLayoutPosition();
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+                AlertDialog.Builder alertDialog;
+
+                if (MyApplication.getInstance().isDarkModeEnabled()) {
+                    alertDialog = new AlertDialog.Builder(context,R.style.Theme_AppCompat_Dialog_Alert);
+                } else {
+                    alertDialog = new AlertDialog.Builder(context,R.style.Theme_AppCompat_Light_Dialog_Alert);
+                }
+
                 alertDialog.setTitle(module.getName());
                 final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1);
                 if (downloaded == 1) {
@@ -192,13 +202,11 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         void bind(Module module) {
             if (module.isNewContent()) {
-                itemView.setBackgroundColor(Color.parseColor("#E0F7FA"));
-//                name.setTypeface(null, Typeface.BOLD);
-//                name.setTextColor(Color.parseColor("#000000"));
+                itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.navBarSelected));
             } else {
-                itemView.setBackgroundColor(Color.WHITE);
-//                name.setTypeface(null, Typeface.NORMAL);
-//                name.setTextColor(Color.parseColor("#808080"));
+                TypedValue value = new TypedValue();
+                context.getTheme().resolveAttribute(R.attr.cardBgColor,value,true);
+                itemView.setBackgroundColor(value.data);
             }
 
             name.setText(module.getName());
@@ -212,11 +220,8 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             }
             iconWrapper.setVisibility(View.VISIBLE);
             if (!module.isDownloadable()) {
-//                download.setVisibility(View.GONE);
-//                name.setTextColor(Color.parseColor("#000000"));
                 downloadIcon.setImageResource(R.drawable.eye);
             } else {
-//                download.setVisibility(View.VISIBLE);
                 List<Content> contents = module.getContents();
                 downloaded = 1;
                 for (Content content : contents) {
@@ -226,12 +231,8 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     }
                 }
                 if (downloaded == 1) {
-//                    download.setImageResource(R.drawable.eye);
-//                    name.setTextColor(Color.parseColor("#4CAF50"));
                     downloadIcon.setImageResource(R.drawable.eye);
                 } else {
-//                    download.setImageResource(R.drawable.content_save);
-//                    name.setTextColor(Color.parseColor("#000000"));
                     downloadIcon.setImageResource(R.drawable.download);
                 }
             }

@@ -5,8 +5,13 @@
     <color name="blueAccent">#00bcd4</color>
     <color name="white">#ffffffff</color>
     <color name="black">#ff000000</color>
-    <color name="darkGray">#ff212121</color>
-    <color name="lightGray">#ff424242</color>
+    <color name="lighterBlack">#ff212121</color>
+
+    <color name="activityBackgroundLight">#FFFAFAFA</color>
+    <color name="activityBackgroundDark">@color/black</color>
+
+    <color name="cardBackgroundLight">@color/white</color>
+    <color name="cardBackgroundDark">@color/lighterBlack</color>
 
     <color name="textPrimary">@android:color/primary_text_light</color>
     <color name="textSecondary">@android:color/secondary_text_light</color>
@@ -15,6 +20,7 @@
     <color name="textSecondaryDark">@android:color/secondary_text_dark</color>
 
     <color name="navBarSelected">#5533B5E5</color>
+    <color name="moduleUnread">#FFE0F7FA</color>
 
     <!-- Tints for file icons -->
     <color name="alizarin">#e74c3c</color>

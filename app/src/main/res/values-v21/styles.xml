@@ -7,11 +7,14 @@
         <item name="colorAccent">@color/blueAccent</item>
         <item name="android:textColorPrimary">@color/textPrimary</item>
         <item name="android:textColorSecondary">@color/textSecondary</item>
+        <item name="dialogTheme">@style/AlertDialog.AppCompat.Light</item>
 
-        <item name="themeBackground">@color/white</item>
+        <item name="themeBackground">@color/activityBackgroundLight</item>
         <item name="navBarColorStates">@color/navbar_itemcolor_light</item>
         <item name="navBarAppearance">@style/navBarLight</item>
         <item name="navBarHeaderDrawable">@drawable/navbar_header_light</item>
+        <item name="iconTintColor">@android:color/transparent</item>
+        <item name="cardBgColor">@color/cardBackgroundLight</item>
 
         <!-- Required above API 21 for proper NoActionBar -->
         <item name="windowActionBar">false</item>
@@ -22,15 +25,18 @@
 
     <style name="AppTheme.NoActionBar.Dark" parent="AppTheme.NoActionBar">
         <!-- Should match corresponding AppTheme.Dark -->
-        <item name="colorPrimary">@color/lightGray</item>
+        <item name="colorPrimary">@color/lighterBlack</item>
         <item name="colorPrimaryDark">@color/black</item>
         <item name="android:textColorPrimary">@color/textPrimaryDark</item>
         <item name="android:textColorSecondary">@color/textSecondaryDark</item>
+        <item name="dialogTheme">@style/AlertDialog.AppCompat</item>
 
-        <item name="themeBackground">@color/darkGray</item>
+        <item name="themeBackground">@color/activityBackgroundDark</item>
         <item name="navBarColorStates">@color/navbar_itemcolor_dark</item>
         <item name="navBarAppearance">@style/navBarDark</item>
         <item name="navBarHeaderDrawable">@drawable/navbar_header_dark</item>
+        <item name="iconTintColor">@color/white</item>
+        <item name="cardBgColor">@color/cardBackgroundDark</item>
     </style>
 
 </resources>

@@ -5,5 +5,7 @@
         <attr name="navBarColorStates" format="reference" />
         <attr name="navBarAppearance" format="reference" />
         <attr name="navBarHeaderDrawable" format="reference" />
+        <attr name="iconTintColor" format="reference" />
+        <attr name="cardBgColor" format="reference" />
     </declare-styleable>
 </resources>

@@ -26,6 +26,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.MyApplication;
 import crux.bphc.cms.CourseDetailActivity;
 import crux.bphc.cms.R;
 import helper.ClickListener;
@@ -424,8 +425,14 @@ public class MyCoursesFragment extends Fragment {
                 download.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        AlertDialog.Builder alertDialog;
 
-                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+                        if (MyApplication.getInstance().isDarkModeEnabled()) {
+                            alertDialog = new AlertDialog.Builder(getContext(),R.style.Theme_AppCompat_Dialog_Alert);
+                        } else {
+                            alertDialog = new AlertDialog.Builder(getContext(),R.style.Theme_AppCompat_Light_Dialog_Alert);
+                        }
+
                         alertDialog.setTitle("Confirm Download");
                         alertDialog.setMessage("Are you sure, you want to download the course?");
                         alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {

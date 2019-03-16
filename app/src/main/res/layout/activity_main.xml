@@ -19,11 +19,11 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
-        android:background="?attr/themeBackground"
-        app:theme="?attr/navBarAppearance"
+        android:background="?themeBackground"
+        app:theme="?navBarAppearance"
         app:itemBackground="@drawable/navbar_itembackground"
-        app:itemIconTint="?attr/navBarColorStates"
-        app:itemTextColor="?attr/navBarColorStates"
+        app:itemIconTint="?navBarColorStates"
+        app:itemTextColor="?navBarColorStates"
         app:headerLayout="@layout/nav_header_main"
         app:menu="@menu/activity_main_drawer" />
 
