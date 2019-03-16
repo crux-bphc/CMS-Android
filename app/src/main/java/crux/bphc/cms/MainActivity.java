@@ -28,6 +28,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import app.Constants;
+import app.MyApplication;
 import crux.bphc.cms.fragments.ForumFragment;
 import crux.bphc.cms.fragments.MyCoursesFragment;
 import crux.bphc.cms.fragments.SearchCourseFragment;
@@ -49,6 +50,10 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (MyApplication.getInstance().isDarkModeEnabled()) {
+            setTheme(R.style.AppTheme_NoActionBar_Dark);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);

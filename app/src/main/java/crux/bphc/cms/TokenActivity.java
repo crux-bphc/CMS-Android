@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.List;
 
 import app.Constants;
+import app.MyApplication;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -51,6 +52,11 @@ public class TokenActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (MyApplication.getInstance().isDarkModeEnabled()) {
+            setTheme(R.style.AppTheme_Dark);
+            recreate();
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_token);
         ButterKnife.bind(this);

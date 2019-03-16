@@ -41,6 +41,10 @@ public class CourseModulesActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (MyApplication.getInstance().isDarkModeEnabled()) {
+            setTheme(R.style.AppTheme_Dark);
+        }
+
         super.onCreate(savedInstanceState);
         int sectionID = getIntent().getIntExtra("id", -1);
         if (sectionID == -1) {

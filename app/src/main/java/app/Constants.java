@@ -16,6 +16,7 @@ public class Constants {
     public static String COURSE_URL = API_URL + "course/view.php";
     public static String LOGIN_HELP_URL = "https://docs.google.com/document/d/1FUMAdVXCWhrnFT18LpYdeIMwlWPAnOezRweKOE-CRtA/edit";
     public static String TOKEN;
+    public static final String DARK_MODE_KEY = "DARK_MODE";
 
     public static String getFeedbackURL(String username, String id) {
         id += "@hyderabad.bits-pilani.ac.in";

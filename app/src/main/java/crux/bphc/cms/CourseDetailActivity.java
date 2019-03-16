@@ -33,6 +33,10 @@ public class CourseDetailActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (MyApplication.getInstance().isDarkModeEnabled()) {
+            setTheme(R.style.AppTheme_Dark);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_course_detail);
 
