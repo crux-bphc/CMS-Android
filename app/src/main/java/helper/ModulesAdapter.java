@@ -335,7 +335,9 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     @Override
                     public void updateDrawState(TextPaint textpaint) {
                         super.updateDrawState(textpaint);
-                        textpaint.setColor(Color.BLACK);
+                        TypedValue value = new TypedValue();
+                        context.getTheme().resolveAttribute(R.attr.colorAccent,value,true);
+                        textpaint.setColor(value.data);
                         textpaint.setUnderlineText(false);
                         textpaint.setFakeBoldText(true);
                     }
