@@ -8,5 +8,6 @@
         <attr name="iconTintColor" format="reference" />
         <attr name="cardBgColor" format="reference" />
         <attr name="tokenImageTint" format="reference" />
+        <attr name="dividerColor" format="reference" />
     </declare-styleable>
 </resources>

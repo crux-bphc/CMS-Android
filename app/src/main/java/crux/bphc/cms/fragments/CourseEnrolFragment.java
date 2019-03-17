@@ -104,9 +104,9 @@ public class CourseEnrolFragment extends Fragment {
 
             int textColor;
             if (MyApplication.getInstance().isDarkModeEnabled()) {
-                textColor = ContextCompat.getColor(getContext(), R.color.textPrimaryDark);
+                textColor = ContextCompat.getColor(getContext(), R.color.text_primary_dark);
             } else {
-                textColor = ContextCompat.getColor(getContext(), R.color.textPrimary);
+                textColor = ContextCompat.getColor(getContext(), R.color.text_primary_light);
             }
 
             for (Contact contact : teachers) {

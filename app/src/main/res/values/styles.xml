@@ -5,8 +5,8 @@
         <item name="colorPrimary">@color/orange</item>
         <item name="colorPrimaryDark">@color/orangeDark</item>
         <item name="colorAccent">@color/blueAccent</item>
-        <item name="android:textColorPrimary">@color/textPrimary</item>
-        <item name="android:textColorSecondary">@color/textSecondary</item>
+        <item name="android:textColorPrimary">@color/text_primary_light</item>
+        <item name="android:textColorSecondary">@color/text_secondary_light</item>
         <item name="dialogTheme">@style/AlertDialog.AppCompat.Light</item>
 
         <item name="themeBackground">@color/activityBackgroundLight</item>
@@ -16,13 +16,14 @@
         <item name="iconTintColor">@android:color/transparent</item> <!-- This is equivalent to no tint-->
         <item name="tokenImageTint">@android:color/transparent</item>
         <item name="cardBgColor">@color/cardBackgroundLight</item>
+        <item name="dividerColor">@color/gray74</item>
     </style>
 
     <style name="AppTheme.Dark" parent="AppTheme">
-        <item name="colorPrimary">@color/lighterBlack</item>
+        <item name="colorPrimary">@color/gray13</item>
         <item name="colorPrimaryDark">@color/black</item>
-        <item name="android:textColorPrimary">@color/textPrimaryDark</item>
-        <item name="android:textColorSecondary">@color/textSecondaryDark</item>
+        <item name="android:textColorPrimary">@color/text_primary_dark</item>
+        <item name="android:textColorSecondary">@color/text_secondary_dark</item>
         <item name="dialogTheme">@style/AlertDialog.AppCompat</item>
 
         <item name="themeBackground">@color/activityBackgroundDark</item>
@@ -32,6 +33,7 @@
         <item name="cardBgColor">@color/cardBackgroundDark</item>
         <item name="iconTintColor">@color/white</item>
         <item name="tokenImageTint">@color/black_alpha26</item>
+        <item name="dividerColor">@color/gray26</item>
     </style>
 
     <style name="SplashTheme" parent="AppTheme.Dark">
@@ -43,8 +45,8 @@
         <item name="colorPrimary">@color/orange</item>
         <item name="colorPrimaryDark">@color/orangeDark</item>
         <item name="colorAccent">@color/blueAccent</item>
-        <item name="android:textColorPrimary">@color/textPrimary</item>
-        <item name="android:textColorSecondary">@color/textSecondary</item>
+        <item name="android:textColorPrimary">@color/text_primary_light</item>
+        <item name="android:textColorSecondary">@color/text_secondary_light</item>
         <item name="dialogTheme">@style/AlertDialog.AppCompat.Light</item>
 
         <item name="themeBackground">@color/activityBackgroundLight</item>
@@ -53,16 +55,17 @@
         <item name="navBarHeaderDrawable">@drawable/navbar_header_light</item>
         <item name="iconTintColor">@android:color/transparent</item>
         <item name="cardBgColor">@color/cardBackgroundLight</item>
+        <item name="dividerColor">@color/gray74</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
 
     <style name="AppTheme.NoActionBar.Dark" parent="AppTheme.NoActionBar">
-        <item name="colorPrimary">@color/lighterBlack</item>
+        <item name="colorPrimary">@color/gray13</item>
         <item name="colorPrimaryDark">@color/black</item>
-        <item name="android:textColorPrimary">@color/textPrimaryDark</item>
-        <item name="android:textColorSecondary">@color/textSecondaryDark</item>
+        <item name="android:textColorPrimary">@color/text_primary_dark</item>
+        <item name="android:textColorSecondary">@color/text_secondary_dark</item>
         <item name="dialogTheme">@style/AlertDialog.AppCompat</item>
 
         <item name="themeBackground">@color/activityBackgroundDark</item>
@@ -71,13 +74,15 @@
         <item name="navBarHeaderDrawable">@drawable/navbar_header_dark</item>
         <item name="cardBgColor">@color/cardBackgroundDark</item>
         <item name="iconTintColor">@color/white</item>
+        <item name="dividerColor">@color/gray26</item>
     </style>
 
     <style name="navBarLight">
-        <item name="android:textColorSecondary">@color/textSecondary</item>
+        <item name="android:textColorSecondary">@color/text_secondary_light</item>
     </style>
 
     <style name="navBarDark">
+        <item name="android:listDivider">@color/gray26</item>
         <item name="android:textColorSecondary">@color/orangeDark</item>
     </style>
 

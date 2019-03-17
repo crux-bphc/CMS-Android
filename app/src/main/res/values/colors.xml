@@ -6,23 +6,22 @@
 
     <color name="white">#ffffffff</color>
     <color name="white_alpha26">#42ffffff</color>
+    <color name="white_alpha50">#80ffffff</color> <!-- default disabled text primary Dark -->
+
+    <color name="gray13">#ff212121</color>
+    <color name="gray26">#ff424242</color>
+    <color name="gray">#ffBEBEBE</color> <!-- default text secondary Dark -->
+    <color name="gray_alpha50">#80BEBEBE</color> <!-- default disabled text secondary Dark -->
+    <color name="gray74">#ffBDBDBD</color> <!-- list divider color Light -->
 
     <color name="black">#ff000000</color>
-    <color name="lighterBlack">#ff212121</color>
     <color name="black_alpha26">#42000000</color>
-    <color name="black_alpha77">#c4000000</color>
 
     <color name="activityBackgroundLight">#FFFAFAFA</color>
     <color name="activityBackgroundDark">@color/black</color>
 
     <color name="cardBackgroundLight">@color/white</color>
-    <color name="cardBackgroundDark">@color/lighterBlack</color>
-
-    <color name="textPrimary">@android:color/primary_text_light</color>
-    <color name="textSecondary">@android:color/secondary_text_light</color>
-
-    <color name="textPrimaryDark">@android:color/primary_text_dark</color>
-    <color name="textSecondaryDark">@android:color/secondary_text_dark</color>
+    <color name="cardBackgroundDark">@color/gray13</color>
 
     <color name="navBarSelected">@color/black_alpha26</color>
     <color name="moduleUnread">#FFE0F7FA</color>
