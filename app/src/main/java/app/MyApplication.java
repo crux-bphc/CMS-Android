@@ -4,7 +4,6 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import crux.bphc.cms.R;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 

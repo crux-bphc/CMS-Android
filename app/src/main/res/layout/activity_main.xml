@@ -19,7 +19,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
-        android:background="?themeBackground"
+        android:background="?cardBgColor"
         app:theme="?navBarAppearance"
         app:itemBackground="@drawable/navbar_itembackground"
         app:itemIconTint="?navBarColorStates"

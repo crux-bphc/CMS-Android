@@ -52,9 +52,9 @@ public class TokenActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (MyApplication.getInstance().isDarkModeEnabled()) {
-            setTheme(R.style.AppTheme_Dark);
-            recreate();
+        // reverse condition because SplashTheme is default dark
+        if (!MyApplication.getInstance().isDarkModeEnabled()) {
+            setTheme(R.style.AppTheme);
         }
 
         super.onCreate(savedInstanceState);

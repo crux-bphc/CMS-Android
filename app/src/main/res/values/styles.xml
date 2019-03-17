@@ -14,6 +14,7 @@
         <item name="navBarAppearance">@style/navBarLight</item>
         <item name="navBarHeaderDrawable">@drawable/navbar_header_light</item>
         <item name="iconTintColor">@android:color/transparent</item> <!-- This is equivalent to no tint-->
+        <item name="tokenImageTint">@android:color/transparent</item>
         <item name="cardBgColor">@color/cardBackgroundLight</item>
     </style>
 
@@ -30,6 +31,12 @@
         <item name="navBarHeaderDrawable">@drawable/navbar_header_dark</item>
         <item name="cardBgColor">@color/cardBackgroundDark</item>
         <item name="iconTintColor">@color/white</item>
+        <item name="tokenImageTint">@color/black_alpha26</item>
+    </style>
+
+    <style name="SplashTheme" parent="AppTheme.Dark">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:statusBarColor">@color/activityBackgroundDark</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

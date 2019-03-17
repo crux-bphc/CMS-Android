@@ -3,9 +3,14 @@
     <color name="orange">#FF5722</color>
     <color name="orangeDark">#E64A19</color>
     <color name="blueAccent">#00bcd4</color>
+
     <color name="white">#ffffffff</color>
+    <color name="white_alpha26">#42ffffff</color>
+
     <color name="black">#ff000000</color>
     <color name="lighterBlack">#ff212121</color>
+    <color name="black_alpha26">#42000000</color>
+    <color name="black_alpha77">#c4000000</color>
 
     <color name="activityBackgroundLight">#FFFAFAFA</color>
     <color name="activityBackgroundDark">@color/black</color>
@@ -19,7 +24,7 @@
     <color name="textPrimaryDark">@android:color/primary_text_dark</color>
     <color name="textSecondaryDark">@android:color/secondary_text_dark</color>
 
-    <color name="navBarSelected">#5533B5E5</color>
+    <color name="navBarSelected">@color/black_alpha26</color>
     <color name="moduleUnread">#FFE0F7FA</color>
 
     <!-- Tints for file icons -->
