@@ -32,8 +32,7 @@
             android:textStyle="bold" />
     </LinearLayout>
 
-    <TextView
-        android:autoLink="all"
+    <helper.HtmlTextView
         android:clickable="true"
         android:focusable="true"
         android:visibility="gone"

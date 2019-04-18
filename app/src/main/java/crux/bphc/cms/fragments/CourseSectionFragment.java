@@ -10,7 +10,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
-import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
@@ -34,8 +33,10 @@ import crux.bphc.cms.R;
 import helper.ClickListener;
 import helper.CourseDataHandler;
 import helper.CourseRequestHandler;
+import helper.HtmlTextView;
 import helper.ModulesAdapter;
 import helper.MyFileManager;
+import helper.Util;
 import set.CourseSection;
 import set.Module;
 import set.forum.Discussion;
@@ -262,15 +263,19 @@ public class CourseSectionFragment extends Fragment {
         });*/
         if (!section.getSummary().isEmpty()) {
             v.findViewById(R.id.description).setVisibility(View.VISIBLE);
-            Spanned htmlDescription = Html.fromHtml(addToken(section.getSummary().trim()));
-            String descriptionWithOutExtraSpace = htmlDescription.toString().trim();
+            String descriptionWithOutExtraSpace = addToken(section.getSummary().trim());
             TextView textView = v.findViewById(R.id.description);
-            textView.setText(htmlDescription.subSequence(0, descriptionWithOutExtraSpace.length()));
-            textView.setMovementMethod(LinkMovementMethod.getInstance());
-            textView.setLinksClickable(true);
-            textView.setTag(textView.getText());
+
+            // The first object in the array is the full html description
+            // The second represents the number of characters to be shown before the text is truncated.
+            // The value is calculated and assigned when the text is set in makeTextViewResizable
+            textView.setTag(new Object[] {descriptionWithOutExtraSpace, -1});
+
             makeTextViewResizable(textView, maxDescriptionLines, "Show More", true);
+        }else{
+            v.findViewById(R.id.description).setVisibility(View.GONE);
         }
+
         RecyclerView recyclerView = v.findViewById(R.id.recyclerView);
 
         final ModulesAdapter myAdapter = new ModulesAdapter(getContext(), mFileManager, courseName);
@@ -317,62 +322,97 @@ public class CourseSectionFragment extends Fragment {
 
     }
 
+    /**
+     * Sets the text associated with the Textview and appends @param{}expandText to the text
+     * @param description the Textview who's text is to be modified
+     * @param maxLine the maximum number of lines to be shown inside the Textview
+     * @param expandText the String that should be append to the end of the text. This text will be converted to a clickable span.
+     * @param viewMore whether the clickable span will expand or limit text
+     */
     public void makeTextViewResizable(final TextView description, final int maxLine, final String expandText, final boolean viewMore) {
 
-        if (description.getTag() == null) {
-            description.setTag(description.getText());
-        }
         ViewTreeObserver vto = description.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 
-
             @Override
             public void onGlobalLayout() {
-                String text;
-                int lineEndIndex;
+                String displayText = ""; /* The final text that is to be displayed  */
+                String descriptionHtml = (String) ((Object[]) description.getTag())[0]; /* The description of the course section (with HTML tags) */
+                int lineEndIndex = (int) ((Object[]) description.getTag())[1]; /* The number of characters that are shown in the description textview */
+
+                String descriptionText = Html.fromHtml(descriptionHtml).toString(); /* The description of the course section (with the HTML tags removed) */
+
                 ViewTreeObserver obs = description.getViewTreeObserver();
                 obs.removeOnGlobalLayoutListener(this);
-                if (maxLine == 0) {
-                    text = expandText;
-                } else if (maxLine > 0 && description.getLineCount() > maxLine) {
-                    lineEndIndex = description.getLayout().getLineEnd(maxLine - 1);
-                    text = description.getText().subSequence(0, lineEndIndex) + "\n" + expandText;
-                } else if (description.getLineCount() <= maxLine) {
-                    text = description.getText().toString();
+                if (viewMore) {
+                    if (maxLine == 0) {
+                        displayText = expandText;
+                    } else if (description.getLineCount() > maxLine) {
+                        if (lineEndIndex == -1) {
+                            // We do it this way because the layout may change after the activity has
+                            // been created and the text in description changes meaning the number
+                            // of characters also changes. Ideally, the layout should be static.
+                            // row_course_section->description has initial visibility GONE, which might be the culprit
+                            lineEndIndex = description.getLayout().getLineEnd(maxLine - 1);
+                            ((Object[]) description.getTag())[1] = lineEndIndex;
+                        }
+
+                        //int lineEndIndex = description.getLayout().getLineEnd(maxLine - 1); /* The maximum number of characters that the TextView can show at a time */
+                        /* Find out how much of the final text would actually be visible and grab the HTML description till that part */
+                        if (descriptionText.length() > lineEndIndex) {
+                            /* Start from lineEndIndex and find out the next complete word */
+                            String nearestWord = Util.nextNearestWord(descriptionText, lineEndIndex);
+                            if (!nearestWord.isEmpty()) { /* if empty -> lineEndIndex is probably at the end of the string */
+                                int occurrence = Util.countOccurrencesOfWord(descriptionText.substring(0, lineEndIndex + 1), nearestWord) + 1; /* Find the number of occurrences of the word in the truncated string, there will be at least one occurrence */
+                                displayText = descriptionHtml.subSequence(0, Util.indexOfOccurrence(descriptionHtml, nearestWord, occurrence)).toString() + "\n" + expandText;
+                            }
+                            else {
+                                displayText = descriptionHtml;
+                            }
+
+                        } else {
+                            displayText = descriptionHtml;
+                        }
+                    } else if (description.getLineCount() <= maxLine) {
+                        displayText = descriptionHtml;
+                    }
                 } else {
-                    lineEndIndex = description.getLayout().getLineEnd(description.getLayout().getLineCount() - 1);
-                    text = description.getText().subSequence(0, lineEndIndex) + "\n" + expandText;
+                    displayText = descriptionHtml + "\n" + expandText;
                 }
-                description.setText(text);
+
+                SpannableStringBuilder spanBuilder = new SpannableStringBuilder();
+                spanBuilder.append(HtmlTextView.parseHtml(displayText));
+
+                addClickablePartTextViewResizable(spanBuilder, description, expandText, viewMore);
                 description.setMovementMethod(LinkMovementMethod.getInstance());
-                description.setText(
-                        addClickablePartTextViewResizable(description.getText().toString(), description, expandText,
-                                viewMore), TextView.BufferType.SPANNABLE);
+                description.setText(spanBuilder, TextView.BufferType.SPANNABLE);
             }
         });
 
+        description.requestLayout(); /* Causes the view to be re-measured and re-drawn, which calls the GlobalLayoutListener we have defined above */
     }
 
+    /**
+     * Associates a <code>ClickableSpan</code> with <code>spannableText</code>
+     * @param spannableStringBuilder The SpannableStringBuilder to which the clickable span is to be added
+     * @param description The TextView to which the SpannableString will be set
+     * @param spannableText The text to which the span should be assigned to
+     * @param viewMore Whether clicking the span results in more text being visible or not
+     * @return
+     */
     private SpannableStringBuilder addClickablePartTextViewResizable(
-            final String spannedString, final TextView description, final String spanableText, final boolean viewMore) {
+            final SpannableStringBuilder spannableStringBuilder, final TextView description, final String spannableText, final boolean viewMore) {
 
-        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(spannedString);
-
-        if (spannedString.contains(spanableText)) {
+        if (spannableStringBuilder.toString().contains(spannableText)) {
             spannableStringBuilder.setSpan(new ClickableSpan() {
 
                 @Override
                 public void onClick(View widget) {
-
-                    description.setLayoutParams(description.getLayoutParams());
-                    description.setText(description.getTag().toString(), TextView.BufferType.SPANNABLE);
-                    description.invalidate();
                     if (viewMore) {
                         makeTextViewResizable(description, -1, "Show Less", false);
                     } else {
                         makeTextViewResizable(description, maxDescriptionLines, "Show More", true);
                     }
-
                 }
 
                 @Override
@@ -384,7 +424,7 @@ public class CourseSectionFragment extends Fragment {
                     textpaint.setUnderlineText(false);
                     textpaint.setFakeBoldText(true);
                 }
-            }, spannedString.indexOf(spanableText), spannedString.indexOf(spanableText) + spanableText.length(), 0);
+            }, spannableStringBuilder.toString().indexOf(spannableText), spannableStringBuilder.toString().indexOf(spannableText) + spannableText.length(), 0);
 
         }
         description.setHighlightColor(Color.TRANSPARENT);
