@@ -289,7 +289,7 @@ public class ForumFragment extends Fragment {
                 mSubject.setText(discussion.getSubject());
                 mUserName.setText(discussion.getUserfullname());
                 mModifiedTime.setText(formatDate(discussion.getTimemodified()));
-                mMessage.setText(discussion.getMessage());
+                mMessage.setText(HtmlTextView.parseHtml((discussion.getMessage())));
             }
         }
     }
