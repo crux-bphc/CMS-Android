@@ -9,6 +9,8 @@ Dates are in `yyyy-mm-dd`.
 ### Added
 * Dark theme for the app, with a toggle in the settings. System preview window will be dark by default.
 
+### Fixed
+* Repeated notifications of very old forum discussions
 
 ## Version 1.4.1 (verCode 8), 2018-09-08
 ### Added

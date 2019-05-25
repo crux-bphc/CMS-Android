@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,17 +27,15 @@ import java.util.Locale;
 import app.MyApplication;
 import crux.bphc.cms.R;
 import helper.ClickListener;
+import helper.CourseRequestHandler;
+import helper.CourseRequestHandler.CallBack;
 import helper.HtmlTextView;
 import helper.MoodleServices;
 import io.realm.Realm;
 import io.realm.RealmResults;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import set.forum.Discussion;
-import set.forum.ForumData;
 
 import static app.Constants.API_URL;
 
@@ -57,7 +56,6 @@ public class ForumFragment extends Fragment {
     private String COURSE_NAME;
     private int page = 0;
     private boolean mLoading = false;
-    private boolean mRemaining = true;
 
     private ForumAdapter mAdapter;
     private ClickListener mClickListener;
@@ -69,6 +67,7 @@ public class ForumFragment extends Fragment {
 
     private MoodleServices moodleServices;
 
+    private CourseRequestHandler courseRequestHandler;
 
     public ForumFragment() {
         // Required empty public constructor
@@ -97,6 +96,7 @@ public class ForumFragment extends Fragment {
             COURSE_NAME = getArguments().getString(COURSE_NAME_KEY);
         }
         realm = MyApplication.getInstance().getRealmInstance();
+        courseRequestHandler = new CourseRequestHandler(this.getActivity());
     }
 
     @Override
@@ -118,8 +118,7 @@ public class ForumFragment extends Fragment {
             public void onRefresh() {
                 page = 0;
                 mLoading = false;
-                mRemaining = true;
-                makeFirstRequest();
+                makeRequest();
             }
         });
 
@@ -141,27 +140,6 @@ public class ForumFragment extends Fragment {
         mRecyclerView = view.findViewById(R.id.site_news);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                int visible = layoutManager.getChildCount();
-                int total = layoutManager.getItemCount();
-                int visibleRowIndex = layoutManager.findFirstVisibleItemPosition();
-
-                if (!mLoading) {
-                    if (visible + visibleRowIndex >= total) {
-                        mLoading = true;
-                        if (mRemaining) makeNextRequest();
-                    }
-                }
-            }
-        });
 
         // Instantiate retrofit instance for sending requests
         Retrofit retrofit = new Retrofit.Builder()
@@ -173,25 +151,20 @@ public class ForumFragment extends Fragment {
         mAdapter = new ForumAdapter(mClickListener, new ArrayList<>());
         mRecyclerView.setAdapter(mAdapter);
 
-        makeFirstRequest();
+        makeRequest();
     }
 
-    private void makeFirstRequest() {
+    private void makeRequest() {
         mSwipeRefreshLayout.setRefreshing(true);
-        Call<ForumData> call = moodleServices.getForumDiscussions(TOKEN, FORUM_ID, 0, PER_PAGE);
-        call.enqueue(new Callback<ForumData>() {
+        courseRequestHandler.getForumDiscussions(FORUM_ID, new CallBack<List<Discussion>>()
+        {
             @Override
-            public void onResponse(Call<ForumData> call, Response<ForumData> response) {
-                List<Discussion> discussions = response.body().getDiscussions();
-
+            public void onResponse(List<Discussion> discussions) {
                 if (discussions.size() == 0) {
-                    mRemaining = false;
                     mSwipeRefreshLayout.setRefreshing(false);
                     mEmptyView.setVisibility(View.VISIBLE);
                 } else {
-                    for (Discussion discussion : discussions) {
-                        discussion.setForumId(FORUM_ID);
-                    }
+                    for (Discussion discussion : discussions) discussion.setForumId(FORUM_ID); // TODO replace with lambda
                     mEmptyView.setVisibility(View.GONE);
                     mAdapter.clearDiscussions();
                     mAdapter.addDiscussions(discussions);
@@ -205,24 +178,19 @@ public class ForumFragment extends Fragment {
                             realm.copyToRealm(mAdapter.getDiscussions());
                         }
                     });
-
-                    page++;
                     mLoading = false;
                     mSwipeRefreshLayout.setRefreshing(false);
-                    // avoid an additional request
-                    if (discussions.size() < PER_PAGE) mRemaining = false;
                 }
             }
 
             @Override
-            public void onFailure(Call<ForumData> call, Throwable t) {
-                System.out.println(t.toString());
+            public void onFailure(String message, Throwable t){
+                Log.e("ForumFragment", t.toString());
+                System.err.println(t.getStackTrace());
                 mLoading = false;
                 mSwipeRefreshLayout.setRefreshing(false);
 
                 // Load and display cached discussion data from database, if present
-                // Do not attempt to load new pages unless manual refresh
-                mRemaining = false;
                 RealmResults<Discussion> results = realm.where(Discussion.class).equalTo("forumId", FORUM_ID).findAll();
                 List<Discussion> dbDiscussions = realm.copyFromRealm(results);
                 if (dbDiscussions.size() == 0) {
@@ -233,49 +201,6 @@ public class ForumFragment extends Fragment {
                     mAdapter.clearDiscussions();
                     mAdapter.addDiscussions(dbDiscussions);
                 }
-            }
-        });
-    }
-
-    private void makeNextRequest() {
-        mSwipeRefreshLayout.setRefreshing(true);
-        Call<ForumData> call = moodleServices.getForumDiscussions(TOKEN, FORUM_ID, page, PER_PAGE);
-        call.enqueue(new Callback<ForumData>() {
-            @Override
-            public void onResponse(Call<ForumData> call, Response<ForumData> response) {
-                List<Discussion> discussions = response.body().getDiscussions();
-
-                if (discussions.size() == 0) {
-                    mRemaining = false;
-                    mSwipeRefreshLayout.setRefreshing(false);
-                } else {
-                    for (Discussion discussion : discussions) {
-                        discussion.setForumId(FORUM_ID);
-                    }
-                    mAdapter.addDiscussions(discussions);
-
-                    final RealmResults<Discussion> results = realm.where(Discussion.class).equalTo("forumId", FORUM_ID).findAll();
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            results.deleteAllFromRealm();
-                            realm.copyToRealm(mAdapter.getDiscussions());
-                        }
-                    });
-
-                    page++;
-                    mLoading = false;
-                    mSwipeRefreshLayout.setRefreshing(false);
-                    // avoid an additional request
-                    if (discussions.size() < PER_PAGE) mRemaining = false;
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ForumData> call, Throwable t) {
-                System.out.println(t.toString());
-                mLoading = false;
-                mSwipeRefreshLayout.setRefreshing(false);
             }
         });
     }
