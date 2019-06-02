@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity
     private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 1001;
     private UserAccount mUserAccount;
     private Fragment fragment;
+    NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +73,7 @@ public class MainActivity extends AppCompatActivity
         };
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         View headerView = navigationView.getHeaderView(0);
@@ -236,6 +237,7 @@ public class MainActivity extends AppCompatActivity
         } else if (getSupportFragmentManager().getBackStackEntryCount() != 0) {
             super.onBackPressed();
         } else if (!(fragment instanceof MyCoursesFragment)) {
+            navigationView.setCheckedItem(R.id.my_courses);
             setHome();
         } else {
             super.onBackPressed();

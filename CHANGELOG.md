@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 Dates are in `yyyy-mm-dd`.
 
 ## Unreleased
+### Fixed
+Checked item in Navigation View in Main Activity is not getting updated when we click in the Navigation Bar, on any other fragment  other than My courses and press the back button.
 
 ## Version 1.4.1 (verCode 8), 2018-09-08
 ### Added
