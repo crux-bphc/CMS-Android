@@ -79,17 +79,18 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:background="#bdbdbd"
                     android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp" />
+                    android:background="#bdbdbd" />
 
                 <helper.HtmlTextView
+                    android:id="@+id/message"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/message"
                     android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
+                    android:paddingTop="3dp"
 
+                    android:paddingRight="8dp"
+                    android:paddingBottom="6dp"
                     android:text="Time Table Changes - 2 Second Semester 2016-17"
                     android:textSize="16sp" />
 
@@ -124,8 +125,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:layout_marginTop="8dp"
-                    android:background="#bdbdbd"/>
+                    android:background="#bdbdbd" />
 
             </LinearLayout>
 

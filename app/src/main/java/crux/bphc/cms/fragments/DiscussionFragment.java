@@ -4,9 +4,11 @@ package crux.bphc.cms.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -38,9 +40,11 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
     private HtmlTextView mMessage;
     private LinearLayout mAttachmentContainer;
 
-    public DiscussionFragment() {
-        // Required empty public constructor
+    public DiscussionFragment()
+    {
+            // Required empty public constructor
     }
+
 
     public static DiscussionFragment newInstance(int id, String folderName) {
         DiscussionFragment fragment = new DiscussionFragment();
@@ -106,31 +110,67 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
             TextView fileName = attachmentView.findViewById(R.id.fileName);
             fileName.setText(attachment.getFilename());
 
-            ImageView download = attachmentView.findViewById(R.id.downloadIcon);
-            if (mFileManager.searchFile(attachment.getFilename())) {
+            ImageView download = attachmentView.findViewById(R.id.downloadButton);
+            ImageView ellipsis = attachmentView.findViewById(R.id.more);
+
+            boolean downloaded = mFileManager.searchFile(attachment.getFilename());
+            if (downloaded) {
                 download.setImageResource(R.drawable.eye);
+                ellipsis.setVisibility(View.VISIBLE);
             } else {
-                download.setImageResource(R.drawable.content_save);
+                download.setImageResource(R.drawable.download);
+                ellipsis.setVisibility(View.GONE);
             }
-            download.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (!mFileManager.searchFile(attachment.getFilename())) {
-                        Toast.makeText(getActivity(), "Downloading file - " + attachment.getFilename(), Toast.LENGTH_SHORT).show();
-                        mFileManager.downloadFile(
-                                attachment.getFilename(),
-                                attachment.getFileurl(),
-                                "",
-                                mFolderName,
-                                true
-                        );
-                    } else {
-                        mFileManager.openFile(attachment.getFilename(), mFolderName);
-                    }
+            download.setOnClickListener(v -> {
+                if (!downloaded) {
+                    Toast.makeText(getActivity(), "Downloading file - " + attachment.getFilename(), Toast.LENGTH_SHORT).show();
+                    mFileManager.downloadFile(
+                            attachment.getFilename(),
+                            attachment.getFileurl(),
+                            "",
+                            mFolderName,
+                            true
+                    );
+                } else {
+                    mFileManager.openFile(attachment.getFilename(), mFolderName);
                 }
             });
 
-
+            ellipsis.setOnClickListener(v -> {
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(this.getContext());
+                alertDialog.setTitle(attachment.getFilename());
+                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_list_item_1);
+                if(downloaded)
+                {
+                    arrayAdapter.add("View");
+                    arrayAdapter.add("Re-Download");
+                    arrayAdapter.add("Share");
+                }
+                alertDialog.setNegativeButton("Cancel", null);
+                alertDialog.setAdapter(arrayAdapter, (dialogInterface, i) -> {
+                    if (downloaded) {
+                        switch (i) {
+                            case 0:
+                                mFileManager.openFile(attachment.getFilename(), mFolderName);
+                                break;
+                            case 1:
+                                Toast.makeText(getActivity(), "Downloading file - " + attachment.getFilename(), Toast.LENGTH_SHORT).show();
+                                mFileManager.downloadFile(
+                                        attachment.getFilename(),
+                                        attachment.getFileurl(),
+                                        "",
+                                        mFolderName,
+                                        true
+                                );
+                                break;
+                            case 2:
+                                mFileManager.shareFile(attachment.getFilename(), mFolderName);
+                                break;
+                        }
+                    }
+                });
+                alertDialog.show();
+            });
         }
     }
 
@@ -148,8 +188,10 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
             TextView fileNameTextView = childView.findViewById(R.id.fileName);
             if (fileNameTextView != null &&
                     fileNameTextView.getText().toString().equalsIgnoreCase(fileName)) {
-                ImageView downloadIcon = childView.findViewById(R.id.downloadIcon);
+                ImageView downloadIcon = childView.findViewById(R.id.downloadButton);
                 downloadIcon.setImageResource(R.drawable.eye);
+                ImageView ellipsis = childView.findViewById(R.id.more);
+                ellipsis.setVisibility(View.VISIBLE);
                 break;
             }
         }

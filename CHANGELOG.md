@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 Dates are in `yyyy-mm-dd`.
 
 ## Unreleased
+### Added
+* Ellipsis in course discussions attachments to view, re-download and share downloaded attachments
 
 ## Version 1.4.1 (verCode 8), 2018-09-08
 ### Added
