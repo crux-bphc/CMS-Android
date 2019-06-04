@@ -8,6 +8,7 @@ Dates are in `yyyy-mm-dd`.
 ## Unreleased
 ### Added
 * Dark theme for the app, with a toggle in the settings. System preview window will be dark by default.
+* Ellipsis in course discussions attachments to view, re-download and share downloaded attachment
 
 ### Fixed
 * Repeated notifications of very old forum discussions
