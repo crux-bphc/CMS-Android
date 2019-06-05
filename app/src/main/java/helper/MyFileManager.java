@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import app.Constants;
+import app.MyApplication;
 import crux.bphc.cms.BuildConfig;
 import crux.bphc.cms.R;
 import crux.bphc.cms.fragments.ForumFragment;
@@ -236,7 +237,14 @@ public class MyFileManager {
                 if (module.getDescription() == null || module.getDescription().length() == 0) {
                     return false;
                 }
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(activity);
+                AlertDialog.Builder alertDialog;
+
+                if (MyApplication.getInstance().isDarkModeEnabled()) {
+                    alertDialog = new AlertDialog.Builder(activity,R.style.Theme_AppCompat_Dialog_Alert);
+                } else {
+                    alertDialog = new AlertDialog.Builder(activity,R.style.Theme_AppCompat_Light_Dialog_Alert);
+                }
+
                 Spanned htmlDescription = Html.fromHtml(module.getDescription());
                 String descriptionWithOutExtraSpace = htmlDescription.toString().trim();
                 alertDialog.setMessage(htmlDescription.subSequence(0, descriptionWithOutExtraSpace.length()));

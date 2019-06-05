@@ -9,11 +9,16 @@ import android.view.View;
 import android.widget.ImageView;
 
 import app.Constants;
+import app.MyApplication;
 
 public class InfoActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (MyApplication.getInstance().isDarkModeEnabled()) {
+            setTheme(R.style.AppTheme_Dark);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info);
         ImageView imageView = findViewById(R.id.image);

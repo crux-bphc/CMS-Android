@@ -28,6 +28,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import app.Constants;
+import app.MyApplication;
 import crux.bphc.cms.fragments.ForumFragment;
 import crux.bphc.cms.fragments.MyCoursesFragment;
 import crux.bphc.cms.fragments.SearchCourseFragment;
@@ -49,6 +50,10 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (MyApplication.getInstance().isDarkModeEnabled()) {
+            setTheme(R.style.AppTheme_NoActionBar_Dark);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -147,7 +152,14 @@ public class MainActivity extends AppCompatActivity
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
 
-                AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+                AlertDialog.Builder dialog;
+
+                if (MyApplication.getInstance().isDarkModeEnabled()) {
+                    dialog = new AlertDialog.Builder(this,R.style.Theme_AppCompat_Dialog_Alert);
+                } else {
+                    dialog = new AlertDialog.Builder(this,R.style.Theme_AppCompat_Light_Dialog_Alert);
+                }
+
                 dialog.setMessage("Need Write permissions to seamlessly Download Files...");
                 dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
@@ -205,7 +217,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     private AlertDialog askToLogout() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
+        AlertDialog.Builder alertDialog;
+
+        if (MyApplication.getInstance().isDarkModeEnabled()) {
+            alertDialog = new AlertDialog.Builder(MainActivity.this,R.style.Theme_AppCompat_Dialog_Alert);
+        } else {
+            alertDialog = new AlertDialog.Builder(MainActivity.this,R.style.Theme_AppCompat_Light_Dialog_Alert);
+        }
+
         alertDialog.setMessage("Are you sure you want to Logout?");
         alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override

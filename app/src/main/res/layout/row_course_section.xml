@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:animateLayoutChanges="true"
     android:orientation="vertical"
-    android:background="#fff">
+    android:background="?cardBgColor">
 
     <LinearLayout
         android:background="?attr/selectableItemBackgroundBorderless"
@@ -18,16 +18,16 @@
             android:layout_width="8dp"
             android:layout_height="4dp"
             android:layout_gravity="center_vertical"
-            android:background="@color/colorAccent" />
+            android:background="?colorAccent" />
 
         <TextView
             android:id="@+id/sectionName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/colorAccent"
+            android:background="?colorAccent"
             android:padding="8dp"
             android:text="Section 1"
-            android:textColor="#fff"
+            android:textColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -44,7 +44,7 @@
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:text="@string/lorem"
-        android:textColor="#000"
+        android:textColor="?android:textColorPrimary"
         android:textSize="16sp"
          />
 

@@ -14,6 +14,7 @@ import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -377,7 +378,9 @@ public class CourseSectionFragment extends Fragment {
                 @Override
                 public void updateDrawState(TextPaint textpaint) {
                     super.updateDrawState(textpaint);
-                    textpaint.setColor(getResources().getColor(R.color.colorAccent));
+                    TypedValue value = new TypedValue();
+                    getContext().getTheme().resolveAttribute(R.attr.colorAccent,value,true);
+                    textpaint.setColor(value.data);
                     textpaint.setUnderlineText(false);
                     textpaint.setFakeBoldText(true);
                 }

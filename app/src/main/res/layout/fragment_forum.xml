@@ -1,5 +1,6 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="?themeBackground"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -22,6 +23,7 @@
         android:gravity="center"
         android:text="@string/no_posts_to_display"
         android:visibility="gone"
+        android:textColor="?android:textColorPrimary"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
 </FrameLayout>

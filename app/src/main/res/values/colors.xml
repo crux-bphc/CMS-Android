@@ -1,13 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#FF5722</color>
-    <color name="colorPrimaryDark">#E64A19</color>
-    <color name="colorAccent">#00bcd4</color>
+    <color name="orange">#FF5722</color>
+    <color name="orangeDark">#E64A19</color>
+    <color name="blueAccent">#00bcd4</color>
+
+    <color name="white">#ffffffff</color>
+    <color name="white_alpha26">#42ffffff</color>
+    <color name="white_alpha50">#80ffffff</color> <!-- default disabled text primary Dark -->
+
+    <color name="gray13">#ff212121</color>
+    <color name="gray26">#ff424242</color>
+    <color name="gray">#ffBEBEBE</color> <!-- default text secondary Dark -->
+    <color name="gray_alpha50">#80BEBEBE</color> <!-- default disabled text secondary Dark -->
+    <color name="gray74">#ffBDBDBD</color> <!-- list divider color Light -->
+
+    <color name="black">#ff000000</color>
+    <color name="black_alpha26">#42000000</color>
+
+    <color name="activityBackgroundLight">#FFFAFAFA</color>
+    <color name="activityBackgroundDark">@color/black</color>
+
+    <color name="cardBackgroundLight">@color/white</color>
+    <color name="cardBackgroundDark">@color/gray13</color>
+
+    <color name="navBarSelected">@color/black_alpha26</color>
+    <color name="moduleUnread">#FFE0F7FA</color>
+
+    <!-- Tints for file icons -->
     <color name="alizarin">#e74c3c</color>
     <color name="nephritis">#27ae60</color>
     <color name="belize_hole">#2980b9</color>
-    <color name="pumpkin">#d35400</color>
-    <color name="orange">#f39c12</color>
-    <color name="midnight_blue">#2c3e50</color>
     <color name="sunflower">#f1c40f</color>
 </resources>

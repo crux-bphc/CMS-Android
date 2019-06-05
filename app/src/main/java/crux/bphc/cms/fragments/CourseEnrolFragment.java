@@ -3,11 +3,14 @@ package crux.bphc.cms.fragments;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -95,12 +98,24 @@ public class CourseEnrolFragment extends Fragment {
         } else {
             LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) noTeacherInfo.getLayoutParams();
             layoutParams.setMargins(0, 8, 0, 0);
+
+            // TODO: shift this to XML as ?android:textColorPrimary if possible
+            // using TypedValue and getting android.R.attr.textColorPrimary did not work
+
+            int textColor;
+            if (MyApplication.getInstance().isDarkModeEnabled()) {
+                textColor = ContextCompat.getColor(getContext(), R.color.text_primary_dark);
+            } else {
+                textColor = ContextCompat.getColor(getContext(), R.color.text_primary_light);
+            }
+
             for (Contact contact : teachers) {
                 TextView teacherName = new TextView(getActivity());
                 teacherName.setLayoutParams(layoutParams);
                 teacherName.setText(contact.getFullname());
+                teacherName.setTextColor(textColor);
                 teacherName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-                teacherName.setPadding(8, 0, 8, 0);
+                teacherName.setPaddingRelative(8, 0, 8, 0);
                 mTeachers.addView(teacherName);
             }
         }
@@ -116,7 +131,14 @@ public class CourseEnrolFragment extends Fragment {
     }
 
     private AlertDialog createEnrollmentConfirmationDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder;
+
+        if (MyApplication.getInstance().isDarkModeEnabled()) {
+            builder = new AlertDialog.Builder(getContext(),R.style.Theme_AppCompat_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(getContext(),R.style.Theme_AppCompat_Light_Dialog_Alert);
+        }
+
         builder.setMessage(R.string.course_enrol_confirmation_msg);
 
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {

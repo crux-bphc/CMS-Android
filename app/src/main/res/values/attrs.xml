@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CMSAppTheme">
+        <attr name="themeBackground" format="reference" />
+        <attr name="navBarColorStates" format="reference" />
+        <attr name="navBarAppearance" format="reference" />
+        <attr name="navBarHeaderDrawable" format="reference" />
+        <attr name="iconTintColor" format="reference" />
+        <attr name="cardBgColor" format="reference" />
+        <attr name="tokenImageTint" format="reference" />
+        <attr name="dividerColor" format="reference" />
+    </declare-styleable>
+</resources>
