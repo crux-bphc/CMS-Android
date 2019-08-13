@@ -252,9 +252,9 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if (getSupportFragmentManager().getBackStackEntryCount() != 0) {
-            super.onBackPressed();
         } else if (!(fragment instanceof MyCoursesFragment)) {
+            NavigationView navigationView = findViewById(R.id.nav_view);
+            navigationView.setCheckedItem(R.id.my_courses);
             setHome();
         } else {
             super.onBackPressed();
