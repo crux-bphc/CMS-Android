@@ -6,13 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 Dates are in `yyyy-mm-dd`.
 
 ## Unreleased
-<<<<<<< HEAD
 ### Added
 * Dark theme for the app, with a toggle in the settings. System preview window will be dark by default.
 
 ### Fixed
 * Repeated notifications of very old forum discussions
 * Hyperlinks not clickable in forums posts and course section descriptions #92
+* Navigation Bar not updating when back button is pressed
 
 ## Version 1.4.1 (verCode 8), 2018-09-08
 ### Added
