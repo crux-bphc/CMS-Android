@@ -115,10 +115,10 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
 
             boolean downloaded = mFileManager.searchFile(attachment.getFilename());
             if (downloaded) {
-                //download.setImageResource(R.drawable.download);
+                download.setImageResource(R.drawable.eye);
                 ellipsis.setVisibility(View.VISIBLE);
             } else {
-                //download.setImageResource(R.drawable.download);
+                download.setImageResource(R.drawable.download);
                 ellipsis.setVisibility(View.GONE);
             }
             download.setOnClickListener(v -> {
