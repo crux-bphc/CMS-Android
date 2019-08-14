@@ -49,22 +49,6 @@ public class NotificationService extends JobService {
      * NOT called by the service itself.
      */
     public static void startService(Context context, boolean replace) {
-        /*
-         * Build JobInfo object. Job will run once per hour, on any type of network,
-         * and persist across reboots.
-         *
-         * By using JobScheduler, the method `onStartJob` will be executed taking into consideration
-         * Doze mode etc.
-         *
-         * This particular periodic job will execute exactly once within a 1 hour period,
-         * but may do so at any time, not necessarily at the end of it. The exact time of execution
-         * is subject to the optimizations of the Android OS based on other scheduled jobs, idle time etc.
-         */
-        ComponentName serviceComponent = new ComponentName(context, NotificationService.class);
-        JobInfo.Builder builder = new JobInfo.Builder(CMS_JOB_ID, serviceComponent)
-                .setPeriodic(TimeUnit.HOURS.toMillis(1))
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                .setPersisted(true);
 
         // Get an instance of the system JobScheduler service.
         JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
@@ -82,6 +66,23 @@ public class NotificationService extends JobService {
                 }
             }
         }
+
+        /*
+         * Build JobInfo object. Job will run once per hour, on any type of network,
+         * and persist across reboots.
+         *
+         * By using JobScheduler, the method `onStartJob` will be executed taking into consideration
+         * Doze mode etc.
+         *
+         * This particular periodic job will execute exactly once within a 1 hour period,
+         * but may do so at any time, not necessarily at the end of it. The exact time of execution
+         * is subject to the optimizations of the Android OS based on other scheduled jobs, idle time etc.
+         */
+        ComponentName serviceComponent = new ComponentName(context, NotificationService.class);
+        JobInfo.Builder builder = new JobInfo.Builder(CMS_JOB_ID, serviceComponent)
+                .setPeriodic(TimeUnit.HOURS.toMillis(1))
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setPersisted(true);
 
         // Pass our job to the JobScheduler in order to queue it.
         jobScheduler.schedule(builder.build());
