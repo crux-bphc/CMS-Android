@@ -38,6 +38,7 @@ import helper.UserAccount;
 import helper.UserUtils;
 
 import static app.Constants.API_URL;
+import static app.Constants.TOKEN;
 import static crux.bphc.cms.service.NotificationService.NOTIFICATION_CHANNEL_UPDATES;
 import static crux.bphc.cms.service.NotificationService.NOTIFICATION_CHANNEL_UPDATES_BUNDLE;
 
@@ -75,17 +76,30 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         };
+
+
+
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
+        // Set the nav panel up
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
         View headerView = navigationView.getHeaderView(0);
         TextView username = headerView.findViewById(R.id.username);
         TextView fullName = headerView.findViewById(R.id.firstname);
         username.setText(mUserAccount.getUsername());
         fullName.setText(mUserAccount.getFirstName());
-        setHome();
+
+        // Set the fragments up
+        pushView(MyCoursesFragment.newInstance(TOKEN), "My Courses", true);
+        getSupportFragmentManager().addOnBackStackChangedListener(() -> {
+            Fragment frag = getSupportFragmentManager().findFragmentById(R.id.content_main);
+            if (frag instanceof MyCoursesFragment){
+                navigationView.setCheckedItem(R.id.my_courses);
+            }
+        });
+
         askPermission();
         createNotificationChannels(); // initialize channels before starting background service
         NotificationService.startService(this, false);
@@ -192,29 +206,19 @@ public class MainActivity extends AppCompatActivity
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    private void setHome() {
-        clearBackStack();
+    private void pushView(Fragment fragment, String tag, boolean rootFrag){
+        if  (rootFrag){
+            clearBackStack();
+        }
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        fragment = MyCoursesFragment.newInstance(Constants.TOKEN);
-        transaction.replace(R.id.content_main, fragment, "My Courses");
+        transaction.replace(R.id.content_main, fragment, tag);
+        if (!rootFrag){
+            transaction.addToBackStack(null);
+        }
         transaction.commit();
+        this.fragment = fragment;
     }
 
-    private void setCourseSearch() {
-        clearBackStack();
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        fragment = SearchCourseFragment.newInstance(Constants.TOKEN);
-        transaction.replace(R.id.content_main, fragment, "Course Search");
-        transaction.commit();
-    }
-
-    private void setSiteNews() {
-        clearBackStack();
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        fragment = ForumFragment.newInstance(Constants.TOKEN);
-        transaction.replace(R.id.content_main, fragment, "Site News");
-        transaction.commit();
-    }
 
     private AlertDialog askToLogout() {
         AlertDialog.Builder alertDialog;
@@ -252,17 +256,12 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if (!(fragment instanceof MyCoursesFragment)) {
-            NavigationView navigationView = findViewById(R.id.nav_view);
-            navigationView.setCheckedItem(R.id.my_courses);
-            setHome();
         } else {
             super.onBackPressed();
         }
     }
 
-
-    @SuppressWarnings("StatementWithEmptyBody")
+    
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -270,13 +269,13 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         switch (id) {
             case R.id.my_courses:
-                setHome();
+                pushView(MyCoursesFragment.newInstance(TOKEN), "My Courses", true);
                 break;
             case R.id.site_news:
-                setSiteNews();
+                pushView(ForumFragment.newInstance(TOKEN), "Site News", false);
                 break;
             case R.id.course_search:
-                setCourseSearch();
+                pushView(SearchCourseFragment.newInstance(TOKEN), "Course Search", false);
                 break;
             case R.id.website:
                 MyFileManager.showInWebsite(this, API_URL + "my/");
