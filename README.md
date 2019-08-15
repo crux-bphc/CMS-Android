@@ -13,6 +13,20 @@ This is the Android version of the CMS BPHC app. The app uses standard Moodle en
 4. Download course content once; access locally any time.
 5. Notifications for new content
 
+## Versioning
+Changelogs are necessary so that the end user knows what changes were brought in each new release. This project maintains changelogs using the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) guidelines.
+
+Version numbers are important in helping to differentiate releases of a product. This project follows [Semantic Versioning](https://semver.org/) to keep track of versions.
+
+Android uses a unique integer for each release to the Google Version Code. To ensure proper version code semantics and proper correlation with semantic versioning, the following standard will be used:
+
+1. The Major version will be multipled by 1,000,000.
+2. The Minor version will be multiplied by 10,000.
+3. The Patch version will be multipled by 100.
+4. The above values will be added together to get the version code a release.
+5. Pre-releases, alpha releases etc shoud be signified by appropriate values in the least two significant digits.
+6. The changelog should state the semantic version number as well as version code (if a Playstore rollout has been done) with each release.
+
 ## Contributing
 You can contribute by submitting an issue, or by picking an existing one from the list and sending a PR. Ensure that the branch underlying the PR is up-to-date with latest changes. Contributors must ensure they add any significant changes to the [changelog](CHANGELOG.md) in the same PR itself.
 
