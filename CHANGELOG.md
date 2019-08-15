@@ -7,6 +7,13 @@ Dates are in `yyyy-mm-dd`.
 
 ## Unreleased
 ### Added
+
+### Changed
+
+### Fixed
+
+## Version 1.5.1 (verCode 1050100), 2019-08-15
+### Added
 * Dark theme for the app, with a toggle in the settings. System preview window will be dark by default.
 * Splashscreen for the app
 * Ellipsis in course discussions attachments to view, re-download and share downloaded attachment
