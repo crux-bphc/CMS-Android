@@ -4,10 +4,11 @@
 
     <item android:drawable="@color/activityBackgroundDark"/>
 
-    <item>
-        <bitmap
-            android:src="@drawable/splash_logo"
-            android:gravity="center"/>
-    </item>
+    <!--
+         We need to use a seperate scaled vector drawable since it isn't possible to scale a vector drawable.
+         Scaled Drawable doesn't seem to work either. android:width and android:height attributes are only
+         available in API 23+
+     -->
+    <item android:drawable="@drawable/splash_scaled_logo" android:gravity="center" />
 
 </layer-list>
