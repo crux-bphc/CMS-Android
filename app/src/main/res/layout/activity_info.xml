@@ -12,7 +12,7 @@
     android:background="?themeBackground"
     tools:context="crux.bphc.cms.InfoActivity">
 
-    <TextView
+    <helper.HtmlTextView
         android:id="@+id/description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -22,23 +22,24 @@
 
     <ImageView
         android:id="@+id/image"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
+        android:layout_width="202dp"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/crux"
         android:layout_below="@+id/description"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="92dp"
+        android:layout_marginBottom="159dp"
         android:clickable="true"
-        android:tint="?iconTintColor"
-        app:srcCompat="@drawable/github_circle" />
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/ic_crux_logo" />
 
     <TextView
         android:id="@+id/crux"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:text="Powered by CRUx"
+        android:layout_alignParentBottom="true"
+        android:text="Powered by Crux"
         android:textColor="?android:textColorPrimary"
         android:textSize="16sp"
         android:textStyle="bold" />

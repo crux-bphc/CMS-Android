@@ -26,63 +26,64 @@
         android:padding="16dp">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="120dp"
-            android:scaleType="centerInside"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
             android:layout_marginBottom="56dp"
-            android:src="@drawable/bits_logo" />
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/ic_bits_logo" />
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <Button
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
                 android:id="@+id/instructions"
-                android:padding="12dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:background="?colorAccent"
+                android:padding="12dp"
+                android:text="@string/get_token"
                 android:textColor="@android:color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:typeface="monospace"
-                android:text="@string/get_token" />
+                android:typeface="monospace" />
 
             <ImageView
                 android:id="@+id/login_help"
-                android:src="@drawable/help"
-                android:layout_marginStart="8dp"
-                android:layout_gravity="center"
                 android:layout_width="48dp"
-                android:layout_height="48dp" />
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="8dp"
+                android:src="@drawable/help" />
 
         </LinearLayout>
 
         <EditText
+            android:id="@+id/token"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/token"
             android:layout_marginTop="16dp"
+            android:background="@drawable/rounded_border_edit_text"
+            android:hint="@string/token_hint"
+            android:inputType="text"
             android:padding="12dp"
             android:textColor="?android:textColorPrimary"
-            android:textColorHint="?android:textColorSecondary"
-            android:background="@drawable/rounded_border_edit_text"
-            android:inputType="text"
-            android:hint="@string/token_hint" />
+            android:textColorHint="?android:textColorSecondary" />
 
         <Button
+            android:id="@+id/login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/login"
             android:layout_marginTop="32dp"
             android:background="?colorAccent"
+            android:text="@string/action_sign_in_short"
             android:textColor="@android:color/white"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:typeface="monospace"
-            android:text="@string/action_sign_in_short"/>
+            android:typeface="monospace" />
 
     </LinearLayout>
 

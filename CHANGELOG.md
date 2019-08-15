@@ -8,7 +8,12 @@ Dates are in `yyyy-mm-dd`.
 ## Unreleased
 ### Added
 * Dark theme for the app, with a toggle in the settings. System preview window will be dark by default.
+* Splashscreen for the app
 * Ellipsis in course discussions attachments to view, re-download and share downloaded attachment
+
+### Changed
+* Change the text of the information in the "About us" section.
+* Replace Octocat with the logo of Crux in the "About us" section.
 
 ### Fixed
 * Repeated notifications of very old forum discussions

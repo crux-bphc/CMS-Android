@@ -8,6 +8,7 @@ public class Constants {
     public static final int PER_PAGE = 20; // Number of course search results in a page
     // used for intent from CourseSearch to CorseDetailActivity for CourseEnrolFrag
     public static final String COURSE_PARCEL_INTENT_KEY = "course_parcel";
+    public static final String WEBSITE_URL = "https://crux-bphc.github.io/";
     public static final String GITHUB_URL = "https://github.com/CRUx-BPHC/CMS-Android/";
     public static final String GITHUB_URL_ISSUE = GITHUB_URL + "issues/";
     //"https://goo.gl/forms/wKCukHQTCDCp7HsG3";//GITHUB_URL + "issues/";
