@@ -23,7 +23,7 @@
     <color name="cardBackgroundLight">@color/white</color>
     <color name="cardBackgroundDark">@color/gray13</color>
 
-    <color name="navBarSelected">@color/black_alpha26</color>
+    <color name="navBarSelected">#42C0C0C0</color>
     <color name="moduleUnread">#FFE0F7FA</color>
 
     <!-- Tints for file icons -->
