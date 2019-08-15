@@ -14,6 +14,7 @@ Dates are in `yyyy-mm-dd`.
 * Repeated notifications of very old forum discussions
 * Hyperlinks not clickable in forums posts and course section descriptions #92
 * Navigation Bar not updating when back button is pressed
+* Unintuitive back button behaviour in the main activity
 
 ## Version 1.4.1 (verCode 8), 2018-09-08
 ### Added
