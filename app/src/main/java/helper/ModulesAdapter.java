@@ -95,7 +95,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         int downloaded = -1;
         ProgressBar progressBar;
         View iconWrapper, topDivider, bottomDivider;
-        View clickWrapper, textWrapper;
+        View clickWrapper, textWrapper, clickWrapperName;
 
         ViewHolderResource(View itemView) {
             super(itemView);
@@ -108,17 +108,20 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             bottomDivider = itemView.findViewById(R.id.bottomDivider);
             description = itemView.findViewById(R.id.description);
             clickWrapper = itemView.findViewById(R.id.clickWrapper);
+            clickWrapperName = itemView.findViewById(R.id.clickWrapperName);
             textWrapper = itemView.findViewById(R.id.textWrapper);
             downloadIcon = itemView.findViewById(R.id.downloadButton);
             description.setMovementMethod(LinkMovementMethod.getInstance());
             description.setLinksClickable(true);
 
-            downloadIcon.setOnClickListener(view -> {
+            clickWrapperName.setOnClickListener(view -> {
                 if (clickListener != null) {
                     clickListener.onClick(modules.get(getLayoutPosition()), getLayoutPosition());
                 }
                 markAsReadandUnread(modules.get(getLayoutPosition()), getLayoutPosition(), false);
             });
+
+
             more.setOnClickListener(v -> {
                 final Module module = modules.get(getLayoutPosition());
                 final int position = getLayoutPosition();

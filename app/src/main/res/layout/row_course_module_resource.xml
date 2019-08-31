@@ -26,8 +26,8 @@
 
         <ProgressBar
             android:id="@+id/progressBar"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="47dp"
+            android:layout_height="43dp"
             android:layout_centerVertical="true"
             android:padding="12dp" />
     </RelativeLayout>
@@ -55,6 +55,19 @@
             android:paddingBottom="6dp"
             android:paddingTop="6dp">
 
+            <LinearLayout
+                android:id="@+id/clickWrapperName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:layout_gravity="center_vertical"
+                android:clipChildren="false"
+                android:orientation="horizontal"
+                android:paddingBottom="6dp"
+                android:paddingTop="6dp">
 
             <helper.HtmlTextView
                 android:id="@+id/fileName"
@@ -75,12 +88,11 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_gravity="center_vertical"
-                android:background="?android:selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="14dp"
                 android:tint="?iconTintColor"
+                android:padding="14dp"
                 app:srcCompat="@drawable/download" />
+
+            </LinearLayout>
 
             <ImageView
                 android:id="@+id/more"
