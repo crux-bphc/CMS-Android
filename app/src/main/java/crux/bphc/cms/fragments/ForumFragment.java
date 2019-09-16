@@ -1,6 +1,7 @@
 package crux.bphc.cms.fragments;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -69,6 +70,8 @@ public class ForumFragment extends Fragment {
 
     private CourseRequestHandler courseRequestHandler;
 
+    private Context context;
+
     public ForumFragment() {
         // Required empty public constructor
     }
@@ -97,6 +100,7 @@ public class ForumFragment extends Fragment {
         }
         realm = MyApplication.getInstance().getRealmInstance();
         courseRequestHandler = new CourseRequestHandler(this.getActivity());
+        context = getContext();
     }
 
     @Override
@@ -138,7 +142,7 @@ public class ForumFragment extends Fragment {
         };
 
         mRecyclerView = view.findViewById(R.id.site_news);
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         mRecyclerView.setLayoutManager(layoutManager);
 
         // Instantiate retrofit instance for sending requests
@@ -195,9 +199,9 @@ public class ForumFragment extends Fragment {
                 List<Discussion> dbDiscussions = realm.copyFromRealm(results);
                 if (dbDiscussions.size() == 0) {
                     mEmptyView.setVisibility(View.VISIBLE);
-                    Toast.makeText(getContext(), "No cached data. Check connection and refresh", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "No cached data. Check connection and refresh", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getContext(), "Loading cached data. Refresh for latest", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Loading cached data. Refresh for latest", Toast.LENGTH_SHORT).show();
                     mAdapter.clearDiscussions();
                     mAdapter.addDiscussions(dbDiscussions);
                 }
@@ -285,7 +289,7 @@ public class ForumFragment extends Fragment {
             }
 
             public void bind(Discussion discussion) {
-                Picasso.with(getContext()).load(discussion.getUserpictureurl()).into(mUserPic);
+                Picasso.with(context).load(discussion.getUserpictureurl()).into(mUserPic);
                 mSubject.setText(discussion.getSubject());
                 mUserName.setText(discussion.getUserfullname());
                 mModifiedTime.setText(formatDate(discussion.getTimemodified()));
