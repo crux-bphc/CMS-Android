@@ -2,13 +2,10 @@ package crux.bphc.cms;
 
 
 import android.os.Bundle;
-import android.provider.Settings;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SwitchCompat;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.CompoundButton;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 
 import app.MyApplication;
 import butterknife.BindView;
