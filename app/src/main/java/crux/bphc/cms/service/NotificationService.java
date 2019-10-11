@@ -12,7 +12,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 import android.util.Log;
 
 import java.util.List;
@@ -31,7 +31,7 @@ import set.Module;
 import set.NotificationSet;
 import set.forum.Discussion;
 
-import static android.support.v4.app.NotificationCompat.PRIORITY_DEFAULT;
+import static androidx.core.app.NotificationCompat.PRIORITY_DEFAULT;
 import static helper.HtmlTextView.parseHtml;
 
 public class NotificationService extends JobService {
