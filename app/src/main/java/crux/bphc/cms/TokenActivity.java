@@ -7,17 +7,18 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
-import android.widget.EditText;
+
+import android.util.Base64;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 
 import app.Constants;
 import app.MyApplication;
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import helper.APIClient;
@@ -38,9 +39,6 @@ import set.Module;
 import set.forum.Discussion;
 
 public class TokenActivity extends AppCompatActivity {
-
-    @BindView(R.id.token)
-    EditText tokenEditText;
 
     private ProgressDialog progressDialog;
     private Toast toast = null;
@@ -63,41 +61,45 @@ public class TokenActivity extends AppCompatActivity {
 
         progressDialog = new ProgressDialog(this);
 
-        userAccount = new UserAccount(this);
-        checkLoggedIn();
-
         Retrofit retrofit = APIClient.getRetrofitInstance();
         moodleServices = retrofit.create(MoodleServices.class);
 
         courseDataHandler = new CourseDataHandler(this);
         courseRequestHandler = new CourseRequestHandler(this);
+
+        userAccount = new UserAccount(this);
     }
 
-    @OnClick(R.id.login_help)
-    void onClickHelp() {
-        Intent viewIntent = new Intent("android.intent.action.VIEW", Uri.parse(Constants.LOGIN_HELP_URL));
-        dismissProgress();
-        startActivity(viewIntent);
-    }
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-    @OnClick(R.id.instructions)
-    void onClickInstructions() {
-        String preferencesUrl = Constants.API_URL + "user/preferences.php";
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(preferencesUrl));
-        startActivity(intent);
-    }
+        Intent intent = getIntent();
+        if (intent != null && intent.getAction() == Intent.ACTION_VIEW) {
+            Uri data = intent.getData();
+            if (data != null && data.getHost() != null){
+                String host = data.getHost();
+                String token = host.substring(6);
+                token = new String(Base64.decode(token, Base64.DEFAULT));
 
-    @OnClick(R.id.login)
-    void onClickLogin() {
-        String token = tokenEditText.getText().toString();
-        if (token.length() < 25) {
-            if (toast != null) toast.cancel();
-            toast = Toast.makeText(this, "Please provide a valid token", Toast.LENGTH_SHORT);
-            toast.show();
-            return;
+                // The actual token is split into 2 parts. The 2nd part is the access token
+                // Not sure what the second part is for :/
+                token = token.substring(token.lastIndexOf(':') + 1);
+
+                loginUsingToken(token);
+            }
         }
 
+        checkLoggedIn();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+    }
+
+    private void loginUsingToken(String token) {
         showProgress(true, "Fetching user details.");
         Call<ResponseBody> call = moodleServices.fetchUserDetail(token);
         call.enqueue(new Callback<ResponseBody>() {
@@ -146,6 +148,21 @@ public class TokenActivity extends AppCompatActivity {
                 showProgress(false, "");
             }
         });
+    }
+
+    @OnClick(R.id.google_login)
+    void onLogin() {
+        /*
+            We'll just create an into a specific Moodle endpoint. The Moodle website will handle the authentication,
+            generate a token and redirect the browser to the Uri with specified schema. The browser will create an
+            intent that'll launch this activity again.
+         */
+        String passport = ((Integer )new Random().nextInt(2000000000)).toString(); // A random number that
+                                                                                          // identifies the request
+        String loginUrl = String.format(Constants.LOGIN_URL, passport);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(loginUrl));
+        startActivity(intent);
     }
 
     private void showProgress(final boolean show, String message) {
