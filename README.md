@@ -36,5 +36,7 @@ Commit messages should follow common guidelines, such as the ones mentioned [her
 
 Mention keywords such as "Fixes" or "Closes" in commit messages, followed by the issue number, to automatically close corresponding issues. [(List of keywords)](https://help.github.com/articles/closing-issues-using-keywords/)
 
+The Moodle endpoints used by this app have been collected in a [Postman](https://getpostman.com") [Here](https://www.getpostman.com/collections/207390c4552febe4e393). You may import this collection into Postman directly using the link. 
+
 ## License
 This app is under the MIT License.
