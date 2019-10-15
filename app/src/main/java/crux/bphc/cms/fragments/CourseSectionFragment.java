@@ -256,7 +256,7 @@ public class CourseSectionFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), CourseModulesActivity.class);
-                intent.putExtra("id", section.getId());
+                intent.putExtra("id", section.getId());getSupportFragmentManager
                 startActivityForResult(intent, MODULE_ACTIVITY);
                 getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
@@ -278,7 +278,7 @@ public class CourseSectionFragment extends Fragment {
 
         RecyclerView recyclerView = v.findViewById(R.id.recyclerView);
 
-        final ModulesAdapter myAdapter = new ModulesAdapter(getContext(), mFileManager, courseName);
+        final ModulesAdapter myAdapter = new ModulesAdapter(getContext(), mFileManager, courseName, courseId);
         myAdapter.setModules(section.getModules());
         recyclerView.setAdapter(myAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

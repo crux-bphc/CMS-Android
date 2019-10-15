@@ -25,7 +25,7 @@ public class MyApplication extends Application {
         realm = Realm.getInstance(getRealmConfiguration());
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        this.isDarkMode = prefs.getBoolean(Constants.DARK_MODE_KEY,false);
+        this.isDarkMode = prefs.getBoolean(Constants.DARK_MODE_KEY, this.isDarkMode);
     }
 
     public boolean isDarkModeEnabled() {
