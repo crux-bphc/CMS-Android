@@ -14,12 +14,14 @@
         android:paddingTop="8dp"
         android:paddingBottom="8dp">
 
+        <!-- the little blue rectangle to the left of the section title -->
         <View
             android:layout_width="8dp"
             android:layout_height="4dp"
             android:layout_gravity="center_vertical"
             android:background="?colorAccent" />
 
+        <!-- the blue rectangle that says the section title-->
         <TextView
             android:id="@+id/sectionName"
             android:layout_width="wrap_content"
@@ -32,6 +34,7 @@
             android:textStyle="bold" />
     </LinearLayout>
 
+    <!-- If there is any description of the section-->
     <helper.HtmlTextView
         android:clickable="true"
         android:focusable="true"

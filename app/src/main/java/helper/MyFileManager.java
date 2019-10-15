@@ -117,7 +117,7 @@ public class MyFileManager {
 
     // TODO check if the courseName params of these methods are needed, since we're passing it in constructor anyway
     public void downloadFile(Content content, Module module, String courseName) {
-        downloadFile(content.getFilename(), content.getFileurl(), module.getDescription(), courseName, false);
+        downloadFile(content.getFilename(), content.getFileUrl(), module.getDescription(), courseName, false);
     }
 
     public void downloadFile(String fileName, String fileurl, String description, String courseName, boolean isForum) {
@@ -220,8 +220,8 @@ public class MyFileManager {
 
     public boolean onClickAction(Module module, String courseName) {
         if (module.getModType() == Module.Type.URL) {
-            if (module.getContents().size() > 0 && !module.getContents().get(0).getFileurl().isEmpty()) {
-                MyFileManager.showInWebsite(activity, module.getContents().get(0).getFileurl());
+            if (module.getContents().size() > 0 && !module.getContents().get(0).getFileUrl().isEmpty()) {
+                MyFileManager.showInWebsite(activity, module.getContents().get(0).getFileUrl());
 
             }
         } else if (module.getModType() == Module.Type.PAGE) {

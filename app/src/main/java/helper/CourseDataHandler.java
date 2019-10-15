@@ -2,7 +2,6 @@ package helper;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -185,7 +184,7 @@ public class CourseDataHandler {
         for (Content content : module.getContents()) {
             Content realmContent = realm.where(Content.class)
                     .equalTo("timemodified", content.getTimemodified())
-                    .equalTo("fileurl", content.getFileurl())
+                    .equalTo("fileurl", content.getFileUrl())
                     .findFirst();
             Content newContent = realmContent == null ? content : null;
             if (newContent != null) {

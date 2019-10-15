@@ -68,7 +68,7 @@ public class CourseModulesActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
 
-        myAdapter = new ModulesAdapter(this, mFileManager, courseName);
+        myAdapter = new ModulesAdapter(this, mFileManager, courseName, sections.first().getCourseID());
         myAdapter.setModules(modules);
         recyclerView.setAdapter(myAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
