@@ -57,7 +57,7 @@ public class Content extends RealmObject {
         this.filepath = filepath;
     }
 
-    public String getFileUrl() {
+    public String getFileurl() {
         return fileurl;
     }
 
