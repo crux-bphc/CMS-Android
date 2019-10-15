@@ -193,7 +193,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                     System.out.println(module.getContents());
                                     if (module.getContents() != null)
                                         for (Content content : module.getContents()) {
-                                            toShare += content.getFileUrl().replace("/moodle", "/fileShare/moodle") + "&courseName=" + courseName.replace(" ", "%20") + "&courseId=" + courseId + " ";
+                                            toShare += content.getFileurl().replace("/moodle", "/fileShare/moodle") + "&courseName=" + courseName.replace(" ", "%20") + "&courseId=" + courseId + " ";
                                         }
 
                                     Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
