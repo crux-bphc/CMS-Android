@@ -66,3 +66,6 @@ Dates are in `yyyy-mm-dd`.
 * Bug in SiteNews pagination where only the latest page is displayed and cached.
 * Files list for course was being generated using entire CMS directory.
 * Added a missing Toast when starting file download from a forum attachment.
+
+### Changed
+* Made the background on buttons in a module bordered

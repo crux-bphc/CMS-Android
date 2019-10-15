@@ -2,6 +2,7 @@ package helper;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
@@ -33,6 +34,7 @@ import app.MyApplication;
 import crux.bphc.cms.R;
 import set.Content;
 import set.Module;
+import set.search.Course;
 
 public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -43,14 +45,16 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private List<Module> modules;
     private ClickListener clickListener;
     private String courseName;
+    private int courseId;
     private int maxDescriptionlines = 3;
 
-    public ModulesAdapter(Context context, MyFileManager fileManager, String courseName) {
+    public ModulesAdapter(Context context, MyFileManager fileManager, String courseName, int courseId) {
         this.context = context;
         inflater = LayoutInflater.from(context);
         modules = new ArrayList<>();
         mFileManager = fileManager;
         this.courseName = courseName;
+        this.courseId = courseId;
         courseDataHandler = new CourseDataHandler(context);
     }
 
@@ -121,7 +125,6 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 markAsReadandUnread(modules.get(getLayoutPosition()), getLayoutPosition(), false);
             });
 
-
             more.setOnClickListener(v -> {
                 final Module module = modules.get(getLayoutPosition());
                 final int position = getLayoutPosition();
@@ -142,6 +145,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     arrayAdapter.add("Mark as Unread");
                 } else {
                     arrayAdapter.add("Download");
+                    arrayAdapter.add("Share");
                     arrayAdapter.add("Mark as Unread");
                 }
 
@@ -185,7 +189,21 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                     mFileManager.downloadFile(module.getContents().get(0), module, courseName);
                                     break;
                                 case 1:
+                                    String toShare = "";
+                                    System.out.println(module.getContents());
+                                    if (module.getContents() != null)
+                                        for (Content content : module.getContents()) {
+                                            toShare += content.getFileUrl().replace("/moodle", "/fileShare/moodle") + "&courseName=" + courseName.replace(" ", "%20") + "&courseId=" + courseId + " ";
+                                        }
+
+                                    Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                                    sharingIntent.setType("text/plain");
+                                    sharingIntent.putExtra(Intent.EXTRA_TEXT, toShare);
+                                    itemView.getContext().startActivity(Intent.createChooser(sharingIntent, null));
+                                    break;
+                                case 2:
                                     markAsReadandUnread(module, position, true);
+                                    break;
                             }
 
                         }
