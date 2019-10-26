@@ -2,6 +2,7 @@ package helper;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
@@ -43,14 +44,16 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private List<Module> modules;
     private ClickListener clickListener;
     private String courseName;
+    private int courseID;
     private int maxDescriptionlines = 3;
 
-    public ModulesAdapter(Context context, MyFileManager fileManager, String courseName) {
+    public ModulesAdapter(Context context, MyFileManager fileManager, String courseName, int courseID) {
         this.context = context;
         inflater = LayoutInflater.from(context);
         modules = new ArrayList<>();
         mFileManager = fileManager;
         this.courseName = courseName;
+        this.courseID = courseID;
         courseDataHandler = new CourseDataHandler(context);
     }
 
@@ -142,6 +145,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     arrayAdapter.add("Mark as Unread");
                 } else {
                     arrayAdapter.add("Download");
+                    arrayAdapter.add("Share");
                     arrayAdapter.add("Mark as Unread");
                 }
 
@@ -185,6 +189,9 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                     mFileManager.downloadFile(module.getContents().get(0), module, courseName);
                                     break;
                                 case 1:
+                                    shareModuleLinks(module);
+                                    break;
+                                case 2:
                                     markAsReadandUnread(module, position, true);
                             }
 
@@ -201,6 +208,19 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             courseDataHandler.markAsReadandUnread(module.getId(), isNewContent);
             modules.get(position).setNewContent(isNewContent);
             notifyItemChanged(position);
+        }
+
+        private void shareModuleLinks(Module module) {
+            String toShare = "";
+            if (module.getContents() != null)
+                for (Content content : module.getContents()) {
+                    toShare += content.getFileurl().replace("/moodle", "/fileShare/moodle") + "&courseName=" + courseName.replace(" ", "%20") + "&courseId=" + courseID;
+                }
+
+            Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+            sharingIntent.setType("text/plain");
+            sharingIntent.putExtra(Intent.EXTRA_TEXT, toShare);
+            itemView.getContext().startActivity(Intent.createChooser(sharingIntent, null));
         }
 
         void bind(Module module) {
