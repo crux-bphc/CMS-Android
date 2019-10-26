@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -26,6 +27,9 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.List;
 
 import app.Constants;
 import app.MyApplication;
@@ -36,6 +40,8 @@ import crux.bphc.cms.service.NotificationService;
 import helper.MyFileManager;
 import helper.UserAccount;
 import helper.UserUtils;
+import io.realm.Realm;
+import set.Course;
 
 import static app.Constants.API_URL;
 import static app.Constants.TOKEN;
@@ -104,11 +110,42 @@ public class MainActivity extends AppCompatActivity
         createNotificationChannels(); // initialize channels before starting background service
         NotificationService.startService(this, false);
         resolveDeepLink();
+        resolveModuleLinkShare();
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
     }
 
+    private void resolveModuleLinkShare() {
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        Uri uri = intent.getData();
+        if(uri != null && action != null && action.equals("android.intent.action.VIEW")) {
+            Realm realm = Realm.getInstance(MyApplication.getRealmConfiguration());
+            List<Course> courses = realm.copyFromRealm(realm.where(Course.class).findAll());
+            int courseId = Integer.parseInt(uri.getQueryParameter("courseId"));
+
+            boolean isEnrolled = false;
+            for(Course course : courses) {
+                if(course.getCourseId() == courseId) {
+                    isEnrolled = true;
+                    break;
+                }
+            }
+
+            if(isEnrolled) {
+                String fileUrl = uri.getScheme() + "://" + uri.getHost() + uri.getPath().replace("/fileShare", "") + "?forcedownload=1&token=" + mUserAccount.getToken();
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(fileUrl));
+                startActivity(browserIntent);
+            }
+            else {
+                Toast.makeText(this, "You need to be enrolled in " + uri.getQueryParameter("courseName") + " in order to view", Toast.LENGTH_LONG).show();
+            }
+
+            realm.close();
+
+        }
+    }
 
     // Create channels for devices running Oreo and above; Can be safely called even if channel exists
     void createNotificationChannels() {

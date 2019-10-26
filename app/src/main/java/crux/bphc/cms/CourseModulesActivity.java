@@ -32,6 +32,7 @@ public class CourseModulesActivity extends AppCompatActivity {
     MyFileManager mFileManager;
     boolean newFileDownloaded = false;
     String courseName = "";
+    int courseID;
 
     private void setDownloaded(String fileName) {
         myAdapter.notifyDataSetChanged();
@@ -59,7 +60,8 @@ public class CourseModulesActivity extends AppCompatActivity {
         RealmResults<CourseSection> sections = realm.where(CourseSection.class).equalTo("id", sectionID).findAll();
 
         setTitle(sections.first().getName());
-        courseName = CourseDataHandler.getCourseName(sections.first().getCourseID());
+        courseID = sections.first().getCourseID();
+        courseName = CourseDataHandler.getCourseName(courseID);
         mFileManager = new MyFileManager(this, courseName);
         modules = sections.first().getModules();
         if (modules.size() == 0) {
@@ -68,7 +70,7 @@ public class CourseModulesActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
 
-        myAdapter = new ModulesAdapter(this, mFileManager, courseName);
+        myAdapter = new ModulesAdapter(this, mFileManager, courseName, courseID);
         myAdapter.setModules(modules);
         recyclerView.setAdapter(myAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
