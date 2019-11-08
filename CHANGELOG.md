@@ -8,7 +8,7 @@ Dates are in `yyyy-mm-dd`.
 ## Unreleased
 ### Added
 * Google Login
-
+* Ability to share modules without having to download them
 ### Changed
 * Module names are clickable
 
