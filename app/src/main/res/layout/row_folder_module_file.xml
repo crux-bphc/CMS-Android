@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:layout_marginTop="8dp"
+    android:background="?cardBgColor"
+    android:padding="8dp">
+
+    <ImageView
+        android:id="@+id/fileIcon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:padding="8dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/fileName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="15dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="THE QUICK BROWN FOX JUMPED OVER THE LAZY DOG"
+            android:textColor="?android:textColorPrimary"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/downloadButton"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:background="?android:selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginRight="5dp"
+            android:tint="?iconTintColor"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/download" />
+
+        <ImageView
+            android:id="@+id/more"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="5dp"
+            android:background="?android:selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:tint="?iconTintColor"
+            android:layout_gravity="center|right"
+            app:srcCompat="@drawable/dots_horizontal" />
+    </LinearLayout>
+
+</LinearLayout>

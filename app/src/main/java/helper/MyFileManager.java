@@ -29,6 +29,7 @@ import app.Constants;
 import app.MyApplication;
 import crux.bphc.cms.BuildConfig;
 import crux.bphc.cms.R;
+import crux.bphc.cms.fragments.FolderModuleFragment;
 import crux.bphc.cms.fragments.ForumFragment;
 import set.Content;
 import set.Module;
@@ -46,8 +47,7 @@ public class MyFileManager {
     private Callback callback;
     private String courseDirName;
     private BroadcastReceiver onComplete = new BroadcastReceiver() {
-        public void onReceive(Context ctxt, Intent intent) {
-            int i = 0;
+        public void onReceive(Context context, Intent intent) {
             reloadFileList();
             for (String filename : requestedDownloads) {
                 if (searchFile(filename)) {
@@ -57,7 +57,6 @@ public class MyFileManager {
                     }
                     return;
                 }
-                i++;
             }
         }
     };
@@ -80,7 +79,29 @@ public class MyFileManager {
         activity.startActivity(intent);
     }
 
-    private String getApplicationType(String filename) {
+    public static int getIconFromFileName(String filename) {
+        switch (MyFileManager.getExtension(filename)) {
+            case "pdf":
+                return (R.drawable.file_pdf);
+
+            case "xls":
+            case "xlsx":
+                return (R.drawable.file_excel);
+
+            case "doc":
+            case "docx":
+                return (R.drawable.file_word);
+
+            case "ppt":
+            case "pptx":
+                return (R.drawable.file_powerpoint);
+
+            default:
+                return -1;
+        }
+    }
+
+    private static String getApplicationType(String filename) {
         String extension = getExtension(filename);
         switch (extension) {
             case "pdf":
@@ -232,6 +253,12 @@ public class MyFileManager {
                     .addToBackStack(null)
                     .replace(R.id.course_section_enrol_container, forumFragment, "Announcements");
             fragmentTransaction.commit();
+        } else if (module.getModType() == Module.Type.FOLDER) {
+            Fragment folderModulerFragment = FolderModuleFragment.newInstance(Constants.TOKEN, module.getInstance(), courseName);
+            FragmentTransaction fragmentTransaction = ((AppCompatActivity) activity).getSupportFragmentManager().beginTransaction()
+                    .addToBackStack(null)
+                    .replace(R.id.course_section_enrol_container, folderModulerFragment, "Folder Module");
+            fragmentTransaction.commit();
         } else if (module.getContents() == null || module.getContents().size() == 0) {
             if (module.getModType() == Module.Type.LABEL) {
                 if (module.getDescription() == null || module.getDescription().length() == 0) {
@@ -240,9 +267,9 @@ public class MyFileManager {
                 AlertDialog.Builder alertDialog;
 
                 if (MyApplication.getInstance().isDarkModeEnabled()) {
-                    alertDialog = new AlertDialog.Builder(activity,R.style.Theme_AppCompat_Dialog_Alert);
+                    alertDialog = new AlertDialog.Builder(activity, R.style.Theme_AppCompat_Dialog_Alert);
                 } else {
-                    alertDialog = new AlertDialog.Builder(activity,R.style.Theme_AppCompat_Light_Dialog_Alert);
+                    alertDialog = new AlertDialog.Builder(activity, R.style.Theme_AppCompat_Light_Dialog_Alert);
                 }
 
                 Spanned htmlDescription = Html.fromHtml(module.getDescription());
@@ -253,7 +280,6 @@ public class MyFileManager {
             } else
 
                 showInWebsite(activity, module.getUrl());
-
         } else {
             for (Content content : module.getContents()) {
                 if (!searchFile(content.getFilename())) {
