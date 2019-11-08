@@ -7,11 +7,15 @@ Dates are in `yyyy-mm-dd`.
 
 ## Unreleased
 ### Added
+* Google Login
 
 ### Changed
 * Module names are clickable
 
 ### Fixed
+
+### Removed
+* Token based login
 
 ## Version 1.5.1 (verCode 1050100), 2019-08-15
 ### Added
