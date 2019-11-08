@@ -10,6 +10,7 @@ Dates are in `yyyy-mm-dd`.
 * Google Login
 * Ability to share modules without having to download them
 * Fragment for Folder Modules
+* Notifications for Site News
 
 ### Changed
 * Module names are clickable
