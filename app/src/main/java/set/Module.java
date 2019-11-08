@@ -195,33 +195,12 @@ public class Module extends RealmObject {
      *
      * @return resource id if icon available, else returns -1
      */
-    public int getResourceIcon() {
+    public int getModuleIcon() {
 
         switch (getModType()) {
             //  , QUIZ, URL, PAGE, DEFAULT
             case RESOURCE:
-                switch (MyFileManager.getExtension(getContents().get(0).getFilename())) {
-                    case "pdf":
-                        return (R.drawable.file_pdf);
-
-                    case "xls":
-                    case "xlsx":
-                        return (R.drawable.file_excel);
-
-                    case "doc":
-                    case "docx":
-                        return (R.drawable.file_word);
-
-                    case "ppt":
-                    case "pptx":
-                        return (R.drawable.file_powerpoint);
-
-                    default:
-                        return -1;
-                }
-
-            case DEFAULT:
-                return -1;
+                return MyFileManager.getIconFromFileName(getContents().get(0).getFilename());
 
             case ASSIGNMENT:
                 return (R.drawable.book);
@@ -241,9 +220,12 @@ public class Module extends RealmObject {
             case FORUM:
                 return (R.drawable.forum);
 
+            case DEFAULT:
+                return -1;
         }
         return -1;
     }
+
 
     public boolean isDownloadable() {
         return getContents() != null && getContents().size() != 0 && getModType() != Type.URL && getModType() != Type.FORUM && getModType() != Type.PAGE;
