@@ -1,5 +1,6 @@
 package crux.bphc.cms.service;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.job.JobInfo;
@@ -187,9 +188,9 @@ public class NotificationService extends JobService {
                                 d.setForumId(module.getInstance());
                             }
                             List<Discussion> newDiscussions = courseDataHandler.setForumDiscussions(module.getInstance(), discussions);
-                            if(newDiscussions.size() > 0)  courseDataHandler.markAsReadandUnread(module.getId(), true);
+                            if (newDiscussions.size() > 0)  courseDataHandler.markAsReadandUnread(module.getId(), true);
                             for (Discussion discussion : newDiscussions) {
-                                createNotifModuleAdded(new NotificationSet(course, module, discussion));
+                                createNotifModuleAdded(NotificationSet.createNotificationSet(course, module, discussion));
                             }
                         }
                     }
@@ -199,13 +200,25 @@ public class NotificationService extends JobService {
             }
         }
 
+        // Create notifications for site news
+        List<Discussion> discussions = courseRequestHandler.getForumDiscussions(1); // 1 is always site news
+        if (discussions != null) {
+            for (Discussion d : discussions) {
+                d.setForumId(1);
+            }
+            List<Discussion> newDiscussions = courseDataHandler.setForumDiscussions(1, discussions);
+            for (Discussion discussion : newDiscussions) {
+                createNotifModuleAdded(new NotificationSet(discussion.getId(), 1, "Site News", discussion.getMessage(), null));
+            }
+        }
+        
         mJobRunning = false;
         jobFinished(job, false);
     }
 
     private void createNotifSectionAdded(CourseSection section, Course course) {
         for (Module module : section.getModules()) {
-            createNotifModuleAdded(new NotificationSet(course, section, module));
+            createNotifModuleAdded(NotificationSet.createNotificationSet(course, section, module));
         }
     }
 
