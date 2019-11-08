@@ -242,7 +242,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 description.setVisibility(View.GONE);
             }
             iconWrapper.setVisibility(View.VISIBLE);
-            if (!module.isDownloadable()) {
+            if (!module.isDownloadable() || module.getModType() == Module.Type.FOLDER) {
                 downloadIcon.setImageResource(R.drawable.eye);
             } else {
                 List<Content> contents = module.getContents();
@@ -263,9 +263,9 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             if (module.getModType() == Module.Type.LABEL) {
                 iconWrapper.setVisibility(View.GONE);
             } else {
-                int resourceIcon = module.getResourceIcon();
+                int resourceIcon = module.getModuleIcon();
                 if (resourceIcon != -1) {
-                    modIcon.setImageResource(module.getResourceIcon());
+                    modIcon.setImageResource(module.getModuleIcon());
                 } else {
                     progressBar.setVisibility(View.VISIBLE);
                     Picasso.with(context).load(module.getModicon()).into(modIcon, new Callback() {

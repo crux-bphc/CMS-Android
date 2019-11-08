@@ -9,6 +9,8 @@ Dates are in `yyyy-mm-dd`.
 ### Added
 * Google Login
 * Ability to share modules without having to download them
+* Fragment for Folder Modules
+
 ### Changed
 * Module names are clickable
 
