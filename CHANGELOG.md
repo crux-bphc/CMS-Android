@@ -9,6 +9,7 @@ Dates are in `yyyy-mm-dd`.
 ### Added
 
 ### Changed
+* Module names are clickable
 
 ### Fixed
 
