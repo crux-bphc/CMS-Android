@@ -14,7 +14,7 @@ public class NotificationSet implements RealmModel {
 
     @PrimaryKey
     private int uniqueId;
-    private int bundleID;
+    private int bundleId;
     private String notifSummary;
     private String notifTitle;
     private String notifContext;
@@ -22,11 +22,25 @@ public class NotificationSet implements RealmModel {
     public NotificationSet() {
     }
 
-    public NotificationSet(int courseID, String courseName, int modId, String moduleName) {
-        this.bundleID = courseID;
-        this.notifSummary = courseName;
-        this.uniqueId = modId;
-        this.notifContext = moduleName;
+    public NotificationSet(int uniqueId, int bundleId, String notifTitle, String notifContext, String notifSummary) {
+        this.uniqueId = uniqueId;
+        this.bundleId = bundleId;
+        this.notifTitle = notifTitle;
+        this.notifContext = notifContext;
+        this.notifSummary = notifSummary;
+    }
+
+    /** Helper methods to create NotificationSet objects */
+    public static NotificationSet createNotificationSet(Course course, CourseSection section, Module module) {
+        return new NotificationSet(module.getId(), course.getId(), section.getName(), module.getName(), course.getShortname());
+    }
+
+    public static NotificationSet createNotificationSet(Course course, Module module, Discussion discussion) {
+        return new NotificationSet(discussion.getId(), course.getId(), module.getName(), discussion.getName(), course.getShortname());
+    }
+
+    public static NotificationSet createNotificationSet(int courseID, String courseName, int modId, String moduleName) {
+        return new NotificationSet(modId, courseID, "", moduleName, courseName);
     }
 
     public int getUniqueId() {
@@ -34,12 +48,12 @@ public class NotificationSet implements RealmModel {
     }
 
     public int getBundleID() {
-        return bundleID;
+        return bundleId;
     }
 
 
     public void setBundleID(int bundleID) {
-        this.bundleID = bundleID;
+        this.bundleId = bundleID;
     }
 
     public String getNotifSummary() {
@@ -65,23 +79,6 @@ public class NotificationSet implements RealmModel {
     public void setNotifContext(String notifContext) {
         this.notifContext = notifContext;
     }
-
-    public NotificationSet(Course course, CourseSection section, Module module) {
-        this.bundleID = course.getId();
-        this.notifSummary = course.getShortname();
-        this.notifTitle = section.getName();
-        this.uniqueId = module.getId();
-        this.notifContext = module.getName();
-    }
-
-    public NotificationSet(Course course, Module module, Discussion discussion) {
-        this.bundleID = course.getId();
-        this.notifSummary = course.getShortname();
-        this.notifTitle = module.getName();
-        this.notifContext = discussion.getName();
-        this.uniqueId = discussion.getId();
-    }
-
 
     public void setUniqueId(int uniqueId) {
         this.uniqueId = uniqueId;
