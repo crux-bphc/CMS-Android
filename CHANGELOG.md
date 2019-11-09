@@ -11,6 +11,7 @@ Dates are in `yyyy-mm-dd`.
 * Ability to share modules without having to download them
 * Fragment for Folder Modules
 * Notifications for Site News
+* File properties in the `More Options` ellipsis
 
 ### Changed
 * Module names are clickable

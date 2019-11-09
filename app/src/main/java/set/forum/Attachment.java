@@ -11,6 +11,8 @@ public class Attachment extends RealmObject {
     private String filename;
     private String mimetype;
     private String fileurl;
+    private int filesize;
+    private long timemodified;
 
     public Attachment() {
     }
@@ -23,8 +25,11 @@ public class Attachment extends RealmObject {
         return mimetype;
     }
 
-
     public String getFileurl() {
         return fileurl;
     }
+
+    public int getFileSize() { return filesize; }
+
+    public long getTimemodified() { return timemodified; }
 }

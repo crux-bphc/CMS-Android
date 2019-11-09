@@ -224,32 +224,53 @@ public class FolderModuleFragment extends Fragment {
                     alertDialog.setTitle(content.getFilename());
 
                     final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1);
+                    alertDialog.setNegativeButton("Cancel", null);
+
                     if (downloaded) {
                         arrayAdapter.add("View");
                         arrayAdapter.add("Re-Download");
                         arrayAdapter.add("Share");
+                        arrayAdapter.add("Properties");
+
+                        alertDialog.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        switch (i) {
+                                            case 0:
+                                                downloadOrOpenFile(content, false);
+                                                break;
+                                            case 1:
+                                                downloadOrOpenFile(content, true);
+                                                break;
+                                            case 2:
+                                                mFileManager.shareFile(content.getFilename(), COURSE_NAME);
+                                                break;
+                                            case 3:
+                                                mFileManager.showPropertiesDialog(getActivity(), content);
+                                                break;
+                                        }
+                                    }
+                                }
+                        );
                     } else {
                         arrayAdapter.add("Download");
-                    }
+                        arrayAdapter.add("Properties");
 
-                    alertDialog.setNegativeButton("Cancel", null);
-                    alertDialog.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
+                        alertDialog.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
                                 switch (i) {
-                                    case 0: // View/Download
+                                    case 0:
                                         downloadOrOpenFile(content, false);
                                         break;
                                     case 1:
-                                        downloadOrOpenFile(content, true);
-                                        break;
-                                    case 2:
-                                        mFileManager.shareFile(content.getFilename(), COURSE_NAME);
+                                        mFileManager.showPropertiesDialog(getActivity(), content);
                                         break;
                                 }
                             }
-                        }
-                    );
+                        });
+                    }
+
                     alertDialog.show();
                 });
             }
