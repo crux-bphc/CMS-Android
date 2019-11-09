@@ -14,6 +14,7 @@ Dates are in `yyyy-mm-dd`.
 
 ### Changed
 * Module names are clickable
+* Discussion Attachment names are clickable
 
 ### Fixed
 * Crash when refreshing discussions and switching to another fragment/activity
