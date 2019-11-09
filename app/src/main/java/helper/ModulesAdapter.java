@@ -95,7 +95,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         HtmlTextView name;
         TextView description;
         ImageView modIcon, more, downloadIcon;
-        int downloaded = -1;
+        boolean downloaded = false;
         ProgressBar progressBar;
         View iconWrapper, topDivider, bottomDivider;
         View clickWrapper, textWrapper, clickWrapperName;
@@ -137,67 +137,73 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
 
                 alertDialog.setTitle(module.getName());
+                alertDialog.setNegativeButton("Cancel", null);
+
                 final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1);
-                if (downloaded == 1) {
+                if (downloaded) {
                     arrayAdapter.add("View");
                     arrayAdapter.add("Re-Download");
                     arrayAdapter.add("Share");
                     arrayAdapter.add("Mark as Unread");
+                    if (module.getModType() == Module.Type.RESOURCE) // Properties are available only for a single file
+                        arrayAdapter.add("Properties");
+
+                    alertDialog.setAdapter(arrayAdapter, (dialogInterface, selection) -> {
+                        switch (selection) {
+                            case 0:
+                                if (module.getContents() != null)
+                                    for (Content content : module.getContents()) {
+                                        mFileManager.openFile(content.getFilename(), courseName);
+                                    }
+                                break;
+                            case 1:
+                                if (!module.isDownloadable()) {
+                                    return;
+                                }
+
+                                for (Content content : module.getContents()) {
+                                    Toast.makeText(context, "Downloading file - " + content.getFilename(), Toast.LENGTH_SHORT).show();
+                                    mFileManager.downloadFile(content, module, courseName);
+                                }
+                                break;
+                            case 2:
+                                if (module.getContents() != null)
+                                    for (Content content : module.getContents()) {
+                                        mFileManager.shareFile(content.getFilename(), courseName);
+                                    }
+                                break;
+                            case 3:
+                                markAsReadandUnread(module, position, true);
+                                break;
+                            case 4:
+                                mFileManager.showPropertiesDialog(context, module.getContents().get(0));
+                                break;
+                        }
+                    });
                 } else {
                     arrayAdapter.add("Download");
                     arrayAdapter.add("Share");
                     arrayAdapter.add("Mark as Unread");
+                    if (module.getModType() == Module.Type.RESOURCE) // Properties are available only for a single file
+                        arrayAdapter.add("Properties");
+
+                    alertDialog.setAdapter(arrayAdapter, (dialogInterface, selection) -> {
+                        switch (selection) {
+                            case 0:
+                                mFileManager.downloadFile(module.getContents().get(0), module, courseName);
+                                break;
+                            case 1:
+                                shareModuleLinks(module);
+                                break;
+                            case 2:
+                                markAsReadandUnread(module, position, true);
+                            case 3:
+                                mFileManager.showPropertiesDialog(context, module.getContents().get(0));
+                                break;
+                        }
+                    });
                 }
 
-                alertDialog.setNegativeButton("Cancel", null);
-                alertDialog.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        if (downloaded == 1) {
-                            switch (i) {
-                                case 0:
-                                    if (module.getContents() != null)
-                                        for (Content content : module.getContents()) {
-                                            mFileManager.openFile(content.getFilename(), courseName);
-
-                                        }
-                                    break;
-                                case 1:
-                                    if (!module.isDownloadable()) {
-                                        return;
-                                    }
-
-                                    for (Content content : module.getContents()) {
-                                        Toast.makeText(context, "Downloading file - " + content.getFilename(), Toast.LENGTH_SHORT).show();
-                                        mFileManager.downloadFile(content, module, courseName);
-                                    }
-                                    break;
-                                case 2:
-                                    if (module.getContents() != null)
-                                        for (Content content : module.getContents()) {
-                                            mFileManager.shareFile(content.getFilename(), courseName);
-                                        }
-                                    break;
-                                case 3:
-                                    markAsReadandUnread(module, position, true);
-
-
-                            }
-                        } else {
-                            switch (i) {
-                                case 0:
-                                    mFileManager.downloadFile(module.getContents().get(0), module, courseName);
-                                    break;
-                                case 1:
-                                    shareModuleLinks(module);
-                                    break;
-                                case 2:
-                                    markAsReadandUnread(module, position, true);
-                            }
-
-                        }
-                    }
-                });
                 alertDialog.show();
                 markAsReadandUnread(modules.get(getLayoutPosition()), getLayoutPosition(), false);
             });
@@ -246,14 +252,14 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 downloadIcon.setImageResource(R.drawable.eye);
             } else {
                 List<Content> contents = module.getContents();
-                downloaded = 1;
+                downloaded = true;
                 for (Content content : contents) {
                     if (!mFileManager.searchFile(content.getFilename())) {
-                        downloaded = 0;
+                        downloaded = false;
                         break;
                     }
                 }
-                if (downloaded == 1) {
+                if (downloaded) {
                     downloadIcon.setImageResource(R.drawable.eye);
                 } else {
                     downloadIcon.setImageResource(R.drawable.download);

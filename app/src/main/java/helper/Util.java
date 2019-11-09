@@ -1,5 +1,9 @@
 package helper;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
 /**
  * Set of utility functions that can be used throughout the entire project.
  *
@@ -82,5 +86,32 @@ public class Util {
         return startIndex;
     }
 
+
+    /**
+     * Convert `bytes` to human readable format
+     * Sourced from: https://stackoverflow.com/a/3758880/2198399
+     * @param si use SI or binary units
+     * @return Human-readable size in SI/binary units
+     */
+    public static String humanReadableByteCount(long bytes, boolean si) {
+        int unit = si ? 1000 : 1024;
+        if (bytes < unit) return bytes + " B";
+        int exp = (int) (Math.log(bytes) / Math.log(unit));
+        String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
+        return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+    }
+
+
+    /**
+     * Constructs a DateTime string in the local timezone
+     * @param epoch Unix epoch of the instant, in seconds
+     * @return DateTime string in the format 10:10:10 AM 18-Nov-2019
+     */
+    public static String epochToDateTime(long epoch) {
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:m:ss a dd-MMM-yy");
+        sdf.setTimeZone(TimeZone.getDefault());
+
+        return sdf.format(new Date(epoch * 1000));
+    }
 
 }
