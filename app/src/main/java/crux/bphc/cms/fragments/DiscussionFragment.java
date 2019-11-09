@@ -152,35 +152,34 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
 
                 // Check if downloaded once again, for consistency (user downloaded and then opens ellipsis immediately)
                 boolean isDownloaded = mFileManager.searchFile(attachment.getFilename());
-                if(isDownloaded)
-                {
+                alertDialog.setNegativeButton("Cancel", null);
+
+                if (isDownloaded) {
                     arrayAdapter.add("View");
                     arrayAdapter.add("Re-Download");
                     arrayAdapter.add("Share");
-                }
-                alertDialog.setNegativeButton("Cancel", null);
-                alertDialog.setAdapter(arrayAdapter, (dialogInterface, i) -> {
-                    if (isDownloaded) {
-                        switch (i) {
-                            case 0:
-                                mFileManager.openFile(attachment.getFilename(), mFolderName);
-                                break;
-                            case 1:
-                                Toast.makeText(getActivity(), "Downloading file - " + attachment.getFilename(), Toast.LENGTH_SHORT).show();
-                                mFileManager.downloadFile(
-                                        attachment.getFilename(),
-                                        attachment.getFileurl(),
-                                        "",
-                                        mFolderName,
-                                        true
-                                );
-                                break;
-                            case 2:
-                                mFileManager.shareFile(attachment.getFilename(), mFolderName);
-                                break;
+                    arrayAdapter.add("Properties");
+
+                    alertDialog.setAdapter(arrayAdapter, (dialogInterface, i) -> {
+                        if (isDownloaded) {
+                            switch (i) {
+                                case 0:
+                                    mFileManager.openFile(attachment.getFilename(), mFolderName);
+                                    break;
+                                case 1:
+                                    Toast.makeText(getActivity(), "Downloading file - " + attachment.getFilename(), Toast.LENGTH_SHORT).show();
+                                    mFileManager.downloadFile(attachment.getFilename(), attachment.getFileurl(), "", mFolderName, true);
+                                    break;
+                                case 2:
+                                    mFileManager.shareFile(attachment.getFilename(), mFolderName);
+                                    break;
+                                case 3:
+                                    mFileManager.showPropertiesDialog(getContext(), attachment);
+                            }
                         }
-                    }
-                });
+                    });
+                }
+
                 alertDialog.show();
             });
         }
