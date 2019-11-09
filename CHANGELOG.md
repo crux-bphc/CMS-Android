@@ -13,7 +13,7 @@ Dates are in `yyyy-mm-dd`.
 * Module names are clickable
 
 ### Fixed
-
+* crash when refreshing discussions and switching to another fragment/activity
 ### Removed
 * Token based login
 
