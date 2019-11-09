@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -100,13 +101,10 @@ public class FolderModuleFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mClickListener = new ClickListener() {
-            @Override
-            public boolean onClick(Object object, int position) {
-                Content content = (Content) object;
-                downloadOrOpenFile(content, false);
-                return true;  // why is this here?
-            }
+        mClickListener = (object, position) -> {
+            Content content = (Content) object;
+            downloadOrOpenFile(content, false);
+            return true;  // why is this here?
         };
 
         mRecyclerView = view.findViewById(R.id.files);
@@ -181,21 +179,16 @@ public class FolderModuleFragment extends Fragment {
             private ImageView fileIcon;
             private ImageView download;
             private ImageView ellipsis;
+            private LinearLayout clickWrapper;
             
             public FolderModuleViewHolder(View itemView) {
                 super(itemView);
-                itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        int position = getLayoutPosition();
-                        mClickListener.onClick(mContents.get(position), position);
-                    }
-                });
 
                 fileName = itemView.findViewById(R.id.fileName);
                 fileIcon = itemView.findViewById(R.id.fileIcon);
                 download = itemView.findViewById(R.id.downloadButton);
                 ellipsis = itemView.findViewById(R.id.more);
+                clickWrapper = itemView.findViewById(R.id.clickWrapper);
             }
 
             public void bind(Content content) {
@@ -213,7 +206,7 @@ public class FolderModuleFragment extends Fragment {
                     download.setImageResource(R.drawable.eye);
                 }
 
-                download.setOnClickListener(view -> {
+                clickWrapper.setOnClickListener(view -> {
                     if (mClickListener != null) {
                         mClickListener.onClick(contents.get(getLayoutPosition()), getLayoutPosition());
                     }

@@ -111,7 +111,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             bottomDivider = itemView.findViewById(R.id.bottomDivider);
             description = itemView.findViewById(R.id.description);
             clickWrapper = itemView.findViewById(R.id.clickWrapper);
-            clickWrapperName = itemView.findViewById(R.id.clickWrapperName);
+            clickWrapperName = itemView.findViewById(R.id.clickWrapper);
             textWrapper = itemView.findViewById(R.id.textWrapper);
             downloadIcon = itemView.findViewById(R.id.downloadButton);
             description.setMovementMethod(LinkMovementMethod.getInstance());

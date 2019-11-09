@@ -47,7 +47,6 @@
             android:background="@android:color/darker_gray" />
 
         <LinearLayout
-            android:id="@+id/clickWrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clipChildren="false"
@@ -56,7 +55,7 @@
             android:paddingTop="6dp">
 
             <LinearLayout
-                android:id="@+id/clickWrapperName"
+                android:id="@+id/clickWrapper"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -69,28 +68,28 @@
                 android:paddingBottom="6dp"
                 android:paddingTop="6dp">
 
-            <helper.HtmlTextView
-                android:id="@+id/fileName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_weight="1"
-                android:paddingBottom="8dp"
-                android:paddingTop="8dp"
-                android:text="Assignment 1"
-                android:textColor="?android:textColorPrimary"
-                android:textSize="16sp" />
+                <helper.HtmlTextView
+                    android:id="@+id/fileName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_weight="1"
+                    android:paddingBottom="8dp"
+                    android:paddingTop="8dp"
+                    android:text="Assignment 1"
+                    android:textColor="?android:textColorPrimary"
+                    android:textSize="16sp" />
 
-            <ImageView
-                android:id="@+id/downloadButton"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_gravity="center_vertical"
-                android:tint="?iconTintColor"
-                android:padding="14dp"
-                app:srcCompat="@drawable/download" />
+                <ImageView
+                    android:id="@+id/downloadButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center_vertical"
+                    android:tint="?iconTintColor"
+                    android:padding="14dp"
+                    app:srcCompat="@drawable/download" />
 
             </LinearLayout>
 

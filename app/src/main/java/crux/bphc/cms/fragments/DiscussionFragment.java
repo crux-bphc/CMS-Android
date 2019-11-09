@@ -110,6 +110,7 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
             TextView fileName = attachmentView.findViewById(R.id.fileName);
             fileName.setText(attachment.getFilename());
 
+            LinearLayout clickWrapper = attachmentView.findViewById(R.id.clickWrapper);
             ImageView download = attachmentView.findViewById(R.id.downloadButton);
             ImageView ellipsis = attachmentView.findViewById(R.id.more);
 
@@ -121,7 +122,8 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
                 download.setImageResource(R.drawable.download);
                 ellipsis.setVisibility(View.GONE);
             }
-            download.setOnClickListener(v -> {
+
+            clickWrapper.setOnClickListener(v -> {
                 if (!downloaded) {
                     Toast.makeText(getActivity(), "Downloading file - " + attachment.getFilename(), Toast.LENGTH_SHORT).show();
                     mFileManager.downloadFile(
