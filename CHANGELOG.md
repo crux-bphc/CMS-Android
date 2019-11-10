@@ -7,6 +7,15 @@ Dates are in `yyyy-mm-dd`.
 
 ## Unreleased
 ### Added
+
+
+### Changed
+
+
+### Fixed
+
+## Version 1.6.0 (verCode 1060000), 2019-11-10
+### Added
 * Google Login
 * Ability to share modules without having to download them
 * Fragment for Folder Modules
