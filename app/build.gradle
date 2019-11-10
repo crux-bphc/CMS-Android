@@ -12,8 +12,8 @@ android {
         applicationId "crux.bphc.cms"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 1050100
-        versionName "1.5.1"
+        versionCode 1060000
+        versionName "1.6.0"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
