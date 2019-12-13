@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity
                 startActivity(browserIntent);
             }
             else {
-                Toast.makeText(this, "You need to be enrolled in " + uri.getQueryParameter("courseName") + " in order to view", Toast.LENGTH_LONG).show();
+                z.makeText(this, "You need to be enrolled in " + uri.getQueryParameter("courseName") + " in order to view", Toast.LENGTH_LONG).show();
             }
 
             realm.close();
