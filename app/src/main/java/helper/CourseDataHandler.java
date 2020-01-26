@@ -206,6 +206,10 @@ public class CourseDataHandler {
         List<Discussion> newDiscussions = new ArrayList<>();
         Realm realm = Realm.getInstance(MyApplication.getRealmConfiguration());
 
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(discussions);
+        realm.commitTransaction();
+
         for (Discussion discussion : discussions) {
             if (realm.where(Discussion.class).equalTo("id", discussion.getId()).findFirst() == null) {
                 newDiscussions.add(discussion);
