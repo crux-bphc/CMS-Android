@@ -108,7 +108,7 @@ public class NotificationService extends JobService {
         /*
          * Return boolean that answers the question: "Is your program still doing work?"
          *
-         * Returning true implies the wakelock needs to be held, since processing is being done
+         * Returning true implies the wakelock needs to be held, since processing is bsieing done
          * (usually in some other thread). If all work is completed here itself, false can be returned.
          */
         return true;
@@ -207,8 +207,8 @@ public class NotificationService extends JobService {
                 d.setForumId(1);
             }
             List<Discussion> newDiscussions = courseDataHandler.setForumDiscussions(1, discussions);
-            for (Discussion discussion : newDiscussions) {
-                createNotifModuleAdded(new NotificationSet(discussion.getId(), 1, "Site News", discussion.getMessage(), null));
+            for (Discussion discussion : discussions) {
+                createNotifModuleAdded(new NotificationSet(discussion.getId(), 1, "Site News", discussion.getMessage().replaceAll("\\<.*?\\>", ""), null));
             }
         }
         
