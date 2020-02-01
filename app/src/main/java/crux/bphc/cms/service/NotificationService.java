@@ -207,7 +207,7 @@ public class NotificationService extends JobService {
                 d.setForumId(1);
             }
             List<Discussion> newDiscussions = courseDataHandler.setForumDiscussions(1, discussions);
-            for (Discussion discussion : discussions) {
+            for (Discussion discussion : newDiscussions) {
                 createNotifModuleAdded(new NotificationSet(discussion.getId(), 1, "Site News", discussion.getMessage().replaceAll("\\<.*?\\>", ""), null));
             }
         }
