@@ -1,5 +1,7 @@
 package set;
 
+import android.text.Html;
+
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
@@ -104,11 +106,11 @@ public class Course extends RealmObject {
     }
 
     public String getShortname() {
-        return shortname;
+        return Html.fromHtml(shortname).toString();
     }
 
     public void setShortname(String shortname) {
-        this.shortname = shortname;
+        this.shortname = Html.fromHtml(shortname).toString();
     }
 
     public String getFullname() {
