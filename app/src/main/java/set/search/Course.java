@@ -2,6 +2,7 @@ package set.search;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.Html;
 
 import java.util.List;
 
@@ -79,7 +80,7 @@ public class Course implements Parcelable {
     }
 
     public String getDisplayname() {
-        return displayname;
+        return Html.fromHtml(displayname).toString();
     }
 
     public String getCategoryname() {
