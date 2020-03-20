@@ -1,5 +1,7 @@
 package set;
 
+import android.text.Html;
+
 import java.util.List;
 
 import crux.bphc.cms.R;
@@ -120,11 +122,11 @@ public class Module extends RealmObject {
     }
 
     public String getName() {
-        return name;
+        return Html.fromHtml(name).toString();
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = Html.escapeHtml(name);
     }
 
     public int getInstance() {

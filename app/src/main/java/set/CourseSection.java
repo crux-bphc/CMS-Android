@@ -1,5 +1,7 @@
 package set;
 
+import android.text.Html;
+
 import java.util.List;
 
 import io.realm.RealmList;
@@ -40,7 +42,7 @@ public class CourseSection extends RealmObject {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = Html.escapeHtml(name);
     }
 
     public void setSummary(String summary) {
@@ -64,7 +66,7 @@ public class CourseSection extends RealmObject {
     }
 
     public String getName() {
-        return name;
+        return Html.fromHtml(name).toString();
     }
 
     public List<Module> getModules() {

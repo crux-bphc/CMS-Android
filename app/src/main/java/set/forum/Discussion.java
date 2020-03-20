@@ -1,5 +1,7 @@
 package set.forum;
 
+import android.text.Html;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
 
@@ -30,7 +32,7 @@ public class Discussion extends RealmObject {
     }
 
     public String getName() {
-        return name;
+        return Html.fromHtml(name).toString();
     }
 
     public int getGroupid() {
@@ -58,7 +60,7 @@ public class Discussion extends RealmObject {
     }
 
     public String getSubject() {
-        return subject;
+        return Html.fromHtml(subject).toString();
     }
 
     public String getMessage() {
