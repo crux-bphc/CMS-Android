@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.gson.Gson;
@@ -86,6 +87,7 @@ public class TokenActivity extends AppCompatActivity {
                 if (!data.getScheme().equals(Constants.SSO_URL_SCHEME)) {
                     Toast.makeText(this, "Invalid token URI Schema.",
                             Toast.LENGTH_SHORT).show();
+                    Util.showBadTokenDialog(this);
                     return;
                 }
                 final String host_scheme = "token=";
@@ -94,6 +96,7 @@ public class TokenActivity extends AppCompatActivity {
                 if (!host.contains(host_scheme)) {
                     Toast.makeText(this, "Invalid token URI Schema.",
                             Toast.LENGTH_SHORT).show();
+                    Util.showBadTokenDialog(this);
                     return;
                 }
 
@@ -104,6 +107,13 @@ public class TokenActivity extends AppCompatActivity {
                 host = new String(Base64.decode(host, Base64.DEFAULT));
 
                 String[] parts = host.split(":::");
+                if (parts.length != 2) {
+                    Toast.makeText(this, "Invalid token signature",
+                            Toast.LENGTH_SHORT).show();
+                    Util.showBadTokenDialog(this);
+                    return;
+                }
+
                 String digest = parts[0].toUpperCase();
                 String token = parts[1];
 
@@ -116,6 +126,7 @@ public class TokenActivity extends AppCompatActivity {
                             .equals(digest))) {
                         Toast.makeText(this, "Invalid token signature",
                                 Toast.LENGTH_SHORT).show();
+                        Util.showBadTokenDialog(this);
                         return;
                     }
                 } catch (NoSuchAlgorithmException e) {
@@ -154,6 +165,7 @@ public class TokenActivity extends AppCompatActivity {
                             "Invalid token provided!",
                             Toast.LENGTH_SHORT).show();
                     showProgress(false, "");
+                    Util.showBadTokenDialog(TokenActivity.this);
                     return;
                 }
 
