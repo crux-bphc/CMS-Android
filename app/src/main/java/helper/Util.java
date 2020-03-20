@@ -1,8 +1,14 @@
 package helper;
 
+import android.content.Context;
+
+import androidx.appcompat.app.AlertDialog;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+
+import crux.bphc.cms.TokenActivity;
 
 /**
  * Set of utility functions that can be used throughout the entire project.
@@ -132,4 +138,12 @@ public class Util {
         return new String(hexChars);
     }
 
+    public static void showBadTokenDialog(Context ctxt) {
+        AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(ctxt);
+        dlgAlert.setMessage("The login failed due to an invalid token. Please ensure" +
+                " that you are logged into your BITS Email on your default browser.");
+        dlgAlert.setTitle("Invalid Token");
+        dlgAlert.setPositiveButton("OK", null);
+        dlgAlert.create().show();
+    }
 }
