@@ -12,11 +12,16 @@ public class Constants {
     public static final String GITHUB_URL = "https://github.com/CRUx-BPHC/CMS-Android/";
     public static final String GITHUB_URL_ISSUE = GITHUB_URL + "issues/";
     //"https://goo.gl/forms/wKCukHQTCDCp7HsG3";//GITHUB_URL + "issues/";
+
     public static String API_URL = "https://td.bits-hyderabad.ac.in/moodle/";
-    public static String LOGIN_URL = API_URL + "/admin/tool/mobile/launch.php?service=moodle_mobile_app&passport=%s&urlscheme=cmsbphc&oauthsso=1";
-    public static String COURSE_URL = API_URL + "course/view.php";
+    public static String SSO_LOGIN_URL = API_URL + "/admin/tool/mobile/launch.php?service=moodle_mobile_app&passport=%s&urlscheme=%s&oauthsso=1";
+    public static String COURSE_URL = API_URL + "/course/view.php";
+    public static String SSO_URL_SCHEME = "cmsbphc";
+
     public static String TOKEN;
+
     public static final String DARK_MODE_KEY = "DARK_MODE";
+    public static final String LOGIN_LAUNCH_DATA = "LOGIN_LAUNCH_DATA";
 
     public static String getFeedbackURL(String username, String id) {
         id += "@hyderabad.bits-pilani.ac.in";
