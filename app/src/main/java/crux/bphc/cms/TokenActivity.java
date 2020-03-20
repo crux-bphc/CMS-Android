@@ -6,14 +6,18 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.util.Base64;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -28,6 +32,7 @@ import helper.MoodleServices;
 import helper.UserAccount;
 import helper.UserDetail;
 import helper.UserUtils;
+import helper.Util;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -77,15 +82,46 @@ public class TokenActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null && intent.getAction() == Intent.ACTION_VIEW) {
             Uri data = intent.getData();
-            if (data != null && data.getHost() != null){
+            if (data != null) {
+                if (!data.getScheme().equals(Constants.SSO_URL_SCHEME)) {
+                    Toast.makeText(this, "Invalid token URI Schema.",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                final String host_scheme = "token=";
                 String host = data.getHost();
-                String token = host.substring(6);
-                token = new String(Base64.decode(token, Base64.DEFAULT));
 
-                // The actual token is split into 2 parts. The 2nd part is the access token
-                // Not sure what the second part is for :/
-                token = token.substring(token.lastIndexOf(':') + 1);
+                if (!host.contains(host_scheme)) {
+                    Toast.makeText(this, "Invalid token URI Schema.",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
+                // Clean up the host so that we can extract the token
+                host = host.replace(host_scheme, "");
+                host = host.replaceAll("/?#?$", "");
+
+                host = new String(Base64.decode(host, Base64.DEFAULT));
+
+                String[] parts = host.split(":::");
+                String digest = parts[0].toUpperCase();
+                String token = parts[1];
+
+                HashMap<String, String> launchData = MyApplication.getInstance().getLoginLaunchData();
+                String signature = launchData.get("SITE_URL") + launchData.get("PASSPORT");
+
+                try {
+                    if (!(Util.bytesToHex(MessageDigest.getInstance("md5")
+                            .digest(signature.getBytes(StandardCharsets.US_ASCII)))
+                            .equals(digest))) {
+                        Toast.makeText(this, "Invalid token signature",
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                } catch (NoSuchAlgorithmException e) {
+                    Toast.makeText(this, "MD5 not a valid MessageDigest algorithm! :o",
+                            Toast.LENGTH_SHORT).show();
+                }
                 loginUsingToken(token);
             }
         }
@@ -157,9 +193,18 @@ public class TokenActivity extends AppCompatActivity {
             generate a token and redirect the browser to the Uri with specified schema. The browser will create an
             intent that'll launch this activity again.
          */
-        String passport = ((Integer )new Random().nextInt(2000000000)).toString(); // A random number that
-                                                                                          // identifies the request
-        String loginUrl = String.format(Constants.LOGIN_URL, passport);
+
+        // A random number that identifies the request
+        String passport = ((Integer) new Random().nextInt(1000)).toString();
+        String loginUrl = String.format(Constants.SSO_LOGIN_URL, passport, Constants.SSO_URL_SCHEME);
+
+        // Set the launch data, we need this to verify the token obtained after SSO
+        HashMap<String, String> data = new HashMap<String, String>();
+        // SITE_URL must not end with trailing /
+        data.put("SITE_URL", Constants.API_URL.replaceAll("/$", ""));
+        data.put("PASSPORT", passport);
+        MyApplication.getInstance().setLoginLaunchData(data);
+
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(loginUrl));
         startActivity(intent);
@@ -172,9 +217,9 @@ public class TokenActivity extends AppCompatActivity {
             progressDialog.hide();
         progressDialog.setMessage(message);
     }
-    
+
     private void dismissProgress() {
-        if(progressDialog.isShowing()) {
+        if (progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
     }

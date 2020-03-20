@@ -11,6 +11,8 @@ import java.util.TimeZone;
  */
 public class Util {
 
+    final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+
     /**
      * Start from <code>start</code> and finds the next word. A word is a sequence of 4 or more characters that ends with a whitespace or a newline.
      * @param str The string in which you want to find the next word
@@ -112,6 +114,22 @@ public class Util {
         sdf.setTimeZone(TimeZone.getDefault());
 
         return sdf.format(new Date(epoch * 1000));
+    }
+
+
+    /**
+     * Converts a byte array to a hex string
+     * Source: @url { https://stackoverflow.com/a/40907652 }
+     * * @return Hex string
+     */
+    public static String bytesToHex(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        for (int j = 0; j < bytes.length; j++) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
     }
 
 }
