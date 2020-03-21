@@ -18,7 +18,7 @@ Changelogs are necessary so that the end user knows what changes were brought in
 
 Version numbers are important in helping to differentiate releases of a product. This project follows [Semantic Versioning](https://semver.org/) to keep track of versions.
 
-Android uses a unique integer for each release to the Google Version Code. To ensure proper version code semantics and proper correlation with semantic versioning, the following standard will be used:
+Android uses a unique integer for each release to the Google Version Code. To ensure proper version code semantics and proper correlation with semantic versioning, the following standard is used:
 
 1. The Major version will be multipled by 1,000,000.
 2. The Minor version will be multiplied by 10,000.
