@@ -17,16 +17,16 @@ public class NotificationSet implements RealmModel {
     private int bundleId;
     private String notifSummary;
     private String notifTitle;
-    private String notifContext;
+    private String notifContent;
 
     public NotificationSet() {
     }
 
-    public NotificationSet(int uniqueId, int bundleId, String notifTitle, String notifContext, String notifSummary) {
+    public NotificationSet(int uniqueId, int bundleId, String notifTitle, String notifContent, String notifSummary) {
         this.uniqueId = uniqueId;
         this.bundleId = bundleId;
         this.notifTitle = notifTitle;
-        this.notifContext = notifContext;
+        this.notifContent = notifContent;
         this.notifSummary = notifSummary;
     }
 
@@ -36,7 +36,7 @@ public class NotificationSet implements RealmModel {
     }
 
     public static NotificationSet createNotificationSet(Course course, Module module, Discussion discussion) {
-        return new NotificationSet(discussion.getId(), course.getId(), module.getName(), discussion.getName(), course.getShortname());
+        return new NotificationSet(discussion.getId(), course.getId(), module.getName(), discussion.getMessage(), course.getShortname());
     }
 
     public static NotificationSet createNotificationSet(int courseID, String courseName, int modId, String moduleName) {
@@ -72,18 +72,17 @@ public class NotificationSet implements RealmModel {
         this.notifTitle = notifTitle;
     }
 
-    public String getNotifContext() {
-        return notifContext;
+    public String getNotifContent() {
+        return notifContent;
     }
 
-    public void setNotifContext(String notifContext) {
-        this.notifContext = notifContext;
+    public void setNotifContent(String notifContent) {
+        this.notifContent = notifContent;
     }
 
     public void setUniqueId(int uniqueId) {
         this.uniqueId = uniqueId;
     }
-
 
     public String getTitle() {
         return notifSummary;
@@ -94,7 +93,4 @@ public class NotificationSet implements RealmModel {
 
     }
 
-    public String getContentText() {
-        return notifContext;
-    }
 }

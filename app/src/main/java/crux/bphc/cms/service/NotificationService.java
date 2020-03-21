@@ -1,6 +1,5 @@
 package crux.bphc.cms.service;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.job.JobInfo;
@@ -13,8 +12,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
-import androidx.core.app.NotificationCompat;
 import android.util.Log;
+
+import androidx.core.app.NotificationCompat;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -171,7 +171,6 @@ public class NotificationService extends JobService {
                 continue;
             }
 
-
             // update the sections of the course, and get new parts
             // Since new course notifications are skipped, default modules like "Announcements" will not get a notif
             List<CourseSection> newPartsInSection = courseDataHandler.setCourseData(course.getCourseId(), courseSections);
@@ -183,6 +182,7 @@ public class NotificationService extends JobService {
                     for (Module module : modules) {
                         if (module.getModType() == Module.Type.FORUM) {
                             List<Discussion> discussions = courseRequestHandler.getForumDiscussions(module.getInstance());
+
                             if (discussions == null) continue;
                             for (Discussion d : discussions) {
                                 d.setForumId(module.getInstance());
@@ -211,7 +211,7 @@ public class NotificationService extends JobService {
                 createNotifModuleAdded(new NotificationSet(discussion.getId(), 1, "Site News", discussion.getMessage(), null));
             }
         }
-        
+
         mJobRunning = false;
         jobFinished(job, false);
     }
@@ -233,10 +233,10 @@ public class NotificationService extends JobService {
 
             NotificationCompat.Builder groupBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_UPDATES_BUNDLE)
                     .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentText(notificationSet.getNotifSummary())
+                    .setContentText(parseHtml(notificationSet.getNotifSummary()))
                     .setStyle(new NotificationCompat.InboxStyle()
-                            .setBigContentTitle(notificationSet.getNotifSummary())
-                            .setSummaryText(notificationSet.getNotifSummary()))
+                            .setBigContentTitle(parseHtml(notificationSet.getNotifSummary()))
+                            .setSummaryText(parseHtml(notificationSet.getNotifSummary())))
                     .setGroup(notificationSet.getGroupKey())
                     .setGroupSummary(true)
                     .setAutoCancel(true)
@@ -257,18 +257,16 @@ public class NotificationService extends JobService {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 mBuilder.setContentTitle(parseHtml(notificationSet.getNotifTitle()))
-                        .setContentText(parseHtml(notificationSet.getContentText()))
+                        .setContentText(parseHtml(notificationSet.getNotifContent()))
                         .setStyle(new NotificationCompat.InboxStyle()
-                                .setSummaryText(notificationSet.getNotifSummary())
-                                .addLine(notificationSet.getContentText()));
+                                .setSummaryText(parseHtml(notificationSet.getNotifSummary()))
+                                .addLine(parseHtml(notificationSet.getNotifContent())));
                 // Notify the summary notification for post nougat devices only
                 mNotifyMgr.notify(notificationSet.getBundleID(), groupBuilder.build());
             } else {
                 mBuilder.setContentTitle(parseHtml(notificationSet.getNotifSummary()))
-                        .setContentText(parseHtml(notificationSet.getContentText()));
+                        .setContentText(parseHtml(notificationSet.getNotifContent()));
             }
-
-
             mNotifyMgr.notify(notificationSet.getUniqueId(), mBuilder.build());
         }
     }
