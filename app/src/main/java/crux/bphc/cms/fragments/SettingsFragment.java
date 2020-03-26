@@ -48,6 +48,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             return true;
         });
 
+        CheckBoxPreference notifications = findPreference("notifications");
+
+        final UserAccount userAccount = new UserAccount(getActivity());
+
+        notifications.setChecked(userAccount.isNotificationsEnabled());
+
+        notifications.setOnPreferenceChangeListener(((preference, o) -> {
+            userAccount.setNotificationsEnabled((Boolean) o);
+            return true;
+        }));
+
     }
 
     @Override

@@ -64,5 +64,10 @@ public class UserAccount {
         return prefs.getBoolean("notificationEnable", true);
     }
 
+    public void setNotificationsEnabled(boolean b) {
+        prefs.edit()
+                .putBoolean("notificationEnable", b)
+                .apply();
+    }
 
 }

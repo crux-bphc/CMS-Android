@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <CheckBoxPreference
-        android:key="notificationEnable"
+        android:key="notifications"
         android:title="Notifications"
         />
 
