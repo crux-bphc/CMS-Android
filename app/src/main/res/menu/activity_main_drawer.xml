@@ -19,6 +19,11 @@
             android:id="@+id/course_search"
             android:icon="@drawable/ic_search"
             android:title="@string/course_search_navigation_drawer" />
+
+        <item
+            android:id="@+id/settings"
+            android:icon="@drawable/ic_settings"
+            android:title="Settings" />
         <item
             android:id="@+id/website"
             android:checkable="false"
@@ -44,10 +49,7 @@
                 android:id="@+id/about"
                 android:icon="@drawable/ic_information"
                 android:title="About" />
-            <item
-                android:id="@+id/settings"
-                android:icon="@drawable/ic_settings"
-                android:title="Settings" />
+
         </menu>
     </item>
     <item
