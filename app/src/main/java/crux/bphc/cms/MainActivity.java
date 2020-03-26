@@ -36,6 +36,7 @@ import app.MyApplication;
 import crux.bphc.cms.fragments.ForumFragment;
 import crux.bphc.cms.fragments.MyCoursesFragment;
 import crux.bphc.cms.fragments.SearchCourseFragment;
+import crux.bphc.cms.fragments.SettingsFragment;
 import crux.bphc.cms.service.NotificationService;
 import helper.MyFileManager;
 import helper.UserAccount;
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 1001;
+    private static final String KEY_FRAGMENT = "fragment";
     private UserAccount mUserAccount;
     private Fragment fragment;
 
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -97,8 +100,11 @@ public class MainActivity extends AppCompatActivity
         username.setText(mUserAccount.getUsername());
         fullName.setText(mUserAccount.getFirstName());
 
-        // Set the fragments up
-        pushView(MyCoursesFragment.newInstance(TOKEN), "My Courses", true);
+        // Set up fragments
+        if (savedInstanceState == null) {
+            pushView(MyCoursesFragment.newInstance(TOKEN), "My Courses", true);
+        }
+
         getSupportFragmentManager().addOnBackStackChangedListener(() -> {
             Fragment frag = getSupportFragmentManager().findFragmentById(R.id.content_main);
             if (frag instanceof MyCoursesFragment){
@@ -319,8 +325,7 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case R.id.settings:
-                Intent intent1 = new Intent(this, SettingsActivity.class);
-                startActivity(intent1);
+                pushView(new SettingsFragment(), "Settings", false);
                 break;
             case R.id.nav_share:
                 final String appPackageName = BuildConfig.APPLICATION_ID;

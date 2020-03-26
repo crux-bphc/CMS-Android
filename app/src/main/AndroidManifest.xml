@@ -78,7 +78,7 @@
         </provider>
 
         <activity
-            android:name=".SettingsActivity"
+            android:name=".fragments.SettingsFragment"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
