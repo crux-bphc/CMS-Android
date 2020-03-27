@@ -27,6 +27,7 @@ public class HtmlTextView extends AppCompatTextView {
     }
 
     public static Spanned parseHtml(String text) {
+        if (text == null) return null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return Html.fromHtml(text, Html.FROM_HTML_MODE_COMPACT);
         } else {
