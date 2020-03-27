@@ -76,17 +76,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-
-        <activity
-            android:name=".fragments.SettingsFragment"
-            android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="crux.bphc.cms.MainActivity" />
-        </activity>
-
         <activity
             android:name=".InfoActivity"
             android:screenOrientation="portrait" />
