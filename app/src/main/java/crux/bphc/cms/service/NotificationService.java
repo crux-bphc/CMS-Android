@@ -208,7 +208,7 @@ public class NotificationService extends JobService {
             }
             List<Discussion> newDiscussions = courseDataHandler.setForumDiscussions(1, discussions);
             for (Discussion discussion : newDiscussions) {
-                createNotifModuleAdded(new NotificationSet(discussion.getId(), 1, "Site News", discussion.getMessage(), null));
+                createNotifModuleAdded(new NotificationSet(discussion.getId(), 1, "Site News", discussion.getMessage(), "Site News"));
             }
         }
 
