@@ -13,6 +13,7 @@ Dates are in `yyyy-mm-dd`.
 
 ### Fixed
 * HTML encoded entities in course names
+* Unparsed HTML in notification summary
 * Empty ghost site notifications
 
 ## Version 1.6.0 (verCode 1060000), 2019-11-10
