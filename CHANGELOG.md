@@ -7,10 +7,9 @@ Dates are in `yyyy-mm-dd`.
 
 ## Unreleased
 ### Added
-
+* Dialogbox on invalid token after Google login
 
 ### Changed
-
 
 ### Fixed
 * Empty ghost site notifications
