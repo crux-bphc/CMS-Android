@@ -139,6 +139,7 @@ public class MyFileManager {
 
     // TODO check if the courseName params of these methods are needed, since we're passing it in constructor anyway
     public void downloadFile(Content content, Module module, String courseName) {
+        deleteOldDownload(content, courseName); //delete any pre-existing version of the file
         downloadFile(content.getFilename(), content.getFileurl(), module.getDescription(), courseName, false);
     }
 
@@ -170,6 +171,13 @@ public class MyFileManager {
         requestedDownloads.add(fileName);
     }
 
+    public void deleteOldDownload(Content content, String courseName) {
+        String fileName = content.getFilename();
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()+getFilePath(courseName, fileName));
+        if (file.exists()) {
+            file.delete();
+        }
+    }
 
     public boolean searchFile(String fileName) {
         //if courseName is empty check sb folders
