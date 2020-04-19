@@ -10,6 +10,8 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.SwitchPreference;
+
 import app.MyApplication;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,12 +30,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
 
         super.onCreate(savedInstanceState);
+
+        getActivity().setTitle("Settings");
     }
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
         setPreferencesFromResource(R.xml.preferences, s);
 
+        SwitchPreference darkMode = findPreference("DARK_MODE");
         darkMode.setOnPreferenceChangeListener((preference, o) -> {
             this.themeChanged = true;
             MyApplication.getInstance().setDarkModeEnabled((Boolean) o);
@@ -41,6 +46,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             return true;
         });
 
+        SwitchPreference notifications = findPreference("notifications");
         final UserAccount userAccount = new UserAccount(getActivity());
 
         notifications.setChecked(userAccount.isNotificationsEnabled());
