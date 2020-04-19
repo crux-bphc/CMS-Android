@@ -34,26 +34,16 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public void onCreatePreferences(Bundle bundle, String s) {
         setPreferencesFromResource(R.xml.preferences, s);
 
-        findPreference("notifications");
-
-        CheckBoxPreference darkMode = findPreference("DARK_MODE");
         darkMode.setOnPreferenceChangeListener((preference, o) -> {
-
             this.themeChanged = true;
-
             MyApplication.getInstance().setDarkModeEnabled((Boolean) o);
-
             getActivity().recreate();
-
             return true;
         });
-
-        CheckBoxPreference notifications = findPreference("notifications");
 
         final UserAccount userAccount = new UserAccount(getActivity());
 
         notifications.setChecked(userAccount.isNotificationsEnabled());
-
         notifications.setOnPreferenceChangeListener(((preference, o) -> {
             userAccount.setNotificationsEnabled((Boolean) o);
             return true;
@@ -63,7 +53,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @Override
     public void onSaveInstanceState(Bundle outState){
-
         if (themeChanged) outState.putBoolean(KEY_SHOW_SETTINGS, true);
 
         super.onSaveInstanceState(outState);
