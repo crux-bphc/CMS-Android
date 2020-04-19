@@ -43,6 +43,8 @@ import helper.UserAccount;
 import helper.UserUtils;
 import io.realm.Realm;
 import set.Course;
+import set.CourseSection;
+import set.Module;
 
 import static app.Constants.API_URL;
 import static app.Constants.TOKEN;
@@ -115,7 +117,7 @@ public class MainActivity extends AppCompatActivity
         askPermission();
         createNotificationChannels(); // initialize channels before starting background service
         NotificationService.startService(this, false);
-        resolveDeepLink();
+        resolveIntent();
         resolveModuleLinkShare();
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -176,29 +178,40 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void resolveDeepLink() {
-        String pathString = getIntent().getStringExtra("path");
-        if (pathString != null) {
-            if (pathString.contains("view.php")) {
-                String[] ids = pathString.split("=");
-                try {
-                    int id = Integer.parseInt(ids[ids.length - 1]);
-                    if (id == 1) {
-                        //todo open site news
-                    } else {
-                        Intent intent = new Intent(this, CourseDetailActivity.class);
-                        intent.putExtra("id", id);
-                        startActivity(intent);
-                        return;
+    private void resolveIntent() {
+        int courseId = getIntent().getIntExtra("courseId", -1);
+        int modId = getIntent().getIntExtra("modId", -1);
+
+        if (courseId == -1) return;
+
+        if (modId == -1) {
+            Intent intent = new Intent(this, CourseDetailActivity.class);
+            intent.putExtra("courseId", courseId);
+            startActivity(intent);
+            return;
+        }
+
+        Realm realm = Realm.getInstance(MyApplication.getRealmConfiguration());
+        List<CourseSection> courseSections = realm.copyFromRealm(realm.where(CourseSection.class)
+                .equalTo("courseID", courseId).findAll());
+        if (courseSections == null || courseSections.isEmpty()) return;
+
+
+        for (CourseSection courseSection : courseSections) {
+            for (Module module : courseSection.getModules()) {
+                if (module.getId() == modId)  {
+                    Intent intent = new Intent(this, CourseDetailActivity.class);
+                    intent.putExtra("courseId", courseId);
+                    if (!module.isDownloadable() && module.getModType() == Module.Type.FORUM) {
+                        intent.putExtra("forumId", module.getInstance());
                     }
-
-                } catch (NumberFormatException e) {
-
+                    startActivity(intent);
+                    return;
                 }
             }
         }
-    }
 
+    }
 
     private void askPermission() {
         if (ContextCompat.checkSelfPermission(this,

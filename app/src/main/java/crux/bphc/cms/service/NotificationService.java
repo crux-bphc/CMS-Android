@@ -228,7 +228,8 @@ public class NotificationService extends JobService {
 
             Intent intent = new Intent(this, TokenActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra("path", Uri.parse(Constants.getCourseURL(notificationSet.getBundleID())));
+            intent.putExtra("courseId", notificationSet.getBundleID());
+            intent.putExtra("modId", notificationSet.getUniqueId()); // This can be a module or a discussion id, and will be resolved later
             PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             NotificationCompat.Builder groupBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_UPDATES_BUNDLE)

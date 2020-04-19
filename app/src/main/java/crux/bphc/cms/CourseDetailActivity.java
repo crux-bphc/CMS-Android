@@ -47,7 +47,9 @@ public class CourseDetailActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         mEnrolCourse = intent.getParcelableExtra(COURSE_PARCEL_INTENT_KEY);
-        int courseId = intent.getIntExtra("id", -1);
+        int courseId = intent.getIntExtra("courseId", -1);
+        int forumId = intent.getIntExtra("forumId", -1);
+        int discussionId = intent.getIntExtra("discussionId", -1);
 
         if (courseId == -1 && mEnrolCourse == null) {
             finish();
@@ -61,8 +63,8 @@ public class CourseDetailActivity extends AppCompatActivity {
                 .equalTo("id", courseId)
                 .findFirst();
 
+        // check if enrolled
         if (course == null) {
-            System.out.println("receivedCourseId: " + courseId);
             contacts = mEnrolCourse.getContacts();
             setCourseEnrol();
             setTitle(mEnrolCourse.getShortname());
