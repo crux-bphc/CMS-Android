@@ -10,6 +10,7 @@ Dates are in `yyyy-mm-dd`.
 * Dialogbox on invalid token after Google login
 
 ### Changed
+* Replaced custom Settings activity with Android's Preference Fragment
 
 ### Fixed
 * HTML encoded entities in course names
