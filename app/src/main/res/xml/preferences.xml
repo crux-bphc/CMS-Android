@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <CheckBoxPreference
+    <SwitchPreference
         android:key="notifications"
         android:title="Notifications"
         android:icon="@drawable/ic_bell"
-        />
+        android:layout="@layout/preferences_layout" />
 
-    <CheckBoxPreference
+    <SwitchPreference
         android:icon="@drawable/ic_brightness_4"
         android:key="DARK_MODE"
         android:title="Dark theme"
-        />
+        android:layout="@layout/preferences_layout" />
 
 </PreferenceScreen>
