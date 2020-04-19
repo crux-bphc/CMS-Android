@@ -103,10 +103,11 @@ public class Discussion extends RealmObject {
         return pinned;
     }
 
-
     public void setForumId(int forumId) {
         this.forumId = forumId;
     }
+
+    public int getForumid() { return forumId; }
 
     private String attachment;
     private RealmList<Attachment> attachments = null;

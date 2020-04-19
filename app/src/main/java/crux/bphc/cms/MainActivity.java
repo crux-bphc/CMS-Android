@@ -33,6 +33,7 @@ import java.util.List;
 
 import app.Constants;
 import app.MyApplication;
+import crux.bphc.cms.fragments.DiscussionFragment;
 import crux.bphc.cms.fragments.ForumFragment;
 import crux.bphc.cms.fragments.MyCoursesFragment;
 import crux.bphc.cms.fragments.SearchCourseFragment;
@@ -184,6 +185,19 @@ public class MainActivity extends AppCompatActivity
 
         if (courseId == -1) return;
 
+        if (courseId == 1) {
+            // Site news, modId will not be -1
+            // We will push the fragment here itself
+            Fragment forumFragment = ForumFragment.newInstance(TOKEN, 1, "Site News");
+            pushView(forumFragment, "Site News", false);
+
+            // Ensure that the fragment has been commited
+            getSupportFragmentManager().executePendingTransactions();
+
+            Fragment discussionFragment = DiscussionFragment.newInstance(modId, "Site News");
+            pushView(discussionFragment, "Discussion", false);
+        }
+
         if (modId == -1) {
             Intent intent = new Intent(this, CourseDetailActivity.class);
             intent.putExtra("courseId", courseId);
@@ -211,6 +225,11 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
+        // If we've gotten this far, we need to open a discussion
+        Intent intent = new Intent(this, CourseDetailActivity.class);
+        intent.putExtra("courseId", courseId);
+        intent.putExtra("discussionId", modId);
+        startActivity(intent);
     }
 
     private void askPermission() {

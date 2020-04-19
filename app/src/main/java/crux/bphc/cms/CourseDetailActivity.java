@@ -2,6 +2,8 @@ package crux.bphc.cms;
 
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,12 +11,14 @@ import android.view.MenuItem;
 import android.widget.FrameLayout;
 
 import java.util.List;
-
 import app.MyApplication;
 import crux.bphc.cms.fragments.CourseEnrolFragment;
 import crux.bphc.cms.fragments.CourseSectionFragment;
+import crux.bphc.cms.fragments.DiscussionFragment;
+import crux.bphc.cms.fragments.ForumFragment;
 import io.realm.Realm;
 import set.Course;
+import set.forum.Discussion;
 import set.search.Contact;
 
 import static app.Constants.COURSE_PARCEL_INTENT_KEY;
@@ -71,7 +75,16 @@ public class CourseDetailActivity extends AppCompatActivity {
 
         } else {
             setTitle(course.getShortname());
-            setCourseSection();
+            if (forumId == -1 && discussionId == -1) {
+                setCourseSection();
+            } else if (forumId != -1 && discussionId == -1) {
+                setForumFragment(forumId);
+            } else if (forumId == -1 && discussionId != -1) {
+                // We need to find the forumId first
+                forumId = realm.where(Discussion.class).equalTo("id", discussionId)
+                        .findFirst().getForumid();
+                setDiscussionFragment(forumId, discussionId);
+            }
         }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -97,6 +110,29 @@ public class CourseDetailActivity extends AppCompatActivity {
                 courseSectionFragment,
                 "course_section_frag"
         ).commit();
+    }
+
+    private void setForumFragment(int forumId) {
+        // We first add and commit courseSection
+        setCourseSection();
+        fragmentManager.executePendingTransactions();
+
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        Fragment forumFragment = ForumFragment.newInstance(TOKEN, forumId, course.getShortname());
+        fragmentTransaction.addToBackStack(null)
+                .replace(R.id.course_section_enrol_container, forumFragment, "Announcements");
+        fragmentTransaction.commit();
+    }
+
+    private void setDiscussionFragment(int forumId, int discussionId) {
+        setForumFragment(forumId);
+        fragmentManager.executePendingTransactions();
+
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        Fragment discussionFragment = DiscussionFragment.newInstance(discussionId, course.getShortname());
+        fragmentTransaction.addToBackStack(null)
+                .replace(R.id.course_section_enrol_container, discussionFragment, "Discussion");
+        fragmentTransaction.commit();
     }
 
     @Override
