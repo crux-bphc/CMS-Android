@@ -118,7 +118,7 @@ public class MyCoursesFragment extends Fragment {
                 Course course = (Course) object;
 
                 Intent intent = new Intent(getActivity(), CourseDetailActivity.class);
-                intent.putExtra("id", course.getCourseId());
+                intent.putExtra("courseId", course.getCourseId());
                 intent.putExtra("course_name", course.getShortname());
                 startActivityForResult(intent, COURSE_SECTION_ACTIVITY);
                 return true;
