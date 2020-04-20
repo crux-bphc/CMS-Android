@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="?themeBackground"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="crux.bphc.cms.MainActivity"
+    tools:context="crux.bphc.cms.activities.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
 </RelativeLayout>

@@ -1,4 +1,4 @@
-package crux.bphc.cms;
+package crux.bphc.cms.activities;
 
 import android.Manifest;
 import android.app.NotificationChannel;
@@ -35,6 +35,8 @@ import java.util.List;
 
 import app.Constants;
 import app.MyApplication;
+import crux.bphc.cms.BuildConfig;
+import crux.bphc.cms.R;
 import crux.bphc.cms.fragments.DiscussionFragment;
 import crux.bphc.cms.fragments.ForumFragment;
 import crux.bphc.cms.fragments.MyCoursesFragment;

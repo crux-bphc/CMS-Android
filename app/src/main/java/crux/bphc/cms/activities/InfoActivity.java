@@ -1,4 +1,4 @@
-package crux.bphc.cms;
+package crux.bphc.cms.activities;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import app.Constants;
 import app.MyApplication;
+import crux.bphc.cms.R;
 import helper.HtmlTextView;
 
 public class InfoActivity extends AppCompatActivity {

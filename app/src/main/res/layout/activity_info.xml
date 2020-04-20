@@ -10,7 +10,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="?themeBackground"
-    tools:context="crux.bphc.cms.InfoActivity">
+    tools:context="crux.bphc.cms.activities.InfoActivity">
 
     <helper.HtmlTextView
         android:id="@+id/description"

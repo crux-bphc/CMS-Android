@@ -1,4 +1,4 @@
-package crux.bphc.cms;
+package crux.bphc.cms.activities;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -25,6 +25,7 @@ import app.Constants;
 import app.MyApplication;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import crux.bphc.cms.R;
 import helper.APIClient;
 import helper.CourseDataHandler;
 import helper.CourseRequestHandler;

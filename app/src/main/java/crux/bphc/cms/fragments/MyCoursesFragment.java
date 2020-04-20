@@ -31,7 +31,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import crux.bphc.cms.CourseDetailActivity;
+
+import crux.bphc.cms.activities.CourseDetailActivity;
 import crux.bphc.cms.R;
 import helper.ClickListener;
 import helper.CourseDataHandler;
