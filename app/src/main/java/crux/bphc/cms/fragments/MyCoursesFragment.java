@@ -33,12 +33,12 @@ import java.util.List;
 
 import crux.bphc.cms.R;
 import crux.bphc.cms.activities.CourseDetailActivity;
-import helper.ClickListener;
-import helper.CourseDataHandler;
-import helper.CourseDownloader;
-import helper.CourseRequestHandler;
-import helper.HtmlTextView;
-import helper.UserUtils;
+import crux.bphc.cms.helper.ClickListener;
+import crux.bphc.cms.helper.CourseDataHandler;
+import crux.bphc.cms.helper.CourseDownloader;
+import crux.bphc.cms.helper.CourseRequestHandler;
+import crux.bphc.cms.helper.HtmlTextView;
+import crux.bphc.cms.helper.UserUtils;
 import set.Course;
 import set.CourseSection;
 import set.Module;

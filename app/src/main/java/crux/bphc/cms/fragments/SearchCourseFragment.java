@@ -23,8 +23,8 @@ import java.util.List;
 
 import crux.bphc.cms.activities.CourseDetailActivity;
 import crux.bphc.cms.R;
-import helper.ClickListener;
-import helper.MoodleServices;
+import crux.bphc.cms.helper.ClickListener;
+import crux.bphc.cms.helper.MoodleServices;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

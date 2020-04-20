@@ -24,8 +24,8 @@ import java.util.Arrays;
 
 import crux.bphc.cms.R;
 import crux.bphc.cms.app.MyApplication;
-import helper.HtmlTextView;
-import helper.MyFileManager;
+import crux.bphc.cms.helper.HtmlTextView;
+import crux.bphc.cms.helper.MyFileManager;
 import io.realm.Realm;
 import set.forum.Attachment;
 import set.forum.Discussion;

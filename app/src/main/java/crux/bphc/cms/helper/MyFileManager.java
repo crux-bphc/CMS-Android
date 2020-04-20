@@ -1,4 +1,4 @@
-package helper;
+package crux.bphc.cms.helper;
 
 import android.app.Activity;
 import android.app.DownloadManager;

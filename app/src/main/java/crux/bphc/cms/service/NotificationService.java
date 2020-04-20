@@ -20,10 +20,10 @@ import java.util.concurrent.TimeUnit;
 
 import crux.bphc.cms.R;
 import crux.bphc.cms.activities.TokenActivity;
-import helper.CourseDataHandler;
-import helper.CourseRequestHandler;
-import helper.UserAccount;
-import helper.UserUtils;
+import crux.bphc.cms.helper.CourseDataHandler;
+import crux.bphc.cms.helper.CourseRequestHandler;
+import crux.bphc.cms.helper.UserAccount;
+import crux.bphc.cms.helper.UserUtils;
 import set.Course;
 import set.CourseSection;
 import set.Module;
@@ -31,7 +31,7 @@ import set.NotificationSet;
 import set.forum.Discussion;
 
 import static androidx.core.app.NotificationCompat.PRIORITY_DEFAULT;
-import static helper.HtmlTextView.parseHtml;
+import static crux.bphc.cms.helper.HtmlTextView.parseHtml;
 
 public class NotificationService extends JobService {
     private static boolean mJobRunning;
