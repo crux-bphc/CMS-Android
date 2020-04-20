@@ -1,4 +1,4 @@
-package set.search;
+package models.search;
 
 import java.util.List;
 

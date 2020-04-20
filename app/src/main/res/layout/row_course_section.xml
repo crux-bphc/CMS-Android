@@ -34,7 +34,6 @@
 
     </LinearLayout>
 
-
     <LinearLayout
         android:id="@+id/courseSectionDescription"
         android:layout_width="match_parent"
@@ -48,7 +47,7 @@
                 android:layout_width="2dp"
                 android:layout_height="match_parent"
                 android:background="@color/nephritis"/>
-            <helper.HtmlTextView
+            <crux.bphc.cms.helper.HtmlTextView
                 android:id="@+id/description"
                 android:clickable="true"
                 android:focusable="true"

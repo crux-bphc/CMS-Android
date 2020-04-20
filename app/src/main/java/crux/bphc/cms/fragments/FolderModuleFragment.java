@@ -26,8 +26,8 @@ import crux.bphc.cms.R;
 import crux.bphc.cms.helper.ClickListener;
 import crux.bphc.cms.helper.MyFileManager;
 import io.realm.Realm;
-import set.Content;
-import set.Module;
+import models.Content;
+import models.Module;
 
 public class FolderModuleFragment extends Fragment {
 

@@ -1,9 +1,9 @@
-package set;
+package models;
 
 import io.realm.RealmModel;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.RealmClass;
-import set.forum.Discussion;
+import models.forum.Discussion;
 
 /**
  * Created by harsu on 18-01-2017.

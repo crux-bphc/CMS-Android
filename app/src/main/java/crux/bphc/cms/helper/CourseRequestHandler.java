@@ -22,12 +22,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import set.Content;
-import set.Course;
-import set.CourseSection;
-import set.Module;
-import set.forum.Discussion;
-import set.forum.ForumData;
+import models.Content;
+import models.Course;
+import models.CourseSection;
+import models.Module;
+import models.forum.Discussion;
+import models.forum.ForumData;
 
 import static crux.bphc.cms.app.Constants.API_URL;
 

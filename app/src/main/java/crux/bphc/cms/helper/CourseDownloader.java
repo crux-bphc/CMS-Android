@@ -8,9 +8,9 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
-import set.Content;
-import set.CourseSection;
-import set.Module;
+import models.Content;
+import models.CourseSection;
+import models.Module;
 
 /**
  * Created by harsu on 21-12-2016.

@@ -1,4 +1,4 @@
-package set;
+package models;
 
 import android.text.Html;
 
@@ -37,7 +37,7 @@ public class Course extends RealmObject {
     public Course() {
     }
 
-    public Course(set.search.Course course) {
+    public Course(models.search.Course course) {
         this.id = course.getId();
         enrolledusercount = 0;
         shortname = course.getShortname();

@@ -32,9 +32,9 @@ import crux.bphc.cms.BuildConfig;
 import crux.bphc.cms.R;
 import crux.bphc.cms.fragments.FolderModuleFragment;
 import crux.bphc.cms.fragments.ForumFragment;
-import set.Content;
-import set.Module;
-import set.forum.Attachment;
+import models.Content;
+import models.Module;
+import models.forum.Attachment;
 
 /**
  * Created by harsu on 19-01-2017.

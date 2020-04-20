@@ -47,9 +47,9 @@ import crux.bphc.cms.helper.MyFileManager;
 import crux.bphc.cms.helper.UserAccount;
 import crux.bphc.cms.helper.UserUtils;
 import io.realm.Realm;
-import set.Course;
-import set.CourseSection;
-import set.Module;
+import models.Course;
+import models.CourseSection;
+import models.Module;
 
 import static crux.bphc.cms.app.Constants.API_URL;
 import static crux.bphc.cms.app.Constants.TOKEN;

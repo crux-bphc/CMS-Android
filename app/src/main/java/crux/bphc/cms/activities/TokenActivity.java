@@ -39,10 +39,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import set.Course;
-import set.CourseSection;
-import set.Module;
-import set.forum.Discussion;
+import models.Course;
+import models.CourseSection;
+import models.Module;
+import models.forum.Discussion;
 
 public class TokenActivity extends AppCompatActivity {
 
