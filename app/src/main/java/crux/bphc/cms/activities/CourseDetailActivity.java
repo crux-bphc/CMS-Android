@@ -12,8 +12,8 @@ import androidx.fragment.app.FragmentTransaction;
 
 import java.util.List;
 
-import app.MyApplication;
 import crux.bphc.cms.R;
+import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.fragments.CourseEnrolFragment;
 import crux.bphc.cms.fragments.CourseSectionFragment;
 import crux.bphc.cms.fragments.DiscussionFragment;
@@ -23,8 +23,8 @@ import set.Course;
 import set.forum.Discussion;
 import set.search.Contact;
 
-import static app.Constants.COURSE_PARCEL_INTENT_KEY;
-import static app.Constants.TOKEN;
+import static crux.bphc.cms.app.Constants.COURSE_PARCEL_INTENT_KEY;
+import static crux.bphc.cms.app.Constants.TOKEN;
 
 public class CourseDetailActivity extends AppCompatActivity {
 

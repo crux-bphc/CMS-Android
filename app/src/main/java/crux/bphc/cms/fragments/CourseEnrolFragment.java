@@ -21,7 +21,7 @@ import androidx.fragment.app.FragmentManager;
 
 import java.util.List;
 
-import app.MyApplication;
+import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.R;
 import helper.MoodleServices;
 import io.realm.Realm;
@@ -34,7 +34,7 @@ import set.enrol.SelfEnrol;
 import set.search.Contact;
 import set.search.Course;
 
-import static app.Constants.API_URL;
+import static crux.bphc.cms.app.Constants.API_URL;
 
 
 public class CourseEnrolFragment extends Fragment {

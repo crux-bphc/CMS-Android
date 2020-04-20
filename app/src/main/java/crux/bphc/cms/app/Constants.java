@@ -1,4 +1,4 @@
-package app;
+package crux.bphc.cms.app;
 
 /**
  * Created by harsu on 16-12-2016.

@@ -7,8 +7,8 @@ import androidx.annotation.Nullable;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
 
-import app.MyApplication;
 import crux.bphc.cms.R;
+import crux.bphc.cms.app.MyApplication;
 import helper.UserAccount;
 
 public class SettingsFragment extends PreferenceFragmentCompat {

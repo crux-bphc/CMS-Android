@@ -7,7 +7,7 @@ import android.widget.Toast;
 
 import java.io.IOException;
 
-import app.MyApplication;
+import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.activities.TokenActivity;
 import io.realm.Realm;
 import okhttp3.ResponseBody;
@@ -16,7 +16,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static app.Constants.API_URL;
+import static crux.bphc.cms.app.Constants.API_URL;
 
 /**
  * Created by Harshit Agarwal on 24-11-2017.

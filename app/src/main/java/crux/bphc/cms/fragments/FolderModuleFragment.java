@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import app.MyApplication;
+import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.R;
 import helper.ClickListener;
 import helper.MyFileManager;

@@ -21,8 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-import app.Constants;
-import app.MyApplication;
+import crux.bphc.cms.app.Constants;
+import crux.bphc.cms.app.MyApplication;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import crux.bphc.cms.R;

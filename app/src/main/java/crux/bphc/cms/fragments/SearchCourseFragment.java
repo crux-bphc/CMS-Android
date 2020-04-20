@@ -33,9 +33,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import set.search.Course;
 import set.search.CourseSearch;
 
-import static app.Constants.API_URL;
-import static app.Constants.COURSE_PARCEL_INTENT_KEY;
-import static app.Constants.PER_PAGE;
+import static crux.bphc.cms.app.Constants.API_URL;
+import static crux.bphc.cms.app.Constants.COURSE_PARCEL_INTENT_KEY;
+import static crux.bphc.cms.app.Constants.PER_PAGE;
 
 public class SearchCourseFragment extends Fragment {
 

@@ -1,6 +1,6 @@
 package helper;
 
-import app.Constants;
+import crux.bphc.cms.app.Constants;
 import crux.bphc.cms.BuildConfig;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;

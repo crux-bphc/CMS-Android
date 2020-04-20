@@ -26,7 +26,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
-import app.MyApplication;
+import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.R;
 import helper.ClickListener;
 import helper.CourseRequestHandler;
@@ -39,7 +39,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import set.forum.Discussion;
 
-import static app.Constants.API_URL;
+import static crux.bphc.cms.app.Constants.API_URL;
 
 /**
  * A simple {@link Fragment} subclass.
