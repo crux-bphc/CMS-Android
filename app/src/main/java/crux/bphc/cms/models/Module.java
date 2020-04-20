@@ -1,4 +1,4 @@
-package models;
+package crux.bphc.cms.models;
 
 import android.text.Html;
 

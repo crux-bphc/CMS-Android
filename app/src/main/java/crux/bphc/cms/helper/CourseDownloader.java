@@ -8,9 +8,9 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
-import models.Content;
-import models.CourseSection;
-import models.Module;
+import crux.bphc.cms.models.Content;
+import crux.bphc.cms.models.CourseSection;
+import crux.bphc.cms.models.Module;
 
 /**
  * Created by harsu on 21-12-2016.

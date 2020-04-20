@@ -33,8 +33,8 @@ import java.util.List;
 
 import crux.bphc.cms.R;
 import crux.bphc.cms.fragments.MoreOptionsFragment;
-import models.Content;
-import models.Module;
+import crux.bphc.cms.models.Content;
+import crux.bphc.cms.models.Module;
 
 public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 

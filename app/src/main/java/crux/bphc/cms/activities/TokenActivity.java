@@ -39,10 +39,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import models.Course;
-import models.CourseSection;
-import models.Module;
-import models.forum.Discussion;
+import crux.bphc.cms.models.Course;
+import crux.bphc.cms.models.CourseSection;
+import crux.bphc.cms.models.Module;
+import crux.bphc.cms.models.forum.Discussion;
 
 public class TokenActivity extends AppCompatActivity {
 

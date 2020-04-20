@@ -6,10 +6,10 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
-import models.CourseSection;
-import models.enrol.SelfEnrol;
-import models.forum.ForumData;
-import models.search.CourseSearch;
+import crux.bphc.cms.models.CourseSection;
+import crux.bphc.cms.models.enrol.SelfEnrol;
+import crux.bphc.cms.models.forum.ForumData;
+import crux.bphc.cms.models.search.CourseSearch;
 
 /**
  * Created by harsu on 16-12-2016.

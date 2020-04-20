@@ -1,4 +1,4 @@
-package models.enrol;
+package crux.bphc.cms.models.enrol;
 
 /**
  * Created by siddhant on 12/19/16.

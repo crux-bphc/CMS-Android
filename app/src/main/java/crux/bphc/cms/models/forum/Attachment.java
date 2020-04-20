@@ -1,4 +1,4 @@
-package models.forum;
+package crux.bphc.cms.models.forum;
 
 import io.realm.RealmObject;
 

@@ -1,4 +1,4 @@
-package models.search;
+package crux.bphc.cms.models.search;
 
 import android.os.Parcel;
 import android.os.Parcelable;

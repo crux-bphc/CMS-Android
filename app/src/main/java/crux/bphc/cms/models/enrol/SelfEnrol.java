@@ -1,4 +1,4 @@
-package models.enrol;
+package crux.bphc.cms.models.enrol;
 
 import java.util.List;
 

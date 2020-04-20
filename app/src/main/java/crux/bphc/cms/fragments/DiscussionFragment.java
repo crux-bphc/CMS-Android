@@ -27,8 +27,8 @@ import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.helper.HtmlTextView;
 import crux.bphc.cms.helper.MyFileManager;
 import io.realm.Realm;
-import models.forum.Attachment;
-import models.forum.Discussion;
+import crux.bphc.cms.models.forum.Attachment;
+import crux.bphc.cms.models.forum.Discussion;
 
 
 public class DiscussionFragment extends Fragment implements MyFileManager.Callback {

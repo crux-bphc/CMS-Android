@@ -39,9 +39,9 @@ import crux.bphc.cms.helper.HtmlTextView;
 import crux.bphc.cms.helper.ModulesAdapter;
 import crux.bphc.cms.helper.MyFileManager;
 import crux.bphc.cms.helper.Util;
-import models.CourseSection;
-import models.Module;
-import models.forum.Discussion;
+import crux.bphc.cms.models.CourseSection;
+import crux.bphc.cms.models.Module;
+import crux.bphc.cms.models.forum.Discussion;
 
 import static crux.bphc.cms.helper.MyFileManager.DATA_DOWNLOADED;
 

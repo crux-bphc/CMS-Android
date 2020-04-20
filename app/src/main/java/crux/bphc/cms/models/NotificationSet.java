@@ -1,9 +1,9 @@
-package models;
+package crux.bphc.cms.models;
 
 import io.realm.RealmModel;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.RealmClass;
-import models.forum.Discussion;
+import crux.bphc.cms.models.forum.Discussion;
 
 /**
  * Created by harsu on 18-01-2017.

@@ -1,4 +1,4 @@
-package models;
+package crux.bphc.cms.models;
 
 import android.text.Html;
 
@@ -37,7 +37,7 @@ public class Course extends RealmObject {
     public Course() {
     }
 
-    public Course(models.search.Course course) {
+    public Course(crux.bphc.cms.models.search.Course course) {
         this.id = course.getId();
         enrolledusercount = 0;
         shortname = course.getShortname();
