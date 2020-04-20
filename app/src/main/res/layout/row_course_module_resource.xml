@@ -65,7 +65,7 @@
                         android:padding="12dp" />
                 </RelativeLayout>
 
-                <helper.HtmlTextView
+                <crux.bphc.cms.helper.HtmlTextView
                     android:id="@+id/fileName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

@@ -14,11 +14,11 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 import io.realm.Sort;
-import set.Content;
-import set.Course;
-import set.CourseSection;
-import set.Module;
-import set.forum.Discussion;
+import models.Content;
+import models.Course;
+import models.CourseSection;
+import models.Module;
+import models.forum.Discussion;
 
 /**
  * Created by Harshit Agarwal on 24-11-2017.

@@ -30,8 +30,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import set.search.Course;
-import set.search.CourseSearch;
+import models.search.Course;
+import models.search.CourseSearch;
 
 import static crux.bphc.cms.app.Constants.API_URL;
 import static crux.bphc.cms.app.Constants.COURSE_PARCEL_INTENT_KEY;

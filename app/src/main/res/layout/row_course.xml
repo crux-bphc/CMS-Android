@@ -38,7 +38,7 @@
                     android:layout_weight="1"
                      android:orientation="vertical">
 
-                    <helper.HtmlTextView
+                    <crux.bphc.cms.helper.HtmlTextView
                         android:id="@+id/courseName1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -49,7 +49,7 @@
                         android:paddingHorizontal="16dp"
                         android:paddingTop="16dp"
                         android:paddingBottom="3dp"/>
-                    <helper.HtmlTextView
+                    <crux.bphc.cms.helper.HtmlTextView
                         android:id="@+id/courseName2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

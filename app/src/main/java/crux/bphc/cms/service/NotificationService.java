@@ -24,11 +24,11 @@ import crux.bphc.cms.helper.CourseDataHandler;
 import crux.bphc.cms.helper.CourseRequestHandler;
 import crux.bphc.cms.helper.UserAccount;
 import crux.bphc.cms.helper.UserUtils;
-import set.Course;
-import set.CourseSection;
-import set.Module;
-import set.NotificationSet;
-import set.forum.Discussion;
+import models.Course;
+import models.CourseSection;
+import models.Module;
+import models.NotificationSet;
+import models.forum.Discussion;
 
 import static androidx.core.app.NotificationCompat.PRIORITY_DEFAULT;
 import static crux.bphc.cms.helper.HtmlTextView.parseHtml;

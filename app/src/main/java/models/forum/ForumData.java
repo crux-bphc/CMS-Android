@@ -1,4 +1,4 @@
-package set.forum;
+package models.forum;
 
 import java.util.List;
 

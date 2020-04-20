@@ -100,7 +100,7 @@
             />
 
 
-        <helper.HtmlTextView
+        <crux.bphc.cms.helper.HtmlTextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:id="@+id/message"

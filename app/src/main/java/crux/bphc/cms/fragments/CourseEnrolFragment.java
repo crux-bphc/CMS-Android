@@ -30,9 +30,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import set.enrol.SelfEnrol;
-import set.search.Contact;
-import set.search.Course;
+import models.enrol.SelfEnrol;
+import models.search.Contact;
+import models.search.Course;
 
 import static crux.bphc.cms.app.Constants.API_URL;
 
@@ -187,7 +187,7 @@ public class CourseEnrolFragment extends Fragment {
 
                     CourseSectionFragment courseSectionFragment = CourseSectionFragment
                             .newInstance(TOKEN, course.getId());
-                    set.Course courseSet = new set.Course(course);
+                    models.Course courseSet = new models.Course(course);
 
                     Realm realm = MyApplication.getInstance().getRealmInstance();
                     realm.beginTransaction();

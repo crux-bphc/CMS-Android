@@ -6,10 +6,10 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
-import set.CourseSection;
-import set.enrol.SelfEnrol;
-import set.forum.ForumData;
-import set.search.CourseSearch;
+import models.CourseSection;
+import models.enrol.SelfEnrol;
+import models.forum.ForumData;
+import models.search.CourseSearch;
 
 /**
  * Created by harsu on 16-12-2016.

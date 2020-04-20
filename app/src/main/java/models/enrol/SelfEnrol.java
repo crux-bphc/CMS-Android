@@ -1,4 +1,4 @@
-package set.enrol;
+package models.enrol;
 
 import java.util.List;
 

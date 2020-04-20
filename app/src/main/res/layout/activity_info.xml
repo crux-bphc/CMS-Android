@@ -12,7 +12,7 @@
     android:background="?themeBackground"
     tools:context="crux.bphc.cms.activities.InfoActivity">
 
-    <helper.HtmlTextView
+    <crux.bphc.cms.helper.HtmlTextView
         android:id="@+id/description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

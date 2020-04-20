@@ -39,10 +39,10 @@ import crux.bphc.cms.helper.CourseDownloader;
 import crux.bphc.cms.helper.CourseRequestHandler;
 import crux.bphc.cms.helper.HtmlTextView;
 import crux.bphc.cms.helper.UserUtils;
-import set.Course;
-import set.CourseSection;
-import set.Module;
-import set.forum.Discussion;
+import models.Course;
+import models.CourseSection;
+import models.Module;
+import models.forum.Discussion;
 
 import static android.content.Context.INPUT_METHOD_SERVICE;
 

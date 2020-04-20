@@ -101,7 +101,7 @@
                     android:layout_marginBottom="10dp"
                     />
 
-                <helper.HtmlTextView
+                <crux.bphc.cms.helper.HtmlTextView
                     android:id="@+id/message"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

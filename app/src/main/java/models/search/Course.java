@@ -1,4 +1,4 @@
-package set.search;
+package models.search;
 
 import android.os.Parcel;
 import android.os.Parcelable;
