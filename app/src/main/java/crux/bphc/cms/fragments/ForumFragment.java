@@ -37,7 +37,7 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import models.forum.Discussion;
+import crux.bphc.cms.models.forum.Discussion;
 
 import static crux.bphc.cms.app.Constants.API_URL;
 

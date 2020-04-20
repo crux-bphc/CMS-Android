@@ -14,11 +14,11 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 import io.realm.Sort;
-import models.Content;
-import models.Course;
-import models.CourseSection;
-import models.Module;
-import models.forum.Discussion;
+import crux.bphc.cms.models.Content;
+import crux.bphc.cms.models.Course;
+import crux.bphc.cms.models.CourseSection;
+import crux.bphc.cms.models.Module;
+import crux.bphc.cms.models.forum.Discussion;
 
 /**
  * Created by Harshit Agarwal on 24-11-2017.

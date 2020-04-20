@@ -19,9 +19,9 @@ import crux.bphc.cms.fragments.CourseSectionFragment;
 import crux.bphc.cms.fragments.DiscussionFragment;
 import crux.bphc.cms.fragments.ForumFragment;
 import io.realm.Realm;
-import models.Course;
-import models.forum.Discussion;
-import models.search.Contact;
+import crux.bphc.cms.models.Course;
+import crux.bphc.cms.models.forum.Discussion;
+import crux.bphc.cms.models.search.Contact;
 
 import static crux.bphc.cms.app.Constants.COURSE_PARCEL_INTENT_KEY;
 import static crux.bphc.cms.app.Constants.TOKEN;
@@ -35,7 +35,7 @@ public class CourseDetailActivity extends AppCompatActivity {
     private FrameLayout mCourseEnrolContainer;
     private FragmentManager fragmentManager;
     private CourseEnrolFragment mCourseEnrolFragment;
-    private models.search.Course mEnrolCourse;
+    private crux.bphc.cms.models.search.Course mEnrolCourse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
