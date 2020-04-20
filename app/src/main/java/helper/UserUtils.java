@@ -8,7 +8,7 @@ import android.widget.Toast;
 import java.io.IOException;
 
 import app.MyApplication;
-import crux.bphc.cms.TokenActivity;
+import crux.bphc.cms.activities.TokenActivity;
 import io.realm.Realm;
 import okhttp3.ResponseBody;
 import retrofit2.Call;

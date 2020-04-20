@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import crux.bphc.cms.R;
-import crux.bphc.cms.TokenActivity;
+import crux.bphc.cms.activities.TokenActivity;
 import helper.CourseDataHandler;
 import helper.CourseRequestHandler;
 import helper.UserAccount;

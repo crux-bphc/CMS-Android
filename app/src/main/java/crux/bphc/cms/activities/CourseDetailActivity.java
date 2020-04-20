@@ -1,4 +1,4 @@
-package crux.bphc.cms;
+package crux.bphc.cms.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentTransaction;
 import java.util.List;
 
 import app.MyApplication;
+import crux.bphc.cms.R;
 import crux.bphc.cms.fragments.CourseEnrolFragment;
 import crux.bphc.cms.fragments.CourseSectionFragment;
 import crux.bphc.cms.fragments.DiscussionFragment;
