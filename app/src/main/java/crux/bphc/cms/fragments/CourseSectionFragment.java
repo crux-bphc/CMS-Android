@@ -30,7 +30,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.Constants;
+import crux.bphc.cms.app.Constants;
 import crux.bphc.cms.R;
 import helper.ClickListener;
 import helper.CourseDataHandler;

@@ -33,8 +33,8 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.List;
 
-import app.Constants;
-import app.MyApplication;
+import crux.bphc.cms.app.Constants;
+import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.BuildConfig;
 import crux.bphc.cms.R;
 import crux.bphc.cms.fragments.DiscussionFragment;
@@ -51,8 +51,8 @@ import set.Course;
 import set.CourseSection;
 import set.Module;
 
-import static app.Constants.API_URL;
-import static app.Constants.TOKEN;
+import static crux.bphc.cms.app.Constants.API_URL;
+import static crux.bphc.cms.app.Constants.TOKEN;
 import static crux.bphc.cms.service.NotificationService.NOTIFICATION_CHANNEL_UPDATES;
 import static crux.bphc.cms.service.NotificationService.NOTIFICATION_CHANNEL_UPDATES_BUNDLE;
 

@@ -26,8 +26,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import app.Constants;
-import app.MyApplication;
+import crux.bphc.cms.app.Constants;
+import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.BuildConfig;
 import crux.bphc.cms.R;
 import crux.bphc.cms.fragments.FolderModuleFragment;

@@ -9,9 +9,9 @@ import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import app.Constants;
-import app.MyApplication;
 import crux.bphc.cms.R;
+import crux.bphc.cms.app.Constants;
+import crux.bphc.cms.app.MyApplication;
 import helper.HtmlTextView;
 
 public class InfoActivity extends AppCompatActivity {

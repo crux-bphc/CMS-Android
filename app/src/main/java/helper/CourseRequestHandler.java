@@ -29,7 +29,7 @@ import set.Module;
 import set.forum.Discussion;
 import set.forum.ForumData;
 
-import static app.Constants.API_URL;
+import static crux.bphc.cms.app.Constants.API_URL;
 
 /**
  * Created by Harshit Agarwal on 24-11-2017.

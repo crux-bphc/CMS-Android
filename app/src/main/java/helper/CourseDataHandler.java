@@ -9,7 +9,7 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.MyApplication;
+import crux.bphc.cms.app.MyApplication;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;

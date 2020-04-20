@@ -1,4 +1,4 @@
-package app;
+package crux.bphc.cms.app;
 
 import android.app.Application;
 import android.content.SharedPreferences;

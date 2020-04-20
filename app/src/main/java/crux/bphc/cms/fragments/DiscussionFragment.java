@@ -22,8 +22,8 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import app.MyApplication;
 import crux.bphc.cms.R;
+import crux.bphc.cms.app.MyApplication;
 import helper.HtmlTextView;
 import helper.MyFileManager;
 import io.realm.Realm;
