@@ -32,18 +32,18 @@ import java.util.List;
 
 import crux.bphc.cms.app.Constants;
 import crux.bphc.cms.R;
-import helper.ClickListener;
-import helper.CourseDataHandler;
-import helper.CourseRequestHandler;
-import helper.HtmlTextView;
-import helper.ModulesAdapter;
-import helper.MyFileManager;
-import helper.Util;
+import crux.bphc.cms.helper.ClickListener;
+import crux.bphc.cms.helper.CourseDataHandler;
+import crux.bphc.cms.helper.CourseRequestHandler;
+import crux.bphc.cms.helper.HtmlTextView;
+import crux.bphc.cms.helper.ModulesAdapter;
+import crux.bphc.cms.helper.MyFileManager;
+import crux.bphc.cms.helper.Util;
 import set.CourseSection;
 import set.Module;
 import set.forum.Discussion;
 
-import static helper.MyFileManager.DATA_DOWNLOADED;
+import static crux.bphc.cms.helper.MyFileManager.DATA_DOWNLOADED;
 
 /**
  * Created by SKrPl on 12/21/16.

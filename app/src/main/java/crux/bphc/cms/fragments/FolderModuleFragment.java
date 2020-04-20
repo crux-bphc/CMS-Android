@@ -23,8 +23,8 @@ import java.util.List;
 
 import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.R;
-import helper.ClickListener;
-import helper.MyFileManager;
+import crux.bphc.cms.helper.ClickListener;
+import crux.bphc.cms.helper.MyFileManager;
 import io.realm.Realm;
 import set.Content;
 import set.Module;

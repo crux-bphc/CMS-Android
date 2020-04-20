@@ -9,7 +9,7 @@ import androidx.preference.SwitchPreference;
 
 import crux.bphc.cms.R;
 import crux.bphc.cms.app.MyApplication;
-import helper.UserAccount;
+import crux.bphc.cms.helper.UserAccount;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
 

@@ -23,7 +23,7 @@ import java.util.List;
 
 import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.R;
-import helper.MoodleServices;
+import crux.bphc.cms.helper.MoodleServices;
 import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;

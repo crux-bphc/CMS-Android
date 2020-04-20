@@ -5,7 +5,7 @@ import android.text.Html;
 import java.util.List;
 
 import crux.bphc.cms.R;
-import helper.MyFileManager;
+import crux.bphc.cms.helper.MyFileManager;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;

@@ -1,4 +1,4 @@
-package helper;
+package crux.bphc.cms.helper;
 
 import com.google.gson.annotations.SerializedName;
 

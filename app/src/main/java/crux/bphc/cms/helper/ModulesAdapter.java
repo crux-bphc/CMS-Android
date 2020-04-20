@@ -1,4 +1,4 @@
-package helper;
+package crux.bphc.cms.helper;
 
 import android.content.Context;
 import android.content.Intent;

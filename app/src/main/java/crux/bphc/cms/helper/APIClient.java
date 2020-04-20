@@ -1,4 +1,4 @@
-package helper;
+package crux.bphc.cms.helper;
 
 import crux.bphc.cms.app.Constants;
 import crux.bphc.cms.BuildConfig;
