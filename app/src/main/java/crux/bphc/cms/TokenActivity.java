@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.gson.Gson;
@@ -147,7 +146,7 @@ public class TokenActivity extends AppCompatActivity {
     }
 
     private void loginUsingToken(String token) {
-        showProgress(true, "Fetching user details.");
+        showProgress(true, "Fetching your details");
         Call<ResponseBody> call = moodleServices.fetchUserDetail(token);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -186,7 +185,7 @@ public class TokenActivity extends AppCompatActivity {
                     userAccount.setUser(userDetail);
 
                     // now get users courses
-                    getUserCourses();
+                    fetchUserData();
                 }
             }
 
@@ -236,7 +235,7 @@ public class TokenActivity extends AppCompatActivity {
         }
     }
 
-    private void getUserCourses() {
+    private void fetchUserData() {
         new CourseDataRetriever(this, courseRequestHandler, courseDataHandler).execute();
     }
 
@@ -257,7 +256,10 @@ public class TokenActivity extends AppCompatActivity {
         private CourseDataHandler courseDataHandler;
         private CourseRequestHandler courseRequests;
 
-        public CourseDataRetriever(
+        private final int PROGRESS_COURSE_LIST = 1;
+        private final int PROGRESS_COURSE_CONTENT = 2;
+
+        CourseDataRetriever(
                 Context context,
                 CourseRequestHandler courseRequestHandler,
                 CourseDataHandler courseDataHandler) {
@@ -269,9 +271,9 @@ public class TokenActivity extends AppCompatActivity {
         @Override
         protected void onProgressUpdate(Integer... values) {
             if (values.length > 0) {
-                if (values[values.length - 1] == 1) {
+                if (values[0] == PROGRESS_COURSE_LIST) {
                     showProgress(true, "Fetching courses list");
-                } else if (values[values.length - 1] == 2) {
+                } else if (values[0]  == PROGRESS_COURSE_CONTENT) {
                     showProgress(true, "Fetching course contents");
                 }
             }
@@ -280,14 +282,17 @@ public class TokenActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... voids) {
-            publishProgress(1);
+            /* Fetch User's Course List */
+            publishProgress(PROGRESS_COURSE_LIST);
             List<Course> courseList = courseRequests.getCourseList(context);
             if (courseList == null) {
                 UserUtils.checkTokenValidity(context);
-                return null;
+                return false;
             }
             courseDataHandler.setCourseList(courseList);
-            publishProgress(2);
+
+            /* Fetch Course Content */
+            publishProgress(PROGRESS_COURSE_CONTENT);
             List<Course> courses = courseDataHandler.getCourseList();
 
             for (final Course course : courses) {
@@ -310,7 +315,7 @@ public class TokenActivity extends AppCompatActivity {
                 }
                 courseDataHandler.setCourseData(course.getCourseId(), courseSections);
             }
-            return null;
+            return true;
         }
 
         @Override
