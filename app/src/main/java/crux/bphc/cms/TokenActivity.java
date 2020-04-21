@@ -258,6 +258,7 @@ public class TokenActivity extends AppCompatActivity {
 
         private final int PROGRESS_COURSE_LIST = 1;
         private final int PROGRESS_COURSE_CONTENT = 2;
+        private final int PROGRESS_SITE_NEWS = 3;
 
         CourseDataRetriever(
                 Context context,
@@ -271,10 +272,16 @@ public class TokenActivity extends AppCompatActivity {
         @Override
         protected void onProgressUpdate(Integer... values) {
             if (values.length > 0) {
-                if (values[0] == PROGRESS_COURSE_LIST) {
-                    showProgress(true, "Fetching courses list");
-                } else if (values[0]  == PROGRESS_COURSE_CONTENT) {
-                    showProgress(true, "Fetching course contents");
+                switch (values[0]) {
+                    case PROGRESS_COURSE_LIST:
+                        showProgress(true, "Fetching your course list");
+                        break;
+                    case PROGRESS_COURSE_CONTENT:
+                        showProgress(true, "Fetching your courses' contents");
+                        break;
+                    case PROGRESS_SITE_NEWS:
+                        showProgress(true, "Fetching site news");
+                        break;
                 }
             }
             super.onProgressUpdate(values);
@@ -314,6 +321,16 @@ public class TokenActivity extends AppCompatActivity {
                     }
                 }
                 courseDataHandler.setCourseData(course.getCourseId(), courseSections);
+            }
+
+            /* Fetch Site News */
+            publishProgress(PROGRESS_SITE_NEWS);
+            List<Discussion> discussions = courseRequestHandler.getForumDiscussions(1); // 1 is always site news
+            if (discussions != null) {
+                for (Discussion d : discussions) {
+                    d.setForumId(1);
+                }
+                courseDataHandler.setForumDiscussions(1, discussions);
             }
             return true;
         }
