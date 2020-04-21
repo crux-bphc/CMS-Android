@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import app.MyApplication;
 import crux.bphc.cms.CourseDetailActivity;
@@ -79,6 +80,12 @@ public class MyCoursesFragment extends Fragment {
             TOKEN = getArguments().getString(ARG_PARAM1);
         }
         courseDataHandler = new CourseDataHandler(getActivity());
+    }
+
+    @Override
+    public void onStart() {
+        Objects.requireNonNull(getActivity()).setTitle("My Course");
+        super.onStart();
     }
 
     @Override

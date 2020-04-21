@@ -12,6 +12,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
 
+import java.util.Objects;
+
 import app.MyApplication;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,7 +33,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         super.onCreate(savedInstanceState);
 
-        getActivity().setTitle("Settings");
+
+    }
+
+    @Override
+    public void onStart() {
+        Objects.requireNonNull(getActivity()).setTitle("Settings");
+        super.onStart();
     }
 
     @Override
