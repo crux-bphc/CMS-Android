@@ -76,6 +76,14 @@ public class SearchCourseFragment extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        if(getActivity() != null) {
+            getActivity().setTitle("Search Course");
+        }
+        super.onStart();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment

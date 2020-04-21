@@ -104,6 +104,14 @@ public class ForumFragment extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        if(getActivity() != null) {
+            getActivity().setTitle("Site News");
+        }
+        super.onStart();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment

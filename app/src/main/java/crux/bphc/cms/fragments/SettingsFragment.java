@@ -28,10 +28,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if (MyApplication.getInstance().isDarkModeEnabled()) {
             getActivity().setTheme(R.style.AppTheme_NoActionBar_Dark);
         }
-
         super.onCreate(savedInstanceState);
+    }
 
-        getActivity().setTitle("Settings");
+    @Override
+    public void onStart() {
+        if(getActivity() != null) {
+            getActivity().setTitle("Settings");
+        }
+        super.onStart();
     }
 
     @Override
