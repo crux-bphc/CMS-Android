@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import app.MyApplication;
 import crux.bphc.cms.R;
@@ -101,6 +102,12 @@ public class ForumFragment extends Fragment {
         realm = MyApplication.getInstance().getRealmInstance();
         courseRequestHandler = new CourseRequestHandler(this.getActivity());
         context = getContext();
+    }
+
+    @Override
+    public void onStart() {
+        Objects.requireNonNull(getActivity()).setTitle("Site News");
+        super.onStart();
     }
 
     @Override
