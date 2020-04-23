@@ -106,7 +106,9 @@ public class ForumFragment extends Fragment {
 
     @Override
     public void onStart() {
-        Objects.requireNonNull(getActivity()).setTitle("Site News");
+        if(getActivity()!=null) {
+            getActivity().setTitle("Site News");
+        }
         super.onStart();
     }
 

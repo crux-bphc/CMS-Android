@@ -84,7 +84,9 @@ public class MyCoursesFragment extends Fragment {
 
     @Override
     public void onStart() {
-        Objects.requireNonNull(getActivity()).setTitle("My Course");
+        if(getActivity()!=null) {
+            getActivity().setTitle("My Courses");
+        }
         super.onStart();
     }
 

@@ -77,7 +77,9 @@ public class SearchCourseFragment extends Fragment {
     }
     @Override
     public void onStart() {
-        Objects.requireNonNull(getActivity()).setTitle("Search Course");
+        if(getActivity()!=null) {
+            getActivity().setTitle("Search Course");
+        }
         super.onStart();
     }
 
