@@ -19,7 +19,6 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import crux.bphc.cms.CourseDetailActivity;
 import crux.bphc.cms.R;
