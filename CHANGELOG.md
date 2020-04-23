@@ -9,6 +9,7 @@ Dates are in `yyyy-mm-dd`.
 ### Added
 * Dialogbox on invalid token after Google login
 * Discussion notifications now open up the discussion
+* Each screen from the main activity will set its own title
 
 ### Changed
 * Replaced custom Settings activity with Android's Preference Fragment
