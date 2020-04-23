@@ -33,7 +33,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @Override
     public void onStart() {
-        if(getActivity()!=null) {
+        if(getActivity() != null) {
             getActivity().setTitle("Settings");
         }
         super.onStart();

@@ -74,9 +74,10 @@ public class SearchCourseFragment extends Fragment {
             TOKEN = getArguments().getString(TOKEN_KEY);
         }
     }
+
     @Override
     public void onStart() {
-        if(getActivity()!=null) {
+        if(getActivity() != null) {
             getActivity().setTitle("Search Course");
         }
         super.onStart();
