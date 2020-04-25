@@ -8,8 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-import crux.bphc.cms.TokenActivity;
-
 /**
  * Set of utility functions that can be used throughout the entire project.
  *

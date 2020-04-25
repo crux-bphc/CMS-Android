@@ -2,15 +2,16 @@ package crux.bphc.cms;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import java.util.List;
+
 import app.MyApplication;
 import crux.bphc.cms.fragments.CourseEnrolFragment;
 import crux.bphc.cms.fragments.CourseSectionFragment;
