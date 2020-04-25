@@ -2,10 +2,11 @@ package helper;
 
 import android.content.Context;
 import android.os.Build;
-import androidx.appcompat.widget.AppCompatTextView;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.AttributeSet;
+
+import androidx.appcompat.widget.AppCompatTextView;
 
 public class HtmlTextView extends AppCompatTextView {
 

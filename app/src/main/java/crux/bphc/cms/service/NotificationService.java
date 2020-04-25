@@ -9,7 +9,6 @@ import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
@@ -19,7 +18,6 @@ import androidx.core.app.NotificationCompat;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import app.Constants;
 import crux.bphc.cms.R;
 import crux.bphc.cms.TokenActivity;
 import helper.CourseDataHandler;

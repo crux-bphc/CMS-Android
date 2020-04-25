@@ -28,8 +28,6 @@ import io.realm.Realm;
 import set.Content;
 import set.Module;
 
-import static app.Constants.API_URL;
-
 public class FolderModuleFragment extends Fragment {
 
     private static final String TOKEN_KEY = "token";
