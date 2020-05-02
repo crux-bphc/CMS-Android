@@ -2,6 +2,8 @@ package set;
 
 import android.text.Html;
 
+import java.util.regex.Pattern;
+
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
@@ -107,6 +109,27 @@ public class Course extends RealmObject {
 
     public String getShortname() {
         return Html.fromHtml(shortname).toString();
+    }
+
+    public String[] getCourseName(){
+        String courseName = getShortname();
+        String regex =  " ";    // Specifies the string pattern which is to be searched
+        Pattern pattern = Pattern.compile(regex , Pattern.CASE_INSENSITIVE);    // Used to perform case insensitive search of the string
+        String[] parts = pattern.split(courseName);
+
+        String courseCode = parts[0] + " " + parts[1];
+        String name = "";
+        if(parts.length > 2) {
+            for (int i = 2; i < parts.length; i++) {
+                name = name + parts[i] + " ";
+            }
+        }
+        String[] result = new String[2];
+        result[0] = courseCode;
+        result[1] = name;
+
+        return result;
+
     }
 
     public void setShortname(String shortname) {
