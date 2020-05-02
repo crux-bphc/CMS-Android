@@ -406,8 +406,9 @@ public class MyCoursesFragment extends Fragment {
 
         class MyViewHolder extends RecyclerView.ViewHolder {
 
-            HtmlTextView courseName;
-            View download;
+            HtmlTextView courseName1;
+            HtmlTextView courseName2;
+            View download,rowClickWrapper;
             ImageView downloadIcon;
             ProgressBar progressBar;
             TextView downloadText, unreadCount;
@@ -415,56 +416,59 @@ public class MyCoursesFragment extends Fragment {
 
             MyViewHolder(View itemView) {
                 super(itemView);
-                courseName = itemView.findViewById(R.id.courseName);
+                courseName1 = itemView.findViewById(R.id.courseName1);
+                courseName2 = itemView.findViewById(R.id.courseName2);
                 download = itemView.findViewById(R.id.download);
                 downloadText = itemView.findViewById(R.id.downloadText);
                 progressBar = itemView.findViewById(R.id.progressBar);
                 downloadIcon = itemView.findViewById(R.id.downloadIcon);
                 unreadCount = itemView.findViewById(R.id.unreadCount);
+                rowClickWrapper= itemView.findViewById(R.id.rowClickWrapper);
 
-                itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (clickListener != null) {
-                            int pos = getLayoutPosition();
-                            clickListener.onClick(mCourseList.get(pos), pos);
-                        }
+                rowClickWrapper.setOnClickListener(view -> {
+                    if (clickListener != null) {
+                        int pos = getLayoutPosition();
+                        clickListener.onClick(mCourseList.get(pos), pos);
                     }
                 });
-                download.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        AlertDialog.Builder alertDialog;
+                itemView.setOnClickListener(view -> {
+                    if (clickListener != null) {
+                        int pos = getLayoutPosition();
+                        clickListener.onClick(mCourseList.get(pos), pos);
+                    }
+                });
+                download.setOnClickListener(view -> {
+                    AlertDialog.Builder alertDialog;
 
-                        if (MyApplication.getInstance().isDarkModeEnabled()) {
-                            alertDialog = new AlertDialog.Builder(getContext(),R.style.Theme_AppCompat_Dialog_Alert);
-                        } else {
-                            alertDialog = new AlertDialog.Builder(getContext(),R.style.Theme_AppCompat_Light_Dialog_Alert);
-                        }
+                    if (MyApplication.getInstance().isDarkModeEnabled()) {
+                        alertDialog = new AlertDialog.Builder(getContext(),R.style.Theme_AppCompat_Dialog_Alert);
+                    } else {
+                        alertDialog = new AlertDialog.Builder(getContext(),R.style.Theme_AppCompat_Light_Dialog_Alert);
+                    }
 
-                        alertDialog.setTitle("Confirm Download");
-                        alertDialog.setMessage("Are you sure, you want to download the course?");
-                        alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                if (downloadClickListener != null) {
-                                    int pos = getLayoutPosition();
-                                    if (!downloadClickListener.onClick(courses.get(pos), pos)) {
-                                        Toast.makeText(getActivity(), "Download already in progress", Toast.LENGTH_SHORT).show();
-                                    }
+                    alertDialog.setTitle("Confirm Download");
+                    alertDialog.setMessage("Are you sure, you want to download the course?");
+                    alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            if (downloadClickListener != null) {
+                                int pos = getLayoutPosition();
+                                if (!downloadClickListener.onClick(courses.get(pos), pos)) {
+                                    Toast.makeText(getActivity(), "Download already in progress", Toast.LENGTH_SHORT).show();
                                 }
                             }
-                        });
-                        alertDialog.setNegativeButton("Cancel", null);
-                        alertDialog.show();
+                        }
+                    });
+                    alertDialog.setNegativeButton("Cancel", null);
+                    alertDialog.show();
 
-                    }
                 });
             }
 
 
             void bind(Course course) {
-                courseName.setText(course.getShortname());
+                courseName1.setText(course.getCourseName()[0]);
+                courseName2.setText(course.getCourseName()[1]);
                 if (course.getDownloadStatus() == -1) {
                     progressBar.setVisibility(View.GONE);
                     downloadIcon.setVisibility(View.VISIBLE);

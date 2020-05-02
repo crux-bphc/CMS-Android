@@ -1,125 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardBackgroundColor="?cardBgColor"
+    style="?attr/actionButtonStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="4dp"
-    android:layout_marginTop="4dp"
+    android:clipToPadding="false"
     android:clickable="true"
-    android:foreground="?attr/selectableItemBackground">
+    android:focusable="true">
 
-    <LinearLayout
+    <androidx.cardview.widget.CardView
+        app:cardBackgroundColor="?cardBgColor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="4dp"
+        android:elevation="0dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:cardCornerRadius="10dp"
+        android:foreground="?attr/selectableItemBackground">
 
         <LinearLayout
-            android:orientation="horizontal"
+            android:id="@+id/rowClickWrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            >
+            android:orientation="vertical">
 
-            <helper.HtmlTextView
-                android:id="@+id/courseName"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Machine Learning CS F321"
-                android:textColor="?android:textColorPrimary"
-                android:textSize="16sp"
-                android:padding="16dp"/>
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/unreadCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginEnd="16dp"
-                android:background="@drawable/circular_drawable"
-                android:gravity="center"
-                android:padding="4dp"
-                android:text="12"
-                android:textColor="@color/white"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-        </LinearLayout>
+                 <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="?dividerColor" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:orientation="horizontal">
-
-            <!--<LinearLayout
-                android:padding="16dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
+                    <helper.HtmlTextView
+                        android:id="@+id/courseName1"
+                        android:layout_width="match_parent"
+                        android:layout_height="88dp"
+                        android:text="CS F321"
+                        android:textColor="?android:textColorPrimary"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:padding="16dp"/>
+                    <helper.HtmlTextView
+                        android:id="@+id/courseName2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@id/courseName1"
+                        android:text="MACHINE LEARNING L"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="16sp"
+                        android:padding="16dp"/>
+                </RelativeLayout>
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:id="@+id/more_options_button"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_marginRight="6dp"
+                    android:gravity="right"
                     android:layout_gravity="center_vertical"
+                    android:background="?android:selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:tint="?iconTintColor"
+                    app:srcCompat="@drawable/dots_horizontal"
+                    android:rotation="90"  />
 
-                    app:srcCompat="@drawable/eye" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="8dp"
-                    android:text="View"
-                    android:textColor="#212121"
-                    android:textSize="14sp" />
             </LinearLayout>
 
-            <View
-                android:layout_width="0.5dp"
-                android:layout_height="match_parent"
-                android:background="?dividerColor" />-->
-
-            <RelativeLayout
-                android:id="@+id/download"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:background="?attr/selectableItemBackground"
                 android:clickable="true"
-                android:padding="16dp">
+                android:orientation="horizontal">
 
-                <ProgressBar
-                    android:id="@+id/progressBar"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:visibility="gone" />
-
-                <ImageView
-                    android:id="@+id/downloadIcon"
-                    android:tint="?iconTintColor"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center_vertical"
-                    app:srcCompat="@drawable/content_save" />
-
-                <TextView
-                    android:id="@+id/downloadText"
+                <RelativeLayout
+                    android:id="@+id/download"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="8dp"
-                    android:layout_toRightOf="@+id/downloadIcon"
-                    android:text="Download Course"
-                    android:textColor="?android:textColorSecondary"
-                    android:textSize="14sp" />
-            </RelativeLayout>
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:padding="16dp"
+                    android:visibility="gone">
+
+                    <ProgressBar
+                        android:id="@+id/progressBar"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        />
+
+                    <ImageView
+                        android:id="@+id/downloadIcon"
+                        android:tint="?iconTintColor"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        app:srcCompat="@drawable/content_save" />
+
+                    <TextView
+                        android:id="@+id/downloadText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="8dp"
+                        android:layout_toRightOf="@+id/downloadIcon"
+                        android:text="Download Course"
+                        android:textColor="?android:textColorSecondary"
+                        android:textSize="14sp" />
+                </RelativeLayout>
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
-</androidx.cardview.widget.CardView>
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/unreadCount"
+        android:elevation="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|right|top"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="-10dp"
+        android:layout_marginRight="-10dp"
+        android:background="@drawable/circular_drawable"
+        android:gravity="center"
+        android:padding="4dp"
+        android:text="12"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+</FrameLayout>

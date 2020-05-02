@@ -12,9 +12,12 @@
         app:cardBackgroundColor="?cardBgColor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp">
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="14dp"
+        android:layout_marginTop="16dp"
+        app:cardCornerRadius="28dp"
+        android:layout_marginBottom="5dp">
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -23,7 +26,8 @@
             android:paddingBottom="8dp"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
-            android:paddingTop="8dp">
+            android:paddingTop="8dp"
+            android:layout_marginTop="4dp">
 
 
             <EditText
@@ -31,10 +35,15 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
+                android:layout_marginLeft="14dp"
+                android:paddingLeft="@dimen/cardview_default_radius"
+                android:paddingBottom="5dp"
                 android:layout_weight="1"
                 android:focusable="true"
                 android:textColor="?android:textColorPrimary"
                 android:textColorHint="?android:textColorSecondary"
+                android:textSize="18sp"
+                android:background="@android:color/transparent"
                 android:focusableInTouchMode="true"
                 android:hint="Filter my courses" />
 
