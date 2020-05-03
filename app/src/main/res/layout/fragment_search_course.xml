@@ -14,7 +14,9 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp">
+        android:layout_marginTop="10dp"
+        app:cardCornerRadius="20dp"
+        android:layout_marginBottom="8dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -29,14 +31,17 @@
                 android:layout_weight="1"
                 android:textColor="?android:textColorPrimary"
                 android:textColorHint="?android:textColorSecondary"
+                android:background="@android:color/transparent"
+                android:layout_marginLeft="14dp"
                 android:inputType="text"
                 android:singleLine="true"
+                android:textSize="18sp"
                 android:imeOptions="actionSearch"
                 android:hint="@string/course_search_edit_text_hint" />
 
             <ImageView
                 android:id="@+id/course_search_button"
-                android:layout_width="24dp"
+                android:layout_width="20dp"
                 android:layout_height="24dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="12dp"
