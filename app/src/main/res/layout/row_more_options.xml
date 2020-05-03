@@ -15,8 +15,8 @@
 
         <ImageView
             android:id="@+id/more_options_icon"
-            android:layout_width="29dp"
-            android:layout_height="27dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="14dp"
             android:layout_marginEnd="20dp"
