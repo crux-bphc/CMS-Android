@@ -14,24 +14,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import app.MyApplication;
 import crux.bphc.cms.R;
+import crux.bphc.cms.fragments.MoreOptionsFragment;
 import set.Content;
 import set.Module;
 
@@ -47,22 +49,25 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private int courseID;
     private int maxDescriptionlines = 3;
 
-    public ModulesAdapter(Context context, MyFileManager fileManager, String courseName, int courseID) {
+    MoreOptionsFragment.OptionsViewModel moreOptionsViewModel;
+
+    public ModulesAdapter(Context context, MyFileManager fileManager, String courseName, int courseID, MoreOptionsFragment.OptionsViewModel moreOptionsViewModel) {
         this.context = context;
-        inflater = LayoutInflater.from(context);
-        modules = new ArrayList<>();
-        mFileManager = fileManager;
+        this.mFileManager = fileManager;
         this.courseName = courseName;
         this.courseID = courseID;
-        courseDataHandler = new CourseDataHandler(context);
-    }
+        this.moreOptionsViewModel = moreOptionsViewModel;
 
+        this.inflater = LayoutInflater.from(context);
+        modules = new ArrayList<>();
+        courseDataHandler = new CourseDataHandler(context);
+
+    }
 
     public void setModules(List<Module> modules) {
         this.modules = modules;
         notifyDataSetChanged();
     }
-
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -128,28 +133,25 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             more.setOnClickListener(v -> {
                 final Module module = modules.get(getLayoutPosition());
                 final int position = getLayoutPosition();
-                AlertDialog.Builder alertDialog;
+                final MoreOptionsFragment.OptionsViewModel moreOptionsViewModel = ModulesAdapter.this.moreOptionsViewModel;
+                Observer<MoreOptionsFragment.Option> observer;  // to handle the selection
 
-                if (MyApplication.getInstance().isDarkModeEnabled()) {
-                    alertDialog = new AlertDialog.Builder(context,R.style.Theme_AppCompat_Dialog_Alert);
-                } else {
-                    alertDialog = new AlertDialog.Builder(context,R.style.Theme_AppCompat_Light_Dialog_Alert);
-                }
-
-                alertDialog.setTitle(module.getName());
-                alertDialog.setNegativeButton("Cancel", null);
-
-                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1);
+                /* Set up our options and their handlers */
+                ArrayList<MoreOptionsFragment.Option> options = new ArrayList<>();
                 if (downloaded) {
-                    arrayAdapter.add("View");
-                    arrayAdapter.add("Re-Download");
-                    arrayAdapter.add("Share");
-                    arrayAdapter.add("Mark as Unread");
-                    if (module.getModType() == Module.Type.RESOURCE) // Properties are available only for a single file
-                        arrayAdapter.add("Properties");
-
-                    alertDialog.setAdapter(arrayAdapter, (dialogInterface, selection) -> {
-                        switch (selection) {
+                    options.addAll(Arrays.asList(
+                            new MoreOptionsFragment.Option(0, "View", R.drawable.eye),
+                            new MoreOptionsFragment.Option(1, "Re-Download", R.drawable.download),
+                            new MoreOptionsFragment.Option(2, "Share", R.drawable.ic_menu_share),
+                            new MoreOptionsFragment.Option(3, "Mark as Unread", R.drawable.ic_info)
+                    ));
+                    if (module.getModType() == Module.Type.RESOURCE) {
+                        options.add(new MoreOptionsFragment.Option(
+                                4, "Properties", R.drawable.eye));
+                    }
+                   observer = option -> {
+                        if (option == null) return;
+                       switch (option.getId()) {
                             case 0:
                                 if (module.getContents() != null)
                                     for (Content content : module.getContents()) {
@@ -162,7 +164,8 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 }
 
                                 for (Content content : module.getContents()) {
-                                    Toast.makeText(context, "Downloading file - " + content.getFilename(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(context, "Downloading file - " + content.getFilename(),
+                                            Toast.LENGTH_SHORT).show();
                                     mFileManager.downloadFile(content, module, courseName);
                                 }
                                 break;
@@ -179,16 +182,22 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 mFileManager.showPropertiesDialog(context, module.getContents().get(0));
                                 break;
                         }
-                    });
+                        moreOptionsViewModel.getSelection().removeObservers((AppCompatActivity) context);
+                       moreOptionsViewModel.clearSelection();
+                   };
                 } else {
-                    arrayAdapter.add("Download");
-                    arrayAdapter.add("Share");
-                    arrayAdapter.add("Mark as Unread");
-                    if (module.getModType() == Module.Type.RESOURCE) // Properties are available only for a single file
-                        arrayAdapter.add("Properties");
-
-                    alertDialog.setAdapter(arrayAdapter, (dialogInterface, selection) -> {
-                        switch (selection) {
+                    options.addAll(Arrays.asList(
+                            new MoreOptionsFragment.Option(0, "Download", R.drawable.download),
+                            new MoreOptionsFragment.Option(1, "Share", R.drawable.ic_menu_share),
+                            new MoreOptionsFragment.Option(2, "Mark as Unread", R.drawable.eye)
+                    ));
+                    if (module.getModType() == Module.Type.RESOURCE) {
+                        options.add(new MoreOptionsFragment.Option(
+                                3, "Properties", R.drawable.ic_info));
+                    }
+                    observer = option -> {
+                        if (option == null) return;
+                        switch (option.getId()) {
                             case 0:
                                 mFileManager.downloadFile(module.getContents().get(0), module, courseName);
                                 break;
@@ -197,14 +206,20 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 break;
                             case 2:
                                 markAsReadandUnread(module, position, true);
+                                break;
                             case 3:
                                 mFileManager.showPropertiesDialog(context, module.getContents().get(0));
                                 break;
                         }
-                    });
+                        moreOptionsViewModel.getSelection().removeObservers((AppCompatActivity) context);
+                        moreOptionsViewModel.clearSelection();
+                    };
                 }
 
-                alertDialog.show();
+                /* Show the fragment and register the observer */
+                MoreOptionsFragment moreOptionsFragment = MoreOptionsFragment.newInstance(module.getName(), options);
+                moreOptionsFragment.show(((AppCompatActivity) context).getSupportFragmentManager(), moreOptionsFragment.getTag());
+                moreOptionsViewModel.getSelection().observe((AppCompatActivity) context, observer);
                 markAsReadandUnread(modules.get(getLayoutPosition()), getLayoutPosition(), false);
             });
             progressBar = itemView.findViewById(R.id.progressBar);
