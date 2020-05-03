@@ -6,17 +6,21 @@ import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import app.MyApplication;
 import crux.bphc.cms.R;
@@ -41,6 +45,8 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
     private TextView mTimeModified;
     private HtmlTextView mMessage;
     private LinearLayout mAttachmentContainer;
+
+    private MoreOptionsFragment.OptionsViewModel moreOptionsViewModel;
 
     public DiscussionFragment() {
         // Required empty public constructor
@@ -75,6 +81,8 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        moreOptionsViewModel = new ViewModelProvider(requireActivity()).get(MoreOptionsFragment.OptionsViewModel.class);
 
         mFileManager = new MyFileManager(getActivity(), mFolderName);
         mFileManager.registerDownloadReceiver();
@@ -140,48 +148,46 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
             });
 
             ellipsis.setOnClickListener(v -> {
-                AlertDialog.Builder alertDialog;
-                if (MyApplication.getInstance().isDarkModeEnabled()) {
-                    alertDialog = new AlertDialog.Builder(this.getContext(), R.style.Theme_AppCompat_Dialog_Alert);
-                } else {
-                    alertDialog = new AlertDialog.Builder(this.getContext(), R.style.Theme_AppCompat_Light_Dialog_Alert);
-                }
-
-                alertDialog.setTitle(attachment.getFilename());
-
-                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_list_item_1);
-
                 // Check if downloaded once again, for consistency (user downloaded and then opens ellipsis immediately)
                 boolean isDownloaded = mFileManager.searchFile(attachment.getFilename());
-                alertDialog.setNegativeButton("Cancel", null);
-
                 if (isDownloaded) {
-                    arrayAdapter.add("View");
-                    arrayAdapter.add("Re-Download");
-                    arrayAdapter.add("Share");
-                    arrayAdapter.add("Properties");
+                    ArrayList<MoreOptionsFragment.Option> options = new ArrayList<>();
+                    Observer<MoreOptionsFragment.Option> observer;  // to handle the selection
 
-                    alertDialog.setAdapter(arrayAdapter, (dialogInterface, i) -> {
-                        if (isDownloaded) {
-                            switch (i) {
-                                case 0:
-                                    mFileManager.openFile(attachment.getFilename(), mFolderName);
-                                    break;
-                                case 1:
-                                    Toast.makeText(getActivity(), "Downloading file - " + attachment.getFilename(), Toast.LENGTH_SHORT).show();
-                                    mFileManager.downloadFile(attachment.getFilename(), attachment.getFileurl(), "", mFolderName, true);
-                                    break;
-                                case 2:
-                                    mFileManager.shareFile(attachment.getFilename(), mFolderName);
-                                    break;
-                                case 3:
-                                    mFileManager.showPropertiesDialog(getContext(), attachment);
-                            }
+                    options.addAll(Arrays.asList(
+                            new MoreOptionsFragment.Option(0, "View", R.drawable.eye),
+                            new MoreOptionsFragment.Option(1, "Re-Download", R.drawable.download),
+                            new MoreOptionsFragment.Option(2, "Share", R.drawable.ic_share),
+                            new MoreOptionsFragment.Option(3, "Properties", R.drawable.ic_info)
+                    ));
+
+                    observer = option -> {
+                        if (option == null) return;
+                        switch (option.getId()) {
+                            case 0:
+                                mFileManager.openFile(attachment.getFilename(), mFolderName);
+                                break;
+                            case 1:
+                                Toast.makeText(getActivity(), "Downloading file - " + attachment.getFilename(),
+                                        Toast.LENGTH_SHORT).show();
+                                mFileManager.downloadFile(attachment.getFilename(), attachment.getFileurl(),
+                                        "", mFolderName, true);
+                                break;
+                            case 2:
+                                mFileManager.shareFile(attachment.getFilename(), mFolderName);
+                                break;
+                            case 3:
+                                mFileManager.showPropertiesDialog(getContext(), attachment);
                         }
-                    });
-                }
+                        moreOptionsViewModel.getSelection().removeObservers((AppCompatActivity) getContext());
+                        moreOptionsViewModel.clearSelection();
+                    };
 
-                alertDialog.show();
+                    MoreOptionsFragment fragment = MoreOptionsFragment.newInstance(attachment.getFilename(), options);
+                    fragment.show(((AppCompatActivity) getContext()).getSupportFragmentManager(),
+                            fragment.getTag());
+                    moreOptionsViewModel.getSelection().observe((AppCompatActivity) getContext(), observer);
+                }
             });
         }
     }
