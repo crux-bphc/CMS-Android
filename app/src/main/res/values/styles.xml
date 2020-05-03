@@ -68,4 +68,10 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <!-- BottomSheetDialog animation -->
+    <style name="BottomSheetDialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_up_bottom</item>
+        <item name="android:windowExitAnimation">@anim/slide_down_bottom</item>
+    </style>
+
 </resources>
