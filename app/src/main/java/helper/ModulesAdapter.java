@@ -142,12 +142,12 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     options.addAll(Arrays.asList(
                             new MoreOptionsFragment.Option(0, "View", R.drawable.eye),
                             new MoreOptionsFragment.Option(1, "Re-Download", R.drawable.download),
-                            new MoreOptionsFragment.Option(2, "Share", R.drawable.ic_menu_share),
-                            new MoreOptionsFragment.Option(3, "Mark as Unread", R.drawable.ic_info)
+                            new MoreOptionsFragment.Option(2, "Share", R.drawable.ic_share),
+                            new MoreOptionsFragment.Option(3, "Mark as Unread", R.drawable.eye_off)
                     ));
                     if (module.getModType() == Module.Type.RESOURCE) {
                         options.add(new MoreOptionsFragment.Option(
-                                4, "Properties", R.drawable.eye));
+                                4, "Properties", R.drawable.ic_info));
                     }
                    observer = option -> {
                         if (option == null) return;
@@ -188,8 +188,8 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 } else {
                     options.addAll(Arrays.asList(
                             new MoreOptionsFragment.Option(0, "Download", R.drawable.download),
-                            new MoreOptionsFragment.Option(1, "Share", R.drawable.ic_menu_share),
-                            new MoreOptionsFragment.Option(2, "Mark as Unread", R.drawable.eye)
+                            new MoreOptionsFragment.Option(1, "Share", R.drawable.ic_share),
+                            new MoreOptionsFragment.Option(2, "Mark as Unread", R.drawable.eye_off)
                     ));
                     if (module.getModType() == Module.Type.RESOURCE) {
                         options.add(new MoreOptionsFragment.Option(
