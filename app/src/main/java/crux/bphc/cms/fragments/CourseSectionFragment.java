@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -66,6 +67,8 @@ public class CourseSectionFragment extends Fragment {
     private String courseName;
     private int maxDescriptionLines = 5;
 
+    MoreOptionsFragment.OptionsViewModel moreOptionsViewModel;
+
     public static CourseSectionFragment newInstance(String token, int courseId) {
         CourseSectionFragment courseSectionFragment = new CourseSectionFragment();
         Bundle args = new Bundle();
@@ -109,6 +112,9 @@ public class CourseSectionFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        moreOptionsViewModel = new ViewModelProvider(requireActivity()).get(MoreOptionsFragment.OptionsViewModel.class);
 
         courseName = CourseDataHandler.getCourseName(courseId);
         mSwipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
@@ -139,6 +145,7 @@ public class CourseSectionFragment extends Fragment {
                 sendRequest(courseId);
             }
         });
+
         checkEmpty();
     }
 
@@ -279,7 +286,8 @@ public class CourseSectionFragment extends Fragment {
 
         RecyclerView recyclerView = v.findViewById(R.id.recyclerView);
 
-        final ModulesAdapter myAdapter = new ModulesAdapter(getContext(), mFileManager, courseName, courseId);
+        final ModulesAdapter myAdapter = new ModulesAdapter(getContext(), mFileManager, courseName,
+                courseId, moreOptionsViewModel);
         myAdapter.setModules(section.getModules());
         recyclerView.setAdapter(myAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
