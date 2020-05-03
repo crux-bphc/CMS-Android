@@ -1,23 +1,24 @@
 package crux.bphc.cms.fragments;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import app.MyApplication;
@@ -48,6 +49,8 @@ public class FolderModuleFragment extends Fragment {
     private MyFileManager mFileManager;
 
     private RecyclerView mRecyclerView;
+
+    private MoreOptionsFragment.OptionsViewModel moreOptionsViewModel;
 
     public FolderModuleFragment() {
 
@@ -99,6 +102,8 @@ public class FolderModuleFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        moreOptionsViewModel = new ViewModelProvider(requireActivity()).get(MoreOptionsFragment.OptionsViewModel.class);
+
         mClickListener = (object, position) -> {
             Content content = (Content) object;
             downloadOrOpenFile(content, false);
@@ -109,7 +114,7 @@ public class FolderModuleFragment extends Fragment {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(layoutManager);
 
-        mAdapter = new FolderModuleFragment.FolderModuleAdapter(mClickListener, new ArrayList<Content>());
+        mAdapter = new FolderModuleFragment.FolderModuleAdapter(mClickListener, new ArrayList<>());
         mRecyclerView.setAdapter(mAdapter);
 
         updateContents();
@@ -211,65 +216,59 @@ public class FolderModuleFragment extends Fragment {
                 });
 
                 ellipsis.setOnClickListener(view -> {
-                    AlertDialog.Builder alertDialog;
-
-                    if (MyApplication.getInstance().isDarkModeEnabled()) {
-                        alertDialog = new AlertDialog.Builder(getContext(), R.style.Theme_AppCompat_Dialog_Alert);
-                    } else {
-                        alertDialog = new AlertDialog.Builder(getContext(), R.style.Theme_AppCompat_Light_Dialog_Alert);
-                    }
-
-                    alertDialog.setTitle(content.getFilename());
-
-                    final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1);
-                    alertDialog.setNegativeButton("Cancel", null);
+                    ArrayList<MoreOptionsFragment.Option> options = new ArrayList<>();
+                    Observer<MoreOptionsFragment.Option> observer;  // to handle the selection
 
                     if (downloaded) {
-                        arrayAdapter.add("View");
-                        arrayAdapter.add("Re-Download");
-                        arrayAdapter.add("Share");
-                        arrayAdapter.add("Properties");
+                        options.addAll(Arrays.asList(
+                                new MoreOptionsFragment.Option(0, "View", R.drawable.eye),
+                                new MoreOptionsFragment.Option(1, "Re-Download", R.drawable.download),
+                                new MoreOptionsFragment.Option(2, "Share", R.drawable.ic_share),
+                                new MoreOptionsFragment.Option(3, "Properties", R.drawable.ic_info)
+                        ));
 
-                        alertDialog.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        switch (i) {
-                                            case 0:
-                                                downloadOrOpenFile(content, false);
-                                                break;
-                                            case 1:
-                                                downloadOrOpenFile(content, true);
-                                                break;
-                                            case 2:
-                                                mFileManager.shareFile(content.getFilename(), COURSE_NAME);
-                                                break;
-                                            case 3:
-                                                mFileManager.showPropertiesDialog(getActivity(), content);
-                                                break;
-                                        }
-                                    }
-                                }
-                        );
-                    } else {
-                        arrayAdapter.add("Download");
-                        arrayAdapter.add("Properties");
-
-                        alertDialog.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                switch (i) {
-                                    case 0:
-                                        downloadOrOpenFile(content, false);
-                                        break;
-                                    case 1:
-                                        mFileManager.showPropertiesDialog(getActivity(), content);
-                                        break;
-                                }
+                        observer = option -> {
+                            if (option == null) return;
+                            switch (option.getId()) {
+                                case 0:
+                                    downloadOrOpenFile(content, false);
+                                    break;
+                                case 1:
+                                    downloadOrOpenFile(content, true);
+                                    break;
+                                case 2:
+                                    mFileManager.shareFile(content.getFilename(), COURSE_NAME);
+                                    break;
+                                case 3:
+                                    mFileManager.showPropertiesDialog(getContext(), content);
                             }
-                        });
-                    }
+                            moreOptionsViewModel.getSelection().removeObservers((AppCompatActivity) getContext());
+                            moreOptionsViewModel.clearSelection();
+                        };
+                    } else {
+                        options.addAll(Arrays.asList(
+                                new MoreOptionsFragment.Option(0, "Download", R.drawable.download),
+                                new MoreOptionsFragment.Option(1, "Properties", R.drawable.ic_info)
+                        ));
 
-                    alertDialog.show();
+                        observer = option -> {
+                            if (option == null) return;
+                            switch (option.getId()) {
+                                case 0:
+                                    downloadOrOpenFile(content, false);
+                                    break;
+                                case 1:
+                                    mFileManager.showPropertiesDialog(getContext(), content);
+                                    break;
+                            }
+                        };
+                        moreOptionsViewModel.getSelection().removeObservers((AppCompatActivity) getContext());
+                        moreOptionsViewModel.clearSelection();
+                    }
+                    MoreOptionsFragment fragment = MoreOptionsFragment.newInstance(content.getFilename(), options);
+                    fragment.show(((AppCompatActivity) getContext()).getSupportFragmentManager(),
+                            fragment.getTag());
+                    moreOptionsViewModel.getSelection().observe((AppCompatActivity) getContext(), observer);
                 });
             }
         }
