@@ -16,7 +16,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:context="crux.bphc.cms.fragments.ForumFragment"
-            android:layout_margin="8dp">
+            android:layout_margin="8dp"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="10dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -27,39 +29,49 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginTop="8dp">
+                    android:layout_marginTop="8dp"
+                    android:paddingHorizontal="4dp"
+                    android:paddingVertical="4dp"
+                    >
 
                     <ImageView
                         android:layout_width="58dp"
                         android:layout_height="58dp"
                         android:id="@+id/user_pic"
-                        android:layout_marginLeft="8dp" />
+                        android:layout_marginLeft="8dp"
+                        android:layout_gravity="center_vertical"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp">
+                        android:layout_marginRight="8dp"
+                        android:paddingVertical="4dp"
+                        android:paddingHorizontal="4dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/subject"
-
                             android:text="Timetable changes - 2 Second Semester 2016-17"
                             android:textSize="20sp"
-                            android:textColor="?android:textColorPrimary" />
+                            android:layout_weight="1"
+                            android:layout_marginBottom="8dp"
+                            android:textColor="?android:textColorPrimary"
+                            android:textStyle="bold
+"/>
 
-                        <LinearLayout
+                        <RelativeLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+                            android:layout_weight="1">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1"
+                                android:layout_alignParentBottom="true"
+                                android:layout_alignParentLeft="true"
                                 android:id="@+id/user_name"
                                 android:textColor="?android:textColorSecondary"
                                 android:text="Instruction Division"
@@ -69,11 +81,13 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:id="@+id/modified_time"
+                                android:layout_alignParentBottom="true"
+                                android:layout_alignParentRight="true"
                                 android:textColor="?android:textColorSecondary"
                                 android:text="8 Feb, 1997"
                                 android:textSize="16sp" />
 
-                        </LinearLayout>
+                        </RelativeLayout>
 
                     </LinearLayout>
 
@@ -83,7 +97,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
                     android:background="?dividerColor"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
                     />
 
                 <helper.HtmlTextView
@@ -94,6 +109,8 @@
                     android:paddingRight="8dp"
                     android:paddingTop="3dp"
                     android:paddingBottom="6dp"
+                    android:layout_marginVertical="4dp"
+                    android:layout_marginHorizontal="4dp"
                     android:textColor="?android:textColorPrimary"
                     android:text="Time Table Changes - 2 Second Semester 2016-17"
                     android:textSize="16sp" />
@@ -109,7 +126,9 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="10dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -125,13 +144,15 @@
                     android:layout_gravity="center_horizontal"
                     android:text="Attachment(s)"
                     android:textSize="20sp"
-                    android:textColor="?android:textColorPrimary"/>
+                    android:textColor="?android:textColorPrimary"
+                    android:textStyle="bold"/>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
                     android:layout_marginTop="8dp"
-                    android:background="?dividerColor"/>
+                    android:background="?dividerColor"
+                    android:layout_marginVertical="10dp"/>
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>
