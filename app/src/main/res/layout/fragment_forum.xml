@@ -12,7 +12,8 @@
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/site_news" />
+            android:id="@+id/site_news"
+            android:paddingTop="8dp"/>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
