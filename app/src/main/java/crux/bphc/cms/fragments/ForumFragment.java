@@ -263,6 +263,7 @@ public class ForumFragment extends Fragment {
         @Override
         public void onBindViewHolder(ForumViewHolder holder, int position) {
             Discussion discussion = mDiscussions.get(position);
+            holder.setIsRecyclable(false);
             holder.bind(discussion);
         }
 
@@ -274,20 +275,18 @@ public class ForumFragment extends Fragment {
 
         public class ForumViewHolder extends RecyclerView.ViewHolder {
 
-            private ImageView mUserPic;
+            private ImageView mUserPic, mPinned;
             private TextView mSubject;
             private TextView mUserName;
             private TextView mModifiedTime;
             private HtmlTextView mMessage;
+            private View forumClickWrapper;
 
             public ForumViewHolder(View itemView) {
                 super(itemView);
-                itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        int position = getLayoutPosition();
-                        mClickListener.onClick(mDiscussions.get(position), position);
-                    }
+                itemView.setOnClickListener(v -> {
+                    int position = getLayoutPosition();
+                    mClickListener.onClick(mDiscussions.get(position), position);
                 });
 
                 mUserPic = itemView.findViewById(R.id.user_pic);
@@ -295,6 +294,14 @@ public class ForumFragment extends Fragment {
                 mUserName = itemView.findViewById(R.id.user_name);
                 mModifiedTime = itemView.findViewById(R.id.modified_time);
                 mMessage = itemView.findViewById(R.id.message);
+                mPinned=itemView.findViewById(R.id.pinned);
+                forumClickWrapper=itemView.findViewById(R.id.forumClickWrapper);
+
+                forumClickWrapper.setOnClickListener(v -> {
+                    int position = getLayoutPosition();
+                    mClickListener.onClick(mDiscussions.get(position), position);
+                });
+
             }
 
             public void bind(Discussion discussion) {
@@ -303,6 +310,9 @@ public class ForumFragment extends Fragment {
                 mUserName.setText(discussion.getUserfullname());
                 mModifiedTime.setText(formatDate(discussion.getTimemodified()));
                 mMessage.setText(HtmlTextView.parseHtml((discussion.getMessage())));
+                if(!discussion.isPinned()){
+                    mPinned.setVisibility(View.GONE);
+                }
             }
         }
     }

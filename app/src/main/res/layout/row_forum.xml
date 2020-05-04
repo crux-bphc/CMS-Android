@@ -1,16 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="?attr/actionButtonStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clipToPadding="false"
+    android:clickable="true"
+    android:focusable="true">
 <androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     app:cardBackgroundColor="?cardBgColor"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     tools:context="crux.bphc.cms.fragments.ForumFragment"
     android:layout_margin="8dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardCornerRadius="10dp">
+    app:cardCornerRadius="10dp"
+    android:elevation="5dp">
 
     <LinearLayout
+        android:id="@+id/forumClickWrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -39,6 +48,7 @@
                 android:paddingHorizontal="4dp"
                 android:paddingVertical="4dp">
 
+
                 <TextView
                     android:id="@+id/subject"
                     android:layout_width="wrap_content"
@@ -49,6 +59,8 @@
                     android:textColor="?android:textColorPrimary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
+
+
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -107,3 +119,17 @@
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>
+    <ImageView
+        android:id="@+id/pinned"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        app:srcCompat="@drawable/pin"
+        android:layout_gravity="end|right|top"
+        android:layout_marginEnd="-8dp"
+        android:layout_marginRight="-10dp"
+        android:background="@drawable/circular_drawable"
+        android:gravity="center"
+        android:padding="4dp"
+        android:elevation="10dp"/>
+
+</FrameLayout>
