@@ -289,14 +289,14 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     modIcon.setImageResource(module.getModuleIcon());
                 } else {
                     progressBar.setVisibility(View.VISIBLE);
-                    Picasso.with(context).load(module.getModicon()).into(modIcon, new Callback() {
+                    Picasso.get().load(module.getModicon()).into(modIcon, new Callback() {
                         @Override
                         public void onSuccess() {
                             progressBar.setVisibility(View.GONE);
                         }
 
                         @Override
-                        public void onError() {
+                        public void onError(Exception e) {
 
                         }
                     });
