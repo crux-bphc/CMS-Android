@@ -91,7 +91,7 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
         Discussion discussion = realm.where(Discussion.class).equalTo("id", id).findFirst();
 
         mUserPic = view.findViewById(R.id.user_pic);
-        Picasso.with(getContext()).load(discussion.getUserpictureurl()).into(mUserPic);
+        Picasso.get().load(discussion.getUserpictureurl()).into(mUserPic);
 
         mSubject = view.findViewById(R.id.subject);
         mSubject.setText(discussion.getSubject());

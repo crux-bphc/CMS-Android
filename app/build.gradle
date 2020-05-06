@@ -47,7 +47,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:4.5.0'
     // for logging
     // Image downloading and caching library
-    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.squareup.picasso:picasso:2.71828'
     // Resources dependency injection
     implementation 'com.jakewharton:butterknife:10.2.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
