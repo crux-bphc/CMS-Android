@@ -66,21 +66,10 @@ public class MoreOptionsFragment extends BottomSheetDialogFragment {
         }
     }
 
-    @Override
-    public void onActivityCreated(Bundle bundle) {
-        super.onActivityCreated(bundle);
-        getDialog().getWindow().getAttributes().windowAnimations = R.style.BottomSheetDialogAnimation;
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        /*
-         * We `cloneInContext()` because (weirdly enough) the context of the inflater and `super.getContext()` are two
-         * different references. This means that the textview `R.id.more_options_header`'s textColor property wasn't
-         * being properly deferenced from the theme/style. This is probably a hacky fix, but it works.
-         */
-        return inflater.cloneInContext(getContext()).inflate(R.layout.fragment_more_options, container, false);
+        return inflater.inflate(R.layout.fragment_more_options, container, false);
     }
 
     @Override
