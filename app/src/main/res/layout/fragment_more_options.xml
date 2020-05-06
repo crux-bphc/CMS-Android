@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="10dp"
-    android:background="?cardBgColor">
+    android:padding="10dp">
 
     <TextView
         android:id="@+id/more_options_header"

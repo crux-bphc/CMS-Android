@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
         <item name="colorPrimary">@color/orange</item>
         <item name="colorPrimaryDark">@color/orangeDark</item>
         <item name="colorAccent">@color/blueAccent</item>
@@ -16,8 +16,13 @@
         <item name="iconTintColor">@android:color/transparent</item> <!-- This is equivalent to no tint-->
         <item name="tokenImageTint">@android:color/transparent</item>
         <item name="cardBgColor">@color/cardBackgroundLight</item>
+        <item name="colorSurface">?attr/cardBgColor</item>
         <item name="dividerColor">@color/gray74</item>
+
+        <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
     </style>
+
+
 
     <style name="AppTheme.Dark" parent="AppTheme">
         <item name="colorPrimary">@color/gray13</item>
@@ -68,10 +73,17 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <!-- BottomSheetDialog animation -->
-    <style name="BottomSheetDialogAnimation">
-        <item name="android:windowEnterAnimation">@anim/slide_up_bottom</item>
-        <item name="android:windowExitAnimation">@anim/slide_down_bottom</item>
+    <style name="CustomBottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/CustomBottomSheet</item>
     </style>
 
+    <style name="CustomBottomSheet" parent="Widget.MaterialComponents.BottomSheet.Modal">
+        <item name="shapeAppearanceOverlay">@style/CustomBottomSheetAppearance</item>
+    </style>
+
+    <style name="CustomBottomSheetAppearance" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">16dp</item>
+        <item name="cornerSizeTopLeft">16dp</item>
+    </style>
 </resources>
