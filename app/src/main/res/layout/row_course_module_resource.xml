@@ -1,58 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="?themeBackground"
+    android:id="@+id/row_course_module_cardView"
+    app:cardBackgroundColor="?cardBgColor"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:clipChildren="false">
-
-    <RelativeLayout
-        android:id="@+id/iconWrapper"
-        android:layout_width="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="3dp">
+    <!-- <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="8dp"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:paddingTop="0dp">
+        android:orientation="horizontal">
+   <View
+        android:id="@+id/unReadBar"
+        android:visibility="invisible"
+        android:layout_width="8dp"
+        android:layout_height="match_parent"
+        android:background="@color/nephritis"/>
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clipChildren="false">-->
 
-        <ImageView
-            android:id="@+id/fileIcon"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_centerVertical="true"
-            android:padding="8dp"
-            app:srcCompat="@drawable/file_powerpoint" />
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="47dp"
-            android:layout_height="43dp"
-            android:layout_centerVertical="true"
-            android:padding="12dp" />
-    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/textWrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/iconWrapper"
-        android:clipChildren="false"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:clipChildren="false">
 
-        <View
+        <!--<View
             android:id="@+id/topDivider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
+            android:background="@android:color/darker_gray" />-->
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clipChildren="false"
             android:orientation="horizontal"
             android:paddingBottom="6dp"
             android:paddingTop="6dp">
+            <!--android:clipChildren="false"-->
 
             <LinearLayout
                 android:id="@+id/clickWrapper"
@@ -63,10 +56,33 @@
                 android:focusable="true"
                 android:background="?android:selectableItemBackgroundBorderless"
                 android:layout_gravity="center_vertical"
-                android:clipChildren="false"
                 android:orientation="horizontal"
-                android:paddingBottom="6dp"
-                android:paddingTop="6dp">
+                android:clipChildren="false">
+
+                <RelativeLayout
+                    android:id="@+id/iconWrapper"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:paddingBottom="8dp"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:paddingTop="8dp">
+
+                    <ImageView
+                        android:id="@+id/fileIcon"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:padding="8dp"
+                        app:srcCompat="@drawable/file_powerpoint" />
+                    <ProgressBar
+                        android:id="@+id/progressBar"
+                        android:layout_width="47dp"
+                        android:layout_height="43dp"
+                        android:visibility="gone"
+                        android:layout_centerVertical="true"
+                        android:padding="12dp" />
+                </RelativeLayout>
 
                 <helper.HtmlTextView
                     android:id="@+id/fileName"
@@ -98,21 +114,30 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_gravity="center_vertical"
-                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
                 android:background="?android:selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
-                android:padding="10dp"
+                android:paddingVertical="10dp"
+                android:paddingRight="8dp"
                 android:tint="?iconTintColor"
                 app:srcCompat="@drawable/dots_horizontal" />
 
         </LinearLayout>
+
+        <View
+            android:id="@+id/nameAndDescriptionDivider"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="?dividerColor"/>
+
 
         <TextView
             android:id="@+id/description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
             android:autoLink="all"
             android:clickable="true"
             android:focusable="true"
@@ -121,11 +146,10 @@
             android:textColor="?android:textColorSecondary"
             android:text="@string/lorem" />
 
-        <View
+        <!--<View
             android:id="@+id/bottomDivider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
+            android:background="@android:color/darker_gray" />-->
     </LinearLayout>
-</RelativeLayout>
-
+</androidx.cardview.widget.CardView>
