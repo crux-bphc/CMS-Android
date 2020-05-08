@@ -10,5 +10,6 @@
         <attr name="unReadModule" format="reference" />
         <attr name="tokenImageTint" format="reference" />
         <attr name="dividerColor" format="reference" />
+        <attr name="textButtonColor" format="reference" />
     </declare-styleable>
 </resources>
