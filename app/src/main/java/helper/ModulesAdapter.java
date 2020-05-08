@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Observer;
@@ -102,8 +103,9 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         ImageView modIcon, more, downloadIcon;
         boolean downloaded = false;
         ProgressBar progressBar;
-        View iconWrapper, topDivider, bottomDivider;
+        View iconWrapper, topDivider, bottomDivider, nameAndDescriptionDivider;
         View clickWrapper, textWrapper, clickWrapperName;
+        CardView cardView;
 
         ViewHolderResource(View itemView) {
             super(itemView);
@@ -112,13 +114,15 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             name = itemView.findViewById(R.id.fileName);
             modIcon = itemView.findViewById(R.id.fileIcon);
             more = itemView.findViewById(R.id.more);
-            topDivider = itemView.findViewById(R.id.topDivider);
-            bottomDivider = itemView.findViewById(R.id.bottomDivider);
+            cardView = itemView.findViewById(R.id.row_course_module_cardView);
+            //topDivider = itemView.findViewById(R.id.topDivider);
+            //bottomDivider = itemView.findViewById(R.id.bottomDivider);
             description = itemView.findViewById(R.id.description);
             clickWrapper = itemView.findViewById(R.id.clickWrapper);
             clickWrapperName = itemView.findViewById(R.id.clickWrapper);
             textWrapper = itemView.findViewById(R.id.textWrapper);
             downloadIcon = itemView.findViewById(R.id.downloadButton);
+            nameAndDescriptionDivider = itemView.findViewById(R.id.nameAndDescriptionDivider);
             description.setMovementMethod(LinkMovementMethod.getInstance());
             description.setLinksClickable(true);
 
@@ -246,11 +250,14 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         void bind(Module module) {
             if (module.isNewContent()) {
-                itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.navBarSelected));
-            } else {
+                TypedValue value = new TypedValue();
+                context.getTheme().resolveAttribute(R.attr.unReadModule,value,true);
+                textWrapper.setBackgroundColor(value.data);
+            }
+            else {
                 TypedValue value = new TypedValue();
                 context.getTheme().resolveAttribute(R.attr.cardBgColor,value,true);
-                itemView.setBackgroundColor(value.data);
+                cardView.setCardBackgroundColor(value.data);
             }
 
             name.setText(module.getName());
@@ -261,6 +268,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 makeTextViewResizable(description, maxDescriptionlines, "show more", true);
             } else {
                 description.setVisibility(View.GONE);
+                nameAndDescriptionDivider.setVisibility(View.GONE);
             }
             iconWrapper.setVisibility(View.VISIBLE);
             if (!module.isDownloadable() || module.getModType() == Module.Type.FOLDER) {
@@ -303,7 +311,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
             }
 
-            if (isNextLabel(getLayoutPosition()) || getLayoutPosition() == modules.size() - 1) {
+            /*if (isNextLabel(getLayoutPosition()) || getLayoutPosition() == modules.size() - 1) {
                 bottomDivider.setVisibility(View.GONE);
             } else {
                 bottomDivider.setVisibility(View.VISIBLE);
@@ -313,7 +321,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 topDivider.setVisibility(View.VISIBLE);
             } else {
                 topDivider.setVisibility(View.GONE);
-            }
+            }*/
             more.setVisibility(module.isDownloadable() ? View.VISIBLE : View.GONE);
 
         }

@@ -33,7 +33,8 @@
         android:text="No internet connection.\nTap to retry"
         android:textColor="?android:textColorPrimary"
         android:textSize="18sp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:focusable="true" />
 
 
 </RelativeLayout>

@@ -24,7 +24,9 @@
     <color name="cardBackgroundDark">@color/gray13</color>
 
     <color name="navBarSelected">#42C0C0C0</color>
-    <color name="moduleUnread">#FFE0F7FA</color>
+
+    <color name="moduleUnreadDark">#42C0C0C0</color>
+    <color name="moduleUnreadLight">#2F323232</color>
 
     <!-- Tints for file icons -->
     <color name="alizarin">#e74c3c</color>
