@@ -39,29 +39,15 @@
         android:id="@+id/courseSectionDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_marginBottom="8dp"
-        android:visibility="visible">
-        <!--<View
-            android:layout_marginHorizontal="8dp"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@color/nephritis"
-            />-->
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="8dp"
-            android:orientation="horizontal"
-            android:clipChildren="true"
-            android:paddingHorizontal="4dp">
+        android:visibility="visible"
+        android:paddingStart="20dp"
+        android:paddingEnd="12dp">
             <View
                 android:layout_width="2dp"
                 android:layout_height="match_parent"
-                android:background="@color/nephritis"
-                />
+                android:background="@color/nephritis"/>
             <helper.HtmlTextView
                 android:id="@+id/description"
                 android:clickable="true"
@@ -75,10 +61,9 @@
                 android:layout_marginVertical="8dp"
                 android:text="@string/lorem"
                 android:textColor="?android:textColorPrimary"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 android:textStyle="italic"/>
 
-        </LinearLayout>
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
