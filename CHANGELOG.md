@@ -5,6 +5,13 @@ All notable changes to the project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standards.
 Dates are in `yyyy-mm-dd`.
 
+## Unreleased
+### Added
+
+## Changed
+
+## Fixed
+
 ## Version 1.7.0-beta.1 (verCode 1070001), 2020-05-09
 ### Added
 * Dialogbox on invalid token after Google login
