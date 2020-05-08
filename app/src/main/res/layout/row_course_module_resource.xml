@@ -9,22 +9,6 @@
     android:layout_margin="8dp"
     app:cardCornerRadius="12dp"
     app:cardElevation="3dp">
-    <!-- <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-   <View
-        android:id="@+id/unReadBar"
-        android:visibility="invisible"
-        android:layout_width="8dp"
-        android:layout_height="match_parent"
-        android:background="@color/nephritis"/>
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:clipChildren="false">-->
-
-
 
     <LinearLayout
         android:id="@+id/textWrapper"
@@ -44,12 +28,12 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingBottom="6dp"
-            android:paddingTop="6dp">
-            <!--android:clipChildren="false"-->
+            android:paddingTop="6dp"
+            android:clipChildren="false">
 
             <LinearLayout
                 android:id="@+id/clickWrapper"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:clickable="true"
@@ -64,10 +48,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:paddingBottom="8dp"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
-                    android:paddingTop="8dp">
+                    android:padding="8dp">
 
                     <ImageView
                         android:id="@+id/fileIcon"
@@ -86,7 +67,7 @@
 
                 <helper.HtmlTextView
                     android:id="@+id/fileName"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="8dp"
@@ -114,12 +95,11 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_gravity="center_vertical"
-                android:layout_marginRight="8dp"
+                android:layout_marginEnd="8dp"
                 android:background="?android:selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
-                android:paddingVertical="10dp"
-                android:paddingRight="8dp"
+                android:padding="8dp"
                 android:tint="?iconTintColor"
                 app:srcCompat="@drawable/dots_horizontal" />
 
