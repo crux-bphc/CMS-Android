@@ -19,12 +19,16 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import app.MyApplication;
@@ -60,6 +64,8 @@ public class MyCoursesFragment extends Fragment {
     private String TOKEN;
     private MyAdapter mAdapter;
     private int coursesUpdated;
+
+    private MoreOptionsFragment.OptionsViewModel moreOptionsViewModel;
 
     public MyCoursesFragment() {
         // Required empty public constructor
@@ -120,6 +126,7 @@ public class MyCoursesFragment extends Fragment {
         mSwipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         mFilterIcon = view.findViewById(R.id.filterIcon);
 
+        moreOptionsViewModel = new ViewModelProvider(requireActivity()).get(MoreOptionsFragment.OptionsViewModel.class);
         mAdapter = new MyAdapter(getActivity(), courses);
         mAdapter.setClickListener(new ClickListener() {
             @Override
@@ -185,7 +192,6 @@ public class MyCoursesFragment extends Fragment {
                 makeRequest();
             }
         });
-
 
         mAdapter.setDownloadClickListener(new ClickListener() {
             @Override
@@ -408,22 +414,20 @@ public class MyCoursesFragment extends Fragment {
 
             HtmlTextView courseName1;
             HtmlTextView courseName2;
-            View download,rowClickWrapper;
-            ImageView downloadIcon;
+            View rowClickWrapper;
+            ImageView more_options;
             ProgressBar progressBar;
-            TextView downloadText, unreadCount;
+            TextView unreadCount;
 
 
             MyViewHolder(View itemView) {
                 super(itemView);
                 courseName1 = itemView.findViewById(R.id.courseName1);
                 courseName2 = itemView.findViewById(R.id.courseName2);
-                download = itemView.findViewById(R.id.download);
-                downloadText = itemView.findViewById(R.id.downloadText);
                 progressBar = itemView.findViewById(R.id.progressBar);
-                downloadIcon = itemView.findViewById(R.id.downloadIcon);
+                more_options = itemView.findViewById(R.id.more_options_button);
                 unreadCount = itemView.findViewById(R.id.unreadCount);
-                rowClickWrapper= itemView.findViewById(R.id.rowClickWrapper);
+                rowClickWrapper = itemView.findViewById(R.id.rowClickWrapper);
 
                 rowClickWrapper.setOnClickListener(view -> {
                     if (clickListener != null) {
@@ -431,37 +435,43 @@ public class MyCoursesFragment extends Fragment {
                         clickListener.onClick(mCourseList.get(pos), pos);
                     }
                 });
+
                 itemView.setOnClickListener(view -> {
                     if (clickListener != null) {
                         int pos = getLayoutPosition();
                         clickListener.onClick(mCourseList.get(pos), pos);
                     }
                 });
-                download.setOnClickListener(view -> {
-                    AlertDialog.Builder alertDialog;
 
-                    if (MyApplication.getInstance().isDarkModeEnabled()) {
-                        alertDialog = new AlertDialog.Builder(getContext(),R.style.Theme_AppCompat_Dialog_Alert);
-                    } else {
-                        alertDialog = new AlertDialog.Builder(getContext(),R.style.Theme_AppCompat_Light_Dialog_Alert);
-                    }
+                more_options.setOnClickListener(view -> {
+                    MoreOptionsFragment.OptionsViewModel moreOptionsViewModel = MyCoursesFragment.this.moreOptionsViewModel;
+                    Observer<MoreOptionsFragment.Option> observer;  // to handle the selection
+                    //Set up our options and their handlers
+                    ArrayList<MoreOptionsFragment.Option> options = new ArrayList<>();
+                    options.addAll(Arrays.asList(
+                            new MoreOptionsFragment.Option(0, "Download course", R.drawable.download),
+                            new MoreOptionsFragment.Option(1, "Mark all as read", R.drawable.eye)
+                    ));
 
-                    alertDialog.setTitle("Confirm Download");
-                    alertDialog.setMessage("Are you sure, you want to download the course?");
-                    alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            if (downloadClickListener != null) {
-                                int pos = getLayoutPosition();
-                                if (!downloadClickListener.onClick(courses.get(pos), pos)) {
-                                    Toast.makeText(getActivity(), "Download already in progress", Toast.LENGTH_SHORT).show();
-                                }
-                            }
+                    observer = option -> {
+                        if (option == null) return;
+                        switch (option.getId()) {
+                            case 0:
+                                downloadCourse();
+                                break;
+
+                            case 1:
+                                markAllAsRead(getLayoutPosition());
+                                break;
                         }
-                    });
-                    alertDialog.setNegativeButton("Cancel", null);
-                    alertDialog.show();
+                        moreOptionsViewModel.getSelection().removeObservers((AppCompatActivity) context);
+                        moreOptionsViewModel.clearSelection();
+                    };
 
+                    String courseName = courses.get(getLayoutPosition()).getShortname();
+                    MoreOptionsFragment moreOptionsFragment = MoreOptionsFragment.newInstance(courseName, options);
+                    moreOptionsFragment.show(((AppCompatActivity) context).getSupportFragmentManager(), moreOptionsFragment.getTag());
+                    moreOptionsViewModel.getSelection().observe((AppCompatActivity) context, observer);
                 });
             }
 
@@ -469,10 +479,8 @@ public class MyCoursesFragment extends Fragment {
             void bind(Course course) {
                 courseName1.setText(course.getCourseName()[0]);
                 courseName2.setText(course.getCourseName()[1]);
-                if (course.getDownloadStatus() == -1) {
+                /*if (course.getDownloadStatus() == -1) {
                     progressBar.setVisibility(View.GONE);
-                    downloadIcon.setVisibility(View.VISIBLE);
-                    downloadText.setText("Download Course");
                 } else {
                     //the course is downloading and is in midway
                     progressBar.setVisibility(View.VISIBLE);
@@ -483,10 +491,46 @@ public class MyCoursesFragment extends Fragment {
                         downloadText.setText("Downloading files... ( " + course.getDownloadedFiles() + " / " + course.getTotalFiles() + " )");
                     else
                         downloadText.setText("Downloaded");
-                }
+                }*/
                 int count = courseDataHandler.getUnreadCount(course.getId());
                 unreadCount.setText(Integer.toString(count));
                 unreadCount.setVisibility(count == 0 ? View.INVISIBLE : View.VISIBLE);
+            }
+
+            public void downloadCourse(){
+                AlertDialog.Builder alertDialog;
+
+                if (MyApplication.getInstance().isDarkModeEnabled()) {
+                    alertDialog = new AlertDialog.Builder(getContext(),R.style.Theme_AppCompat_Dialog_Alert);
+                } else {
+                    alertDialog = new AlertDialog.Builder(getContext(),R.style.Theme_AppCompat_Light_Dialog_Alert);
+                }
+
+                alertDialog.setTitle("Confirm Download");
+                alertDialog.setMessage("Are you sure, you want to download the course?");
+                alertDialog.setPositiveButton("Yes", (dialogInterface, i) -> {
+                    if (downloadClickListener != null) {
+                        int pos = getLayoutPosition();
+                        if (!downloadClickListener.onClick(courses.get(pos), pos)) {
+                            Toast.makeText(getActivity(), "Download already in progress", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                alertDialog.setNegativeButton("Cancel", null);
+                alertDialog.show();
+
+            }
+
+            public void markAllAsRead(int position){
+                int courseId = courses.get(position).getCourseId();
+                List<CourseSection> courseSections;
+                courseSections = courseDataHandler.getCourseData(courseId);
+                courseDataHandler.markAllAsRead(courseSections);
+                courseSections = courseDataHandler.getCourseData(courseId);
+                int count = courseDataHandler.getUnreadCount(courses.get(position).getId());
+                unreadCount.setText(Integer.toString(count));
+                unreadCount.setVisibility(count == 0 ? View.INVISIBLE : View.VISIBLE);
+                Toast.makeText(getActivity(), "Marked all as read", Toast.LENGTH_SHORT).show();
             }
         }
 
