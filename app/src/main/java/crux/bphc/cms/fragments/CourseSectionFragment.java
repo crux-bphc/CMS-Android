@@ -103,6 +103,15 @@ public class CourseSectionFragment extends Fragment {
         setHasOptionsMenu(true);
     }
 
+    @Override
+    public void onStart() {
+        String title = courseDataHandler.getActionBarTitle(courseId);
+        if(getActivity() != null) {
+            getActivity().setTitle(title);
+        }
+        super.onStart();
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

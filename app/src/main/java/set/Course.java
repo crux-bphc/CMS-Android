@@ -2,6 +2,7 @@ package set;
 
 import android.text.Html;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.realm.RealmObject;
@@ -113,22 +114,18 @@ public class Course extends RealmObject {
 
     public String[] getCourseName(){
         String courseName = getShortname();
-        String regex =  " ";    // Specifies the string pattern which is to be searched
-        Pattern pattern = Pattern.compile(regex , Pattern.CASE_INSENSITIVE);    // Used to perform case insensitive search of the string
-        String[] parts = pattern.split(courseName);
+        String regex =  "([\\w\\d \\-'&,]+ \\w\\d\\d\\d) ([\\w\\d \\-'&,]+) ([LTP]\\d*)";  // Specifies the string pattern which is to be searched
+        final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
+        final Matcher matcher = pattern.matcher(courseName);
+        String[] parts = {courseName , "" , ""};
 
-        String courseCode = parts[0] + " " + parts[1];
-        String name = "";
-        if(parts.length > 2) {
-            for (int i = 2; i < parts.length; i++) {
-                name = name + parts[i] + " ";
+        while (matcher.find()) {
+            for (int i = 1; i <= matcher.groupCount(); i++) {
+                parts[i-1] = matcher.group(i);
             }
         }
-        String[] result = new String[2];
-        result[0] = courseCode;
-        result[1] = name;
 
-        return result;
+        return parts;
 
     }
 

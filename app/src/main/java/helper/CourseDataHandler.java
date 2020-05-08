@@ -42,6 +42,15 @@ public class CourseDataHandler {
         return name;
     }
 
+    public String getActionBarTitle(int courseId){
+        Realm realm = Realm.getInstance(MyApplication.getRealmConfiguration());
+        Course course = realm.where(Course.class).equalTo("id", courseId).findFirst();
+        String title = course.getCourseName()[0] + " " + course.getCourseName()[2];
+        realm.close();
+        return title;
+
+    }
+
     private static <T> T deepCopy(T object, Class<T> type) {
         try {
             Gson gson = new Gson();
