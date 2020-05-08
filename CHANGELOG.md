@@ -16,6 +16,7 @@ Dates are in `yyyy-mm-dd`.
 * Replaced custom Settings activity with Android's Preference Fragment
 * Re-download option rewrites the file
 * Replace dialog boxes with bottom sheets
+* Show only Course and Section number as title of Course fragment
 
 ### Fixed
 * HTML encoded entities in course names
