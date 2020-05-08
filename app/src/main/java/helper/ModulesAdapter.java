@@ -122,6 +122,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             clickWrapperName = itemView.findViewById(R.id.clickWrapper);
             textWrapper = itemView.findViewById(R.id.textWrapper);
             downloadIcon = itemView.findViewById(R.id.downloadButton);
+            nameAndDescriptionDivider = itemView.findViewById(R.id.nameAndDescriptionDivider);
             description.setMovementMethod(LinkMovementMethod.getInstance());
             description.setLinksClickable(true);
 
@@ -267,6 +268,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 makeTextViewResizable(description, maxDescriptionlines, "show more", true);
             } else {
                 description.setVisibility(View.GONE);
+                nameAndDescriptionDivider.setVisibility(View.GONE);
             }
             iconWrapper.setVisibility(View.VISIBLE);
             if (!module.isDownloadable() || module.getModType() == Module.Type.FOLDER) {
