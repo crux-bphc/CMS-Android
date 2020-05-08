@@ -478,7 +478,8 @@ public class MyCoursesFragment extends Fragment {
 
             void bind(Course course) {
                 courseName1.setText(course.getCourseName()[0]);
-                courseName2.setText(course.getCourseName()[1]);
+                String name = course.getCourseName()[1] + " " + course.getCourseName()[2];
+                courseName2.setText(name);
                 /*if (course.getDownloadStatus() == -1) {
                     progressBar.setVisibility(View.GONE);
                 } else {
