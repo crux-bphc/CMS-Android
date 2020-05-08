@@ -1,72 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/row_course_module_cardView"
+    app:cardBackgroundColor="?cardBgColor"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="center_horizontal"
-    android:layout_marginTop="8dp"
-    android:background="?cardBgColor"
-    android:padding="8dp">
-
-    <ImageView
-        android:id="@+id/fileIcon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:padding="8dp"
-        app:srcCompat="@drawable/file_pdf" />
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="3dp">
 
     <LinearLayout
+        android:id="@+id/textWrapper"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal" >
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:clipChildren="false">
 
         <LinearLayout
-            android:id="@id/clickWrapper"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
             android:orientation="horizontal"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?android:selectableItemBackgroundBorderless" >
+            android:paddingBottom="6dp"
+            android:paddingTop="6dp"
+            android:clipChildren="false">
 
-            <TextView
-                android:id="@+id/fileName"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/clickWrapper"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:singleLine="true"
-                android:text="The quick brown fox jumped over the lazy dog"
-                android:textColor="?android:textColorPrimary"
-                android:textSize="16sp" />
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal"
+                android:clipChildren="false">
+
+                <ImageView
+                    android:id="@+id/fileIcon"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:padding="8dp"
+                    app:srcCompat="@drawable/file_powerpoint" />
+
+
+                <TextView
+                    android:id="@+id/fileName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:text="The quick brown fox jumped over the lazy dog"
+                    android:textColor="?android:textColorPrimary"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:id="@+id/downloadButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center_vertical"
+                    android:tint="?iconTintColor"
+                    android:padding="14dp"
+                    app:srcCompat="@drawable/download" />
+
+            </LinearLayout>
 
             <ImageView
-                android:id="@+id/downloadButton"
-                android:layout_width="26dp"
-                android:layout_height="26dp"
-                android:layout_marginRight="5dp"
+                android:id="@+id/more"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="8dp"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
                 android:tint="?iconTintColor"
-                android:layout_gravity="center"
-                app:srcCompat="@drawable/download" />
+                app:srcCompat="@drawable/dots_horizontal" />
+
         </LinearLayout>
-
-        <ImageView
-            android:id="@+id/more"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="5dp"
-            android:background="?android:selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:tint="?iconTintColor"
-            android:layout_gravity="center|right"
-            app:srcCompat="@drawable/dots_horizontal" />
     </LinearLayout>
-
-</LinearLayout>
+</androidx.cardview.widget.CardView>
