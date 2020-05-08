@@ -15,7 +15,7 @@ Dates are in `yyyy-mm-dd`.
 * Massive UI changes
 * Replaced custom Settings activity with Android's Preference Fragment
 * Re-download option rewrites the file
-* Replace an dialog box with a bottom sheet
+* Replace dialog boxes with bottom sheets
 
 ### Fixed
 * HTML encoded entities in course names
