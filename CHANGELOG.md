@@ -12,6 +12,7 @@ Dates are in `yyyy-mm-dd`.
 * Each screen from the main activity will set its own title
 
 ### Changed
+* Massive UI changes
 * Replaced custom Settings activity with Android's Preference Fragment
 * Re-download option rewrites the file
 
