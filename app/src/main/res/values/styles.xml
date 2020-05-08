@@ -7,7 +7,7 @@
         <item name="colorAccent">@color/blueAccent</item>
         <item name="android:textColorPrimary">@color/text_primary_light</item>
         <item name="android:textColorSecondary">@color/text_secondary_light</item>
-        <item name="dialogTheme">@style/AlertDialog.AppCompat.Light</item>
+        <item name="textButtonColor">@color/orange</item>
 
         <item name="themeBackground">@color/activityBackgroundLight</item>
         <item name="navBarColorStates">@color/navbar_itemcolor_light</item>
@@ -21,16 +21,15 @@
         <item name="dividerColor">@color/gray74</item>
 
         <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
+        <item name="materialAlertDialogTheme">@style/AlertDialogMaterialTheme</item>
     </style>
-
-
 
     <style name="AppTheme.Dark" parent="AppTheme">
         <item name="colorPrimary">@color/gray13</item>
         <item name="colorPrimaryDark">@color/black</item>
         <item name="android:textColorPrimary">@color/text_primary_dark</item>
         <item name="android:textColorSecondary">@color/text_secondary_dark</item>
-        <item name="dialogTheme">@style/AlertDialog.AppCompat</item>
+        <item name="textButtonColor">@color/orange</item>
 
         <item name="themeBackground">@color/activityBackgroundDark</item>
         <item name="navBarColorStates">@color/navbar_itemcolor_dark</item>
@@ -41,6 +40,8 @@
         <item name="iconTintColor">@color/white</item>
         <item name="tokenImageTint">@color/black_alpha26</item>
         <item name="dividerColor">@color/gray26</item>
+
+        <item name="materialAlertDialogTheme">@style/AlertDialogMaterialTheme</item>
     </style>
 
     <style name="SplashTheme" parent="AppTheme.Dark">
@@ -75,6 +76,7 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <!-- Custom BottomSheetDialog theme -->
     <style name="CustomBottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/CustomBottomSheet</item>
     </style>
@@ -87,5 +89,35 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSizeTopRight">16dp</item>
         <item name="cornerSizeTopLeft">16dp</item>
+    </style>
+
+    <!-- Custom Alert Dialog Theme -->
+    <style name="AlertDialogMaterialTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name ="materialAlertDialogTitleTextStyle">@style/AlertDialog.Title.Text</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/AlertDialog.Body.Text</item>
+        <item name="buttonBarPositiveButtonStyle">@style/AlertDialog.Button.Positive</item>
+        <item name="buttonBarNegativeButtonStyle">@style/AlertDialog.Button.Negative</item>
+    </style>
+
+    <style name="AlertDialog.Title.Text" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">?android:textColorPrimary</item>
+    </style>
+
+    <style name="AlertDialog.Body.Text" parent="TextAppearance.MaterialComponents.Body2">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">?android:textColorPrimary</item>
+    </style>
+
+    <style name="AlertDialog.Button.Positive" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">?textButtonColor</item>1
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="AlertDialog.Button.Negative" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">?textButtonColor</item>1
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">14sp</item>
     </style>
 </resources>

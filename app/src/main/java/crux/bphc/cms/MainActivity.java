@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -29,6 +28,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.List;
@@ -243,32 +243,19 @@ public class MainActivity extends AppCompatActivity
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
 
-                AlertDialog.Builder dialog;
-
-                if (MyApplication.getInstance().isDarkModeEnabled()) {
-                    dialog = new AlertDialog.Builder(this,R.style.Theme_AppCompat_Dialog_Alert);
-                } else {
-                    dialog = new AlertDialog.Builder(this,R.style.Theme_AppCompat_Light_Dialog_Alert);
-                }
-
-                dialog.setMessage("Need Write permissions to seamlessly Download Files...");
-                dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        ActivityCompat.requestPermissions(MainActivity.this,
-                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
-                    }
-                });
-                dialog.show();
+                new MaterialAlertDialogBuilder(this)
+                        .setTitle("Permissions Request")
+                        .setMessage("Need Write Permissions to seamlessly Download Files...")
+                        .setPositiveButton("OK", (dialogInt, which) -> {
+                            ActivityCompat.requestPermissions(MainActivity.this,
+                                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                    MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
+                        }).show();
 
             } else {
-
-
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                         MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
-
             }
         }
     }
@@ -298,28 +285,11 @@ public class MainActivity extends AppCompatActivity
 
 
     private AlertDialog askToLogout() {
-        AlertDialog.Builder alertDialog;
-
-        if (MyApplication.getInstance().isDarkModeEnabled()) {
-            alertDialog = new AlertDialog.Builder(MainActivity.this,R.style.Theme_AppCompat_Dialog_Alert);
-        } else {
-            alertDialog = new AlertDialog.Builder(MainActivity.this,R.style.Theme_AppCompat_Light_Dialog_Alert);
-        }
-
-        alertDialog.setMessage("Are you sure you want to Logout?");
-        alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                logout();
-            }
-        });
-        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-
-            }
-        });
-        return alertDialog.create();
+        MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(this)
+                .setMessage("Are you sure you want to logout?")
+                .setPositiveButton("OK", (dialogInt, which) -> { logout(); })
+                .setNegativeButton("Cancel", (dialogInt, which) -> { });
+        return dialog.create();
     }
 
     public void logout() {

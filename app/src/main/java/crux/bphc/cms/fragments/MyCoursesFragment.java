@@ -2,7 +2,6 @@ package crux.bphc.cms.fragments;
 
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -18,7 +17,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -27,11 +25,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import app.MyApplication;
 import crux.bphc.cms.CourseDetailActivity;
 import crux.bphc.cms.R;
 import helper.ClickListener;
@@ -457,7 +456,7 @@ public class MyCoursesFragment extends Fragment {
                         if (option == null) return;
                         switch (option.getId()) {
                             case 0:
-                                downloadCourse();
+                                confirmDownloadCourse();
                                 break;
 
                             case 1:
@@ -498,28 +497,20 @@ public class MyCoursesFragment extends Fragment {
                 unreadCount.setVisibility(count == 0 ? View.INVISIBLE : View.VISIBLE);
             }
 
-            public void downloadCourse(){
-                AlertDialog.Builder alertDialog;
-
-                if (MyApplication.getInstance().isDarkModeEnabled()) {
-                    alertDialog = new AlertDialog.Builder(getContext(),R.style.Theme_AppCompat_Dialog_Alert);
-                } else {
-                    alertDialog = new AlertDialog.Builder(getContext(),R.style.Theme_AppCompat_Light_Dialog_Alert);
-                }
-
-                alertDialog.setTitle("Confirm Download");
-                alertDialog.setMessage("Are you sure, you want to download the course?");
-                alertDialog.setPositiveButton("Yes", (dialogInterface, i) -> {
-                    if (downloadClickListener != null) {
-                        int pos = getLayoutPosition();
-                        if (!downloadClickListener.onClick(courses.get(pos), pos)) {
-                            Toast.makeText(getActivity(), "Download already in progress", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-                alertDialog.setNegativeButton("Cancel", null);
-                alertDialog.show();
-
+            void confirmDownloadCourse() {
+                new MaterialAlertDialogBuilder(context)
+                        .setTitle("Confirm Download")
+                        .setMessage("Are you sure you want to all the contents of this course?")
+                        .setPositiveButton("Yes", (dialogInterface, i) -> {
+                            if (downloadClickListener != null) {
+                                int pos = getLayoutPosition();
+                                if (!downloadClickListener.onClick(courses.get(pos), pos)) {
+                                    Toast.makeText(getActivity(), "Download already in progress", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                         })
+                        .setNegativeButton("Cancel", null)
+                        .show();
             }
 
             public void markAllAsRead(int position){
