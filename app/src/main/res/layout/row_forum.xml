@@ -62,17 +62,17 @@
 
 
 
-                <RelativeLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/user_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentBottom="true"
+                        android:layout_weight="1"
                         android:text="Instruction Division"
                         android:textColor="?android:textColorSecondary"
                         android:textSize="14sp" />
@@ -81,13 +81,12 @@
                         android:id="@+id/modified_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentBottom="true"
+                        android:layout_weight="0"
                         android:text="8 Feb, 1997"
                         android:textColor="?android:textColorSecondary"
                         android:textSize="14sp" />
 
-                </RelativeLayout>
+                </LinearLayout>
 
             </LinearLayout>
 

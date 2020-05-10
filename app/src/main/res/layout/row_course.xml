@@ -32,30 +32,34 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                 <RelativeLayout
+                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                     android:orientation="vertical">
 
                     <helper.HtmlTextView
                         android:id="@+id/courseName1"
                         android:layout_width="match_parent"
-                        android:layout_height="88dp"
-                        android:text="CS F321"
+                        android:layout_height="wrap_content"
+                        android:text="BITS F314"
                         android:textColor="?android:textColorPrimary"
                         android:textStyle="bold"
                         android:textSize="18sp"
-                        android:padding="16dp"/>
+                        android:paddingHorizontal="16dp"
+                        android:paddingTop="16dp"
+                        android:paddingBottom="3dp"/>
                     <helper.HtmlTextView
                         android:id="@+id/courseName2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_alignBottom="@id/courseName1"
-                        android:text="MACHINE LEARNING L"
+                        android:text="GAME THEORY AND ITS APPLICATIONS L1 SUMMER T"
                         android:textColor="?android:textColorPrimary"
                         android:textSize="16sp"
-                        android:padding="16dp"/>
-                </RelativeLayout>
+                        android:paddingHorizontal="16dp"
+                        android:paddingBottom="16dp"
+                        android:paddingTop="3dp"/>
+                </LinearLayout>
 
                 <ImageView
                     android:id="@+id/more_options_button"
