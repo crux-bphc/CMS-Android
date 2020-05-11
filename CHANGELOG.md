@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 Dates are in `yyyy-mm-dd`.
 
 ## Unreleased
+
+*NOTE: The minimum supported version is now Android 7.0 (API Level 24)*
+
 ### Added
 
 ## Changed
