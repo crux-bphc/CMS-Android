@@ -52,11 +52,11 @@ public class MyCoursesFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final int COURSE_SECTION_ACTIVITY = 105;
     RecyclerView mRecyclerView;
-    EditText mFilter;
+    EditText mSearch;
     SwipeRefreshLayout mSwipeRefreshLayout;
     List<Course> courses;
     View empty;
-    ImageView mFilterIcon;
+    ImageView mSearchIcon;
     boolean isClearIconSet = false;
     List<CourseDownloader.DownloadReq> requestedDownloads;
     String mSearchedText = "";
@@ -121,9 +121,9 @@ public class MyCoursesFragment extends Fragment {
         courses = courseDataHandler.getCourseList();
 
         mRecyclerView = view.findViewById(R.id.recyclerView);
-        mFilter = view.findViewById(R.id.filterET);
+        mSearch = view.findViewById(R.id.searchET);
         mSwipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
-        mFilterIcon = view.findViewById(R.id.filterIcon);
+        mSearchIcon = view.findViewById(R.id.searchIcon);
 
         moreOptionsViewModel = new ViewModelProvider(requireActivity()).get(MoreOptionsFragment.OptionsViewModel.class);
         mAdapter = new MyAdapter(getActivity(), courses);
@@ -145,7 +145,7 @@ public class MyCoursesFragment extends Fragment {
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 //        mSwipeRefreshLayout.setRefreshing(true);
-        mFilter.addTextChangedListener(new TextWatcher() {
+        mSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -162,14 +162,14 @@ public class MyCoursesFragment extends Fragment {
                 filterMyCourses(mSearchedText);
 
                 if (!isClearIconSet) {
-                    mFilterIcon.setImageResource(R.drawable.ic_clear_black_24dp);
+                    mSearchIcon.setImageResource(R.drawable.ic_clear_black_24dp);
                     isClearIconSet = true;
-                    mFilterIcon.setOnClickListener(new View.OnClickListener() {
+                    mSearchIcon.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            mFilter.setText("");
-                            mFilterIcon.setImageResource(R.drawable.filter);
-                            mFilterIcon.setOnClickListener(null);
+                            mSearch.setText("");
+                            mSearchIcon.setImageResource(R.drawable.ic_search);
+                            mSearchIcon.setOnClickListener(null);
                             isClearIconSet = false;
                             InputMethodManager inputManager = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
                             inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
@@ -177,8 +177,8 @@ public class MyCoursesFragment extends Fragment {
                     });
                 }
                 if (mSearchedText.isEmpty()) {
-                    mFilterIcon.setImageResource(R.drawable.filter);
-                    mFilterIcon.setOnClickListener(null);
+                    mSearchIcon.setImageResource(R.drawable.ic_search);
+                    mSearchIcon.setOnClickListener(null);
                     isClearIconSet = false;
                 }
             }
