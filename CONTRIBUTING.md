@@ -1,7 +1,7 @@
 # Contributing
 
 Thank you for taking time to contribute (or at least considering to). CMS-Android is a community project as much as
-it is CRUx's. 
+it is Crux's. 
 
 Contributions does not necessarily mean you have to modify source code and fix a bug or add a new functionality.
 Reporting a bug using the _Issues_ tab is also highly appreciated and a good way to start contributing to a project. 
