@@ -4,15 +4,15 @@ Thank you for taking time to contribute (or at least considering to). CMS-Androi
 it is Crux's. 
 
 Contributions does not necessarily mean you have to modify source code and fix a bug or add a new functionality.
-Reporting a bug using the _Issues_ tab is also highly appreciated and a good way to start contributing to a project. 
-start off contributions.
+Reporting a bug using the [Issues](https://github.com/crux-bphc/CMS-Android/issues) tab is also highly appreciated 
+and a good way to start contributing to the project.
 
 It is essential that you know how to use Git as well as GitHub. While the maintainers will be more than happy helping
 you make your first PR, prerequisite knowhow makes it easier for everyone involved. Check this 
 [guide](https://github.com/firstcontributions/first-contributions)  if you've never contributed to a project on 
 GitHub before.
 
-Please note we have a [code of conduct](code-of-conduct.md), please follow it in all your interactions with the project.
+Please note we have a [Code of Conduct](code-of-conduct.md). Please follow it in all your interactions with the project.
 
 When you submit code changes, your submissions are understood to be under the same [MIT License](LICENSE) that covers the 
 project. Feel free to contact the maintainers if that's a concern.
@@ -43,7 +43,7 @@ The Moodle endpoints used by this app have been collected in a [Postman](https:/
 
 6. If everything looks okay, the mainter(s) will go ahead and merge your changes into the repo. 
 
-**Note for maintainers**: When merging a PR in, rebase the changes instead of creating a merge commit. This ensures a clean commit history.
+**Note for maintainers**: When merging a PR in, *rebase the changes instead of creating a merge commit*. This ensures a clean commit history.
 Squash and rebase if required. You may also ask the contributor to do this if you are unsure how best to squash the commits. Changes introduced
 by a commit must be granular so that diagnosing and fixing problems later on is as simple as rolling back a specific commit.
 
@@ -56,7 +56,7 @@ at previous commits to gain inspiration on how to write a good commit message. A
 closes a particular issue or link the PR with an issue. This allows an issue to be automatically closed once the relavant PR is merged in.
 
 
-## Mainters' Guide to Versioning
+## Maintainers' Guide to Versioning
 
 Changelogs are necessary so that the end user knows what changes were brought in each new release. This project maintains changelogs using the 
 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) guidelines.
@@ -112,9 +112,6 @@ be followed, and all work is to be done on `development` unless otherwise mentio
 10. Add stub changelog notes for the next series of unreleased changes. Once again, create a commit. However, this time,
     push only to `development`. 
     
-**Note Regard `master`**: `master` should always point to the latest release commit i.e a commit that updates the version number in the changelog and 
+**Note Regarding `master`**: `master` should always point to the latest release commit i.e a commit that updates the version number in the changelog and 
 any other files. The commit that master points to should also be tagged with the version number of that release.
-
-
-
 
