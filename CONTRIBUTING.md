@@ -42,7 +42,7 @@ using the link.
    Make sure that the PR is from your feature branch into this repo's `development` branch. If you are making changes 
    that affect the UI in anyway, attach an image in your PR description.
 
-4. Wait for a maintainer to review your commit. If they finds any issue (including redundant code, unnecessary changes, 
+4. Wait for a maintainer to review your commit. If they find any issue (including redundant code, unnecessary changes, 
    potential bugs), they will point it out to you. Make any necessary changes and push them to your fork. Ideally, try 
    not to force push as it becomes harder for the maintiners to keep track of changes. Mark the review as resolved.
 
