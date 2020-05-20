@@ -123,9 +123,9 @@ correlation with Semantic  Versioning, the following steps are used to arrive at
 ## Maintainers' Release Checklist
 
 There is no release timeline for this project. Once the maintainer(s) decide that sufficent changes have been made and
-any and all release blocking bugs have been quashed, a maintainer (identified as the releaser henceforth) will take 
-charge of creating a release. The following checklist is to  be followed, and all work is to be done on `development` 
-unless otherwise mentioned:
+any and all release blocking bugs have been quashed, a maintainer (identified as the release manager henceforth) will 
+take  charge of creating a release. The following checklist is to  be followed, and all work is to be done on
+`development` unless otherwise mentioned:
 
 
 1. Ensure that all relavant changes have been noted in the [changelog](changelog).
@@ -139,7 +139,7 @@ unless otherwise mentioned:
 5. Create a commit with the aforementioned changes. Tag this commit with the version number using `git tag`.
    Fast-forward `master` to the latest `development`.
 
-6.  Push both `master` and `development` directly to the repo. While doing so, the releaser should exercise 
+6.  Push both `master` and `development` directly to the repo. While doing so, the release manager should exercise 
     utmost caution.  Use a PR if you are unsure and are doing this process for the first time. Make sure you push
     the tag that you just created as well using `git push --tags <name-of-remote>`.
    
