@@ -60,10 +60,34 @@ on is as simple as rolling back a specific commit.
 
 ## Commit Messages
 
-Please check [this][commit-message-guidelines] blog post on how to structure your commit messages. It is  also a good 
-idea to look at previous commits to gain inspiration on how to write a good commit message. Also ensure that you use 
-[closing keywords][closing-keywords] in your commit if your PR closes a particular issue or link the PR with an issue. 
-This allows an issue to be automatically closed once the relavant PR is merged in.
+Proper commit messages (subject + body) is a very important aspect of any project. A good commit message communicates
+the exact details of the commit to other people without them having to go through the changes made. Good commit messages
+will be a joy to read in `git log`.
+
+The subject of a commit message should be:
+
+- captialized
+- written in the imperative (e.g., "Fix ...", "Add ...")
+- kept short, while concisely explaining what the commit does.
+- clear about what part of the code is affected
+- a complete sentence
+
+Consider the following commit subjects: 
+
+- `Course enrollment was broken`:  does not explain how it was broken (and isn't in the imperative)
+- `Fixing exception when given bad input`: impossible to tell from the summary what part of the code is
+   affected
+
+The body of a commit must explain the _what_ and _why_ of the commit instead of the _how_. For example, in a commit
+that fixes a certain bug, you must explain _what_ was causing the bug and (possibly) _why_ it was fixed in the particular
+way. The _how_ aspect of your commit/changes should be self-explnatory i.e you shouldn't need to explain how your changes
+fixes the bug. If you feel that your commit needs to include a _how_ as well, that indicates a refactoring of your
+commit is in order.
+
+Make use of [closing keywords][closing-keywords] in your commit if your PR closes a particular issue. Alternatively, link
+the PR with the relavant issue.  This allows an issue to be automatically closed once the relavant PR is merged.
+
+Also checkout [this blogpost][commit-message-guidelines] for further reading regarding commit messages.
 
 [commit-message-guidelines]: https://chris.beams.io/posts/git-commit/
 [closing-keywords]: https://help.github.com/en/github/managing-your-work-on-github/linking-a-pull-request-to-an-issue
