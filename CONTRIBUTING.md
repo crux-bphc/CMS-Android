@@ -1,4 +1,4 @@
-# Contributing
+# Contributing to CMS-Android
 
 Thank you for taking time to contribute (or at least considering to). CMS-Android is a community project as much as
 it is Crux's. 
