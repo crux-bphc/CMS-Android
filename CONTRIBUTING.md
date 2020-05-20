@@ -35,13 +35,13 @@ The Moodle endpoints used by this app have been collected in a [Postman](https:/
    is from your feature branch into this repo's `development` branch. If you are making changes that affect the UI in anyway, attach an image
    in your PR description.
 
-4. Wait for a mainter to review your commit. If they finds any issue (including redundant code, unnecessary changes, potential bugs),
+4. Wait for a maintainer to review your commit. If they finds any issue (including redundant code, unnecessary changes, potential bugs),
    they will point it out to you. Make any necessary changes and push them to your fork. Ideally, try not to force push as it becomes
-   harded for the maintiners to keep track of changes. Mark the review as resolved.
+   harder for the maintiners to keep track of changes. Mark the review as resolved.
 
 5. If you are a maintainer yourself, try to get a secondary opinion from other maintainers or contributors.
 
-6. If everything looks okay, the mainter(s) will go ahead and merge your changes into the repo. 
+6. If everything looks okay, the maintainer(s) will go ahead and merge your changes into the repo. 
 
 **Note for maintainers**: When merging a PR in, *rebase the changes instead of creating a merge commit*. This ensures a clean commit history.
 Squash and rebase if required. You may also ask the contributor to do this if you are unsure how best to squash the commits. Changes introduced
@@ -77,7 +77,7 @@ Versioning, the following steps are used to arrive at the version code:
 
 5. Pre-releases, alpha releases etc shoud be signified by appropriate values in the least two significant digits.
 
-6. The [changelog](CHANGELOD.md) should state the semantic version number as well as version code (if a Playstore rollout has been done) with each 
+6. The [changelog](CHANGELOG.md) should state the semantic version number as well as version code (if a Playstore rollout has been done) with each 
    release.
 
 
