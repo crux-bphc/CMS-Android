@@ -34,7 +34,8 @@ using the link.
 1. Fork the repository and branch from `development`.
 
 2. Work on your changes. Make sure you commit as frequently as required. Once you're done making the changes, push the 
-   commits to your fork. Checkout the **Commit Messages** section to find guidelines relating to commit messages.
+   commits to your fork. Checkout the [Commit Messages](#-commit-messages) section to find guidelines relating to commit 
+   messages.
 
 3. If the changes you make fixes a bug in `master` or adds a new feature, note it down in the [changelog][changelog].
    
