@@ -49,7 +49,10 @@ using the link.
 
 6. If you are a maintainer yourself, try to get a secondary opinion from other maintainers or contributors.
 
-. If everything looks okay, the maintainer(s) will go ahead and merge your changes into the repo.
+7. Checkout the [Multi Commit PRs][#multi-commit-prs] section for guidelines on how to deal with PRs that have multiple
+   commits.
+
+8. If everything looks okay, the maintainer(s) will go ahead and merge your changes into the repo.
 
 **Note for maintainers**: When merging a PR in, *rebase the changes instead of creating a merge commit*. This ensures a
 clean commit history. Squash and rebase if required. You may also ask the contributor to do this if you are unsure how
