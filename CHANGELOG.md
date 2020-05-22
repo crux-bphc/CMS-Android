@@ -14,6 +14,7 @@ Dates are in `yyyy-mm-dd`.
 ## Changed
 
 ## Fixed
+* Full Course Names not being displayed (regression from **v1.7.0-beta1**)
 
 ## Version 1.7.0-beta.1 (verCode 1070001), 2020-05-09
 ### Added
