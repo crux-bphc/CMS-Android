@@ -12,11 +12,13 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <TextView
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="30dp"
         android:id="@+id/firstname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Harshit Agarwal"
+        android:textAllCaps="false"
+        android:layout_marginHorizontal="5dp"
         android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Title" />
 
     <TextView
@@ -25,6 +27,8 @@
         android:layout_height="wrap_content"
         android:paddingTop="4dp"
         android:text="f2014004"
+        android:layout_marginBottom="5dp"
+        android:layout_marginHorizontal="5dp"
         android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Subtitle" />
 
 

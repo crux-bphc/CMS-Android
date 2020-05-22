@@ -53,6 +53,7 @@ import crux.bphc.cms.models.Module;
 
 import static crux.bphc.cms.app.Constants.API_URL;
 import static crux.bphc.cms.app.Constants.TOKEN;
+import static crux.bphc.cms.helper.Util.userDetails;
 import static crux.bphc.cms.service.NotificationService.NOTIFICATION_CHANNEL_UPDATES;
 import static crux.bphc.cms.service.NotificationService.NOTIFICATION_CHANNEL_UPDATES_BUNDLE;
 
@@ -104,8 +105,9 @@ public class MainActivity extends AppCompatActivity
         View headerView = navigationView.getHeaderView(0);
         TextView username = headerView.findViewById(R.id.username);
         TextView fullName = headerView.findViewById(R.id.firstname);
-        username.setText(mUserAccount.getUsername());
-        fullName.setText(mUserAccount.getFirstName());
+        String[] details = userDetails(mUserAccount.getFirstName(), mUserAccount.getUsername());
+        fullName.setText(details[0]);
+        username.setText(details[1]);
 
         // Set up fragments
         if (savedInstanceState == null) {

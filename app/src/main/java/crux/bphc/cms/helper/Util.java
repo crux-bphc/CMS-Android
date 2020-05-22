@@ -9,6 +9,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Set of utility functions that can be used throughout the entire project.
@@ -145,5 +147,44 @@ public class Util {
             .setTitle("Invalid Token")
             .setPositiveButton("OK", null)
             .show();
+    }
+
+    public static String[] userDetails( String fullName, String username){
+        String[] arrOfStr = username.split("@");
+        String studentIDno = arrOfStr[0];
+
+        String nameTitleCase = toTitleCase(fullName);
+        System.out.println(nameTitleCase);
+
+        return new String[]{nameTitleCase, studentIDno};
+    }
+
+    public static String toTitleCase(String str) {
+        if (str == null) {
+            return null;
+        }
+
+        str=str.replace("  "," ");
+
+        boolean space = true;
+        StringBuilder builder = new StringBuilder(str);
+        final int len = builder.length();
+
+        for (int i = 0; i < len; ++i) {
+            char c = builder.charAt(i);
+            if (space) {
+                if (!Character.isWhitespace(c)) {
+                    // Convert to title case and switch out of whitespace mode.
+                    builder.setCharAt(i, Character.toTitleCase(c));
+                    space = false;
+                }
+            } else if (Character.isWhitespace(c)) {
+                space = true;
+            } else {
+                builder.setCharAt(i, Character.toLowerCase(c));
+            }
+        }
+
+        return builder.toString();
     }
 }
