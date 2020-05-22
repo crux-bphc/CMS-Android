@@ -114,7 +114,7 @@ public class Course extends RealmObject {
 
     public String[] getCourseName(){
         String courseName = getShortname();
-        String regex =  "([\\w\\d \\-'&,]+ \\w\\d\\d\\d) ([\\w\\d \\-'&,]+) ([LTP]\\d*)";  // Specifies the string pattern which is to be searched
+        String regex =  "([\\w\\d \\-/'&,]+ \\w\\d\\d\\d) ([\\w\\d \\-/():+\"'&.,?]+) ([LTP]\\d*)";  // Specifies the string pattern which is to be searched
         final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
         final Matcher matcher = pattern.matcher(courseName);
         String[] parts = {courseName , "" , ""};
