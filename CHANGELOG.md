@@ -14,8 +14,8 @@ Dates are in `yyyy-mm-dd`.
 ## Changed
 
 ## Fixed
-* Full Course Names not being displayed (regression from **v1.7.0-beta1**)
-
+* Full Course Names not being displayed (regression in **v1.7.0-beta1**)
+* Module Read/Unread Visual Bug (regression in **v1.7.0-beta1**)
 ## Version 1.7.0-beta.1 (verCode 1070001), 2020-05-09
 ### Added
 * Dialogbox on invalid token after Google login
