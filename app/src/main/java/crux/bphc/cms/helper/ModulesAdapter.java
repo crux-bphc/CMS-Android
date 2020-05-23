@@ -251,11 +251,10 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 TypedValue value = new TypedValue();
                 context.getTheme().resolveAttribute(R.attr.unReadModule,value,true);
                 textWrapper.setBackgroundColor(value.data);
-            }
-            else {
+            } else {
                 TypedValue value = new TypedValue();
                 context.getTheme().resolveAttribute(R.attr.cardBgColor,value,true);
-                cardView.setCardBackgroundColor(value.data);
+                textWrapper.setBackgroundColor(value.data);
             }
 
             name.setText(module.getName());
