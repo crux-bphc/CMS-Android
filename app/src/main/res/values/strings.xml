@@ -20,6 +20,9 @@
     <string name="upToDate">Everything is up to date</string>
     <string name="search_my_courses">Search My courses</string>
     <string name="no_my_courses">No Courses to display</string>
+    <string name="added_to_favorites">Added to favorites</string>
+    <string name="removed_from_favorites">Removed from favorites</string>
+    <string name="favorite">favorite</string>
     <plurals name="noOfCoursesUpdated">
         <item quantity="one">%d Course updated</item>
         <item quantity="other">%d Courses updated</item>
