@@ -50,7 +50,9 @@ public class MyFileManager {
     private Activity activity;
     private ArrayList<String> requestedDownloads;
     private Callback callback;
+    private String courseName;
     private String courseDirName;
+
     private BroadcastReceiver onComplete = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             reloadFileList();
@@ -66,10 +68,11 @@ public class MyFileManager {
         }
     };
 
-    public MyFileManager(Activity activity, String courseDirName) {
+    public MyFileManager(Activity activity, String courseName) {
         this.activity = activity;
         requestedDownloads = new ArrayList<>();
-        this.courseDirName = courseDirName;
+        this.courseName = courseName;
+        this.courseDirName = getSanitizedCoursePath(courseName);
     }
 
 
@@ -232,37 +235,41 @@ public class MyFileManager {
     }
 
     private String getFilePath(String courseName, String fileName) {
-        return getCourseDirectory(courseName) + File.separator + fileName;
+        return getSanitizedCoursePath(courseName) + File.separator + fileName;
     }
 
-    private String getCourseDirectory(String courseName) {
-        return File.separator + ROOT_FOLDER
-                + File.separator + courseName.replaceAll("/", "_");
+    private String getSanitizedCoursePath(String courseName) {
+        return File.separator + ROOT_FOLDER + File.separator + getSanitizedCourseName(courseName);
     }
+
+    private String getSanitizedCourseName(String courseName) {
+        return courseName.replaceAll("/", "_");
+    }
+
 
     public void reloadFileList() {
         fileList = new ArrayList<>();
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
             String path = Environment
                     .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
-                    + getCourseDirectory(courseDirName);
+                    + getSanitizedCoursePath(courseDirName);
             File courseDir = new File(path);
             if (courseDir.isDirectory()) {
                 fileList.addAll(Arrays.asList(courseDir.list()));
             }
         } else {
-            // The mediastore is itself an SQLite Database. We need to provide relevant clauses
-            // for the generated SQL query, like the rows to be selected, and the WHERE and ORDER BY
-            // clauses. Note that REGEXP is SQLite specific and not part of the SQL Standard
+            // MediaStore is backed by an SQLite database. We simply construct
+            // an SQL query clauses which the API will run on the database.
             String[] projection = { MediaStore.Downloads.DISPLAY_NAME };
-            String where = MediaStore.Downloads.RELATIVE_PATH + " REGEXP '^.*" + ROOT_FOLDER
-                    + "\\/" + courseDirName + "\\/?$'";
+            String where = MediaStore.Downloads.RELATIVE_PATH + " LIKE ?";
+            String[] args = { "%" + getSanitizedCourseName(courseName) + "%" };
             String order_by = MediaStore.Downloads.RELATIVE_PATH + " ASC";
+
             try (Cursor cursor = MyApplication.getInstance().getContentResolver().query(
                     MediaStore.Downloads.EXTERNAL_CONTENT_URI,
                     projection,
                     where,
-                    null,
+                    args,
                     order_by
             )){
                 int nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Downloads.DISPLAY_NAME);
