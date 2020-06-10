@@ -20,6 +20,7 @@ import crux.bphc.cms.models.course.CourseSection;
 import crux.bphc.cms.models.course.Module;
 import crux.bphc.cms.models.forum.Discussion;
 import io.realm.Realm;
+
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -63,6 +64,15 @@ public class CourseDataHandler {
      */
     public void replaceCourses(@NotNull List<Course> courses) {
         if (realm != null) {
+            for (Course c : courses) {
+                // We query the db each iteration, this should be more efficient
+                // than doing an O(n^2) search or multiple O(n) maps for each
+                // field we want to transfer over
+                Course inDb = realm.where(Course.class).equalTo("id", c.getId()).findFirst();
+                if (inDb != null) {
+                    c.setFavorite(inDb.isFavorite());
+                }
+            }
             realm.beginTransaction();
             realm.delete(Course.class);
             realm.copyToRealm(courses);
@@ -319,15 +329,6 @@ public class CourseDataHandler {
         }
     }
 
-    public int getUnreadCount(int courseId) {
-        return realm.where(Module.class)
-                .in("courseSectionId", getCourseData(courseId).stream()
-                        .map(CourseSection::getCourseId)
-                        .toArray(Integer[]::new)
-                ).equalTo("isUnread", true)
-                .findAll().size();
-    }
-
     public String getCourseName(int courseId) {
         Course course = realm.where(Course.class).equalTo("id", courseId).findFirst();
         if (course == null) return "";
@@ -348,5 +349,21 @@ public class CourseDataHandler {
      */
     public void setRealmInstance(@NotNull Realm realm) {
         this.realm = realm;
+    }
+
+    public void setFavoriteStatus(int courseId, boolean isFavorite) {
+        realm.beginTransaction();
+        Course course = realm.where(Course.class).equalTo("id", courseId).findFirst();
+        if (course != null) course.setFavorite(isFavorite);
+        realm.commitTransaction();
+    }
+
+    public int getUnreadCount(int courseId) {
+        return realm.where(Module.class)
+                .in("courseSectionId", getCourseData(courseId).stream()
+                        .map(CourseSection::getCourseId)
+                        .toArray(Integer[]::new)
+                ).equalTo("isUnread", true)
+                .findAll().size();
     }
 }

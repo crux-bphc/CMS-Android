@@ -11,6 +11,7 @@ Dates are in `yyyy-mm-dd`.
 
 ### Added
 * Add APK version and commit hash to navigation drawer
+* Ability to mark courses as favorite for easier access
 
 ### Changed
 

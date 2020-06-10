@@ -25,9 +25,12 @@ public class Course extends RealmObject {
     @SerializedName("shortname") private String shortname;
     @SerializedName("fullname") String fullname;
 
+    private boolean favorite;
+
     @Ignore private int downloadStatus;
     @Ignore private int totalFiles;
     @Ignore private int downloadedFiles;
+
 
     @SuppressWarnings("unused")
     public Course() {
@@ -63,12 +66,20 @@ public class Course extends RealmObject {
         this.downloadStatus = downloadStatus;
     }
 
+    public void setFavorite(boolean status) {
+        favorite = status;
+    }
+
     public int getId() {
         return id;
     }
 
     public int getCourseId() {
         return id;
+    }
+
+    public boolean isFavorite() {
+        return favorite;
     }
 
     public String getShortName() {
