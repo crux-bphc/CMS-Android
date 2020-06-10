@@ -7,8 +7,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
@@ -26,10 +29,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import crux.bphc.cms.app.Constants;
-import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.BuildConfig;
 import crux.bphc.cms.R;
+import crux.bphc.cms.app.Constants;
+import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.fragments.FolderModuleFragment;
 import crux.bphc.cms.fragments.ForumFragment;
 import crux.bphc.cms.models.Content;
@@ -42,7 +45,7 @@ import crux.bphc.cms.models.forum.Attachment;
 
 public class MyFileManager {
     public static final int DATA_DOWNLOADED = 20;
-    private static final String CMS = "CMS";
+    private static final String ROOT_FOLDER = "CMS";
     private List<String> fileList;
     private Activity activity;
     private ArrayList<String> requestedDownloads;
@@ -141,40 +144,38 @@ public class MyFileManager {
     // TODO check if the courseName params of these methods are needed, since we're passing it in constructor anyway
     public void downloadFile(Content content, Module module, String courseName) {
         deleteOldDownload(content, courseName); //delete any pre-existing version of the file
-        downloadFile(content.getFilename(), content.getFileurl(), module.getDescription(), courseName, false);
+        downloadFile(content.getFilename(), content.getFileurl(), module.getDescription(),
+                courseName, false);
     }
 
-    public void downloadFile(String fileName, String fileurl, String description, String courseName, boolean isForum) {
+    public void downloadFile(String fileName, String fileUrl, String description, String courseName,
+                             boolean isForum) {
         String url = "";
         if (isForum) {
-            url = fileurl + "?token=" + Constants.TOKEN;
+            url = fileUrl + "?token=" + Constants.TOKEN;
         } else {
-            url = fileurl + "&token=" + Constants.TOKEN;
+            url = fileUrl + "&token=" + Constants.TOKEN;
         }
+
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
         request.setDescription(description);
         request.setTitle(fileName);
-
-        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
-                + getPathExtension(courseName);
-        File direct = new File(path);
-        if (!direct.exists()) {
-            File dir = new File(path);
-            dir.mkdirs();
-        }
-
-        request.allowScanningByMediaScanner();
-        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,
                 getFilePath(courseName, fileName));
-        DownloadManager manager = (DownloadManager) activity.getSystemService(Context.DOWNLOAD_SERVICE);
-        manager.enqueue(request);
-        requestedDownloads.add(fileName);
+
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+            request.allowScanningByMediaScanner();
+        }
+
+        ((DownloadManager) MyApplication.getInstance().getSystemService(Context.DOWNLOAD_SERVICE))
+                .enqueue(request);
     }
 
     public void deleteOldDownload(Content content, String courseName) {
-        String fileName = content.getFilename();
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()+getFilePath(courseName, fileName));
+        String path = Environment
+                .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
+                + getFilePath(courseName, content.getFilename());
+        File file = new File(path);
         if (file.exists()) {
             file.delete();
         }
@@ -231,21 +232,44 @@ public class MyFileManager {
     }
 
     private String getFilePath(String courseName, String fileName) {
-
-        return getPathExtension(courseName) + File.separator + fileName;
+        return getCourseDirectory(courseName) + File.separator + fileName;
     }
 
-    private String getPathExtension(String courseName) {
-        return File.separator + CMS
+    private String getCourseDirectory(String courseName) {
+        return File.separator + ROOT_FOLDER
                 + File.separator + courseName.replaceAll("/", "_");
     }
 
     public void reloadFileList() {
         fileList = new ArrayList<>();
-        File courseDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
-        + getPathExtension(courseDirName));
-        if (courseDir.isDirectory()) {
-            fileList.addAll(Arrays.asList(courseDir.list()));
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+            String path = Environment
+                    .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
+                    + getCourseDirectory(courseDirName);
+            File courseDir = new File(path);
+            if (courseDir.isDirectory()) {
+                fileList.addAll(Arrays.asList(courseDir.list()));
+            }
+        } else {
+            // The mediastore is itself an SQLite Database. We need to provide relevant clauses
+            // for the generated SQL query, like the rows to be selected, and the WHERE and ORDER BY
+            // clauses. Note that REGEXP is SQLite specific and not part of the SQL Standard
+            String[] projection = { MediaStore.Downloads.DISPLAY_NAME };
+            String where = MediaStore.Downloads.RELATIVE_PATH + " REGEXP '^.*" + ROOT_FOLDER
+                    + "\\/" + courseDirName + "\\/?$'";
+            String order_by = MediaStore.Downloads.RELATIVE_PATH + " ASC";
+            try (Cursor cursor = MyApplication.getInstance().getContentResolver().query(
+                    MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                    projection,
+                    where,
+                    null,
+                    order_by
+            )){
+                int nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Downloads.DISPLAY_NAME);
+                while (cursor.moveToNext()) {
+                    fileList.add(cursor.getString(nameColumn));
+                }
+            }
         }
     }
 
