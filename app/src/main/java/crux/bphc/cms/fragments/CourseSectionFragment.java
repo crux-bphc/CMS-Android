@@ -30,8 +30,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import crux.bphc.cms.app.Constants;
 import crux.bphc.cms.R;
+import crux.bphc.cms.app.Constants;
 import crux.bphc.cms.helper.ClickListener;
 import crux.bphc.cms.helper.CourseDataHandler;
 import crux.bphc.cms.helper.CourseRequestHandler;
@@ -467,7 +467,7 @@ public class CourseSectionFragment extends Fragment {
             return true;
         }
         if (item.getItemId() == R.id.action_open_in_browser) {
-            MyFileManager.showInWebsite(getActivity(), Constants.getCourseURL(courseId));
+            Util.openURLInBrowser(getActivity(), Constants.getCourseURL(courseId));
         }
         return super.onOptionsItemSelected(item);
     }

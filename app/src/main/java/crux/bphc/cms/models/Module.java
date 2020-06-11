@@ -5,7 +5,7 @@ import android.text.Html;
 import java.util.List;
 
 import crux.bphc.cms.R;
-import crux.bphc.cms.helper.MyFileManager;
+import crux.bphc.cms.helper.FileUtils;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
@@ -175,7 +175,7 @@ public class Module extends RealmObject {
             return false;
         }
         if (modType == Type.RESOURCE && contents.size() > 0) {
-            switch (MyFileManager.getExtension(contents.get(0).getFilename())) {
+            switch (FileUtils.getExtension(contents.get(0).getFilename())) {
                 case "pdf":
                 case "xls":
                 case "xlsx":
@@ -202,7 +202,7 @@ public class Module extends RealmObject {
         switch (getModType()) {
             //  , QUIZ, URL, PAGE, DEFAULT
             case RESOURCE:
-                return MyFileManager.getIconFromFileName(getContents().get(0).getFilename());
+                return FileUtils.getDrawableIconFromFileName(getContents().get(0).getFilename());
 
             case ASSIGNMENT:
                 return (R.drawable.book);

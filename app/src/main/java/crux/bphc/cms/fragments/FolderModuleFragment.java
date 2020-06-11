@@ -21,13 +21,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.R;
+import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.helper.ClickListener;
+import crux.bphc.cms.helper.FileUtils;
 import crux.bphc.cms.helper.MyFileManager;
-import io.realm.Realm;
 import crux.bphc.cms.models.Content;
 import crux.bphc.cms.models.Module;
+import io.realm.Realm;
 
 public class FolderModuleFragment extends Fragment {
 
@@ -197,7 +198,7 @@ public class FolderModuleFragment extends Fragment {
             public void bind(Content content) {
                 fileName.setText(content.getFilename());
 
-                int icon = MyFileManager.getIconFromFileName(content.getFilename());
+                int icon = FileUtils.getDrawableIconFromFileName(content.getFilename());
                 if (icon != -1) {
                     fileIcon.setImageResource(icon);
                 } else {

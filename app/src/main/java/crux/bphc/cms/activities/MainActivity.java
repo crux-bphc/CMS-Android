@@ -33,23 +33,23 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.List;
 
-import crux.bphc.cms.app.Constants;
-import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.BuildConfig;
 import crux.bphc.cms.R;
+import crux.bphc.cms.app.Constants;
+import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.fragments.DiscussionFragment;
 import crux.bphc.cms.fragments.ForumFragment;
 import crux.bphc.cms.fragments.MyCoursesFragment;
 import crux.bphc.cms.fragments.SearchCourseFragment;
 import crux.bphc.cms.fragments.SettingsFragment;
-import crux.bphc.cms.service.NotificationService;
-import crux.bphc.cms.helper.MyFileManager;
 import crux.bphc.cms.helper.UserAccount;
 import crux.bphc.cms.helper.UserUtils;
-import io.realm.Realm;
+import crux.bphc.cms.helper.Util;
 import crux.bphc.cms.models.Course;
 import crux.bphc.cms.models.CourseSection;
 import crux.bphc.cms.models.Module;
+import crux.bphc.cms.service.NotificationService;
+import io.realm.Realm;
 
 import static crux.bphc.cms.app.Constants.API_URL;
 import static crux.bphc.cms.app.Constants.TOKEN;
@@ -329,7 +329,7 @@ public class MainActivity extends AppCompatActivity
                 pushView(SearchCourseFragment.newInstance(TOKEN), "Course Search", false);
                 break;
             case R.id.website:
-                MyFileManager.showInWebsite(this, API_URL + "my/");
+                Util.openURLInBrowser(this, API_URL + "my/");
                 break;
 
             case R.id.settings:
@@ -345,7 +345,7 @@ public class MainActivity extends AppCompatActivity
                 startActivity(sendIntent);
                 break;
             case R.id.issue:
-                MyFileManager.showInWebsite(this, Constants.getFeedbackURL(mUserAccount.getFirstName(), mUserAccount.getUsername()));
+                Util.openURLInBrowser(this, Constants.getFeedbackURL(mUserAccount.getFirstName(), mUserAccount.getUsername()));
                 break;
             case R.id.about:
                 startActivity(new Intent(this, InfoActivity.class));
