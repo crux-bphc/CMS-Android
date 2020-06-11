@@ -246,13 +246,12 @@ public class MyFileManager {
         return courseName.replaceAll("/", "_");
     }
 
-
     public void reloadFileList() {
         fileList = new ArrayList<>();
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
             String path = Environment
                     .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
-                    + getSanitizedCoursePath(courseDirName);
+                    + courseDirName;
             File courseDir = new File(path);
             if (courseDir.isDirectory()) {
                 fileList.addAll(Arrays.asList(courseDir.list()));
