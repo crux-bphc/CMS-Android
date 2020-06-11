@@ -88,7 +88,7 @@ public class FolderModuleFragment extends Fragment {
             @Override
             public void onDownloadCompleted(String fileName) {
                 mAdapter.notifyDataSetChanged();
-                mFileManager.openFile(fileName, COURSE_NAME);
+                mFileManager.openFile(fileName);
             }
         });
     }
@@ -129,9 +129,9 @@ public class FolderModuleFragment extends Fragment {
     private void downloadOrOpenFile(Content content, boolean forceDownload) {
         if (forceDownload || !mFileManager.searchFile(content.getFilename())) {
             Toast.makeText(getActivity(), "Downloading file - " + content.getFilename(), Toast.LENGTH_SHORT).show();
-            mFileManager.downloadFile(content, module, COURSE_NAME);
+            mFileManager.downloadCourseModuleContent(content, module);
         } else {
-            mFileManager.openFile(content.getFilename(), COURSE_NAME);
+            mFileManager.openFile(content.getFilename());
         }
     }
 
@@ -239,7 +239,7 @@ public class FolderModuleFragment extends Fragment {
                                     downloadOrOpenFile(content, true);
                                     break;
                                 case 2:
-                                    mFileManager.shareFile(content.getFilename(), COURSE_NAME);
+                                    mFileManager.shareFile(content.getFilename());
                                     break;
                                 case 3:
                                     new PropertiesAlertDialog(getContext(), content).show();

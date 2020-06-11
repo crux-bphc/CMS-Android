@@ -77,14 +77,10 @@ public class CourseDownloader implements MyFileManager.Callback {
                 continue;
             for (Content content : module.getContents()) {
                 if (!myFileManager.searchFile(content.getFilename())) {
-                    myFileManager.downloadFile(content, module, courseName);
-//                    if(downloadCallback!=null)
-//                    downloadCallback.onCourseContentDownloaded();// onSuccess(new DownloadReq(-1, module.getId(), content.getFilename()));
+                    myFileManager.downloadCourseModuleContent(content, module);
                 }
             }
         }
-//        if(downloadCallback!=null)
-//        downloadCallback.onFailure();
     }
 
     public boolean searchFile(String fileName) {
