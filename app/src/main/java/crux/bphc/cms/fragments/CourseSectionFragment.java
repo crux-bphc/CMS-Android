@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
@@ -21,7 +22,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,18 +35,19 @@ import java.util.List;
 
 import crux.bphc.cms.R;
 import crux.bphc.cms.app.Constants;
-import crux.bphc.cms.helper.ClickListener;
+import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.helper.CourseDataHandler;
 import crux.bphc.cms.helper.CourseRequestHandler;
+import crux.bphc.cms.helper.FileManager;
 import crux.bphc.cms.helper.HtmlTextView;
 import crux.bphc.cms.helper.ModulesAdapter;
-import crux.bphc.cms.helper.MyFileManager;
 import crux.bphc.cms.helper.Util;
+import crux.bphc.cms.models.Content;
 import crux.bphc.cms.models.CourseSection;
 import crux.bphc.cms.models.Module;
 import crux.bphc.cms.models.forum.Discussion;
 
-import static crux.bphc.cms.helper.MyFileManager.DATA_DOWNLOADED;
+import static crux.bphc.cms.helper.FileManager.DATA_DOWNLOADED;
 
 /**
  * Created by SKrPl on 12/21/16.
@@ -57,7 +61,7 @@ public class CourseSectionFragment extends Fragment {
     private static final int MODULE_ACTIVITY = 101;
 
     View empty;
-    MyFileManager mFileManager;
+    FileManager mFileManager;
     List<CourseSection> courseSections;
     CourseDataHandler courseDataHandler;
     private String TOKEN;
@@ -97,7 +101,9 @@ public class CourseSectionFragment extends Fragment {
             courseId = args.getInt(COURSE_ID_KEY);
         }
         courseDataHandler = new CourseDataHandler(getActivity());
-        mFileManager = new MyFileManager(getActivity(), CourseDataHandler.getCourseName(courseId));
+        courseName = CourseDataHandler.getCourseName(courseId);
+
+        mFileManager = new FileManager(getActivity(), courseName);
         mFileManager.registerDownloadReceiver();
         courseSections = new ArrayList<>();
         setHasOptionsMenu(true);
@@ -125,7 +131,6 @@ public class CourseSectionFragment extends Fragment {
 
         moreOptionsViewModel = new ViewModelProvider(requireActivity()).get(MoreOptionsFragment.OptionsViewModel.class);
 
-        courseName = CourseDataHandler.getCourseName(courseId);
         mSwipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         linearLayout = view.findViewById(R.id.linearLayout);
         empty = view.findViewById(R.id.empty);
@@ -135,12 +140,13 @@ public class CourseSectionFragment extends Fragment {
             mSwipeRefreshLayout.setRefreshing(true);
             sendRequest(courseId);
         }
+
         for (CourseSection section : courseSections) {
             addSection(section);
         }
 
 //        sendRequest(courseId);
-        mFileManager.setCallback(new MyFileManager.Callback() {
+        mFileManager.setCallback(new FileManager.Callback() {
             @Override
             public void onDownloadCompleted(String fileName) {
                 reloadSections();
@@ -303,17 +309,78 @@ public class CourseSectionFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setNestedScrollingEnabled(false);
 
-//        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), RecyclerView.VERTICAL));
+        myAdapter.setClickListener((object, position) -> {
+            // TODO: Consider moving this handler into ModulesAdapter
+            if (object instanceof Module) {
+                Module module = (Module) object;
+                switch(module.getModType()) {
+                    case URL:
+                        if (module.hasContents()) {
+                            String url = module.getContents().get(0).getFileurl();
+                            if (!url.isEmpty())
+                                Util.openURLInBrowser(getActivity(), url);
+                        }
+                        break;
+                    case PAGE:
+                        Util.openURLInBrowser(getActivity(), module.getUrl());
+                        break;
+                    case FORUM:
+                        Fragment forumFragment = ForumFragment.newInstance(Constants.TOKEN, module.getInstance(),
+                                courseName);
+                        FragmentTransaction fragmentTransaction = getActivity()
+                                .getSupportFragmentManager().beginTransaction()
+                                .addToBackStack(null)
+                                .replace(R.id.course_section_enrol_container, forumFragment, "Announcements");
+                        fragmentTransaction.commit();
+                        break;
+                    case FOLDER:
+                        Fragment folderModulerFragment = FolderModuleFragment.newInstance(Constants.TOKEN,
+                                module.getInstance(), courseName);
+                        fragmentTransaction = getActivity()
+                                .getSupportFragmentManager().beginTransaction()
+                                .addToBackStack(null)
+                                .replace(R.id.course_section_enrol_container, folderModulerFragment, "Folder Module");
+                        fragmentTransaction.commit();
+                        break;
+                    case LABEL:
+                        String desc = module.getDescription();
+                        if (desc == null || desc.isEmpty())
+                            break;
 
-        myAdapter.setClickListener(new ClickListener() {
-            @Override
-            public boolean onClick(Object object, int position) {
-                if (object instanceof Module) {
-                    return mFileManager.onClickAction((Module) object, courseName);
+                        AlertDialog.Builder alertDialog;
+                        if (MyApplication.getInstance().isDarkModeEnabled()) {
+                            alertDialog = new AlertDialog.Builder(getActivity(), R.style.Theme_AppCompat_Dialog_Alert);
+                        } else {
+                            alertDialog = new AlertDialog.Builder(getActivity(),
+                                    R.style.Theme_AppCompat_Light_Dialog_Alert);
+                        }
+
+                        Spanned htmlDescription = Html.fromHtml(module.getDescription());
+                        String descriptionWithOutExtraSpace = htmlDescription.toString().trim();
+                        alertDialog.setMessage(htmlDescription.subSequence(0, descriptionWithOutExtraSpace.length()));
+                        alertDialog.setNegativeButton("Close", null);
+                        alertDialog.show();
+                        break;
+                    case RESOURCE:
+                        if (module.hasContents()) {
+                            Content content = module.getContents().first();
+                            if (mFileManager.isModuleContentDownloaded(content)) {
+                                mFileManager.openModuleContent(content);
+                            } else {
+                                Toast.makeText(getActivity(), "Downloading file - " + content.getFilename(),
+                                        Toast.LENGTH_SHORT).show();
+                                mFileManager.downloadModuleContent(content, module);
+                            }
+                        }
+                        break;
+                    default:
+
                 }
-                return false;
+                return true;
             }
+            return false;
         });
+
         linearLayout.addView(v);
     }
 

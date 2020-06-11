@@ -2,8 +2,6 @@ package crux.bphc.cms.models;
 
 import android.text.Html;
 
-import java.util.List;
-
 import crux.bphc.cms.R;
 import crux.bphc.cms.helper.FileUtils;
 import io.realm.RealmList;
@@ -162,8 +160,12 @@ public class Module extends RealmObject {
         this.modplural = modplural;
     }
 
-    public List<Content> getContents() {
+    public RealmList<Content> getContents() {
         return contents;
+    }
+
+    public boolean hasContents() {
+        return contents != null && contents.size() != 0;
     }
 
     public void setContents(RealmList<Content> contents) {
