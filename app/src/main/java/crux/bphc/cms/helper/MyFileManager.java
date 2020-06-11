@@ -17,7 +17,6 @@ import android.text.Spanned;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
@@ -73,63 +72,6 @@ public class MyFileManager {
         requestedDownloads = new ArrayList<>();
         this.courseName = courseName;
         this.courseDirName = getSanitizedCoursePath(courseName);
-    }
-
-
-    @NonNull
-    public static String getExtension(String filename) {
-        return filename.substring(filename.lastIndexOf('.') + 1);
-    }
-
-    public static void showInWebsite(Activity activity, String url) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(url));
-        activity.startActivity(intent);
-    }
-
-    public static int getIconFromFileName(String filename) {
-        switch (MyFileManager.getExtension(filename)) {
-            case "pdf":
-                return (R.drawable.file_pdf);
-
-            case "xls":
-            case "xlsx":
-                return (R.drawable.file_excel);
-
-            case "doc":
-            case "docx":
-                return (R.drawable.file_word);
-
-            case "ppt":
-            case "pptx":
-                return (R.drawable.file_powerpoint);
-
-            default:
-                return -1;
-        }
-    }
-
-    private static String getApplicationType(String filename) {
-        String extension = getExtension(filename);
-        switch (extension) {
-            case "pdf":
-                return "pdf";
-
-            case "xls":
-            case "xlsx":
-                return "vnd.ms-excel";
-
-            case "doc":
-            case "docx":
-                return "msword";
-
-            case "ppt":
-            case "pptx":
-                return "vnd.ms-powerpoint";
-
-            default:
-                return extension;
-        }
     }
 
     public void registerDownloadReceiver() {
@@ -204,7 +146,7 @@ public class MyFileManager {
                 getFilePath(courseName, filename));
         Uri path = FileProvider.getUriForFile(activity, BuildConfig.APPLICATION_ID + ".provider", file);
         Intent pdfOpenintent = new Intent(Intent.ACTION_VIEW);
-        pdfOpenintent.setDataAndType(path, "application/" + getApplicationType(filename));
+        pdfOpenintent.setDataAndType(path, FileUtils.getFileMimeType(filename));
         pdfOpenintent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         pdfOpenintent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         try {
@@ -282,11 +224,11 @@ public class MyFileManager {
     public boolean onClickAction(Module module, String courseName) {
         if (module.getModType() == Module.Type.URL) {
             if (module.getContents().size() > 0 && !module.getContents().get(0).getFileurl().isEmpty()) {
-                MyFileManager.showInWebsite(activity, module.getContents().get(0).getFileurl());
+                Util.openURLInBrowser(activity, module.getContents().get(0).getFileurl());
 
             }
         } else if (module.getModType() == Module.Type.PAGE) {
-            MyFileManager.showInWebsite(activity, module.getUrl());
+            Util.openURLInBrowser(activity, module.getUrl());
         } else if (module.getModType() == Module.Type.FORUM) {
             Fragment forumFragment = ForumFragment.newInstance(Constants.TOKEN, module.getInstance(), courseName);
             FragmentTransaction fragmentTransaction = ((AppCompatActivity) activity).getSupportFragmentManager().beginTransaction()
@@ -319,7 +261,7 @@ public class MyFileManager {
                 alertDialog.show();
             } else
 
-                showInWebsite(activity, module.getUrl());
+                Util.openURLInBrowser(activity, module.getUrl());
         } else {
             for (Content content : module.getContents()) {
                 if (!searchFile(content.getFilename())) {
@@ -359,7 +301,6 @@ public class MyFileManager {
 
     public void showPropertiesDialog(Context context, Attachment attachment) {
         showPropertiesDialog(context, attachment.getFilename(), attachment.getFileSize(), attachment.getTimemodified());
-
     }
 
     public interface Callback {

@@ -1,16 +1,15 @@
 package crux.bphc.cms.helper;
 
+import android.app.Activity;
 import android.content.Context;
-
-import androidx.appcompat.app.AlertDialog;
+import android.content.Intent;
+import android.net.Uri;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Set of utility functions that can be used throughout the entire project.
@@ -186,5 +185,11 @@ public class Util {
         }
 
         return builder.toString();
+    }
+
+    public static void openURLInBrowser(Activity activity, String url) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(url));
+        activity.startActivity(intent);
     }
 }
