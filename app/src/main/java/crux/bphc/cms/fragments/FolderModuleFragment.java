@@ -26,6 +26,7 @@ import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.helper.ClickListener;
 import crux.bphc.cms.helper.FileUtils;
 import crux.bphc.cms.helper.MyFileManager;
+import crux.bphc.cms.helper.PropertiesAlertDialog;
 import crux.bphc.cms.models.Content;
 import crux.bphc.cms.models.Module;
 import io.realm.Realm;
@@ -241,7 +242,7 @@ public class FolderModuleFragment extends Fragment {
                                     mFileManager.shareFile(content.getFilename(), COURSE_NAME);
                                     break;
                                 case 3:
-                                    mFileManager.showPropertiesDialog(getContext(), content);
+                                    new PropertiesAlertDialog(getContext(), content).show();
                             }
                             moreOptionsViewModel.getSelection().removeObservers((AppCompatActivity) getContext());
                             moreOptionsViewModel.clearSelection();
@@ -259,7 +260,7 @@ public class FolderModuleFragment extends Fragment {
                                     downloadOrOpenFile(content, false);
                                     break;
                                 case 1:
-                                    mFileManager.showPropertiesDialog(getContext(), content);
+                                    new PropertiesAlertDialog(getContext(), content).show();
                                     break;
                             }
                         };

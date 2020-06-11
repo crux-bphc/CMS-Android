@@ -181,7 +181,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 markAsReadandUnread(module, position, true);
                                 break;
                             case 4:
-                                mFileManager.showPropertiesDialog(context, module.getContents().get(0));
+                                new PropertiesAlertDialog(context, module.getContents().get(0)).show();
                                 break;
                         }
                         moreOptionsViewModel.getSelection().removeObservers((AppCompatActivity) context);
@@ -210,7 +210,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 markAsReadandUnread(module, position, true);
                                 break;
                             case 3:
-                                mFileManager.showPropertiesDialog(context, module.getContents().get(0));
+                                new PropertiesAlertDialog(context, module.getContents().get(0)).show();
                                 break;
                         }
                         moreOptionsViewModel.getSelection().removeObservers((AppCompatActivity) context);
