@@ -24,12 +24,13 @@ import java.util.List;
 import crux.bphc.cms.R;
 import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.helper.ClickListener;
+import crux.bphc.cms.helper.FileManager;
 import crux.bphc.cms.helper.FileUtils;
-import crux.bphc.cms.helper.MyFileManager;
 import crux.bphc.cms.helper.PropertiesAlertDialog;
 import crux.bphc.cms.models.Content;
 import crux.bphc.cms.models.Module;
 import io.realm.Realm;
+import io.realm.RealmList;
 
 public class FolderModuleFragment extends Fragment {
 
@@ -43,12 +44,12 @@ public class FolderModuleFragment extends Fragment {
     private String MOD_NAME = "";
 
     private Module module;
-    private List<Content> contents;
+    private RealmList<Content> contents;
 
     private FolderModuleFragment.FolderModuleAdapter mAdapter;
     private ClickListener mClickListener;
     private Realm realm;
-    private MyFileManager mFileManager;
+    private FileManager mFileManager;
 
     private RecyclerView mRecyclerView;
 
@@ -82,13 +83,15 @@ public class FolderModuleFragment extends Fragment {
         module = realm.where(Module.class).equalTo("instance", MODULE_INSTANCE).findFirst();
         contents = module.getContents();
 
-        mFileManager = new MyFileManager(getActivity(), COURSE_NAME);
+        mFileManager = new FileManager(getActivity(), COURSE_NAME);
         mFileManager.registerDownloadReceiver();
-        mFileManager.setCallback(new MyFileManager.Callback() {
+        mFileManager.setCallback(new FileManager.Callback() {
             @Override
             public void onDownloadCompleted(String fileName) {
                 mAdapter.notifyDataSetChanged();
-                mFileManager.openFile(fileName);
+                Content content = contents.where().equalTo("filename", fileName).findFirst();
+                if (content != null)
+                    mFileManager.openModuleContent(content);
             }
         });
     }
@@ -127,11 +130,11 @@ public class FolderModuleFragment extends Fragment {
     }
 
     private void downloadOrOpenFile(Content content, boolean forceDownload) {
-        if (forceDownload || !mFileManager.searchFile(content.getFilename())) {
+        if (forceDownload || !mFileManager.isModuleContentDownloaded(content)) {
             Toast.makeText(getActivity(), "Downloading file - " + content.getFilename(), Toast.LENGTH_SHORT).show();
-            mFileManager.downloadCourseModuleContent(content, module);
+            mFileManager.downloadModuleContent(content, module);
         } else {
-            mFileManager.openFile(content.getFilename());
+            mFileManager.openModuleContent(content);
         }
     }
 
@@ -206,7 +209,7 @@ public class FolderModuleFragment extends Fragment {
                     fileIcon.setImageResource(R.drawable.quiz); // Quiz because that's a question mark xD
                 }
 
-                boolean downloaded = mFileManager.searchFile(content.getFilename());
+                boolean downloaded = mFileManager.isModuleContentDownloaded(content);
                 if (downloaded) {
                     download.setImageResource(R.drawable.eye);
                 }
@@ -239,7 +242,7 @@ public class FolderModuleFragment extends Fragment {
                                     downloadOrOpenFile(content, true);
                                     break;
                                 case 2:
-                                    mFileManager.shareFile(content.getFilename());
+                                    mFileManager.shareModuleContent(content);
                                     break;
                                 case 3:
                                     new PropertiesAlertDialog(getContext(), content).show();

@@ -5,20 +5,20 @@ import android.content.Context;
 
 import java.util.List;
 
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
-import io.realm.RealmResults;
 import crux.bphc.cms.models.Content;
 import crux.bphc.cms.models.CourseSection;
 import crux.bphc.cms.models.Module;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import io.realm.RealmResults;
 
 /**
  * Created by harsu on 21-12-2016.
  */
 
-public class CourseDownloader implements MyFileManager.Callback {
+public class CourseDownloader implements FileManager.Callback {
     private DownloadCallback downloadCallback;
-    private MyFileManager myFileManager;
+    private FileManager fileManager;
     private Realm realm;
     private Context context;
 
@@ -28,9 +28,9 @@ public class CourseDownloader implements MyFileManager.Callback {
                 .deleteRealmIfMigrationNeeded()
                 .build();
         realm = Realm.getInstance(config);
-        myFileManager = new MyFileManager(activity, courseName);
-        myFileManager.registerDownloadReceiver();
-        myFileManager.setCallback(this);
+        fileManager = new FileManager(activity, courseName);
+        fileManager.registerDownloadReceiver();
+        fileManager.setCallback(this);
     }
 
     public void setDownloadCallback(DownloadCallback downloadCallback) {
@@ -70,25 +70,21 @@ public class CourseDownloader implements MyFileManager.Callback {
 
 
     public void downloadSection(CourseSection section, String courseName) {
-        myFileManager.reloadFileList();
+        fileManager.reloadFileList();
         List<Module> modules = section.getModules();
         for (Module module : modules) {
             if (!module.isDownloadable())
                 continue;
             for (Content content : module.getContents()) {
-                if (!myFileManager.searchFile(content.getFilename())) {
-                    myFileManager.downloadCourseModuleContent(content, module);
+                if (!fileManager.isModuleContentDownloaded(content)) {
+                    fileManager.downloadModuleContent(content, module);
                 }
             }
         }
     }
 
-    public boolean searchFile(String fileName) {
-        return myFileManager.searchFile(fileName);
-    }
-
     public int getDownloadedContentCount(int courseID) {
-        myFileManager.reloadFileList();
+        fileManager.reloadFileList();
         int count = 0;
         RealmResults<CourseSection> courseSections = realm.where(CourseSection.class).equalTo("courseID", courseID).findAll();
         for (CourseSection section : courseSections) {
@@ -96,7 +92,7 @@ public class CourseDownloader implements MyFileManager.Callback {
             for (Module module : modules) {
                 if (module.isDownloadable())
                     for (Content content : module.getContents()) {
-                        if (myFileManager.searchFile(content.getFilename())) {
+                        if (fileManager.isModuleContentDownloaded(content)) {
                             count++;
                         }
                     }
@@ -107,7 +103,7 @@ public class CourseDownloader implements MyFileManager.Callback {
     }
 
     public int getTotalContentCount(int courseID) {
-        myFileManager.reloadFileList();
+        fileManager.reloadFileList();
         int count = 0;
         RealmResults<CourseSection> courseSections = realm.where(CourseSection.class).equalTo("courseID", courseID).findAll();
         for (CourseSection section : courseSections) {
@@ -130,7 +126,7 @@ public class CourseDownloader implements MyFileManager.Callback {
     }
 
     public void unregisterReceiver() {
-        myFileManager.unregisterDownloadReceiver();
+        fileManager.unregisterDownloadReceiver();
     }
 
 

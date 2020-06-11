@@ -24,21 +24,21 @@ import java.util.Arrays;
 
 import crux.bphc.cms.R;
 import crux.bphc.cms.app.MyApplication;
+import crux.bphc.cms.helper.FileManager;
 import crux.bphc.cms.helper.HtmlTextView;
-import crux.bphc.cms.helper.MyFileManager;
 import crux.bphc.cms.helper.PropertiesAlertDialog;
-import io.realm.Realm;
 import crux.bphc.cms.models.forum.Attachment;
 import crux.bphc.cms.models.forum.Discussion;
+import io.realm.Realm;
 
 
-public class DiscussionFragment extends Fragment implements MyFileManager.Callback {
+public class DiscussionFragment extends Fragment {
 
-    private  String mFolderName;
+    private  String mCourseName;
     private int id;
 
     private Realm realm;
-    private MyFileManager mFileManager;
+    private FileManager mFileManager;
 
     private ImageView mUserPic;
     private TextView mSubject;
@@ -53,11 +53,11 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
         // Required empty public constructor
     }
 
-    public static DiscussionFragment newInstance(int id, String folderName) {
+    public static DiscussionFragment newInstance(int id, String mCourseName) {
         DiscussionFragment fragment = new DiscussionFragment();
         Bundle args = new Bundle();
         args.putInt("id", id);
-        args.putString("folderName", folderName);
+        args.putString("courseName", mCourseName);
         fragment.setArguments(args);
         return fragment;
     }
@@ -67,7 +67,7 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             id = getArguments().getInt("id");
-            mFolderName = getArguments().getString("folderName");
+            mCourseName = getArguments().getString("courseName");
         }
         realm = MyApplication.getInstance().getRealmInstance();
     }
@@ -85,11 +85,29 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
 
         moreOptionsViewModel = new ViewModelProvider(requireActivity()).get(MoreOptionsFragment.OptionsViewModel.class);
 
-        mFileManager = new MyFileManager(getActivity(), mFolderName);
-        mFileManager.registerDownloadReceiver();
-        mFileManager.setCallback(this);
-
         Discussion discussion = realm.where(Discussion.class).equalTo("id", id).findFirst();
+
+        mFileManager = new FileManager(getActivity(), mCourseName);
+        mFileManager.registerDownloadReceiver();
+        mFileManager.setCallback(filename -> {
+            int child = mAttachmentContainer.getChildCount();
+            for (int i = 0; i < child; i++) {
+                View childView = mAttachmentContainer.getChildAt(i);
+                TextView fileNameTextView = childView.findViewById(R.id.fileName);
+                if (fileNameTextView != null &&
+                        fileNameTextView.getText().toString().equalsIgnoreCase(filename)) {
+                    ImageView downloadIcon = childView.findViewById(R.id.downloadButton);
+                    downloadIcon.setImageResource(R.drawable.eye);
+                    ImageView ellipsis = childView.findViewById(R.id.more);
+                    ellipsis.setVisibility(View.VISIBLE);
+                    break;
+                }
+            }
+
+            Attachment attachment = discussion.getAttachments().where().equalTo("fileName", filename).findFirst();
+            if (attachment != null)
+                mFileManager.openDiscussionAttachment(attachment);
+        });
 
         mUserPic = view.findViewById(R.id.user_pic);
         Picasso.get().load(discussion.getUserpictureurl()).into(mUserPic);
@@ -124,7 +142,7 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
             ImageView download = attachmentView.findViewById(R.id.downloadButton);
             ImageView ellipsis = attachmentView.findViewById(R.id.more);
 
-            boolean downloaded = mFileManager.searchFile(attachment.getFilename());
+            boolean downloaded = mFileManager.isDiscussionAttachmentDownloaded(attachment);
             if (downloaded) {
                 download.setImageResource(R.drawable.eye);
                 ellipsis.setVisibility(View.VISIBLE);
@@ -136,15 +154,15 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
             clickWrapper.setOnClickListener(v -> {
                 if (!downloaded) {
                     Toast.makeText(getActivity(), "Downloading file - " + attachment.getFilename(), Toast.LENGTH_SHORT).show();
-                    mFileManager.downloadFile(attachment.getFilename(), attachment.getFileurl(), "", mFolderName, true);
+                    mFileManager.downloadDiscussionAttachment(attachment, discussion.getSubject(), mCourseName);
                 } else {
-                    mFileManager.openFile(attachment.getFilename());
+                    mFileManager.openDiscussionAttachment(attachment);
                 }
             });
 
             ellipsis.setOnClickListener(v -> {
                 // Check if downloaded once again, for consistency (user downloaded and then opens ellipsis immediately)
-                boolean isDownloaded = mFileManager.searchFile(attachment.getFilename());
+                boolean isDownloaded = mFileManager.isDiscussionAttachmentDownloaded(attachment);
                 if (isDownloaded) {
                     ArrayList<MoreOptionsFragment.Option> options = new ArrayList<>();
                     Observer<MoreOptionsFragment.Option> observer;  // to handle the selection
@@ -160,16 +178,16 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
                         if (option == null) return;
                         switch (option.getId()) {
                             case 0:
-                                mFileManager.openFile(attachment.getFilename());
+                                mFileManager.openDiscussionAttachment(attachment);
                                 break;
                             case 1:
                                 Toast.makeText(getActivity(), "Downloading file - " + attachment.getFilename(),
                                         Toast.LENGTH_SHORT).show();
-                                mFileManager.downloadFile(attachment.getFilename(), attachment.getFileurl(), "",
-                                        mFolderName, true);
+                                mFileManager.downloadDiscussionAttachment(attachment, discussion.getSubject(),
+                                        mCourseName);
                                 break;
                             case 2:
-                                mFileManager.shareFile(attachment.getFilename());
+                                mFileManager.shareDiscussionAttachment(attachment);
                                 break;
                             case 3:
                                 new PropertiesAlertDialog(getContext(), attachment).show();
@@ -191,23 +209,5 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
     public void onDestroy() {
         super.onDestroy();
         mFileManager.unregisterDownloadReceiver();
-    }
-
-    @Override
-    public void onDownloadCompleted(String fileName) {
-        int child = mAttachmentContainer.getChildCount();
-        for (int i = 0; i < child; i++) {
-            View childView = mAttachmentContainer.getChildAt(i);
-            TextView fileNameTextView = childView.findViewById(R.id.fileName);
-            if (fileNameTextView != null &&
-                    fileNameTextView.getText().toString().equalsIgnoreCase(fileName)) {
-                ImageView downloadIcon = childView.findViewById(R.id.downloadButton);
-                downloadIcon.setImageResource(R.drawable.eye);
-                ImageView ellipsis = childView.findViewById(R.id.more);
-                ellipsis.setVisibility(View.VISIBLE);
-                break;
-            }
-        }
-        mFileManager.openFile(fileName);
     }
 }

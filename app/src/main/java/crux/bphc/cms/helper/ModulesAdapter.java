@@ -39,7 +39,7 @@ import crux.bphc.cms.models.Module;
 public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     CourseDataHandler courseDataHandler;
-    private MyFileManager mFileManager;
+    private FileManager mFileManager;
     private Context context;
     private LayoutInflater inflater;
     private List<Module> modules;
@@ -50,7 +50,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     MoreOptionsFragment.OptionsViewModel moreOptionsViewModel;
 
-    public ModulesAdapter(Context context, MyFileManager fileManager, String courseName, int courseID, MoreOptionsFragment.OptionsViewModel moreOptionsViewModel) {
+    public ModulesAdapter(Context context, FileManager fileManager, String courseName, int courseID, MoreOptionsFragment.OptionsViewModel moreOptionsViewModel) {
         this.context = context;
         this.mFileManager = fileManager;
         this.courseName = courseName;
@@ -157,7 +157,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             case 0:
                                 if (module.getContents() != null)
                                     for (Content content : module.getContents()) {
-                                        mFileManager.openFile(content.getFilename());
+                                        mFileManager.openModuleContent(content);
                                     }
                                 break;
                             case 1:
@@ -168,13 +168,13 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 for (Content content : module.getContents()) {
                                     Toast.makeText(context, "Downloading file - " + content.getFilename(),
                                             Toast.LENGTH_SHORT).show();
-                                    mFileManager.downloadCourseModuleContent(content, module);
+                                    mFileManager.downloadModuleContent(content, module);
                                 }
                                 break;
                             case 2:
                                 if (module.getContents() != null)
                                     for (Content content : module.getContents()) {
-                                        mFileManager.shareFile(content.getFilename());
+                                        mFileManager.shareModuleContent(content);
                                     }
                                 break;
                             case 3:
@@ -201,7 +201,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         if (option == null) return;
                         switch (option.getId()) {
                             case 0:
-                                mFileManager.downloadCourseModuleContent(module.getContents().get(0), module);
+                                mFileManager.downloadModuleContent(module.getContents().get(0), module);
                                 break;
                             case 1:
                                 shareModuleLinks(module);
@@ -274,7 +274,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 List<Content> contents = module.getContents();
                 downloaded = true;
                 for (Content content : contents) {
-                    if (!mFileManager.searchFile(content.getFilename())) {
+                    if (!mFileManager.isModuleContentDownloaded(content)) {
                         downloaded = false;
                         break;
                     }
