@@ -14,7 +14,6 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Html;
 import android.text.Spanned;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -36,7 +35,6 @@ import crux.bphc.cms.fragments.FolderModuleFragment;
 import crux.bphc.cms.fragments.ForumFragment;
 import crux.bphc.cms.models.Content;
 import crux.bphc.cms.models.Module;
-import crux.bphc.cms.models.forum.Attachment;
 
 /**
  * Created by harsu on 19-01-2017.
@@ -51,50 +49,37 @@ public class MyFileManager {
     private Callback callback;
     private String courseName;
     private String courseDirName;
-
-    private BroadcastReceiver onComplete = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            reloadFileList();
-            for (String filename : requestedDownloads) {
-                if (searchFile(filename)) {
-                    requestedDownloads.remove(filename);
-                    if (callback != null) {
-                        callback.onDownloadCompleted(filename);
-                    }
-                    return;
-                }
-            }
-        }
-    };
+    private BroadcastReceiver onComplete;
 
     public MyFileManager(Activity activity, String courseName) {
         this.activity = activity;
         requestedDownloads = new ArrayList<>();
         this.courseName = courseName;
         this.courseDirName = getSanitizedCoursePath(courseName);
+
+        onComplete = new BroadcastReceiver() {
+            public void onReceive(Context context, Intent intent) {
+                reloadFileList();
+                for (String filename : requestedDownloads) {
+                    if (searchFile(filename)) {
+                        requestedDownloads.remove(filename);
+                        if (callback != null) {
+                            callback.onDownloadCompleted(filename);
+                        }
+                        return;
+                    }
+                }
+            }
+        };
     }
 
-    public void registerDownloadReceiver() {
-        activity.registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-    }
-
-    public void unregisterDownloadReceiver() {
-        activity.unregisterReceiver(onComplete);
-    }
-
-    public void setCallback(Callback callback) {
-        this.callback = callback;
-    }
-
-    // TODO check if the courseName params of these methods are needed, since we're passing it in constructor anyway
-    public void downloadFile(Content content, Module module, String courseName) {
-        deleteOldDownload(content, courseName); //delete any pre-existing version of the file
+    public void downloadCourseModuleContent(Content content, Module module) {
+        deleteExistingDownload(content);
         downloadFile(content.getFilename(), content.getFileurl(), module.getDescription(),
                 courseName, false);
     }
 
-    public void downloadFile(String fileName, String fileUrl, String description, String courseName,
-                             boolean isForum) {
+    public void downloadFile(String fileName, String fileUrl, String description, String courseName, boolean isForum) {
         String url = "";
         if (isForum) {
             url = fileUrl + "?token=" + Constants.TOKEN;
@@ -116,32 +101,7 @@ public class MyFileManager {
                 .enqueue(request);
     }
 
-    public void deleteOldDownload(Content content, String courseName) {
-        String path = Environment
-                .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
-                + getFilePath(courseName, content.getFilename());
-        File file = new File(path);
-        if (file.exists()) {
-            file.delete();
-        }
-    }
-
-    public boolean searchFile(String fileName) {
-        //if courseName is empty check sb folders
-        if (fileList == null) {
-            reloadFileList();
-            if (fileList.size() == 0) {
-                return false;
-            }
-        }
-        if (fileList.contains(fileName)) {
-            Log.d("File found:", fileName);
-            return true;
-        }
-        return false;
-    }
-
-    public void openFile(String filename, String courseName) {
+    public void openFile(String filename) {
         File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath(),
                 getFilePath(courseName, filename));
         Uri path = FileProvider.getUriForFile(activity, BuildConfig.APPLICATION_ID + ".provider", file);
@@ -157,8 +117,7 @@ public class MyFileManager {
         }
     }
 
-
-    public void shareFile(String filename, String courseName) {
+    public void shareFile(String filename) {
         File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
                 + getFilePath(courseName, filename));
         Uri path = FileProvider.getUriForFile(activity, BuildConfig.APPLICATION_ID + ".provider", file);
@@ -174,18 +133,6 @@ public class MyFileManager {
             Toast.makeText(activity, "No app found to share the file - " + filename, Toast.LENGTH_SHORT).show();
 
         }
-    }
-
-    private String getFilePath(String courseName, String fileName) {
-        return getSanitizedCoursePath(courseName) + File.separator + fileName;
-    }
-
-    private String getSanitizedCoursePath(String courseName) {
-        return File.separator + ROOT_FOLDER + File.separator + getSanitizedCourseName(courseName);
-    }
-
-    private String getSanitizedCourseName(String courseName) {
-        return courseName.replaceAll("/", "_");
     }
 
     public void reloadFileList() {
@@ -221,11 +168,27 @@ public class MyFileManager {
         }
     }
 
+    public void deleteExistingDownload(Content content) {
+        String path = Environment
+                .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
+                + getFilePath(courseName, content.getFilename());
+        File file = new File(path);
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
+    public boolean searchFile(String fileName) {
+        if (fileList == null) {
+            reloadFileList();
+        }
+        return fileList.contains(fileName);
+    }
+
     public boolean onClickAction(Module module, String courseName) {
         if (module.getModType() == Module.Type.URL) {
             if (module.getContents().size() > 0 && !module.getContents().get(0).getFileurl().isEmpty()) {
                 Util.openURLInBrowser(activity, module.getContents().get(0).getFileurl());
-
             }
         } else if (module.getModType() == Module.Type.PAGE) {
             Util.openURLInBrowser(activity, module.getUrl());
@@ -266,14 +229,39 @@ public class MyFileManager {
             for (Content content : module.getContents()) {
                 if (!searchFile(content.getFilename())) {
                     Toast.makeText(activity, "Downloading file - " + content.getFilename(), Toast.LENGTH_SHORT).show();
-                    downloadFile(content, module, courseName);
+                    downloadCourseModuleContent(content, module);
                 } else {
-                    openFile(content.getFilename(), courseName);
+                    openFile(content.getFilename());
                 }
             }
         }
         return true;
     }
+
+    private String getFilePath(String courseName, String fileName) {
+        return getSanitizedCoursePath(courseName) + File.separator + fileName;
+    }
+
+    private String getSanitizedCoursePath(String courseName) {
+        return File.separator + ROOT_FOLDER + File.separator + getSanitizedCourseName(courseName);
+    }
+
+    private String getSanitizedCourseName(String courseName) {
+        return courseName.replaceAll("/", "_");
+    }
+
+    public void registerDownloadReceiver() {
+        activity.registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+    }
+
+    public void unregisterDownloadReceiver() {
+        activity.unregisterReceiver(onComplete);
+    }
+
+    public void setCallback(Callback callback) {
+        this.callback = callback;
+    }
+
 
     public interface Callback {
         void onDownloadCompleted(String fileName);

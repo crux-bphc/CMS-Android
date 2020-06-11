@@ -136,15 +136,9 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
             clickWrapper.setOnClickListener(v -> {
                 if (!downloaded) {
                     Toast.makeText(getActivity(), "Downloading file - " + attachment.getFilename(), Toast.LENGTH_SHORT).show();
-                    mFileManager.downloadFile(
-                            attachment.getFilename(),
-                            attachment.getFileurl(),
-                            "",
-                            mFolderName,
-                            true
-                    );
+                    mFileManager.downloadFile(attachment.getFilename(), attachment.getFileurl(), "", mFolderName, true);
                 } else {
-                    mFileManager.openFile(attachment.getFilename(), mFolderName);
+                    mFileManager.openFile(attachment.getFilename());
                 }
             });
 
@@ -166,16 +160,16 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
                         if (option == null) return;
                         switch (option.getId()) {
                             case 0:
-                                mFileManager.openFile(attachment.getFilename(), mFolderName);
+                                mFileManager.openFile(attachment.getFilename());
                                 break;
                             case 1:
                                 Toast.makeText(getActivity(), "Downloading file - " + attachment.getFilename(),
                                         Toast.LENGTH_SHORT).show();
-                                mFileManager.downloadFile(attachment.getFilename(), attachment.getFileurl(),
-                                        "", mFolderName, true);
+                                mFileManager.downloadFile(attachment.getFilename(), attachment.getFileurl(), "",
+                                        mFolderName, true);
                                 break;
                             case 2:
-                                mFileManager.shareFile(attachment.getFilename(), mFolderName);
+                                mFileManager.shareFile(attachment.getFilename());
                                 break;
                             case 3:
                                 new PropertiesAlertDialog(getContext(), attachment).show();
@@ -214,6 +208,6 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
                 break;
             }
         }
-        mFileManager.openFile(fileName, mFolderName);
+        mFileManager.openFile(fileName);
     }
 }

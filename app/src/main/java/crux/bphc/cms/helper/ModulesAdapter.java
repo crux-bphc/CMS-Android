@@ -157,7 +157,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             case 0:
                                 if (module.getContents() != null)
                                     for (Content content : module.getContents()) {
-                                        mFileManager.openFile(content.getFilename(), courseName);
+                                        mFileManager.openFile(content.getFilename());
                                     }
                                 break;
                             case 1:
@@ -168,13 +168,13 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 for (Content content : module.getContents()) {
                                     Toast.makeText(context, "Downloading file - " + content.getFilename(),
                                             Toast.LENGTH_SHORT).show();
-                                    mFileManager.downloadFile(content, module, courseName);
+                                    mFileManager.downloadCourseModuleContent(content, module);
                                 }
                                 break;
                             case 2:
                                 if (module.getContents() != null)
                                     for (Content content : module.getContents()) {
-                                        mFileManager.shareFile(content.getFilename(), courseName);
+                                        mFileManager.shareFile(content.getFilename());
                                     }
                                 break;
                             case 3:
@@ -201,7 +201,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         if (option == null) return;
                         switch (option.getId()) {
                             case 0:
-                                mFileManager.downloadFile(module.getContents().get(0), module, courseName);
+                                mFileManager.downloadCourseModuleContent(module.getContents().get(0), module);
                                 break;
                             case 1:
                                 shareModuleLinks(module);
