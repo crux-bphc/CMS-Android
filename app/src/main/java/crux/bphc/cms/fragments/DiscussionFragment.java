@@ -26,6 +26,7 @@ import crux.bphc.cms.R;
 import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.helper.HtmlTextView;
 import crux.bphc.cms.helper.MyFileManager;
+import crux.bphc.cms.helper.PropertiesAlertDialog;
 import io.realm.Realm;
 import crux.bphc.cms.models.forum.Attachment;
 import crux.bphc.cms.models.forum.Discussion;
@@ -177,7 +178,7 @@ public class DiscussionFragment extends Fragment implements MyFileManager.Callba
                                 mFileManager.shareFile(attachment.getFilename(), mFolderName);
                                 break;
                             case 3:
-                                mFileManager.showPropertiesDialog(getContext(), attachment);
+                                new PropertiesAlertDialog(getContext(), attachment).show();
                         }
                         moreOptionsViewModel.getSelection().removeObservers((AppCompatActivity) getContext());
                         moreOptionsViewModel.clearSelection();

@@ -275,34 +275,6 @@ public class MyFileManager {
         return true;
     }
 
-    public void showPropertiesDialog(Context context, String filename, int fileSize, long epoch) {
-        AlertDialog.Builder alertDialog;
-
-        if (MyApplication.getInstance().isDarkModeEnabled()) {
-            alertDialog = new AlertDialog.Builder(context, R.style.Theme_AppCompat_Dialog_Alert);
-        } else {
-            alertDialog = new AlertDialog.Builder(context, R.style.Theme_AppCompat_Light_Dialog_Alert);
-        }
-
-        alertDialog.setTitle(filename);
-
-        StringBuilder properties = new StringBuilder();
-
-        properties.append(String.format("File Size: %s\n", Util.humanReadableByteCount(fileSize, false)));
-        properties.append(String.format("Created: %s", Util.epochToDateTime(epoch)));
-
-        alertDialog.setMessage(properties.toString());
-        alertDialog.show();
-    }
-
-    public void showPropertiesDialog(Context context, Content content) {
-        showPropertiesDialog(context, content.getFilename(), content.getFilesize(), content.getTimecreated());
-    }
-
-    public void showPropertiesDialog(Context context, Attachment attachment) {
-        showPropertiesDialog(context, attachment.getFilename(), attachment.getFileSize(), attachment.getTimemodified());
-    }
-
     public interface Callback {
         void onDownloadCompleted(String fileName);
     }
