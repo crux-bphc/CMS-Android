@@ -34,6 +34,7 @@
             android:layout_width="26dp"
             android:layout_height="26dp"
             android:layout_marginEnd="15dp"
+            android:contentDescription="Download"
             android:tint="?iconTintColor"
             app:srcCompat="@drawable/download" />
     </LinearLayout>
@@ -45,6 +46,7 @@
         android:layout_marginEnd="15dp"
         android:background="?android:selectableItemBackgroundBorderless"
         android:clickable="true"
+        android:contentDescription="More Options"
         android:focusable="true"
         android:tint="?iconTintColor"
         app:srcCompat="@drawable/dots_horizontal"

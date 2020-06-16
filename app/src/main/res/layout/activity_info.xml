@@ -30,8 +30,10 @@
         android:layout_marginTop="92dp"
         android:layout_marginBottom="159dp"
         android:clickable="true"
+        android:contentDescription="CRUx Logo"
         android:scaleType="fitCenter"
-        app:srcCompat="@drawable/ic_crux_logo" />
+        app:srcCompat="@drawable/ic_crux_logo"
+        android:focusable="true" />
 
     <TextView
         android:id="@+id/crux"

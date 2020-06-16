@@ -10,13 +10,15 @@
         android:id="@+id/background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:contentDescription="@null"
         android:scaleType="centerCrop"
         android:src="@drawable/intro_bg" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?tokenImageTint" />
+        android:background="?tokenImageTint"
+        android:contentDescription="Background" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -32,6 +34,7 @@
             android:layout_centerInParent="true"
             android:layout_gravity="center"
             android:layout_marginBottom="56dp"
+            android:contentDescription="BITS Logo"
             android:scaleType="fitXY"
             app:srcCompat="@drawable/ic_bits_logo" />
 
