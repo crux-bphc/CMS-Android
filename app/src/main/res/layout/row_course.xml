@@ -65,15 +65,16 @@
                     android:id="@+id/more_options_button"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
-                    android:layout_marginEnd="6dp"
-                    android:gravity="right"
                     android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="6dp"
                     android:background="?android:selectableItemBackgroundBorderless"
                     android:clickable="true"
+                    android:contentDescription="More Options"
                     android:focusable="true"
+                    android:gravity="right"
+                    android:rotation="90"
                     android:tint="?iconTintColor"
-                    app:srcCompat="@drawable/dots_horizontal"
-                    android:rotation="90"  />
+                    app:srcCompat="@drawable/dots_horizontal" />
 
             </LinearLayout>
         </LinearLayout>

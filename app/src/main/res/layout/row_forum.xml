@@ -2,6 +2,7 @@
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     style="?attr/actionButtonStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -9,7 +10,6 @@
     android:clickable="true"
     android:focusable="true">
 <androidx.cardview.widget.CardView
-    xmlns:tools="http://schemas.android.com/tools"
     app:cardBackgroundColor="?cardBgColor"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -37,7 +37,8 @@
                 android:layout_width="58dp"
                 android:layout_height="58dp"
                 android:layout_gravity="center_vertical"
-                android:layout_marginLeft="8dp" />
+                android:layout_marginLeft="8dp"
+                android:contentDescription="Profile Picture" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -118,17 +119,19 @@
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>
+
     <ImageView
         android:id="@+id/pinned"
         android:layout_width="28dp"
         android:layout_height="28dp"
-        app:srcCompat="@drawable/pin"
         android:layout_gravity="end|right|top"
         android:layout_marginEnd="-8dp"
         android:layout_marginRight="-10dp"
         android:background="@drawable/circular_drawable"
+        android:contentDescription="Discussion Pinned"
+        android:elevation="10dp"
         android:gravity="center"
         android:padding="4dp"
-        android:elevation="10dp"/>
+        app:srcCompat="@drawable/pin" />
 
 </FrameLayout>
