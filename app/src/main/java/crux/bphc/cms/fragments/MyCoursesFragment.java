@@ -162,7 +162,7 @@ public class MyCoursesFragment extends Fragment {
                 filterMyCourses(mSearchedText);
 
                 if (!isClearIconSet) {
-                    mSearchIcon.setImageResource(R.drawable.ic_clear_black_24dp);
+                    mSearchIcon.setImageResource(R.drawable.ic_cancel_black_24dp);
                     isClearIconSet = true;
                     mSearchIcon.setOnClickListener(new View.OnClickListener() {
                         @Override

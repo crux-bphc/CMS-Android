@@ -102,7 +102,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         boolean downloaded = false;
         ProgressBar progressBar;
         View iconWrapper, topDivider, bottomDivider, nameAndDescriptionDivider;
-        View clickWrapper, textWrapper, clickWrapperName;
+        View clickWrapper, textWrapper;
         CardView cardView;
 
         ViewHolderResource(View itemView) {
@@ -117,14 +117,13 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             //bottomDivider = itemView.findViewById(R.id.bottomDivider);
             description = itemView.findViewById(R.id.description);
             clickWrapper = itemView.findViewById(R.id.clickWrapper);
-            clickWrapperName = itemView.findViewById(R.id.clickWrapper);
             textWrapper = itemView.findViewById(R.id.textWrapper);
             downloadIcon = itemView.findViewById(R.id.downloadButton);
             nameAndDescriptionDivider = itemView.findViewById(R.id.nameAndDescriptionDivider);
             description.setMovementMethod(LinkMovementMethod.getInstance());
             description.setLinksClickable(true);
 
-            clickWrapperName.setOnClickListener(view -> {
+            clickWrapper.setOnClickListener(view -> {
                 if (clickListener != null) {
                     clickListener.onClick(modules.get(getLayoutPosition()), getLayoutPosition());
                 }

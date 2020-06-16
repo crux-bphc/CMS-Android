@@ -41,7 +41,7 @@
             android:fadingEdge="horizontal"
             android:singleLine="true"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="20dp" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@android:id/summary"

@@ -1,5 +1,6 @@
 package crux.bphc.cms.helper;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -102,6 +103,7 @@ public class Util {
      * @param si use SI or binary units
      * @return Human-readable size in SI/binary units
      */
+    @SuppressLint("DefaultLocale")
     public static String humanReadableByteCount(long bytes, boolean si) {
         int unit = si ? 1000 : 1024;
         if (bytes < unit) return bytes + " B";
@@ -117,7 +119,7 @@ public class Util {
      * @return DateTime string in the format 10:10:10 AM 18-Nov-2019
      */
     public static String epochToDateTime(long epoch) {
-        SimpleDateFormat sdf = new SimpleDateFormat("hh:m:ss a dd-MMM-yy");
+        SimpleDateFormat sdf = (SimpleDateFormat) SimpleDateFormat.getDateTimeInstance();
         sdf.setTimeZone(TimeZone.getDefault());
 
         return sdf.format(new Date(epoch * 1000));
