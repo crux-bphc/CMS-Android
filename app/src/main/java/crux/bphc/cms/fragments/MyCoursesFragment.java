@@ -100,7 +100,7 @@ public class MyCoursesFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == COURSE_SECTION_ACTIVITY) {
             courses = courseDataHandler.getCourseList();
-            filterMyCourses(mSearchedText);
+            mAdapter.filterMyCourses(courses, mSearchedText);
         }
     }
 
@@ -149,7 +149,7 @@ public class MyCoursesFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 mSearchedText = s.toString().toLowerCase(Locale.ROOT).trim();
-                filterMyCourses(mSearchedText);
+                mAdapter.filterMyCourses(courses, mSearchedText);
 
                 if (!isClearIconSet) {
                     mSearchIcon.setImageResource(R.drawable.ic_cancel_black_24dp);
@@ -254,7 +254,7 @@ public class MyCoursesFragment extends Fragment {
                 courses.clear();
                 courses.addAll(courseList);
                 checkEmpty();
-                filterMyCourses(mSearchedText);
+                mAdapter.filterMyCourses(courseList, mSearchedText);
                 updateCourseContent(courses);
             }
 
@@ -333,22 +333,7 @@ public class MyCoursesFragment extends Fragment {
                         public void onFailure(String message, Throwable t) {
                             mSwipeRefreshLayout.setRefreshing(false);
                         }
-                    });
-        }
-    }
-
-    private void filterMyCourses(String searchedText) {
-        if (searchedText.isEmpty()) {
-            mAdapter.setCourses(courses);
-
-        } else {
-            List<Course> filteredCourses = new ArrayList<>();
-            for (Course course : courses) {
-                if (course.getFullName().toLowerCase(Locale.ROOT).contains(searchedText)) {
-                    filteredCourses.add(course);
-                }
-            }
-            mAdapter.setCourses(filteredCourses);
+            });
         }
     }
 
@@ -359,7 +344,6 @@ public class MyCoursesFragment extends Fragment {
     }
 
     private class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
-
         private final LayoutInflater inflater;
         private final Context context;
         private ClickListener clickListener;
@@ -403,6 +387,21 @@ public class MyCoursesFragment extends Fragment {
 
         public void setDownloadClickListener(ClickListener downloadClickListener) {
             this.downloadClickListener = downloadClickListener;
+        }
+
+        public void filterMyCourses(List<Course> courseList, String searchedText){
+            if (searchedText.isEmpty()) {
+                setCourses(courseList);
+
+            } else {
+                List<Course> filteredCourses = new ArrayList<>();
+                for (Course course : courseList) {
+                    if (course.getFullName().toLowerCase(Locale.ROOT).contains(searchedText)) {
+                        filteredCourses.add(course);
+                    }
+                }
+                setCourses(filteredCourses);
+            }
         }
 
         class MyViewHolder extends RecyclerView.ViewHolder {
