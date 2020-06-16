@@ -144,7 +144,7 @@ public class FileManager {
 
             String[] projection = { MediaStore.Downloads._ID };
             String where = "(" + MediaStore.Downloads.RELATIVE_PATH + " LIKE ?" + ") AND "
-                    + MediaStore.Downloads.DISPLAY_NAME + " = ?;";
+                    + MediaStore.Downloads.DISPLAY_NAME + " = ?";
             String[] args = { "%" + getSanitizedCourseName(courseName) + "%", filename };
             String order_by = MediaStore.Downloads.RELATIVE_PATH + " ASC";
 
@@ -195,7 +195,7 @@ public class FileManager {
 
             String[] projection = { MediaStore.Downloads._ID };
             String where = "(" + MediaStore.Downloads.RELATIVE_PATH + " LIKE ?" + ") AND "
-                    + MediaStore.Downloads.DISPLAY_NAME + " = ?;";
+                    + MediaStore.Downloads.DISPLAY_NAME + " = ?";
             String[] args = { "%" + getSanitizedCourseName(courseName) + "%", filename };
             String order_by = MediaStore.Downloads.RELATIVE_PATH + " ASC";
 
@@ -245,7 +245,7 @@ public class FileManager {
             }
         } else {
             String where = "(" + MediaStore.Downloads.RELATIVE_PATH + " LIKE ?" + ") AND "
-                    + MediaStore.Downloads.DISPLAY_NAME + " = ?;";
+                    + MediaStore.Downloads.DISPLAY_NAME + " = ?";
             String[] args = { "%" + getSanitizedCourseName(courseName) + "%", filename };
 
             MyApplication.getInstance().getContentResolver().delete(
