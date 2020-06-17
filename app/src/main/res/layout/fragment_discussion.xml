@@ -39,7 +39,7 @@
                         android:layout_width="58dp"
                         android:layout_height="58dp"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="8dp"
+                        android:layout_marginStart="8dp"
                         android:contentDescription="Profile Picture" />
 
                     <LinearLayout
@@ -72,7 +72,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentBottom="true"
-                                android:layout_alignParentLeft="true"
+                                android:layout_alignParentStart="true"
                                 android:id="@+id/user_name"
                                 android:textColor="?android:textColorSecondary"
                                 android:text="Instruction Division"
@@ -83,7 +83,7 @@
                                 android:layout_height="wrap_content"
                                 android:id="@+id/modified_time"
                                 android:layout_alignParentBottom="true"
-                                android:layout_alignParentRight="true"
+                                android:layout_alignParentEnd="true"
                                 android:textColor="?android:textColorSecondary"
                                 android:text="8 Feb, 1997"
                                 android:textSize="16sp" />
