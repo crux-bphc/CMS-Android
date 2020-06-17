@@ -25,9 +25,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_marginBottom="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginLeft="4dp"
-                android:paddingEnd="8dp">
+                android:layout_marginTop="16dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -49,9 +47,9 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="@dimen/course_enrol_cardview_lr_padding"
-                    android:paddingRight="@dimen/course_enrol_cardview_lr_padding"
-                    android:layout_marginLeft="4dp"
+                    android:paddingStart="@dimen/course_enrol_cardview_lr_padding"
+                    android:paddingEnd="@dimen/course_enrol_cardview_lr_padding"
+                    android:layout_marginStart="4dp"
 
                     android:text="@string/course_enrol_category"
                     android:textSize="16sp"
@@ -67,7 +65,7 @@
                     android:paddingLeft="@dimen/course_enrol_cardview_lr_padding"
                     android:paddingRight="@dimen/course_enrol_cardview_lr_padding"
                     android:layout_marginBottom="16dp"
-                    android:layout_marginLeft="4dp"
+                    android:layout_marginStart="4dp"
                     android:textColor="?android:textColorSecondary"
                     android:text="FIRST SEMESTER 2016-17"
                     android:textSize="16sp" />
@@ -76,9 +74,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="8dp"
-                    android:paddingLeft="@dimen/course_enrol_cardview_lr_padding"
-                    android:paddingRight="@dimen/course_enrol_cardview_lr_padding"
-                    android:layout_marginLeft="4dp"
+                    android:paddingStart="@dimen/course_enrol_cardview_lr_padding"
+                    android:paddingEnd="@dimen/course_enrol_cardview_lr_padding"
+                    android:layout_marginStart="4dp"
                     android:text="@string/course_enrol_teachers"
                     android:textSize="16sp"
                     android:textColor="?android:textColorPrimary"
@@ -90,8 +88,8 @@
                      android:id="@+id/course_enrol_teachers"
                      android:orientation="vertical"
                      android:layout_marginTop="4dp"
-                     android:layout_marginLeft="7dp"
-                     android:paddingLeft="4dp"
+                     android:layout_marginStart="7dp"
+                     android:paddingStart="4dp"
                      android:layout_marginBottom="16dp"
                      android:paddingEnd="8dp">
                      <TextView
@@ -119,10 +117,7 @@
                     android:textColor="@color/white"
                     app:backgroundTint="?colorAccent"
                     app:cornerRadius="20dp" />
-
-
             </LinearLayout>
-
         </androidx.cardview.widget.CardView>
 
 

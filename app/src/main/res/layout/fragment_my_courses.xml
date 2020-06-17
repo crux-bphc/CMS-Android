@@ -12,8 +12,8 @@
         app:cardBackgroundColor="?cardBgColor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="14dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="14dp"
         android:layout_marginTop="16dp"
         app:cardCornerRadius="28dp"
         android:layout_marginBottom="5dp">
@@ -28,14 +28,15 @@
             android:paddingRight="8dp"
             android:paddingTop="8dp"
             android:layout_marginTop="4dp">
-            
+
             <EditText
                 android:id="@+id/searchET"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginLeft="14dp"
-                android:paddingLeft="2dp"
+                android:layout_marginStart="14dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
                 android:paddingBottom="5dp"
                 android:layout_weight="1"
                 android:focusable="true"
@@ -51,8 +52,8 @@
                 android:layout_width="20dp"
                 android:layout_height="24dp"
                 android:layout_gravity="center_vertical"
-                android:layout_marginLeft="12dp"
-                android:layout_marginRight="12dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:contentDescription="Search Button"

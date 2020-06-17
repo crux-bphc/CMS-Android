@@ -39,7 +39,7 @@
         android:id="@+id/crux"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:text="Powered by Crux"
         android:textColor="?android:textColorPrimary"

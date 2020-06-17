@@ -4,8 +4,8 @@
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:minHeight="?android:attr/listPreferredItemHeight"
-    android:paddingLeft="8dip"
-    android:paddingRight="?android:attr/scrollbarSize" >
+    android:layout_marginStart="4dp"
+    android:layout_marginEnd="8dp" >
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -21,7 +21,7 @@
             android:layout_gravity="center"
             android:contentDescription="Preference Icon"
             android:minWidth="48dp"
-            android:paddingRight="8dip"
+            android:layout_marginEnd="8dp"
             android:visibility="gone" />
     </LinearLayout>
 
@@ -29,9 +29,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:paddingBottom="6dip"
-        android:paddingRight="8dip"
-        android:paddingTop="6dip" >
+        android:layout_marginBottom="6dp"
+        android:layout_marginEnd="8dp"
+        android:paddingTop="6dip">
 
         <TextView
             android:id="@android:id/title"
@@ -47,12 +47,11 @@
             android:id="@android:id/summary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@android:id/title"
+            android:layout_alignStart="@android:id/title"
             android:layout_below="@android:id/title"
             android:maxLines="4"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="?android:attr/textColorSecondary"
-            android:visibility="gone" />
+            android:textColor="?android:attr/textColorSecondary" />
     </RelativeLayout>
 
     <!-- Preference should place its actual preference widget here. -->
