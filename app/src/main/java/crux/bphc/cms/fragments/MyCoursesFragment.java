@@ -1,6 +1,7 @@
 package crux.bphc.cms.fragments;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -474,7 +476,6 @@ public class MyCoursesFragment extends Fragment {
                 });
             }
 
-
             void bind(Course course) {
                 courseName1.setText(course.getCourseName()[0]);
                 String name = course.getCourseName()[1] + " " + course.getCourseName()[2];
@@ -493,7 +494,7 @@ public class MyCoursesFragment extends Fragment {
                         downloadText.setText("Downloaded");
                 }*/
                 int count = courseDataHandler.getUnreadCount(course.getId());
-                unreadCount.setText(Integer.toString(count));
+                unreadCount.setText(DecimalFormat.getIntegerInstance().format(count));
                 unreadCount.setVisibility(count == 0 ? View.INVISIBLE : View.VISIBLE);
             }
 
@@ -520,7 +521,7 @@ public class MyCoursesFragment extends Fragment {
                 courseDataHandler.markAllAsRead(courseSections);
                 courseSections = courseDataHandler.getCourseData(courseId);
                 int count = courseDataHandler.getUnreadCount(courses.get(position).getId());
-                unreadCount.setText(Integer.toString(count));
+                unreadCount.setText(DecimalFormat.getIntegerInstance().format(count));
                 unreadCount.setVisibility(count == 0 ? View.INVISIBLE : View.VISIBLE);
                 Toast.makeText(getActivity(), "Marked all as read", Toast.LENGTH_SHORT).show();
             }
