@@ -172,7 +172,6 @@ public class CourseSectionFragment extends Fragment {
             }
         }
         empty.setVisibility(View.VISIBLE);
-        ((TextView) empty).setText("No Course Data to display.\nTap to Reload");
         return true;
     }
 

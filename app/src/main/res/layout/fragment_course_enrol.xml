@@ -33,7 +33,7 @@
                     android:id="@+id/course_enrol_course_display_name"
                     android:paddingLeft="@dimen/course_enrol_cardview_lr_padding"
                     android:paddingRight="@dimen/course_enrol_cardview_lr_padding"
-                    android:text="BIO F211 BIOLOGICAL CHEMISTRY LS1"
+                    android:text="@string/example_course_name"
                     android:textColor="?android:textColorPrimary"
                     android:textSize="18sp"
                     android:textStyle="bold"/>
@@ -67,7 +67,7 @@
                     android:layout_marginBottom="16dp"
                     android:layout_marginStart="4dp"
                     android:textColor="?android:textColorSecondary"
-                    android:text="FIRST SEMESTER 2016-17"
+                    android:text="@string/example_course_category"
                     android:textSize="16sp" />
 
                 <TextView

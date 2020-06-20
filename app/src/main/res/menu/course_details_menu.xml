@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_open_in_browser"
-        android:title="open website view"
+        android:title="@string/open_course_website_on_browser"
         android:icon="@drawable/web"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/mark_all_as_read"
-        android:title="mark all as read"
+        android:title="@string/mark_all_as_read"
         app:showAsAction="ifRoom"/>
 
 </menu>

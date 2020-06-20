@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?tokenImageTint"
-        android:contentDescription="Background" />
+        android:contentDescription="@null" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -34,7 +34,7 @@
             android:layout_centerInParent="true"
             android:layout_gravity="center"
             android:layout_marginBottom="56dp"
-            android:contentDescription="BITS Logo"
+            android:contentDescription="@null"
             android:scaleType="fitXY"
             app:srcCompat="@drawable/ic_bits_logo" />
 
@@ -56,7 +56,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_margin="16dp"
-        android:text="Powered By Crux"
+        android:text="@string/powered_by_crux"
         android:textColor="#fff"
         android:textSize="18sp"
         android:textStyle="bold" />

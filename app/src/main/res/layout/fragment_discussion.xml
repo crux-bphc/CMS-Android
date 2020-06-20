@@ -40,7 +40,7 @@
                         android:layout_height="58dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="8dp"
-                        android:contentDescription="Profile Picture" />
+                        android:contentDescription="@null" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -55,7 +55,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/subject"
-                            android:text="Timetable changes - 2 Second Semester 2016-17"
+                            android:text="@string/example_discussion_title"
                             android:textSize="20sp"
                             android:layout_weight="1"
                             android:layout_marginBottom="8dp"
@@ -73,9 +73,10 @@
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentBottom="true"
                                 android:layout_alignParentStart="true"
+                                android:layout_toStartOf="@id/modified_time"
                                 android:id="@+id/user_name"
                                 android:textColor="?android:textColorSecondary"
-                                android:text="Instruction Division"
+                                android:text="@string/example_discussion_prof"
                                 android:textSize="16sp" />
 
                             <TextView
@@ -85,7 +86,7 @@
                                 android:layout_alignParentBottom="true"
                                 android:layout_alignParentEnd="true"
                                 android:textColor="?android:textColorSecondary"
-                                android:text="8 Feb, 1997"
+                                android:text="@string/example_date"
                                 android:textSize="16sp" />
 
                         </RelativeLayout>
@@ -113,7 +114,7 @@
                     android:layout_marginVertical="4dp"
                     android:layout_marginHorizontal="4dp"
                     android:textColor="?android:textColorPrimary"
-                    android:text="Time Table Changes - 2 Second Semester 2016-17"
+                    android:text="@string/lorem"
                     android:textSize="16sp" />
 
             </LinearLayout>
@@ -143,7 +144,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:text="Attachment(s)"
+                    android:text="@string/discussion_attachments"
                     android:textSize="20sp"
                     android:textColor="?android:textColorPrimary"
                     android:textStyle="bold"/>

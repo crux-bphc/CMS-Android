@@ -45,7 +45,7 @@
                 android:textSize="18sp"
                 android:background="@android:color/transparent"
                 android:focusableInTouchMode="true"
-                android:hint="Search my courses" />
+                android:hint="@string/search_my_courses" />
 
             <ImageView
                 android:id="@+id/searchIcon"
@@ -56,7 +56,7 @@
                 android:layout_marginEnd="6dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
-                android:contentDescription="Search Button"
+                android:contentDescription="@android:string/search_go"
                 android:tint="?iconTintColor"
                 app:srcCompat="@drawable/ic_search"
                 android:focusable="true" />
@@ -73,7 +73,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="No Courses to display."
+            android:text="@string/no_my_courses"
             android:textColor="?android:textColorPrimary"
             android:textSize="18sp" />
 
