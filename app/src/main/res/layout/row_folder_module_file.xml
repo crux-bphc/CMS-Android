@@ -56,7 +56,7 @@
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:singleLine="true"
-                    android:text="The quick brown fox jumped over the lazy dog"
+                    android:text="@string/example_module_name"
                     android:textColor="?android:textColorPrimary"
                     android:textSize="16sp" />
 
@@ -65,7 +65,7 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_gravity="center_vertical"
-                    android:contentDescription="Download"
+                    android:contentDescription="@string/download_go"
                     android:padding="14dp"
                     android:tint="?iconTintColor"
                     app:srcCompat="@drawable/download" />
@@ -80,7 +80,7 @@
                 android:layout_marginEnd="8dp"
                 android:background="?android:selectableItemBackgroundBorderless"
                 android:clickable="true"
-                android:contentDescription="More Options"
+                android:contentDescription="@string/more_options_btn"
                 android:focusable="true"
                 android:padding="8dp"
                 android:tint="?iconTintColor"

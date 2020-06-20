@@ -30,7 +30,7 @@
         android:layout_marginTop="92dp"
         android:layout_marginBottom="159dp"
         android:clickable="true"
-        android:contentDescription="CRUx Logo"
+        android:contentDescription="@null"
         android:scaleType="fitCenter"
         app:srcCompat="@drawable/ic_crux_logo"
         android:focusable="true" />
@@ -41,7 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:text="Powered by Crux"
+        android:text="@string/powered_by_crux"
         android:textColor="?android:textColorPrimary"
         android:textSize="16sp"
         android:textStyle="bold" />

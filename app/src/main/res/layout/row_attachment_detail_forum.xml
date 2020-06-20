@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
             android:layout_weight="1"
-            android:text="Time table changes-2 second sem"
+            android:text="@string/example_discussion_attachment_name"
             android:textColor="?android:textColorPrimary"
             android:textSize="16sp" />
 
@@ -34,7 +34,7 @@
             android:layout_width="26dp"
             android:layout_height="26dp"
             android:layout_marginEnd="15dp"
-            android:contentDescription="Download"
+            android:contentDescription="@string/download_go"
             android:tint="?iconTintColor"
             app:srcCompat="@drawable/download" />
     </LinearLayout>
@@ -46,7 +46,7 @@
         android:layout_marginEnd="15dp"
         android:background="?android:selectableItemBackgroundBorderless"
         android:clickable="true"
-        android:contentDescription="More Options"
+        android:contentDescription="@string/more_options_btn"
         android:focusable="true"
         android:tint="?iconTintColor"
         app:srcCompat="@drawable/dots_horizontal"

@@ -47,7 +47,7 @@
                 android:layout_marginLeft="12dp"
                 android:layout_marginRight="12dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Search Button"
+                android:contentDescription="@android:string/search_go"
                 android:tint="?iconTintColor"
                 app:srcCompat="@drawable/ic_search" />
 
@@ -74,7 +74,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:textColor="?android:textColorPrimary"
-            android:text="No results to display!!!"
+            android:text="@string/no_search_course_results"
             android:textSize="18sp"
             android:id="@+id/empty"
             android:visibility="gone"/>

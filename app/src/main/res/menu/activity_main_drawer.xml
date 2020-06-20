@@ -7,29 +7,25 @@
             android:id="@+id/my_courses"
             android:checked="true"
             android:icon="@drawable/ic_book_multiple_variant"
-            android:title="My Courses" />
-        <!-- <item
-             android:id="@+id/notifications"
-             android:icon="@drawable/ic_bell"
-             android:title="Notifications" />-->
+            android:title="@string/nav_bar_my_courses" />
         <item
             android:id="@+id/site_news"
             android:icon="@drawable/ic_newspaper"
-            android:title="Site News" />
+            android:title="@string/nav_bar_site_news" />
         <item
             android:id="@+id/course_search"
             android:icon="@drawable/ic_search"
-            android:title="@string/course_search_navigation_drawer" />
+            android:title="@string/nav_bar_search_course" />
 
         <item
             android:id="@+id/settings"
             android:icon="@drawable/ic_settings"
-            android:title="Settings" />
+            android:title="@string/nav_bar_settings" />
         <item
             android:id="@+id/website"
             android:checkable="false"
             android:icon="@drawable/ic_web"
-            android:title="Website" />
+            android:title="@string/nav_bar_website" />
     </group>
 
 
@@ -38,18 +34,18 @@
             <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_share_variant"
-                android:title="Share" />
+                android:title="@string/nav_bar_share" />
             <item
                 android:id="@+id/issue"
                 android:icon="@drawable/ic_bug"
-                android:title="Feedback" />
+                android:title="@string/nav_bar_feedback" />
 
 
 
             <item
                 android:id="@+id/about"
                 android:icon="@drawable/ic_information"
-                android:title="About" />
+                android:title="@string/nav_bar_about" />
 
     </group>
 
@@ -58,7 +54,7 @@
     <item
         android:id="@+id/logout"
         android:icon="@drawable/ic_logout"
-        android:title="Logout" />
+        android:title="@string/nav_bar_logout" />
     </group>
 
 </menu>
