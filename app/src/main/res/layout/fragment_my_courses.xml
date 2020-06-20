@@ -45,7 +45,9 @@
                 android:textSize="18sp"
                 android:background="@android:color/transparent"
                 android:focusableInTouchMode="true"
-                android:hint="@string/search_my_courses" />
+                android:hint="@string/search_my_courses"
+                android:importantForAutofill="no"
+                android:inputType="text" />
 
             <ImageView
                 android:id="@+id/searchIcon"
