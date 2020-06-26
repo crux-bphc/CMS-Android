@@ -2,135 +2,128 @@
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     style="?attr/actionButtonStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clipToPadding="false"
     android:clickable="true"
     android:focusable="true">
-<androidx.cardview.widget.CardView
-    app:cardBackgroundColor="?cardBgColor"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    tools:context="crux.bphc.cms.fragments.ForumFragment"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="10dp"
-    android:elevation="5dp">
 
-    <LinearLayout
-        android:id="@+id/forumClickWrapper"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/click_wrapper"
+        app:cardBackgroundColor="?cardBgColor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_margin="8dp"
+        app:cardCornerRadius="10dp"
+        android:elevation="5dp">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal"
-            android:paddingHorizontal="4dp"
-            android:paddingVertical="4dp">
+            android:padding="8dp">
 
             <ImageView
                 android:id="@+id/user_pic"
                 android:layout_width="58dp"
                 android:layout_height="58dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="8dp"
-                android:contentDescription="@null" />
+                android:contentDescription="@null"
 
-            <LinearLayout
-                android:layout_width="match_parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/barrier_message" />
+
+            <TextView
+                android:id="@+id/subject"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:orientation="vertical"
-                android:paddingHorizontal="4dp"
-                android:paddingVertical="4dp">
+                android:layout_marginStart="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/example_discussion_title"
+                android:textColor="?android:textColorPrimary"
+                android:textSize="16sp"
+                android:textStyle="bold"
 
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/user_name"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/barrier_profile_pic" />
 
-                <TextView
-                    android:id="@+id/subject"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:layout_weight="1"
-                    android:text="@string/example_discussion_title"
-                    android:textColor="?android:textColorPrimary"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+            <TextView
+                android:id="@+id/user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/example_discussion_prof"
+                android:textColor="?android:textColorSecondary"
 
+                android:textSize="14sp"
+                app:layout_constraintStart_toEndOf="@id/barrier_profile_pic"
+                app:layout_constraintBottom_toBottomOf="@id/barrier_message" />
 
+            <TextView
+                android:id="@+id/modified_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/example_date"
+                android:textColor="?android:textColorSecondary"
+                android:textSize="14sp"
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
+                app:layout_constraintBottom_toBottomOf="@id/barrier_message"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-                    <TextView
-                        android:id="@+id/user_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/example_discussion_prof"
-                        android:textColor="?android:textColorSecondary"
-                        android:textSize="14sp" />
+            <View
+                android:id="@+id/nameAndDescriptionDivider"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="4dp"
 
-                    <TextView
-                        android:id="@+id/modified_time"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0"
-                        android:text="@string/example_date"
-                        android:textColor="?android:textColorSecondary"
-                        android:textSize="14sp" />
+                android:background="?dividerColor"
+                app:layout_constraintTop_toBottomOf="@id/barrier_message"
+                app:layout_constraintBottom_toTopOf="@id/message" />
 
-                </LinearLayout>
+            <crux.bphc.cms.helper.HtmlTextView
+                android:id="@+id/message"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:minLines="1"
+                android:text="@string/lorem"
+                android:textColor="?android:textColorSecondary"
+                android:textSize="12sp"
 
-            </LinearLayout>
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@id/user_pic"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0" />
 
-        </LinearLayout>
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier_profile_pic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="right"
+                app:constraint_referenced_ids="user_pic" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="?dividerColor"
-            android:layout_marginVertical="8dp"
-            />
-
-
-        <crux.bphc.cms.helper.HtmlTextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/message"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:paddingBottom="4dp"
-            android:layout_marginBottom="4dp"
-            android:textColor="?android:textColorSecondary"
-            android:text="@string/lorem"
-            android:textSize="12sp"
-            android:minLines="1"
-            android:maxLines="2"
-            android:ellipsize="end"/>
-
-    </LinearLayout>
-
-</androidx.cardview.widget.CardView>
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="user_pic,user_name,modified_time" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
 
     <ImageView
         android:id="@+id/pinned"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:layout_gravity="end|top"
-        android:layout_marginEnd="-8dp"
         android:background="@drawable/circular_drawable"
         android:contentDescription="@string/pinned_discussion"
         android:elevation="10dp"
         android:gravity="center"
         android:padding="4dp"
         app:srcCompat="@drawable/pin" />
-
 </FrameLayout>

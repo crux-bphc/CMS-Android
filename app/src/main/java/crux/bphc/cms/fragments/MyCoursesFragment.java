@@ -1,7 +1,6 @@
 package crux.bphc.cms.fragments;
 
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -146,7 +145,6 @@ public class MyCoursesFragment extends Fragment {
         mAdapter.setCourses(courses);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-//        mSwipeRefreshLayout.setRefreshing(true);
         mSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -413,22 +411,22 @@ public class MyCoursesFragment extends Fragment {
 
         class MyViewHolder extends RecyclerView.ViewHolder {
 
-            HtmlTextView courseName1;
-            HtmlTextView courseName2;
+            HtmlTextView courseNumber;
+            HtmlTextView courseName;
             View rowClickWrapper;
-            ImageView more_options;
+            ImageView more;
             ProgressBar progressBar;
             TextView unreadCount;
 
 
             MyViewHolder(View itemView) {
                 super(itemView);
-                courseName1 = itemView.findViewById(R.id.courseName1);
-                courseName2 = itemView.findViewById(R.id.courseName2);
-                progressBar = itemView.findViewById(R.id.progressBar);
-                more_options = itemView.findViewById(R.id.more_options_button);
+                courseNumber = itemView.findViewById(R.id.course_number);
+                courseName = itemView.findViewById(R.id.course_name);
+                progressBar = itemView.findViewById(R.id.progress_bar);
+                more = itemView.findViewById(R.id.more);
                 unreadCount = itemView.findViewById(R.id.unreadCount);
-                rowClickWrapper = itemView.findViewById(R.id.rowClickWrapper);
+                rowClickWrapper = itemView.findViewById(R.id.click_wrapper);
 
                 rowClickWrapper.setOnClickListener(view -> {
                     if (clickListener != null) {
@@ -444,7 +442,7 @@ public class MyCoursesFragment extends Fragment {
                     }
                 });
 
-                more_options.setOnClickListener(view -> {
+                more.setOnClickListener(view -> {
                     MoreOptionsFragment.OptionsViewModel moreOptionsViewModel = MyCoursesFragment.this.moreOptionsViewModel;
                     Observer<MoreOptionsFragment.Option> observer;  // to handle the selection
                     //Set up our options and their handlers
@@ -477,9 +475,9 @@ public class MyCoursesFragment extends Fragment {
             }
 
             void bind(Course course) {
-                courseName1.setText(course.getCourseName()[0]);
+                courseNumber.setText(course.getCourseName()[0]);
                 String name = course.getCourseName()[1] + " " + course.getCourseName()[2];
-                courseName2.setText(name);
+                courseName.setText(name);
                 /*if (course.getDownloadStatus() == -1) {
                     progressBar.setVisibility(View.GONE);
                 } else {
@@ -519,7 +517,6 @@ public class MyCoursesFragment extends Fragment {
                 List<CourseSection> courseSections;
                 courseSections = courseDataHandler.getCourseData(courseId);
                 courseDataHandler.markAllAsRead(courseSections);
-                courseSections = courseDataHandler.getCourseData(courseId);
                 int count = courseDataHandler.getUnreadCount(courses.get(position).getId());
                 unreadCount.setText(DecimalFormat.getIntegerInstance().format(count));
                 unreadCount.setVisibility(count == 0 ? View.INVISIBLE : View.VISIBLE);

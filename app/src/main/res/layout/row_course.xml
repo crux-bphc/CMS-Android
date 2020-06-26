@@ -1,99 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     style="?attr/actionButtonStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:clipToPadding="false"
-    android:clickable="true"
-    android:focusable="true">
+    android:clipToPadding="false">
 
     <androidx.cardview.widget.CardView
-        app:cardBackgroundColor="?cardBgColor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="4dp"
-        android:elevation="0dp"
         android:clickable="true"
+        android:elevation="0dp"
         android:focusable="true"
-        app:cardCornerRadius="10dp"
-        android:foreground="?attr/selectableItemBackground">
+        android:foreground="?attr/selectableItemBackground"
+        app:cardBackgroundColor="?cardBgColor"
+        app:cardCornerRadius="10dp">
 
-        <LinearLayout
-            android:id="@+id/rowClickWrapper"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:clickable="true"
+            android:clipToPadding="false"
+            android:focusable="true">
 
-            <LinearLayout
+            <crux.bphc.cms.helper.HtmlTextView
+                android:id="@+id/course_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:paddingHorizontal="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="3dp"
+                android:text="@string/example_course_number"
+                android:textColor="?android:textColorPrimary"
+                android:textSize="18sp"
+                android:textStyle="bold"
 
-                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                     android:orientation="vertical">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/more" />
 
-                    <crux.bphc.cms.helper.HtmlTextView
-                        android:id="@+id/courseName1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/example_course_number"
-                        android:textColor="?android:textColorPrimary"
-                        android:textStyle="bold"
-                        android:textSize="18sp"
-                        android:paddingHorizontal="16dp"
-                        android:paddingTop="16dp"
-                        android:paddingBottom="3dp"/>
-                    <crux.bphc.cms.helper.HtmlTextView
-                        android:id="@+id/courseName2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/example_course_name"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="16sp"
-                        android:paddingHorizontal="16dp"
-                        android:paddingBottom="16dp"
-                        android:paddingTop="3dp"/>
-                </LinearLayout>
 
-                <ImageView
-                    android:id="@+id/more_options_button"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="6dp"
-                    android:background="?android:selectableItemBackgroundBorderless"
-                    android:clickable="true"
-                    android:contentDescription="@string/more_options_btn"
-                    android:focusable="true"
-                    android:gravity="end"
-                    android:rotation="90"
-                    android:tint="?iconTintColor"
-                    app:srcCompat="@drawable/dots_horizontal" />
+            <crux.bphc.cms.helper.HtmlTextView
+                android:id="@+id/course_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="16dp"
+                android:text="@string/example_course_name"
+                android:textColor="?android:textColorPrimary"
+                android:textSize="16sp"
 
-            </LinearLayout>
-        </LinearLayout>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/course_number" />
+
+            <View
+                android:id="@+id/click_wrapper"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:orientation="vertical"
+                android:focusable="true"
+                android:clickable="true"
+
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/course_name"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/more" />
+
+            <ImageView
+                android:id="@+id/more"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginEnd="6dp"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:contentDescription="@string/more_options_btn"
+                android:focusable="true"
+                android:rotation="90"
+                android:tint="?iconTintColor"
+                app:layout_constraintBottom_toBottomOf="parent"
+
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed"
+                app:srcCompat="@drawable/dots_horizontal" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
     <TextView
         android:id="@+id/unreadCount"
-        android:elevation="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|top"
-        android:layout_marginTop="3dp"
         android:layout_marginEnd="-10dp"
         android:background="@drawable/circular_drawable"
+        android:elevation="5dp"
         android:gravity="center"
         android:padding="4dp"
         android:text=""
         android:textColor="@color/white"
         android:textSize="12sp"
         android:textStyle="bold" />
-
 </FrameLayout>

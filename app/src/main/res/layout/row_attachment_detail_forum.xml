@@ -1,55 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:background="?cardBgColor"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginTop="8dp"
-    android:orientation="horizontal"
-    android:padding="8dp">
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:background="?cardBgColor"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
 
-    <LinearLayout
-        android:id="@+id/clickWrapper"
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="?android:selectableItemBackgroundBorderless"
+        android:layout_marginEnd="20dp"
         android:layout_weight="1"
+        android:text="@string/example_discussion_attachment_name"
+        android:textColor="?android:textColorPrimary"
+        android:textSize="16sp"
+
+        app:layout_constraintEnd_toStartOf="@id/download"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <ImageView
+        android:id="@+id/download"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:layout_marginEnd="15dp"
+        android:contentDescription="@string/download_go"
+        android:tint="?iconTintColor"
+        app:srcCompat="@drawable/download"
+
+        app:layout_constraintStart_toEndOf="@id/name"
+        app:layout_constraintEnd_toStartOf="@+id/more"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/barrier"/>
+
+    <View
+        android:id="@+id/click_wrapper"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="?android:selectableItemBackgroundBorderless"
+        android:clickable="true"
         android:focusable="true"
-        android:clickable="true" >
 
-        <TextView
-            android:id="@+id/fileName"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
-            android:layout_weight="1"
-            android:text="@string/example_discussion_attachment_name"
-            android:textColor="?android:textColorPrimary"
-            android:textSize="16sp" />
-
-        <ImageView
-            android:id="@+id/downloadButton"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
-            android:layout_marginEnd="15dp"
-            android:contentDescription="@string/download_go"
-            android:tint="?iconTintColor"
-            app:srcCompat="@drawable/download" />
-    </LinearLayout>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/download"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/barrier" />
 
     <ImageView
         android:id="@+id/more"
         android:layout_width="26dp"
         android:layout_height="26dp"
-        android:layout_marginEnd="15dp"
         android:background="?android:selectableItemBackgroundBorderless"
         android:clickable="true"
         android:contentDescription="@string/more_options_btn"
         android:focusable="true"
         android:tint="?iconTintColor"
-        app:srcCompat="@drawable/dots_horizontal"
-        tools:visibility="gone" />
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
 
-</LinearLayout>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/barrier"
+        app:srcCompat="@drawable/dots_horizontal" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="name,download,more"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -274,7 +274,7 @@ public class CourseSectionFragment extends Fragment {
 
         View v = LayoutInflater.from(getActivity()).inflate(R.layout.row_course_section, linearLayout, false);
 
-        ((TextView) v.findViewById(R.id.sectionName)).setText(section.getName());
+        ((TextView) v.findViewById(R.id.section_name)).setText(section.getName());
         /*v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
