@@ -207,7 +207,7 @@ public class Module extends RealmObject {
                 return FileUtils.getDrawableIconFromFileName(getContents().get(0).getFilename());
 
             case ASSIGNMENT:
-                return (R.drawable.book);
+                return (R.drawable.assignment);
 
             case FOLDER:
                 return (R.drawable.folder);
@@ -224,6 +224,9 @@ public class Module extends RealmObject {
             case FORUM:
                 return (R.drawable.forum);
 
+            case BOOK:
+                return R.drawable.book;
+
             case DEFAULT:
                 return -1;
         }
@@ -236,6 +239,6 @@ public class Module extends RealmObject {
     }
 
     public enum Type {
-        RESOURCE, FORUM, LABEL, ASSIGNMENT, FOLDER, QUIZ, URL, PAGE, DEFAULT
+        RESOURCE, FORUM, LABEL, ASSIGNMENT, FOLDER, QUIZ, URL, PAGE, DEFAULT, BOOK
     }
 }

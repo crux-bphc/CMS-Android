@@ -24,10 +24,7 @@
         <item quantity="one">%d Course updated</item>
         <item quantity="other">%d Courses updated</item>
     </plurals>
-
-    <!-- Used in main.xml, marking for deletion -->
-    <string name="action_settings">Settings</string>
-
+    
     <!-- Course Sections -->
     <string name="open_course_website_on_browser">open page in browser</string>
     <string name="mark_all_as_read">mark all as read</string>
@@ -40,13 +37,11 @@
 
     <!-- Course Search -->
     <string name="course_search_edit_text_hint">Enter Course Name</string>
-    <string name="course_search_button">Search</string>
     <string name="no_search_course_results">No courses with that name were found</string>
 
     <!-- Course Enrol -->
     <string name="course_enrol_category">Category</string>
     <string name="course_enrol_teachers">Teachers</string>
-    <string name="course_enrol_self_enrol">Self enrolment (Student)</string>
     <string name="course_enrol_self_enrol_button">Enrol me</string>
     <string name="course_enrol_teachers_no_info">No information available about teachers</string>
     <string name="course_enrol_confirmation_msg">Are you sure you want to enrol yourself in this course?</string>

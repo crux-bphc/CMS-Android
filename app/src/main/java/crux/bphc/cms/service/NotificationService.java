@@ -231,7 +231,7 @@ public class NotificationService extends JobService {
             PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             NotificationCompat.Builder groupBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_UPDATES_BUNDLE)
-                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setSmallIcon(R.drawable.ic_bits_logo)
                     .setContentText(parseHtml(notificationSet.getNotifSummary()))
                     .setStyle(new NotificationCompat.InboxStyle()
                             .setBigContentTitle(parseHtml(notificationSet.getNotifSummary()))
@@ -246,7 +246,7 @@ public class NotificationService extends JobService {
             // channel ID is ignored for below Oreo
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_UPDATES)
-                            .setSmallIcon(R.mipmap.ic_launcher)
+                            .setSmallIcon(R.drawable.ic_bits_logo)
                             .setGroup(notificationSet.getGroupKey())
                             .setGroupSummary(false)
                             .setAutoCancel(true)
