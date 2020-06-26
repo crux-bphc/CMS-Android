@@ -3,12 +3,7 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android" android:opacity="opaque">
 
     <item android:drawable="@color/activityBackgroundDark"/>
-
-    <!--
-         We need to use a seperate scaled vector drawable since it isn't possible to scale a vector drawable.
-         Scaled Drawable doesn't seem to work either. android:width and android:height attributes are only
-         available in API 23+
-     -->
-    <item android:drawable="@drawable/splash_scaled_logo" android:gravity="center" />
+    <item android:drawable="@drawable/ic_bits_logo" android:gravity="center"
+        android:width="200dp" android:height="200dp"/>
 
 </layer-list>
