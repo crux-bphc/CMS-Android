@@ -31,8 +31,7 @@
                     android:orientation="horizontal"
                     android:layout_marginTop="8dp"
                     android:paddingHorizontal="4dp"
-                    android:paddingVertical="4dp"
-                    >
+                    android:paddingVertical="4dp" >
 
                     <ImageView
                         android:id="@+id/user_pic"

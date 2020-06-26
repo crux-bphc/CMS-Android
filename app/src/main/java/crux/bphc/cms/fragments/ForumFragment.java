@@ -280,7 +280,7 @@ public class ForumFragment extends Fragment {
             private TextView mUserName;
             private TextView mModifiedTime;
             private HtmlTextView mMessage;
-            private View forumClickWrapper;
+            private View clickWrapper;
 
             public ForumViewHolder(View itemView) {
                 super(itemView);
@@ -295,9 +295,9 @@ public class ForumFragment extends Fragment {
                 mModifiedTime = itemView.findViewById(R.id.modified_time);
                 mMessage = itemView.findViewById(R.id.message);
                 mPinned=itemView.findViewById(R.id.pinned);
-                forumClickWrapper=itemView.findViewById(R.id.forumClickWrapper);
+                clickWrapper=itemView.findViewById(R.id.click_wrapper);
 
-                forumClickWrapper.setOnClickListener(v -> {
+                clickWrapper.setOnClickListener(v -> {
                     int position = getLayoutPosition();
                     mClickListener.onClick(mDiscussions.get(position), position);
                 });

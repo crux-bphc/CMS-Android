@@ -93,10 +93,10 @@ public class DiscussionFragment extends Fragment {
             int child = mAttachmentContainer.getChildCount();
             for (int i = 0; i < child; i++) {
                 View childView = mAttachmentContainer.getChildAt(i);
-                TextView fileNameTextView = childView.findViewById(R.id.fileName);
+                TextView fileNameTextView = childView.findViewById(R.id.name);
                 if (fileNameTextView != null &&
                         fileNameTextView.getText().toString().equalsIgnoreCase(filename)) {
-                    ImageView downloadIcon = childView.findViewById(R.id.downloadButton);
+                    ImageView downloadIcon = childView.findViewById(R.id.download);
                     downloadIcon.setImageResource(R.drawable.eye);
                     ImageView ellipsis = childView.findViewById(R.id.more);
                     ellipsis.setVisibility(View.VISIBLE);
@@ -135,11 +135,11 @@ public class DiscussionFragment extends Fragment {
                     R.layout.row_attachment_detail_forum,
                     mAttachmentContainer);
 
-            TextView fileName = attachmentView.findViewById(R.id.fileName);
+            TextView fileName = attachmentView.findViewById(R.id.name);
             fileName.setText(attachment.getFilename());
 
-            LinearLayout clickWrapper = attachmentView.findViewById(R.id.clickWrapper);
-            ImageView download = attachmentView.findViewById(R.id.downloadButton);
+            View clickWrapper = attachmentView.findViewById(R.id.click_wrapper);
+            ImageView download = attachmentView.findViewById(R.id.download);
             ImageView ellipsis = attachmentView.findViewById(R.id.more);
 
             boolean downloaded = mFileManager.isDiscussionAttachmentDownloaded(attachment);

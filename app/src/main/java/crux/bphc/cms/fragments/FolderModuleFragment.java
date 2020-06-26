@@ -192,11 +192,11 @@ public class FolderModuleFragment extends Fragment {
             public FolderModuleViewHolder(View itemView) {
                 super(itemView);
 
-                fileName = itemView.findViewById(R.id.fileName);
-                fileIcon = itemView.findViewById(R.id.fileIcon);
-                download = itemView.findViewById(R.id.downloadButton);
+                fileName = itemView.findViewById(R.id.name);
+                fileIcon = itemView.findViewById(R.id.icon);
+                download = itemView.findViewById(R.id.download);
                 ellipsis = itemView.findViewById(R.id.more);
-                clickWrapper = itemView.findViewById(R.id.clickWrapper);
+                clickWrapper = itemView.findViewById(R.id.click_wrapper);
             }
 
             public void bind(Content content) {

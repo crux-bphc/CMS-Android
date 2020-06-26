@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardBackgroundColor="?cardBgColor"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="3dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipChildren="false"
+        android:orientation="vertical"
+        android:paddingHorizontal="4dp"
+        android:paddingVertical="8dp">
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="-6dp"
+            android:layout_marginBottom="8dp"
+            android:contentDescription="@null"
+            app:layout_constraintBottom_toTopOf="@id/nameAndDescriptionDivider"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/file_powerpoint" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="-6dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"
+
+            app:layout_constraintBottom_toTopOf="@id/nameAndDescriptionDivider"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <crux.bphc.cms.helper.HtmlTextView
+            android:id="@+id/name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:text="@string/example_module_name"
+            android:textColor="?android:textColorPrimary"
+            android:textSize="16sp"
+
+            app:layout_constraintBottom_toTopOf="@id/nameAndDescriptionDivider"
+            app:layout_constraintEnd_toStartOf="@id/download"
+            app:layout_constraintStart_toEndOf="@id/icon_barrier"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/download"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="14dp"
+            android:contentDescription="@string/download_go"
+            android:tint="?iconTintColor"
+            app:layout_constraintBottom_toTopOf="@id/nameAndDescriptionDivider"
+
+            app:layout_constraintEnd_toStartOf="@id/more"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/download" />
+
+        <View
+            android:id="@+id/click_wrapper"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:focusable="true"
+            android:clickable="true"
+            android:background="?selectableItemBackgroundBorderless"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/download"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/name_description_barrier" />
+
+        <ImageView
+            android:id="@+id/more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:background="?android:selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="@string/more_options_btn"
+            android:focusable="true"
+            android:tint="?iconTintColor"
+            app:layout_constraintBottom_toTopOf="@id/nameAndDescriptionDivider"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/dots_horizontal" />
+
+
+        <View
+            android:id="@+id/nameAndDescriptionDivider"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginTop="6dp"
+            android:background="?dividerColor"
+
+            app:layout_constraintTop_toBottomOf="@id/name_description_barrier" />
+
+
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:autoLink="all"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingStart="16dp"
+            android:paddingEnd="8dp"
+            android:text="@string/lorem"
+            android:textColor="?android:textColorSecondary"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/nameAndDescriptionDivider" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/name_description_barrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="icon,progress_bar,name,download,more" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/icon_barrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="right"
+            app:constraint_referenced_ids="icon,progress_bar" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

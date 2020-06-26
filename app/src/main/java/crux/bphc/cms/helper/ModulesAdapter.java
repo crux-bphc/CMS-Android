@@ -20,7 +20,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -71,7 +70,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        return new ViewHolderResource(inflater.inflate(R.layout.row_course_module_resource, parent, false));
+        return new ViewHolderResource(inflater.inflate(R.layout.row_course_module, parent, false));
     }
 
     @Override
@@ -89,37 +88,29 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.clickListener = clickListener;
     }
 
-    private boolean isNextLabel(int position) {
-        position++;
-        return modules.size() > position && modules.get(position).getModType() == Module.Type.LABEL;
-
-    }
-
     class ViewHolderResource extends RecyclerView.ViewHolder {
         HtmlTextView name;
         TextView description;
         ImageView modIcon, more, downloadIcon;
         boolean downloaded = false;
         ProgressBar progressBar;
-        View iconWrapper, topDivider, bottomDivider, nameAndDescriptionDivider;
-        View clickWrapper, textWrapper;
-        CardView cardView;
+        View nameAndDescriptionDivider;
+        View layout_wrapper;
+        View clickWrapper;
 
         ViewHolderResource(View itemView) {
             super(itemView);
 
-            iconWrapper = itemView.findViewById(R.id.iconWrapper);
-            name = itemView.findViewById(R.id.fileName);
-            modIcon = itemView.findViewById(R.id.fileIcon);
+            name = itemView.findViewById(R.id.name);
+            progressBar = itemView.findViewById(R.id.progress_bar);
+            modIcon = itemView.findViewById(R.id.icon);
             more = itemView.findViewById(R.id.more);
-            cardView = itemView.findViewById(R.id.row_course_module_cardView);
-            //topDivider = itemView.findViewById(R.id.topDivider);
-            //bottomDivider = itemView.findViewById(R.id.bottomDivider);
             description = itemView.findViewById(R.id.description);
-            clickWrapper = itemView.findViewById(R.id.clickWrapper);
-            textWrapper = itemView.findViewById(R.id.textWrapper);
-            downloadIcon = itemView.findViewById(R.id.downloadButton);
+            layout_wrapper = itemView.findViewById(R.id.layout_wrapper);
+            downloadIcon = itemView.findViewById(R.id.download);
             nameAndDescriptionDivider = itemView.findViewById(R.id.nameAndDescriptionDivider);
+            clickWrapper = itemView.findViewById(R.id.click_wrapper);
+
             description.setMovementMethod(LinkMovementMethod.getInstance());
             description.setLinksClickable(true);
 
@@ -129,7 +120,6 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
                 markAsReadandUnread(modules.get(getLayoutPosition()), getLayoutPosition(), false);
             });
-
 
             more.setOnClickListener(v -> {
                 final Module module = modules.get(getLayoutPosition());
@@ -223,7 +213,6 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 moreOptionsViewModel.getSelection().observe((AppCompatActivity) context, observer);
                 markAsReadandUnread(modules.get(getLayoutPosition()), getLayoutPosition(), false);
             });
-            progressBar = itemView.findViewById(R.id.progressBar);
         }
 
         private void markAsReadandUnread(Module module, int position, boolean isNewContent) {
@@ -246,16 +235,16 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
 
         void bind(Module module) {
+            // Set read/unread bg color
+            TypedValue value = new TypedValue();
             if (module.isNewContent()) {
-                TypedValue value = new TypedValue();
-                context.getTheme().resolveAttribute(R.attr.unReadModule,value,true);
-                textWrapper.setBackgroundColor(value.data);
+                context.getTheme().resolveAttribute(R.attr.unReadModule, value, true);
             } else {
-                TypedValue value = new TypedValue();
-                context.getTheme().resolveAttribute(R.attr.cardBgColor,value,true);
-                textWrapper.setBackgroundColor(value.data);
+                context.getTheme().resolveAttribute(R.attr.cardBgColor, value, true);
             }
+            layout_wrapper.setBackgroundColor(value.data);
 
+            // Set name and description
             name.setText(module.getName());
             if (module.getDescription() != null && !module.getDescription().isEmpty()) {
                 Spanned htmlDescription = Html.fromHtml(module.getDescription());
@@ -266,37 +255,37 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 description.setVisibility(View.GONE);
                 nameAndDescriptionDivider.setVisibility(View.GONE);
             }
-            iconWrapper.setVisibility(View.VISIBLE);
+
+            // Set download/eye icon
             if (!module.isDownloadable() || module.getModType() == Module.Type.FOLDER) {
                 downloadIcon.setImageResource(R.drawable.eye);
             } else {
-                List<Content> contents = module.getContents();
-                downloaded = true;
-                for (Content content : contents) {
-                    if (!mFileManager.isModuleContentDownloaded(content)) {
-                        downloaded = false;
-                        break;
-                    }
-                }
+                boolean downloaded = module.getContents().stream().
+                        allMatch(content -> mFileManager.isModuleContentDownloaded(content));
                 if (downloaded) {
                     downloadIcon.setImageResource(R.drawable.eye);
                 } else {
                     downloadIcon.setImageResource(R.drawable.download);
                 }
             }
+
+            // Set visibility of more
+            more.setVisibility(module.isDownloadable() ? View.VISIBLE : View.GONE);
+
+            // Set file icon
             progressBar.setVisibility(View.GONE);
-            if (module.getModType() == Module.Type.LABEL) {
-                iconWrapper.setVisibility(View.GONE);
+            if (module.getModuleIcon() != -1) {
+                modIcon.setImageResource(module.getModuleIcon());
             } else {
-                int resourceIcon = module.getModuleIcon();
-                if (resourceIcon != -1) {
-                    modIcon.setImageResource(module.getModuleIcon());
-                } else {
+                // Either no icon is needed or it needs to be fetched
+                modIcon.setVisibility(View.GONE);
+                if (module.getModType() != Module.Type.LABEL) {
                     progressBar.setVisibility(View.VISIBLE);
                     Picasso.get().load(module.getModicon()).into(modIcon, new Callback() {
                         @Override
                         public void onSuccess() {
                             progressBar.setVisibility(View.GONE);
+                            modIcon.setVisibility(View.VISIBLE);
                         }
 
                         @Override
@@ -306,20 +295,6 @@ public class ModulesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     });
                 }
             }
-
-            /*if (isNextLabel(getLayoutPosition()) || getLayoutPosition() == modules.size() - 1) {
-                bottomDivider.setVisibility(View.GONE);
-            } else {
-                bottomDivider.setVisibility(View.VISIBLE);
-            }
-
-            if (module.getModType() == Module.Type.LABEL) {
-                topDivider.setVisibility(View.VISIBLE);
-            } else {
-                topDivider.setVisibility(View.GONE);
-            }*/
-            more.setVisibility(module.isDownloadable() ? View.VISIBLE : View.GONE);
-
         }
 
         public  void makeTextViewResizable(final TextView description, final int maxLine, final String expandText, final boolean viewMore) {
