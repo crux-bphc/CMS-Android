@@ -4,6 +4,7 @@ import android.text.Html;
 
 import crux.bphc.cms.R;
 import crux.bphc.cms.helper.FileUtils;
+import crux.bphc.cms.interfaces.CourseContent;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
@@ -14,7 +15,7 @@ import io.realm.annotations.PrimaryKey;
  */
 
 
-public class Module extends RealmObject {
+public class Module extends RealmObject implements CourseContent {
     @PrimaryKey
     private int id;
     private String url, name;

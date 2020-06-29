@@ -4,6 +4,7 @@ import android.text.Html;
 
 import java.util.List;
 
+import crux.bphc.cms.interfaces.CourseContent;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -12,7 +13,7 @@ import io.realm.annotations.PrimaryKey;
  * Created by harsu on 17-12-2016.
  */
 
-public class CourseSection extends RealmObject {
+public class CourseSection extends RealmObject implements CourseContent {
 
     @PrimaryKey
     private int id;
