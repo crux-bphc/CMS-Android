@@ -186,7 +186,7 @@ public class NotificationService extends JobService {
                                 d.setForumId(module.getInstance());
                             }
                             List<Discussion> newDiscussions = courseDataHandler.setForumDiscussions(module.getInstance(), discussions);
-                            if (newDiscussions.size() > 0)  courseDataHandler.markAsReadandUnread(module.getId(), true);
+                            if (newDiscussions.size() > 0)  courseDataHandler.markModuleAsReadOrUnread(module, true);
                             for (Discussion discussion : newDiscussions) {
                                 createNotifModuleAdded(NotificationSet.createNotificationSet(course, module, discussion));
                             }

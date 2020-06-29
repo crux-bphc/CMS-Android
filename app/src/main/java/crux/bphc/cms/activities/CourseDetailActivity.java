@@ -15,7 +15,7 @@ import java.util.List;
 import crux.bphc.cms.R;
 import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.fragments.CourseEnrolFragment;
-import crux.bphc.cms.fragments.CourseSectionFragment;
+import crux.bphc.cms.fragments.CourseContentFragment;
 import crux.bphc.cms.fragments.DiscussionFragment;
 import crux.bphc.cms.fragments.ForumFragment;
 import io.realm.Realm;
@@ -104,7 +104,7 @@ public class CourseDetailActivity extends AppCompatActivity {
 
     private void setCourseSection() {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        CourseSectionFragment courseSectionFragment = CourseSectionFragment.newInstance(
+        CourseContentFragment courseSectionFragment = CourseContentFragment.newInstance(
                 TOKEN,
                 course.getCourseId());
         fragmentTransaction.replace(

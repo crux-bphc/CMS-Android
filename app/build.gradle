@@ -66,5 +66,7 @@ dependencies {
     implementation 'com.jakewharton:butterknife:10.2.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
     implementation 'com.google.android.gms:play-services-auth:18.0.0'
+    // composition over inheritance :)
+    implementation 'com.hannesdorfmann:adapterdelegates4:4.3.0'
 }
 

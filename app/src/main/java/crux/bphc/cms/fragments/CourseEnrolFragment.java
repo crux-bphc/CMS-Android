@@ -185,7 +185,7 @@ public class CourseEnrolFragment extends Fragment {
 
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 
-                    CourseSectionFragment courseSectionFragment = CourseSectionFragment
+                    CourseContentFragment courseSectionFragment = CourseContentFragment
                             .newInstance(TOKEN, course.getId());
                     crux.bphc.cms.models.Course courseSet = new crux.bphc.cms.models.Course(course);
 

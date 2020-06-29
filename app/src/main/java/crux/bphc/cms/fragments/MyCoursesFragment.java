@@ -310,7 +310,7 @@ public class MyCoursesFragment extends Fragment {
                                                 }
                                                 List<Discussion> newDiscussions = courseDataHandler.setForumDiscussions(module.getInstance(), responseObject);
                                                 if (newDiscussions.size() > 0)
-                                                    courseDataHandler.markAsReadandUnread(module.getId(), true);
+                                                    courseDataHandler.markModuleAsReadOrUnread(module, true);
                                             }
 
                                             @Override
