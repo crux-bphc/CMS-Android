@@ -23,13 +23,14 @@ import crux.bphc.cms.interfaces.CourseContent;
 
  @see CourseModuleDelegate
  @see CourseSectionDelegate
+
  @author Abhijeet Viswa
  */
 
 @SuppressWarnings("rawtypes")
 public class CourseContentAdapter extends RecyclerView.Adapter {
 
-    private AdapterDelegatesManager<List<CourseContent>> delegatesManager;
+    private final AdapterDelegatesManager<List<CourseContent>> delegatesManager;
     private List<CourseContent> contents;
 
     public CourseContentAdapter(Activity activity, List<CourseContent> contents, FileManager fileManager,

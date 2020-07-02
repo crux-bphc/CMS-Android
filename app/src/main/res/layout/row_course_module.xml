@@ -121,7 +121,7 @@
             app:layout_constraintTop_toBottomOf="@id/name_description_barrier" />
 
 
-        <TextView
+        <crux.bphc.cms.widgets.CollapsibleTextView
             android:id="@+id/description"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -137,7 +137,12 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/nameAndDescriptionDivider" />
+            app:layout_constraintTop_toBottomOf="@id/nameAndDescriptionDivider"
+
+            app:full_text="@string/lorem"
+            app:expand_text="show more"
+            app:collapse_text="show less"
+            app:collapsed_line_count="3" />
 
         <androidx.constraintlayout.widget.Barrier
             android:id="@+id/name_description_barrier"
