@@ -106,4 +106,6 @@
     <string name="lorem">Lorem ipsum dolor sit amet, tale omnis ei mei, falli utinam graeco ne has. Rationibus constituto comprehensam ius te, mel in nusquam delicatissimi. Ne ius quidam oportere, dicat soleat option mel ei, usu cu minim consetetur. Mei id electram dissentias, et augue patrioque interpretaris vel.</string>
     <string name="app_info"><![CDATA[This companion app for Moodle (CMS) is open source. It provides live notifications on course content addition and also many essential features.<br /><br />You can use the <a href="https://github.com/crux-bphc/CMS-Android/issues">issues</a> tab on <a href="https://github.com/crux-bphc/CMS-Android">GitHub</a> to submit ideas for new features or report any bugs.<br />Click the logo below to visit our website.]]></string>
 
+    <string name="example_commit_hash">defaced</string>
+    <string name="example_app_version_name">v1.7.0-beta.1</string>
 </resources>

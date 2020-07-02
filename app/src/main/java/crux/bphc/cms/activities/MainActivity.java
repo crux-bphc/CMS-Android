@@ -94,9 +94,7 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
-
-
-        drawer.setDrawerListener(toggle);
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         // Set the nav panel up
@@ -108,6 +106,10 @@ public class MainActivity extends AppCompatActivity
         String[] details = userDetails(mUserAccount.getFirstName(), mUserAccount.getUsername());
         fullName.setText(details[0]);
         username.setText(details[1]);
+
+        // Set version code and commit hash
+        ((TextView) navigationView.findViewById(R.id.app_version_name)).setText(BuildConfig.VERSION_NAME);
+        ((TextView) navigationView.findViewById(R.id.commit_hash)).setText(BuildConfig.COMMIT_HASH);
 
         // Set up fragments
         if (savedInstanceState == null) {
