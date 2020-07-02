@@ -12,4 +12,16 @@
         <attr name="dividerColor" format="reference" />
         <attr name="textButtonColor" format="reference" />
     </declare-styleable>
+
+    <declare-styleable name="CollapsibleTextView">
+        <!-- The full, expanded text -->
+        <attr name="full_text" format="string" />
+        <!-- The string that, when clicked, will collapse the text. If not set,
+        expanded views won't be collapsible by user input. -->
+        <attr name="collapse_text" format="string" />
+        <!-- The string that, when clicked, will expand the text  -->
+        <attr name="expand_text" format="string" />
+        <!-- The maximum number of lines to be shown the text is collapsed. -->
+        <attr name="collapsed_line_count" format="integer" />
+    </declare-styleable>
 </resources>
