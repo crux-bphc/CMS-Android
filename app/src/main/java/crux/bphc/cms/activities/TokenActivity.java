@@ -1,7 +1,6 @@
 package crux.bphc.cms.activities;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -13,7 +12,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.gson.Gson;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -21,11 +23,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-import crux.bphc.cms.app.Constants;
-import crux.bphc.cms.app.MyApplication;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import crux.bphc.cms.R;
+import crux.bphc.cms.app.Constants;
+import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.helper.APIClient;
 import crux.bphc.cms.helper.CourseDataHandler;
 import crux.bphc.cms.helper.CourseRequestHandler;
@@ -34,25 +36,22 @@ import crux.bphc.cms.helper.UserAccount;
 import crux.bphc.cms.helper.UserDetail;
 import crux.bphc.cms.helper.UserUtils;
 import crux.bphc.cms.helper.Util;
+import crux.bphc.cms.models.Course;
+import crux.bphc.cms.models.CourseSection;
+import crux.bphc.cms.models.Module;
+import crux.bphc.cms.models.forum.Discussion;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import crux.bphc.cms.models.Course;
-import crux.bphc.cms.models.CourseSection;
-import crux.bphc.cms.models.Module;
-import crux.bphc.cms.models.forum.Discussion;
 
 public class TokenActivity extends AppCompatActivity {
 
     private ProgressDialog progressDialog;
-    private Toast toast = null;
 
     private MoodleServices moodleServices;
     private UserAccount userAccount;
-    private CourseDataHandler courseDataHandler;
-    private CourseRequestHandler courseRequestHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,9 +69,6 @@ public class TokenActivity extends AppCompatActivity {
         Retrofit retrofit = APIClient.getRetrofitInstance();
         moodleServices = retrofit.create(MoodleServices.class);
 
-        courseDataHandler = new CourseDataHandler(this);
-        courseRequestHandler = new CourseRequestHandler(this);
-
         userAccount = new UserAccount(this);
     }
 
@@ -81,10 +77,11 @@ public class TokenActivity extends AppCompatActivity {
         super.onResume();
 
         Intent intent = getIntent();
-        if (intent != null && intent.getAction() == Intent.ACTION_VIEW) {
+        if (intent != null && intent.getAction() != null && intent.getAction().equals(Intent.ACTION_VIEW)) {
             Uri data = intent.getData();
             if (data != null) {
-                if (!data.getScheme().equals(Constants.SSO_URL_SCHEME)) {
+                String scheme = data.getScheme();
+                if (scheme != null && !scheme.equals(Constants.SSO_URL_SCHEME)) {
                     Toast.makeText(this, "Invalid token URI Schema.",
                             Toast.LENGTH_SHORT).show();
                     Util.showBadTokenDialog(this);
@@ -93,51 +90,59 @@ public class TokenActivity extends AppCompatActivity {
                 final String host_scheme = "token=";
                 String host = data.getHost();
 
-                if (!host.contains(host_scheme)) {
-                    Toast.makeText(this, "Invalid token URI Schema.",
-                            Toast.LENGTH_SHORT).show();
-                    Util.showBadTokenDialog(this);
-                    return;
-                }
+                if (host != null) {
 
-                // Clean up the host so that we can extract the token
-                host = host.replace(host_scheme, "");
-                host = host.replaceAll("/?#?$", "");
+                    if (!host.contains(host_scheme)) {
+                        Toast.makeText(this, "Invalid token URI Schema.",
+                                Toast.LENGTH_SHORT).show();
+                        Util.showBadTokenDialog(this);
+                        return;
+                    }
 
-                host = new String(Base64.decode(host, Base64.DEFAULT));
+                    // Clean up the host so that we can extract the token
+                    host = host.replace(host_scheme, "");
+                    host = host.replaceAll("/?#?$", "");
 
-                String[] parts = host.split(":::");
-                if (parts.length != 2) {
-                    Toast.makeText(this, "Invalid token signature",
-                            Toast.LENGTH_SHORT).show();
-                    Util.showBadTokenDialog(this);
-                    return;
-                }
+                    host = new String(Base64.decode(host, Base64.DEFAULT));
 
-                String digest = parts[0].toUpperCase();
-                String token = parts[1];
-
-                HashMap<String, String> launchData = MyApplication.getInstance().getLoginLaunchData();
-                String signature = launchData.get("SITE_URL") + launchData.get("PASSPORT");
-
-                try {
-                    if (!(Util.bytesToHex(MessageDigest.getInstance("md5")
-                            .digest(signature.getBytes(StandardCharsets.US_ASCII)))
-                            .equals(digest))) {
+                    String[] parts = host.split(":::");
+                    if (parts.length != 2) {
                         Toast.makeText(this, "Invalid token signature",
                                 Toast.LENGTH_SHORT).show();
                         Util.showBadTokenDialog(this);
                         return;
                     }
-                } catch (NoSuchAlgorithmException e) {
-                    Toast.makeText(this, "MD5 not a valid MessageDigest algorithm! :o",
-                            Toast.LENGTH_SHORT).show();
+
+                    String digest = parts[0].toUpperCase();
+                    String token = parts[1];
+
+                    HashMap<String, String> launchData = MyApplication.getInstance().getLoginLaunchData();
+                    String signature = launchData.get("SITE_URL") + launchData.get("PASSPORT");
+
+                    try {
+                        if (!(Util.bytesToHex(MessageDigest.getInstance("md5")
+                                .digest(signature.getBytes(StandardCharsets.US_ASCII)))
+                                .equals(digest))) {
+                            Toast.makeText(this, "Invalid token signature",
+                                    Toast.LENGTH_SHORT).show();
+                            Util.showBadTokenDialog(this);
+                            return;
+                        }
+                    } catch (NoSuchAlgorithmException e) {
+                        Toast.makeText(this, "MD5 not a valid MessageDigest algorithm! :o",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                    loginUsingToken(token);
                 }
-                loginUsingToken(token);
             }
         }
-
         checkLoggedIn();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        progressDialog.dismiss();
     }
 
     @Override
@@ -151,10 +156,12 @@ public class TokenActivity extends AppCompatActivity {
         Call<ResponseBody> call = moodleServices.fetchUserDetail(token);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            public void onResponse(@NotNull Call<ResponseBody> call, @NotNull Response<ResponseBody> response) {
                 String responseString = "";
                 try {
-                    responseString = response.body().string();
+                    if (response.body() != null) {
+                        responseString = response.body().string();
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                     return;
@@ -191,7 +198,7 @@ public class TokenActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            public void onFailure(@NotNull Call<ResponseBody> call, @NotNull Throwable t) {
                 t.printStackTrace();
                 showProgress(false, "");
             }
@@ -211,7 +218,7 @@ public class TokenActivity extends AppCompatActivity {
         String loginUrl = String.format(Constants.SSO_LOGIN_URL, passport, Constants.SSO_URL_SCHEME);
 
         // Set the launch data, we need this to verify the token obtained after SSO
-        HashMap<String, String> data = new HashMap<String, String>();
+        HashMap<String, String> data = new HashMap<>();
         // SITE_URL must not end with trailing /
         data.put("SITE_URL", Constants.API_URL.replaceAll("/$", ""));
         data.put("PASSPORT", passport);
@@ -237,7 +244,7 @@ public class TokenActivity extends AppCompatActivity {
     }
 
     private void fetchUserData() {
-        new CourseDataRetriever(this, courseRequestHandler, courseDataHandler).execute();
+        new CourseDataRetriever(this).execute();
     }
 
     private void checkLoggedIn() {
@@ -251,50 +258,30 @@ public class TokenActivity extends AppCompatActivity {
         }
     }
 
-    class CourseDataRetriever extends AsyncTask<Void, Integer, Boolean> {
+    static class CourseDataRetriever extends AsyncTask<Void, Integer, Boolean> {
 
-        private Context context;
+        private WeakReference<TokenActivity> activityRef;
         private CourseDataHandler courseDataHandler;
-        private CourseRequestHandler courseRequests;
+        private CourseRequestHandler courseRequestHandler;
 
-        private final int PROGRESS_COURSE_LIST = 1;
-        private final int PROGRESS_COURSE_CONTENT = 2;
-        private final int PROGRESS_SITE_NEWS = 3;
+        private static final int PROGRESS_COURSE_LIST = 1;
+        private static final int PROGRESS_COURSE_CONTENT = 2;
+        private static final int PROGRESS_SITE_NEWS = 3;
 
         CourseDataRetriever(
-                Context context,
-                CourseRequestHandler courseRequestHandler,
-                CourseDataHandler courseDataHandler) {
-            this.context = context;
-            this.courseRequests = courseRequestHandler;
-            this.courseDataHandler = courseDataHandler;
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            if (values.length > 0) {
-                switch (values[0]) {
-                    case PROGRESS_COURSE_LIST:
-                        showProgress(true, "Fetching your course list");
-                        break;
-                    case PROGRESS_COURSE_CONTENT:
-                        showProgress(true, "Fetching your courses' contents");
-                        break;
-                    case PROGRESS_SITE_NEWS:
-                        showProgress(true, "Fetching site news");
-                        break;
-                }
-            }
-            super.onProgressUpdate(values);
+                TokenActivity activity) {
+            activityRef = new WeakReference<>(activity);
+            courseDataHandler = new CourseDataHandler(activityRef.get());
+            courseRequestHandler = new CourseRequestHandler(activityRef.get());
         }
 
         @Override
         protected Boolean doInBackground(Void... voids) {
             /* Fetch User's Course List */
             publishProgress(PROGRESS_COURSE_LIST);
-            List<Course> courseList = courseRequests.getCourseList(context);
+            List<Course> courseList = courseRequestHandler.getCourseList(activityRef.get());
             if (courseList == null) {
-                UserUtils.checkTokenValidity(context);
+                UserUtils.checkTokenValidity(activityRef.get());
                 return false;
             }
             courseDataHandler.setCourseList(courseList);
@@ -304,7 +291,7 @@ public class TokenActivity extends AppCompatActivity {
             List<Course> courses = courseDataHandler.getCourseList();
 
             for (final Course course : courses) {
-                List<CourseSection> courseSections = courseRequests.getCourseData(course);
+                List<CourseSection> courseSections = courseRequestHandler.getCourseData(course);
                 if (courseSections == null) {
                     continue;
                 }
@@ -337,9 +324,27 @@ public class TokenActivity extends AppCompatActivity {
         }
 
         @Override
+        protected void onProgressUpdate(Integer... values) {
+            if (values.length > 0) {
+                switch (values[0]) {
+                    case PROGRESS_COURSE_LIST:
+                        activityRef.get().showProgress(true, "Fetching your course list");
+                        break;
+                    case PROGRESS_COURSE_CONTENT:
+                        activityRef.get().showProgress(true, "Fetching your courses' contents");
+                        break;
+                    case PROGRESS_SITE_NEWS:
+                        activityRef.get().showProgress(true, "Fetching site news");
+                        break;
+                }
+            }
+            super.onProgressUpdate(values);
+        }
+
+        @Override
         protected void onPostExecute(Boolean bool) {
             super.onPostExecute(bool);
-            checkLoggedIn();
+            activityRef.get().checkLoggedIn();
         }
     }
 }
