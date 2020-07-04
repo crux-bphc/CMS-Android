@@ -6,6 +6,7 @@ import android.text.Html;
 
 import androidx.core.text.HtmlCompat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -63,6 +64,7 @@ public class Course implements Parcelable {
         return shortname;
     }
 
+    @SuppressWarnings("unchecked")
     private Course(Parcel source) {
         this.id = source.readInt();
         this.fullname = source.readString();
@@ -72,9 +74,9 @@ public class Course implements Parcelable {
         this.categoryname = source.readString();
         this.summary = source.readString();
         this.summaryformat = source.readInt();
-        overviewfiles = source.readArrayList(String.class.getClassLoader());
+        source.readStringList(overviewfiles);
         contacts = source.readArrayList(Contact.class.getClassLoader());
-        enrollmentmethods = source.readArrayList(String.class.getClassLoader());
+        source.readStringList(enrollmentmethods);
     }
 
     public int getId() {
