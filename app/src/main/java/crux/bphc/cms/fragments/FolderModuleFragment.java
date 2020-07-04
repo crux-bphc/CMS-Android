@@ -76,14 +76,11 @@ public class FolderModuleFragment extends Fragment {
 
         mFileManager = new FileManager(getActivity(), COURSE_NAME);
         mFileManager.registerDownloadReceiver();
-        mFileManager.setCallback(new FileManager.Callback() {
-            @Override
-            public void onDownloadCompleted(String fileName) {
-                mAdapter.notifyDataSetChanged();
-                Content content = contents.where().equalTo("filename", fileName).findFirst();
-                if (content != null)
-                    mFileManager.openModuleContent(content);
-            }
+        mFileManager.setCallback(fileName -> {
+            mAdapter.notifyDataSetChanged();
+            Content content = contents.where().equalTo("filename", fileName).findFirst();
+            if (content != null)
+                mFileManager.openModuleContent(content);
         });
     }
 

@@ -120,17 +120,14 @@ public class MyCoursesFragment extends Fragment {
 
         moreOptionsViewModel = new ViewModelProvider(requireActivity()).get(MoreOptionsFragment.OptionsViewModel.class);
         mAdapter = new MyAdapter(getActivity(), courses);
-        mAdapter.setClickListener(new ClickListener() {
-            @Override
-            public boolean onClick(Object object, int position) {
-                Course course = (Course) object;
+        mAdapter.setClickListener((object, position) -> {
+            Course course = (Course) object;
 
-                Intent intent = new Intent(getActivity(), CourseDetailActivity.class);
-                intent.putExtra("courseId", course.getCourseId());
-                intent.putExtra("course_name", course.getShortname());
-                startActivityForResult(intent, COURSE_SECTION_ACTIVITY);
-                return true;
-            }
+            Intent intent = new Intent(getActivity(), CourseDetailActivity.class);
+            intent.putExtra("courseId", course.getCourseId());
+            intent.putExtra("course_name", course.getShortname());
+            startActivityForResult(intent, COURSE_SECTION_ACTIVITY);
+            return true;
         });
 
 
@@ -156,16 +153,13 @@ public class MyCoursesFragment extends Fragment {
                 if (!isClearIconSet) {
                     mSearchIcon.setImageResource(R.drawable.ic_cancel_black_24dp);
                     isClearIconSet = true;
-                    mSearchIcon.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            mSearch.setText("");
-                            mSearchIcon.setImageResource(R.drawable.ic_search);
-                            mSearchIcon.setOnClickListener(null);
-                            isClearIconSet = false;
-                            InputMethodManager inputManager = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
-                            inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                        }
+                    mSearchIcon.setOnClickListener(view1 -> {
+                        mSearch.setText("");
+                        mSearchIcon.setImageResource(R.drawable.ic_search);
+                        mSearchIcon.setOnClickListener(null);
+                        isClearIconSet = false;
+                        InputMethodManager inputManager = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
+                        inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                     });
                 }
                 if (mSearchedText.isEmpty()) {
@@ -176,63 +170,57 @@ public class MyCoursesFragment extends Fragment {
             }
         });
 
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mSwipeRefreshLayout.setRefreshing(true);
-                makeRequest();
-            }
+        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+            mSwipeRefreshLayout.setRefreshing(true);
+            makeRequest();
         });
 
-        mAdapter.setDownloadClickListener(new ClickListener() {
-            @Override
-            public boolean onClick(Object object, final int position) {
-                final Course course = (Course) object;
-                if (course.getDownloadStatus() != -1)
-                    return false;
-                course.setDownloadStatus(0);
-                mAdapter.notifyItemChanged(position);
-                final CourseDownloader courseDownloader = new CourseDownloader(getActivity(),
-                        CourseDataHandler.getCourseName(course.getId()));
-                courseDownloader.setDownloadCallback(new CourseDownloader.DownloadCallback() {
-                    @Override
-                    public void onCourseDataDownloaded() {
-                        course.setDownloadedFiles(courseDownloader.getDownloadedContentCount(course.getId()));
-                        course.setTotalFiles(courseDownloader.getTotalContentCount(course.getId()));
-                        if (course.getTotalFiles() == course.getDownloadedFiles()) {
-                            Toast.makeText(getActivity(), "All files already downloaded", Toast.LENGTH_SHORT).show();
-                            course.setDownloadStatus(-1);
-                        } else {
-                            course.setDownloadStatus(1);
-                        }
-                        mAdapter.notifyItemChanged(position);
+        mAdapter.setDownloadClickListener((object, position) -> {
+            final Course course = (Course) object;
+            if (course.getDownloadStatus() != -1)
+                return false;
+            course.setDownloadStatus(0);
+            mAdapter.notifyItemChanged(position);
+            final CourseDownloader courseDownloader = new CourseDownloader(getActivity(),
+                    CourseDataHandler.getCourseName(course.getId()));
+            courseDownloader.setDownloadCallback(new CourseDownloader.DownloadCallback() {
+                @Override
+                public void onCourseDataDownloaded() {
+                    course.setDownloadedFiles(courseDownloader.getDownloadedContentCount(course.getId()));
+                    course.setTotalFiles(courseDownloader.getTotalContentCount(course.getId()));
+                    if (course.getTotalFiles() == course.getDownloadedFiles()) {
+                        Toast.makeText(getActivity(), "All files already downloaded", Toast.LENGTH_SHORT).show();
+                        course.setDownloadStatus(-1);
+                    } else {
+                        course.setDownloadStatus(1);
                     }
+                    mAdapter.notifyItemChanged(position);
+                }
 
-                    @Override
-                    public void onCourseContentDownloaded() {
-                        course.setDownloadedFiles(course.getDownloadedFiles() + 1);
+                @Override
+                public void onCourseContentDownloaded() {
+                    course.setDownloadedFiles(course.getDownloadedFiles() + 1);
 
-                        if (course.getDownloadedFiles() == course.getTotalFiles()) {
-                            course.setDownloadStatus(-1);
-                            courseDownloader.unregisterReceiver();
-                            //todo notification all files downloaded for this course
-                        }
-                        mAdapter.notifyItemChanged(position);
-                    }
-
-                    @Override
-                    public void onFailure() {
-                        Toast.makeText(getActivity(), "Check your internet connection", Toast.LENGTH_SHORT).show();
-                        courses.get(position).setDownloadStatus(-1);
-                        mAdapter.notifyItemChanged(position);
+                    if (course.getDownloadedFiles() == course.getTotalFiles()) {
+                        course.setDownloadStatus(-1);
                         courseDownloader.unregisterReceiver();
+                        //todo notification all files downloaded for this course
                     }
-                });
-                courseDownloader.downloadCourseData(course.getCourseId());
+                    mAdapter.notifyItemChanged(position);
+                }
 
-                return true;
+                @Override
+                public void onFailure() {
+                    Toast.makeText(getActivity(), "Check your internet connection", Toast.LENGTH_SHORT).show();
+                    courses.get(position).setDownloadStatus(-1);
+                    mAdapter.notifyItemChanged(position);
+                    courseDownloader.unregisterReceiver();
+                }
+            });
+            courseDownloader.downloadCourseData(course.getCourseId());
 
-            }
+            return true;
+
         });
 
         checkEmpty();

@@ -95,12 +95,9 @@ public class NotificationService extends JobService {
         mJobRunning = true;
 
         // Call our course update operation on a different thread
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                mJobRunning = true;
-                handleJob(job);
-            }
+        AsyncTask.execute(() -> {
+            mJobRunning = true;
+            handleJob(job);
         });
 
         /*

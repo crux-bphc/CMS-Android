@@ -25,25 +25,15 @@ public class InfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info);
         ImageView imageView = findViewById(R.id.image);
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent viewIntent =
-                        new Intent("android.intent.action.VIEW",
-                                Uri.parse(Constants.WEBSITE_URL));
-                startActivity(viewIntent);
-            }
+        imageView.setOnClickListener(view -> {
+            Intent viewIntent = new Intent("android.intent.action.VIEW", Uri.parse(Constants.WEBSITE_URL));
+            startActivity(viewIntent);
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_clear_white);
-        findViewById(R.id.crux).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent viewIntent =
-                        new Intent("android.intent.action.VIEW",
-                                Uri.parse(Constants.WEBSITE_URL));
-                startActivity(viewIntent);
-            }
+        findViewById(R.id.crux).setOnClickListener(view -> {
+            Intent viewIntent = new Intent("android.intent.action.VIEW", Uri.parse(Constants.WEBSITE_URL));
+            startActivity(viewIntent);
         });
         setTitle("About us");
 

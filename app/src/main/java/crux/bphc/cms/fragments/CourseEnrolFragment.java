@@ -115,12 +115,7 @@ public class CourseEnrolFragment extends Fragment {
         }
 
         Button mEnrolButton = view.findViewById(R.id.course_enrol_enrol_button);
-        mEnrolButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createEnrollmentConfirmationDialog().show();
-            }
-        });
+        mEnrolButton.setOnClickListener(v -> createEnrollmentConfirmationDialog().show());
 
     }
 
@@ -135,20 +130,9 @@ public class CourseEnrolFragment extends Fragment {
 
         builder.setMessage(R.string.course_enrol_confirmation_msg);
 
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //Toast.makeText(getActivity(), "Positive button works", Toast.LENGTH_SHORT).show();
-                enrolInCourse();
-            }
-        });
+        builder.setPositiveButton("OK", (dialog, which) -> enrolInCourse());
 
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> { });
         return builder.create();
     }
 

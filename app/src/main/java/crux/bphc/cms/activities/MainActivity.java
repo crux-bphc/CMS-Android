@@ -251,11 +251,10 @@ public class MainActivity extends AppCompatActivity
                 new MaterialAlertDialogBuilder(this)
                         .setTitle("Permissions Request")
                         .setMessage("Need Write Permissions to seamlessly Download Files...")
-                        .setPositiveButton("OK", (dialogInt, which) -> {
-                            ActivityCompat.requestPermissions(MainActivity.this,
-                                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                    MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
-                        }).show();
+                        .setPositiveButton("OK", (dialogInt, which) ->
+                                ActivityCompat.requestPermissions(MainActivity.this,
+                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                MY_PERMISSIONS_REQUEST_WRITE_STORAGE)).show();
 
             } else {
                 ActivityCompat.requestPermissions(this,
@@ -291,7 +290,7 @@ public class MainActivity extends AppCompatActivity
     private AlertDialog askToLogout() {
         MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(this)
                 .setMessage("Are you sure you want to logout?")
-                .setPositiveButton("OK", (dialogInt, which) -> { logout(); })
+                .setPositiveButton("OK", (dialogInt, which) -> logout())
                 .setNegativeButton("Cancel", (dialogInt, which) -> { });
         return dialog.create();
     }
