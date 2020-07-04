@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -47,6 +48,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class TokenActivity extends AppCompatActivity {
+
+    private static final String TAG = TokenActivity.class.getName();
 
     private ProgressDialog progressDialog;
 
@@ -163,7 +166,7 @@ public class TokenActivity extends AppCompatActivity {
                         responseString = response.body().string();
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "IOException while fetching user details", e);
                     return;
                 }
                 if (responseString.contains("Invalid token")) {

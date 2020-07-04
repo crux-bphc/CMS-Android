@@ -3,6 +3,7 @@ package crux.bphc.cms.helper;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -23,6 +24,9 @@ import static crux.bphc.cms.app.Constants.API_URL;
  */
 
 public class UserUtils {
+
+    public static final String TAG = UserUtils.class.getName();
+
     public static void logout(Context context) {
         Realm realm = MyApplication.getInstance().getRealmInstance();
         realm.beginTransaction();
@@ -61,10 +65,11 @@ public class UserUtils {
             }
             if (tokenResponse.body() == null || tokenResponse.body().string() == null || tokenResponse.body().string().contains("Invalid token")) {
                 logoutAndClearBackStack(context);
-                return;
             }
 
         } catch (IOException e) {
+            Log.wtf(TAG, e);
+            logoutAndClearBackStack(context);
         }
     }
 
