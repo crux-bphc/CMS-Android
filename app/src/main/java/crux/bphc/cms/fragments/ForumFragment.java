@@ -219,7 +219,7 @@ public class ForumFragment extends Fragment {
                 Calendar.SHORT,
                 Locale.getDefault());
         int year = cal.get(Calendar.YEAR);
-        return String.valueOf(day) + " " + month + ", " + String.valueOf(year);
+        return day + " " + month + ", " + year;
     }
 
     private class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.ForumViewHolder> {
