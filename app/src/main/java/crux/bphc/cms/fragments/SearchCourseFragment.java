@@ -101,16 +101,13 @@ public class SearchCourseFragment extends Fragment {
 
         moodleServices = retrofit.create(MoodleServices.class);
 
-        mSearchCourseAdapter = new SearchCourseAdapter(getActivity(), new ArrayList<Course>());
-        mSearchCourseAdapter.setClickListener(new ClickListener() {
-            @Override
-            public boolean onClick(Object object, int position) {
-                Course course = (Course) object;
-                Intent intent = new Intent(getActivity(), CourseDetailActivity.class);
-                intent.putExtra(COURSE_PARCEL_INTENT_KEY, course);
-                startActivity(intent);
-                return true;
-            }
+        mSearchCourseAdapter = new SearchCourseAdapter(getActivity(), new ArrayList<>());
+        mSearchCourseAdapter.setClickListener((object, position) -> {
+            Course course = (Course) object;
+            Intent intent = new Intent(getActivity(), CourseDetailActivity.class);
+            intent.putExtra(COURSE_PARCEL_INTENT_KEY, course);
+            startActivity(intent);
+            return true;
         });
 
         RecyclerView mRecyclerView = view.findViewById(R.id.searched_courses);
@@ -149,34 +146,23 @@ public class SearchCourseFragment extends Fragment {
         });
 
 
-        mSwipeToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                page = 0;
-                mSearchCourseAdapter.clearCourses();
-                mLoading = true;
-                containsMore = true;
-                getSearchCourses(mPreviousSearch);
-            }
+        mSwipeToRefresh.setOnRefreshListener(() -> {
+            page = 0;
+            mSearchCourseAdapter.clearCourses();
+            mLoading = true;
+            containsMore = true;
+            getSearchCourses(mPreviousSearch);
         });
 
-        mEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    performSearch();
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        mButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        mEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 performSearch();
+                return true;
             }
+            return false;
         });
+
+        mButton.setOnClickListener(v -> performSearch());
     }
 
     private void performSearch() {
@@ -325,13 +311,10 @@ public class SearchCourseFragment extends Fragment {
                 super(itemView);
                 mSearchCourseDisplayName = itemView.findViewById(R.id.search_course_display_name);
 
-                mSearchCourseDisplayName.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (mClickListener != null) {
-                            int pos = getLayoutPosition();
-                            mClickListener.onClick(mCourses.get(pos), pos);
-                        }
+                mSearchCourseDisplayName.setOnClickListener(v -> {
+                    if (mClickListener != null) {
+                        int pos = getLayoutPosition();
+                        mClickListener.onClick(mCourses.get(pos), pos);
                     }
                 });
             }

@@ -118,28 +118,22 @@ public class ForumFragment extends Fragment {
         mEmptyView = view.findViewById(R.id.tv_empty);
 
         mSwipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                page = 0;
-                mLoading = false;
-                makeRequest();
-            }
+        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+            page = 0;
+            mLoading = false;
+            makeRequest();
         });
 
-        ClickListener mClickListener = new ClickListener() {
-            @Override
-            public boolean onClick(Object object, int position) {
-                Discussion discussion = (Discussion) object;
-                DiscussionFragment fragment = DiscussionFragment.newInstance(discussion.getId(), COURSE_NAME);
-                FragmentTransaction transaction = getActivity()
-                        .getSupportFragmentManager()
-                        .beginTransaction();
-                transaction.addToBackStack(null);
-                transaction.replace(((ViewGroup) getView().getParent()).getId(), fragment, "ForumDetail");
-                transaction.commit();
-                return true;
-            }
+        ClickListener mClickListener = (object, position) -> {
+            Discussion discussion = (Discussion) object;
+            DiscussionFragment fragment = DiscussionFragment.newInstance(discussion.getId(), COURSE_NAME);
+            FragmentTransaction transaction = getActivity()
+                    .getSupportFragmentManager()
+                    .beginTransaction();
+            transaction.addToBackStack(null);
+            transaction.replace(((ViewGroup) getView().getParent()).getId(), fragment, "ForumDetail");
+            transaction.commit();
+            return true;
         };
 
         RecyclerView mRecyclerView = view.findViewById(R.id.site_news);
@@ -176,12 +170,9 @@ public class ForumFragment extends Fragment {
 
                     // reset cached data
                     final RealmResults<Discussion> results = realm.where(Discussion.class).equalTo("forumId", FORUM_ID).findAll();
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            results.deleteAllFromRealm();
-                            realm.copyToRealm(mAdapter.getDiscussions());
-                        }
+                    realm.executeTransaction(realm -> {
+                        results.deleteAllFromRealm();
+                        realm.copyToRealm(mAdapter.getDiscussions());
                     });
                     mLoading = false;
                     mSwipeRefreshLayout.setRefreshing(false);
