@@ -21,6 +21,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 
 import crux.bphc.cms.R;
@@ -73,7 +75,7 @@ public class MoreOptionsFragment extends BottomSheetDialogFragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NotNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         // obtain the view model
@@ -87,22 +89,29 @@ public class MoreOptionsFragment extends BottomSheetDialogFragment {
         Context context = getContext();
         ListView listView = view.findViewById(R.id.more_options_list);
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(), R.layout.row_more_options) {
+            OptionViewHolder vh;
+
             @Override
             public @NonNull
             View getView(int position, View convertView, ViewGroup parent) {
-                // the number of options are going to be limited, setting up a view holder will likely be overkill
                 LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                View rowView = inflater.inflate(R.layout.row_more_options, parent, false);
-                TextView textView = rowView.findViewById(R.id.more_options_text);
-                ImageView imageView = rowView.findViewById(R.id.more_options_icon);
+                if (convertView == null) {
+                    convertView = inflater.inflate(R.layout.row_more_options, parent, false);
+                    vh = new OptionViewHolder();
+                    vh.text = convertView.findViewById(R.id.more_options_text);
+                    vh.icon = convertView.findViewById(R.id.more_options_icon);
+                    convertView.setTag(vh);
+                } else {
+                    vh = (OptionViewHolder) convertView.getTag();
+                }
 
                 Option option = options.get(position);
-                textView.setText(option.optionText);
+                vh.text.setText(option.optionText);
                 if (option.drawableIcon != 0) {
-                    imageView.setImageResource(option.drawableIcon);
-                    imageView.setVisibility(View.VISIBLE);
+                    vh.icon.setImageResource(option.drawableIcon);
+                    vh.icon.setVisibility(View.VISIBLE);
                 }
-                return rowView;
+                return convertView;
             }
         };
 
@@ -202,5 +211,10 @@ public class MoreOptionsFragment extends BottomSheetDialogFragment {
             selection.setValue(null);
         }
 
+    }
+
+    static class OptionViewHolder {
+        private TextView text;
+        private ImageView icon;
     }
 }

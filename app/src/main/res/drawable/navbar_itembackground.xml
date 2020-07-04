@@ -7,7 +7,7 @@
     </item>
 
     <item>
-        <selector xmlns:android="http://schemas.android.com/apk/res/android">
+        <selector>
             <item android:drawable="@color/navBarSelected" android:state_checked="true" />
         </selector>
     </item>

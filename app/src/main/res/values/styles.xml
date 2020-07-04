@@ -10,6 +10,7 @@
         <item name="textButtonColor">@color/orange</item>
 
         <item name="themeBackground">@color/activityBackgroundLight</item>
+        <item name="android:windowBackground">?themeBackground</item>
         <item name="navBarColorStates">@color/navbar_itemcolor_light</item>
         <item name="navBarAppearance">@style/navBarLight</item>
         <item name="navBarHeaderDrawable">@drawable/navbar_header_light</item>
@@ -32,6 +33,7 @@
         <item name="textButtonColor">@color/orange</item>
 
         <item name="themeBackground">@color/activityBackgroundDark</item>
+        <item name="android:windowBackground">?themeBackground</item>
         <item name="navBarColorStates">@color/navbar_itemcolor_dark</item>
         <item name="navBarAppearance">@style/navBarDark</item>
         <item name="navBarHeaderDrawable">@drawable/navbar_header_dark</item>
