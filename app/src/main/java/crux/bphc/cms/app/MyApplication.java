@@ -43,6 +43,7 @@ public class MyApplication extends Application {
         prefEdit.apply();
     }
 
+    @SuppressWarnings("unchecked")
     public HashMap<String, String> getLoginLaunchData() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String data = prefs.getString(Constants.LOGIN_LAUNCH_DATA, "");
