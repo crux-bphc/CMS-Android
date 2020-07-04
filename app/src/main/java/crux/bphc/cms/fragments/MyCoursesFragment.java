@@ -426,8 +426,7 @@ public class MyCoursesFragment extends Fragment {
                     MoreOptionsFragment.OptionsViewModel moreOptionsViewModel = MyCoursesFragment.this.moreOptionsViewModel;
                     Observer<MoreOptionsFragment.Option> observer;  // to handle the selection
                     //Set up our options and their handlers
-                    ArrayList<MoreOptionsFragment.Option> options = new ArrayList<>();
-                    options.addAll(Arrays.asList(
+                    ArrayList<MoreOptionsFragment.Option> options = new ArrayList<>(Arrays.asList(
                             new MoreOptionsFragment.Option(0, "Download course", R.drawable.download),
                             new MoreOptionsFragment.Option(1, "Mark all as read", R.drawable.eye)
                     ));

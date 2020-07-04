@@ -157,10 +157,9 @@ public class DiscussionFragment extends Fragment {
                     // Check if downloaded once again, for consistency (user downloaded and then opens ellipsis immediately)
                     boolean isDownloaded = mFileManager.isDiscussionAttachmentDownloaded(attachment);
                     if (isDownloaded) {
-                        ArrayList<MoreOptionsFragment.Option> options = new ArrayList<>();
                         Observer<MoreOptionsFragment.Option> observer;  // to handle the selection
 
-                        options.addAll(Arrays.asList(
+                        ArrayList<MoreOptionsFragment.Option> options = new ArrayList<>(Arrays.asList(
                                 new MoreOptionsFragment.Option(0, "View", R.drawable.eye),
                                 new MoreOptionsFragment.Option(1, "Re-Download", R.drawable.download),
                                 new MoreOptionsFragment.Option(2, "Share", R.drawable.ic_share),
