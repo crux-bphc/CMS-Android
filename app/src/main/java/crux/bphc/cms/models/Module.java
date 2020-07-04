@@ -2,6 +2,8 @@ package crux.bphc.cms.models;
 
 import android.text.Html;
 
+import androidx.core.text.HtmlCompat;
+
 import crux.bphc.cms.R;
 import crux.bphc.cms.helper.FileUtils;
 import crux.bphc.cms.interfaces.CourseContent;
@@ -121,7 +123,7 @@ public class Module extends RealmObject implements CourseContent {
     }
 
     public String getName() {
-        return Html.fromHtml(name).toString();
+        return HtmlCompat.fromHtml(name, HtmlCompat.FROM_HTML_MODE_COMPACT).toString().trim();
     }
 
     public void setName(String name) {

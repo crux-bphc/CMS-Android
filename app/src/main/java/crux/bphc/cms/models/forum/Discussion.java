@@ -2,6 +2,8 @@ package crux.bphc.cms.models.forum;
 
 import android.text.Html;
 
+import androidx.core.text.HtmlCompat;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
 
@@ -32,7 +34,7 @@ public class Discussion extends RealmObject {
     }
 
     public String getName() {
-        return Html.fromHtml(name).toString();
+        return HtmlCompat.fromHtml(name, HtmlCompat.FROM_HTML_MODE_COMPACT).toString().trim();
     }
 
     public int getGroupid() {
@@ -60,7 +62,7 @@ public class Discussion extends RealmObject {
     }
 
     public String getSubject() {
-        return Html.fromHtml(subject).toString();
+        return HtmlCompat.fromHtml(subject, HtmlCompat.FROM_HTML_MODE_COMPACT).toString().trim();
     }
 
     public String getMessage() {

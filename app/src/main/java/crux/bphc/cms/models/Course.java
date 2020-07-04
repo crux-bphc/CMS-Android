@@ -2,6 +2,8 @@ package crux.bphc.cms.models;
 
 import android.text.Html;
 
+import androidx.core.text.HtmlCompat;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -109,7 +111,7 @@ public class Course extends RealmObject {
     }
 
     public String getShortname() {
-        return Html.fromHtml(shortname).toString();
+        return HtmlCompat.fromHtml(shortname, HtmlCompat.FROM_HTML_MODE_COMPACT).toString().trim();
     }
 
     public String[] getCourseName(){
@@ -130,7 +132,7 @@ public class Course extends RealmObject {
     }
 
     public void setShortname(String shortname) {
-        this.shortname = Html.fromHtml(shortname).toString();
+        this.shortname = HtmlCompat.fromHtml(shortname, HtmlCompat.FROM_HTML_MODE_COMPACT).toString().trim();
     }
 
     public String getFullname() {
