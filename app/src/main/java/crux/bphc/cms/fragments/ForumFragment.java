@@ -48,26 +48,20 @@ import static crux.bphc.cms.app.Constants.API_URL;
  */
 public class ForumFragment extends Fragment {
 
-    private static final String TOKEN_KEY = "token";
     public static final String FORUM_ID_KEY = "forum_id";
     public static final String COURSE_NAME_KEY = "courseName";
     private final int PER_PAGE = 20;
 
-    private String TOKEN;
     private int FORUM_ID = 1;
     private String COURSE_NAME;
     private int page = 0;
     private boolean mLoading = false;
 
     private ForumAdapter mAdapter;
-    private ClickListener mClickListener;
     private Realm realm;
 
-    private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private TextView mEmptyView;
-
-    private MoodleServices moodleServices;
 
     private CourseRequestHandler courseRequestHandler;
 
@@ -77,25 +71,23 @@ public class ForumFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static ForumFragment newInstance(String token, int forumId, String courseName) {
+    public static ForumFragment newInstance(int forumId, String courseName) {
         ForumFragment fragment = new ForumFragment();
         Bundle args = new Bundle();
-        args.putString(TOKEN_KEY, token);
         args.putInt(FORUM_ID_KEY, forumId);
         args.putString(COURSE_NAME_KEY, courseName);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public static ForumFragment newInstance(String token) {
-        return newInstance(token, 1, "Site News");
+    public static ForumFragment newInstance() {
+        return newInstance(1, "Site News");
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            TOKEN = getArguments().getString(TOKEN_KEY);
             FORUM_ID = getArguments().getInt(FORUM_ID_KEY);
             COURSE_NAME = getArguments().getString(COURSE_NAME_KEY);
         }
@@ -135,7 +127,7 @@ public class ForumFragment extends Fragment {
             }
         });
 
-        mClickListener = new ClickListener() {
+        ClickListener mClickListener = new ClickListener() {
             @Override
             public boolean onClick(Object object, int position) {
                 Discussion discussion = (Discussion) object;
@@ -150,7 +142,7 @@ public class ForumFragment extends Fragment {
             }
         };
 
-        mRecyclerView = view.findViewById(R.id.site_news);
+        RecyclerView mRecyclerView = view.findViewById(R.id.site_news);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         mRecyclerView.setLayoutManager(layoutManager);
 
@@ -159,7 +151,7 @@ public class ForumFragment extends Fragment {
                 .baseUrl(API_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        moodleServices = retrofit.create(MoodleServices.class);
+        MoodleServices moodleServices = retrofit.create(MoodleServices.class);
 
         mAdapter = new ForumAdapter(mClickListener, new ArrayList<>());
         mRecyclerView.setAdapter(mAdapter);
@@ -280,7 +272,6 @@ public class ForumFragment extends Fragment {
             private TextView mUserName;
             private TextView mModifiedTime;
             private HtmlTextView mMessage;
-            private View clickWrapper;
 
             public ForumViewHolder(View itemView) {
                 super(itemView);
@@ -294,10 +285,9 @@ public class ForumFragment extends Fragment {
                 mUserName = itemView.findViewById(R.id.user_name);
                 mModifiedTime = itemView.findViewById(R.id.modified_time);
                 mMessage = itemView.findViewById(R.id.message);
-                mPinned=itemView.findViewById(R.id.pinned);
-                clickWrapper=itemView.findViewById(R.id.click_wrapper);
+                mPinned = itemView.findViewById(R.id.pinned);
 
-                clickWrapper.setOnClickListener(v -> {
+                itemView.findViewById(R.id.click_wrapper).setOnClickListener(v -> {
                     int position = getLayoutPosition();
                     mClickListener.onClick(mDiscussions.get(position), position);
                 });

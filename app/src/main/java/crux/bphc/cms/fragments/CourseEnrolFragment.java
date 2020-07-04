@@ -42,11 +42,6 @@ public class CourseEnrolFragment extends Fragment {
     private static final String TOKEN_KEY = "token";
     private static final String COURSE_KEY = "course";
 
-    private TextView mCourseDisplayName;
-    private TextView mCourseCategory;
-    private LinearLayout mTeachers;
-    private Button mEnrolButton;
-
     private String TOKEN;
     private Course course;
 
@@ -83,13 +78,13 @@ public class CourseEnrolFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mCourseDisplayName = view.findViewById(R.id.course_enrol_course_display_name);
+        TextView mCourseDisplayName = view.findViewById(R.id.course_enrol_course_display_name);
         mCourseDisplayName.setText(course.getDisplayname());
 
-        mCourseCategory = view.findViewById(R.id.course_enrol_course_category);
+        TextView mCourseCategory = view.findViewById(R.id.course_enrol_course_category);
         mCourseCategory.setText(course.getCategoryname());
 
-        mTeachers = view.findViewById(R.id.course_enrol_teachers);
+        LinearLayout mTeachers = view.findViewById(R.id.course_enrol_teachers);
         List<Contact> teachers = course.getContacts();
         TextView noTeacherInfo = view.findViewById(R.id.course_enrol_teacher_no_info);
         if (teachers.size() == 0 || teachers == null) {
@@ -119,7 +114,7 @@ public class CourseEnrolFragment extends Fragment {
             }
         }
 
-        mEnrolButton = view.findViewById(R.id.course_enrol_enrol_button);
+        Button mEnrolButton = view.findViewById(R.id.course_enrol_enrol_button);
         mEnrolButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

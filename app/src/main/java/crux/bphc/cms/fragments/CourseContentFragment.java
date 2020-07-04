@@ -305,8 +305,8 @@ public class CourseContentFragment extends Fragment {
                 case FOLDER:
                     if (activity != null) {
                         Fragment fragment = module.getModType() == FORUM
-                                ? ForumFragment.newInstance(Constants.TOKEN, module.getInstance(), courseName)
-                                : FolderModuleFragment.newInstance(Constants.TOKEN, module.getInstance(), courseName);
+                                ? ForumFragment.newInstance(module.getInstance(), courseName)
+                                : FolderModuleFragment.newInstance(module.getInstance(), courseName);
                         activity.getSupportFragmentManager()
                                 .beginTransaction()
                                 .addToBackStack(null)

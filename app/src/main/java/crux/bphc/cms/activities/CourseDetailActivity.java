@@ -32,9 +32,7 @@ public class CourseDetailActivity extends AppCompatActivity {
     public List<Contact> contacts;
     Course course;
     Realm realm;
-    private FrameLayout mCourseEnrolContainer;
     private FragmentManager fragmentManager;
-    private CourseEnrolFragment mCourseEnrolFragment;
     private crux.bphc.cms.models.search.Course mEnrolCourse;
 
     @Override
@@ -48,7 +46,6 @@ public class CourseDetailActivity extends AppCompatActivity {
 
         realm = MyApplication.getInstance().getRealmInstance();
         fragmentManager = getSupportFragmentManager();
-        mCourseEnrolContainer = findViewById(R.id.course_section_enrol_container);
 
         Intent intent = getIntent();
 
@@ -94,7 +91,7 @@ public class CourseDetailActivity extends AppCompatActivity {
 
     private void setCourseEnrol() {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        mCourseEnrolFragment = CourseEnrolFragment.newInstance(TOKEN, mEnrolCourse);
+        CourseEnrolFragment mCourseEnrolFragment = CourseEnrolFragment.newInstance(TOKEN, mEnrolCourse);
         fragmentTransaction.replace(
                 R.id.course_section_enrol_container,
                 mCourseEnrolFragment,
@@ -120,7 +117,7 @@ public class CourseDetailActivity extends AppCompatActivity {
         fragmentManager.executePendingTransactions();
 
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        Fragment forumFragment = ForumFragment.newInstance(TOKEN, forumId, course.getShortname());
+        Fragment forumFragment = ForumFragment.newInstance(forumId, course.getShortname());
         fragmentTransaction.addToBackStack(null)
                 .replace(R.id.course_section_enrol_container, forumFragment, "Announcements");
         fragmentTransaction.commit();

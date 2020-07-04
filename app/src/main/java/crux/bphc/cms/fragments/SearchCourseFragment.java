@@ -42,9 +42,7 @@ public class SearchCourseFragment extends Fragment {
     private static final String TOKEN_KEY = "token";
     boolean containsMore = true;
     int mLastVisibleCount = 0;
-    private RecyclerView mRecyclerView;
     private EditText mEditText;
-    private View mButton;
     private SearchCourseAdapter mSearchCourseAdapter;
     private String TOKEN;
     private boolean mLoading = false;
@@ -115,13 +113,13 @@ public class SearchCourseFragment extends Fragment {
             }
         });
 
-        mRecyclerView = view.findViewById(R.id.searched_courses);
+        RecyclerView mRecyclerView = view.findViewById(R.id.searched_courses);
         empty = view.findViewById(R.id.empty);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
 
         mSwipeToRefresh = view.findViewById(R.id.swipeRefreshLayout);
         mEditText = view.findViewById(R.id.course_search_edit_text);
-        mButton = view.findViewById(R.id.course_search_button);
+        View mButton = view.findViewById(R.id.course_search_button);
 
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mSearchCourseAdapter);
@@ -265,14 +263,12 @@ public class SearchCourseFragment extends Fragment {
 
     private class SearchCourseAdapter extends RecyclerView.Adapter<SearchCourseAdapter.SearchCourseViewHolder> {
 
-        private Context mContext;
         private LayoutInflater mLayoutInflater;
-        private List<Course> mCourses = new ArrayList<>();
+        private List<Course> mCourses;
         private ClickListener mClickListener;
 
         SearchCourseAdapter(Context context, List<Course> courses) {
-            mContext = context;
-            mLayoutInflater = LayoutInflater.from(mContext);
+            mLayoutInflater = LayoutInflater.from(context);
             mCourses = courses;
         }
 

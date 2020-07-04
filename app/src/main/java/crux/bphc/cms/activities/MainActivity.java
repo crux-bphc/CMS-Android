@@ -63,7 +63,6 @@ public class MainActivity extends AppCompatActivity
     private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 1001;
     private static final String KEY_FRAGMENT = "fragment";
     private UserAccount mUserAccount;
-    private Fragment fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,7 +112,7 @@ public class MainActivity extends AppCompatActivity
 
         // Set up fragments
         if (savedInstanceState == null) {
-            pushView(MyCoursesFragment.newInstance(TOKEN), "My Courses", true);
+            pushView(MyCoursesFragment.newInstance(), "My Courses", true);
         }
 
         getSupportFragmentManager().addOnBackStackChangedListener(() -> {
@@ -196,7 +195,7 @@ public class MainActivity extends AppCompatActivity
         if (courseId == 1) {
             // Site news, modId will not be -1
             // We will push the fragment here itself
-            Fragment forumFragment = ForumFragment.newInstance(TOKEN, 1, "Site News");
+            Fragment forumFragment = ForumFragment.newInstance();
             pushView(forumFragment, "Site News", false);
 
             // Ensure that the fragment has been commited
@@ -286,7 +285,6 @@ public class MainActivity extends AppCompatActivity
             transaction.addToBackStack(null);
         }
         transaction.commit();
-        this.fragment = fragment;
     }
 
 
@@ -322,10 +320,10 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         switch (id) {
             case R.id.my_courses:
-                pushView(MyCoursesFragment.newInstance(TOKEN), "My Courses", true);
+                pushView(MyCoursesFragment.newInstance(), "My Courses", true);
                 break;
             case R.id.site_news:
-                pushView(ForumFragment.newInstance(TOKEN), "Site News", false);
+                pushView(ForumFragment.newInstance(), "Site News", false);
                 break;
             case R.id.course_search:
                 pushView(SearchCourseFragment.newInstance(TOKEN), "Course Search", false);

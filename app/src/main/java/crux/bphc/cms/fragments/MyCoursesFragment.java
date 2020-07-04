@@ -61,7 +61,6 @@ public class MyCoursesFragment extends Fragment {
     boolean isClearIconSet = false;
     List<CourseDownloader.DownloadReq> requestedDownloads;
     String mSearchedText = "";
-    private String TOKEN;
     private MyAdapter mAdapter;
     private int coursesUpdated;
 
@@ -71,20 +70,13 @@ public class MyCoursesFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static MyCoursesFragment newInstance(String token) {
-        MyCoursesFragment fragment = new MyCoursesFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, token);
-        fragment.setArguments(args);
-        return fragment;
+    public static MyCoursesFragment newInstance() {
+        return new MyCoursesFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            TOKEN = getArguments().getString(ARG_PARAM1);
-        }
         courseDataHandler = new CourseDataHandler(getActivity());
     }
 
