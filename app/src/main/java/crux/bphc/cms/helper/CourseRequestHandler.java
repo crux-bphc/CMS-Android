@@ -1,6 +1,7 @@
 package crux.bphc.cms.helper;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -37,9 +38,11 @@ import static crux.bphc.cms.app.Constants.API_URL;
 
 public class CourseRequestHandler {
 
+    public static final String TAG = CourseRequestHandler.class.getName();
     public static final String INVALID_TOKEN = "Invalid token";
     public static final String NETWORK_ERROR = "Network error";
     public static final String ACCESS_EXCEPTION = "accessexception";
+
     UserAccount userAccount;
     Context context;
     MoodleServices moodleServices;
@@ -157,7 +160,7 @@ public class CourseRequestHandler {
             List<CourseSection> responseCourseSections = response.body();
             return resolve(responseCourseSections);
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.w(TAG, "IOException while getting course data", e);
         }
         return null;
     }
@@ -196,7 +199,7 @@ public class CourseRequestHandler {
             if (forumData == null) return null;
             return forumData.getDiscussions();
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.w(TAG, "IOException while getting Forum Discussions", e);
         }
         return null;
     }

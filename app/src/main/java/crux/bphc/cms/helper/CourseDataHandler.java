@@ -1,6 +1,7 @@
 package crux.bphc.cms.helper;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -25,6 +26,8 @@ import crux.bphc.cms.models.forum.Discussion;
  */
 
 public class CourseDataHandler {
+
+    private final static String TAG = CourseDataHandler.class.getName();
 
     Context context;
     UserAccount userAccount;
@@ -56,7 +59,7 @@ public class CourseDataHandler {
             Gson gson = new Gson();
             return gson.fromJson(gson.toJson(object, type), type);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error while deepcopy of type ", e);
             return null;
         }
     }
