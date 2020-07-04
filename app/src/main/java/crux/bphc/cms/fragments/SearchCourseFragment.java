@@ -247,7 +247,7 @@ public class SearchCourseFragment extends Fragment {
 
     }
 
-    private class SearchCourseAdapter extends RecyclerView.Adapter<SearchCourseAdapter.SearchCourseViewHolder> {
+    private static class SearchCourseAdapter extends RecyclerView.Adapter<SearchCourseAdapter.SearchCourseViewHolder> {
 
         private LayoutInflater mLayoutInflater;
         private List<Course> mCourses;

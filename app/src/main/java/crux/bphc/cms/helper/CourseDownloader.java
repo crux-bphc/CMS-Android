@@ -138,7 +138,7 @@ public class CourseDownloader implements FileManager.Callback {
         void onFailure();
     }
 
-    public class DownloadReq {
+    public static class DownloadReq {
         int position;
         int id;
         String fileName;
