@@ -213,7 +213,7 @@ public class ForumFragment extends Fragment {
         return day + " " + month + ", " + year;
     }
 
-    private class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.ForumViewHolder> {
+    private static class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.ForumViewHolder> {
 
         private List<Discussion> mDiscussions = new ArrayList<>();
         private ClickListener mClickListener;
