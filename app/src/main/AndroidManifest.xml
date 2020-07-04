@@ -77,7 +77,8 @@
         </provider>
         <activity
             android:name=".activities.InfoActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
 
     </application>
 
