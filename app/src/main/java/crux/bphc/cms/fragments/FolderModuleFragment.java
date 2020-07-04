@@ -34,24 +34,17 @@ import io.realm.RealmList;
 
 public class FolderModuleFragment extends Fragment {
 
-    private static final String TOKEN_KEY = "token";
     private static final String MODULE_ID_KEY = "moduleID";
     private static final String COURSE_NAME_KEY = "courseName";
 
-    private String TOKEN = "";
     private int MODULE_INSTANCE = 0;
     private String COURSE_NAME = "";
-    private String MOD_NAME = "";
 
     private Module module;
     private RealmList<Content> contents;
 
     private FolderModuleFragment.FolderModuleAdapter mAdapter;
-    private ClickListener mClickListener;
-    private Realm realm;
     private FileManager mFileManager;
-
-    private RecyclerView mRecyclerView;
 
     private MoreOptionsFragment.OptionsViewModel moreOptionsViewModel;
 
@@ -59,10 +52,9 @@ public class FolderModuleFragment extends Fragment {
 
     }
 
-    public static FolderModuleFragment newInstance(String token, int moduleId, String courseName) {
+    public static FolderModuleFragment newInstance(int moduleId, String courseName) {
         FolderModuleFragment fragment = new FolderModuleFragment();
         Bundle args = new Bundle();
-        args.putString(TOKEN_KEY, token);
         args.putInt(MODULE_ID_KEY, moduleId);
         args.putString(COURSE_NAME_KEY, courseName);
         fragment.setArguments(args);
@@ -72,12 +64,11 @@ public class FolderModuleFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            TOKEN = getArguments().getString(TOKEN_KEY);
             MODULE_INSTANCE = getArguments().getInt(MODULE_ID_KEY);
             COURSE_NAME = getArguments().getString(COURSE_NAME_KEY);
         }
 
-        realm = MyApplication.getInstance().getRealmInstance();
+        Realm realm = MyApplication.getInstance().getRealmInstance();
 
         // If we NPE, lite
         module = realm.where(Module.class).equalTo("instance", MODULE_INSTANCE).findFirst();
@@ -109,13 +100,13 @@ public class FolderModuleFragment extends Fragment {
 
         moreOptionsViewModel = new ViewModelProvider(requireActivity()).get(MoreOptionsFragment.OptionsViewModel.class);
 
-        mClickListener = (object, position) -> {
+        ClickListener mClickListener = (object, position) -> {
             Content content = (Content) object;
             downloadOrOpenFile(content, false);
-            return true;  // why is this here?
+            return true;
         };
 
-        mRecyclerView = view.findViewById(R.id.files);
+        RecyclerView mRecyclerView = view.findViewById(R.id.files);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(layoutManager);
 

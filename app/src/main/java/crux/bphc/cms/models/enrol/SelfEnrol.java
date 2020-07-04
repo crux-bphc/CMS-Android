@@ -9,11 +9,9 @@ import java.util.List;
 public class SelfEnrol {
 
     private boolean status;
-    private List<SelfEnrolWarning> warnings;
 
-    public SelfEnrol(boolean status, List<SelfEnrolWarning> warnings) {
+    public SelfEnrol(boolean status) {
         this.status = status;
-        this.warnings = warnings;
     }
 
     public boolean getStatus() {
