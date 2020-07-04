@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.Html;
 
+import androidx.core.text.HtmlCompat;
+
 import java.util.List;
 
 /**
@@ -80,7 +82,7 @@ public class Course implements Parcelable {
     }
 
     public String getDisplayname() {
-        return Html.fromHtml(displayname).toString();
+        return HtmlCompat.fromHtml(displayname, HtmlCompat.FROM_HTML_MODE_COMPACT).toString().trim();
     }
 
     public String getCategoryname() {
