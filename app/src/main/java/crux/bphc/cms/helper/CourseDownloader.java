@@ -5,9 +5,9 @@ import android.content.Context;
 
 import java.util.List;
 
-import crux.bphc.cms.models.Content;
-import crux.bphc.cms.models.CourseSection;
-import crux.bphc.cms.models.Module;
+import crux.bphc.cms.models.course.Content;
+import crux.bphc.cms.models.course.CourseSection;
+import crux.bphc.cms.models.course.Module;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
@@ -86,7 +86,7 @@ public class CourseDownloader implements FileManager.Callback {
     public int getDownloadedContentCount(int courseID) {
         fileManager.reloadFileList();
         int count = 0;
-        RealmResults<CourseSection> courseSections = realm.where(CourseSection.class).equalTo("courseID", courseID).findAll();
+        RealmResults<CourseSection> courseSections = realm.where(CourseSection.class).equalTo("courseId", courseID).findAll();
         for (CourseSection section : courseSections) {
             List<Module> modules = section.getModules();
             for (Module module : modules) {
@@ -105,7 +105,7 @@ public class CourseDownloader implements FileManager.Callback {
     public int getTotalContentCount(int courseID) {
         fileManager.reloadFileList();
         int count = 0;
-        RealmResults<CourseSection> courseSections = realm.where(CourseSection.class).equalTo("courseID", courseID).findAll();
+        RealmResults<CourseSection> courseSections = realm.where(CourseSection.class).equalTo("courseId", courseID).findAll();
         for (CourseSection section : courseSections) {
             List<Module> modules = section.getModules();
             for (Module module : modules) {

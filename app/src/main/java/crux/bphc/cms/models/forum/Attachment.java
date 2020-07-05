@@ -1,35 +1,36 @@
 package crux.bphc.cms.models.forum;
 
+import com.google.gson.annotations.SerializedName;
+
 import io.realm.RealmObject;
 
 /**
- * Created by siddhant on 1/17/17.
+ * Model class to represent attachment of Discussions.
+ *
+ * @author Siddhant Kumar Patel (01-Jul-2016)
  */
 
 public class Attachment extends RealmObject {
 
-    private String filename;
-    private String mimetype;
-    private String fileurl;
-    private int filesize;
-    private long timemodified;
+    @SerializedName("filename") private String fileName;
+    @SerializedName("mimetype") @SuppressWarnings("unused") private String mimeType;
+    @SerializedName("fileurl") private String fileUrl;
+    @SerializedName("filesize") private int fileSize;
+    @SerializedName("timemodified")  private long timeModified;
 
+    @SuppressWarnings("unused")
     public Attachment() {
     }
 
-    public String getFilename() {
-        return filename;
+    public String getFileName() {
+        return fileName;
     }
 
-    public String getMimetype() {
-        return mimetype;
+    public String getFileUrl() {
+        return fileUrl;
     }
 
-    public String getFileurl() {
-        return fileurl;
-    }
+    public int getFileSize() { return fileSize; }
 
-    public int getFileSize() { return filesize; }
-
-    public long getTimemodified() { return timemodified; }
+    public long getTimeModified() { return timeModified; }
 }

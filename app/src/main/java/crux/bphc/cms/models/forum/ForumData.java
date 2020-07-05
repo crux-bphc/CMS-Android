@@ -1,16 +1,22 @@
 package crux.bphc.cms.models.forum;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 /**
+ * Model class to represent the response from
+ * {@link crux.bphc.cms.helper.MoodleServices#getForumDiscussions}
+ *
+ * @author Siddhant Kumar Patel (17-Jan-2017)
  * Created by siddhant on 1/17/17.
  */
 
 public class ForumData {
 
-    public List<Discussion> discussions = null;
-    public List<Object> warnings = null;
+    @SerializedName("discussions") public List<Discussion> discussions;
 
+    @SuppressWarnings("unused")
     public ForumData() {
 
     }

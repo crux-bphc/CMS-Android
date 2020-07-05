@@ -3,7 +3,6 @@ package crux.bphc.cms.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,8 +29,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import crux.bphc.cms.models.search.Course;
-import crux.bphc.cms.models.search.CourseSearch;
+import crux.bphc.cms.models.enrol.SearchedCourseDetail;
+import crux.bphc.cms.models.enrol.CourseSearch;
 
 import static crux.bphc.cms.app.Constants.API_URL;
 import static crux.bphc.cms.app.Constants.COURSE_PARCEL_INTENT_KEY;
@@ -103,7 +102,7 @@ public class SearchCourseFragment extends Fragment {
 
         mSearchCourseAdapter = new SearchCourseAdapter(getActivity(), new ArrayList<>());
         mSearchCourseAdapter.setClickListener((object, position) -> {
-            Course course = (Course) object;
+            SearchedCourseDetail course = (SearchedCourseDetail) object;
             Intent intent = new Intent(getActivity(), CourseDetailActivity.class);
             intent.putExtra(COURSE_PARCEL_INTENT_KEY, course);
             startActivity(intent);
@@ -217,7 +216,7 @@ public class SearchCourseFragment extends Fragment {
                     }
 
                     if (page == 0) {
-                        List<Course> matchedCourses = response.body().getCourses();
+                        List<SearchedCourseDetail> matchedCourses = response.body().getCourses();
                         if (matchedCourses == null || matchedCourses.size() == 0) {
                             empty.setVisibility(View.VISIBLE);
                             containsMore = false;
@@ -227,7 +226,7 @@ public class SearchCourseFragment extends Fragment {
                             mSearchCourseAdapter.setCourses(matchedCourses);
                         }
                     } else {
-                        List<Course> newMatchedCourses = response.body().getCourses();
+                        List<SearchedCourseDetail> newMatchedCourses = response.body().getCourses();
                         mSearchCourseAdapter.addExtraCourses(newMatchedCourses);
                     }
                 }
@@ -250,25 +249,25 @@ public class SearchCourseFragment extends Fragment {
     private static class SearchCourseAdapter extends RecyclerView.Adapter<SearchCourseAdapter.SearchCourseViewHolder> {
 
         private LayoutInflater mLayoutInflater;
-        private List<Course> mCourses;
+        private List<SearchedCourseDetail> mCourses;
         private ClickListener mClickListener;
 
-        SearchCourseAdapter(Context context, List<Course> courses) {
+        SearchCourseAdapter(Context context, List<SearchedCourseDetail> courses) {
             mLayoutInflater = LayoutInflater.from(context);
             mCourses = courses;
         }
 
-        public List<Course> getCourses() {
+        public List<SearchedCourseDetail> getCourses() {
             return mCourses;
         }
 
-        void setCourses(List<Course> courses) {
+        void setCourses(List<SearchedCourseDetail> courses) {
             mCourses = courses;
             notifyDataSetChanged();
             System.out.println("Number of courses setCourses: " + mCourses.size());
         }
 
-        void addExtraCourses(List<Course> courses) {
+        void addExtraCourses(List<SearchedCourseDetail> courses) {
             mCourses.addAll(courses);
             notifyDataSetChanged();
             System.out.println("Number of courses addExtraCourses: " + mCourses.size());
@@ -292,8 +291,8 @@ public class SearchCourseFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(SearchCourseViewHolder holder, int position) {
-            Course course = mCourses.get(position);
-            holder.mSearchCourseDisplayName.setText(course.getDisplayname());
+            SearchedCourseDetail course = mCourses.get(position);
+            holder.mSearchCourseDisplayName.setText(course.getDisplayName());
         }
 
         @Override

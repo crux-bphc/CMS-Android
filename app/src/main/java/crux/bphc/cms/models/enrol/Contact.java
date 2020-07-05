@@ -1,29 +1,28 @@
-package crux.bphc.cms.models.search;
+package crux.bphc.cms.models.enrol;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
- * Created by siddhant on 12/17/16.
+ * Model class to represent <code>contacts</code> list for a course.
+ *
+ * @author Siddhant Kumar Patel (17-Dec-2016)
  */
 
 public class Contact implements Parcelable {
 
-    private int id;
-    private String fullname;
-
-    public Contact(int id, String fullname) {
-        this.id = id;
-        this.fullname = fullname;
-    }
+    @SerializedName("id") private final int id;
+    @SerializedName("fullname") private final String fullName;
 
     public Contact(Parcel source) {
         this.id = source.readInt();
-        this.fullname = source.readString();
+        this.fullName = source.readString();
     }
 
-    public String getFullname() {
-        return fullname;
+    public String getFullName() {
+        return fullName;
     }
 
     @Override
@@ -34,7 +33,7 @@ public class Contact implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
-        dest.writeString(fullname);
+        dest.writeString(fullName);
     }
 
     public static final Parcelable.Creator<Contact> CREATOR = new Creator<Contact>() {

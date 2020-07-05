@@ -1,17 +1,20 @@
 package crux.bphc.cms.models.enrol;
 
-import java.util.List;
+import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by siddhant on 12/19/16.
+ * Model class to represent the response from
+ * {@link crux.bphc.cms.helper.MoodleServices#selfEnrolUserInCourse}.
+ *
+ * @author Siddhant Kumar Patel (19-Dec-2016)
  */
 
 public class SelfEnrol {
 
-    private boolean status;
+    @SerializedName("status") private boolean status;
 
-    public SelfEnrol(boolean status) {
-        this.status = status;
+    @SuppressWarnings("unused")
+    public SelfEnrol() {
     }
 
     public boolean getStatus() {

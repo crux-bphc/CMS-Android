@@ -286,10 +286,10 @@ public class ForumFragment extends Fragment {
             }
 
             public void bind(Discussion discussion) {
-                Picasso.get().load(discussion.getUserpictureurl()).into(mUserPic);
+                Picasso.get().load(discussion.getUserPictureUrl()).into(mUserPic);
                 mSubject.setText(discussion.getSubject());
-                mUserName.setText(discussion.getUserfullname());
-                mModifiedTime.setText(formatDate(discussion.getTimemodified()));
+                mUserName.setText(discussion.getUserFullName());
+                mModifiedTime.setText(formatDate(discussion.getTimeModified()));
                 mMessage.setText(HtmlTextView.parseHtml((discussion.getMessage())));
                 if(!discussion.isPinned()){
                     mPinned.setVisibility(View.GONE);
