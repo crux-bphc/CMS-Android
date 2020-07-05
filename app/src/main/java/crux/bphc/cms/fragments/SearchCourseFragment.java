@@ -17,6 +17,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +47,6 @@ public class SearchCourseFragment extends Fragment {
     private SearchCourseAdapter mSearchCourseAdapter;
     private String TOKEN;
     private boolean mLoading = false;
-    private int matchedSearches;
     private int page = 0;
     private String mPreviousSearch = "";
     private SwipeRefreshLayout mSwipeToRefresh;
@@ -89,7 +90,7 @@ public class SearchCourseFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NotNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -122,12 +123,12 @@ public class SearchCourseFragment extends Fragment {
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            public void onScrollStateChanged(@NotNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
             }
 
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            public void onScrolled(@NotNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 int visibleItemCount = layoutManager.getChildCount();
                 int totalItemCount = layoutManager.getItemCount();
@@ -199,7 +200,7 @@ public class SearchCourseFragment extends Fragment {
         mSwipeToRefresh.setRefreshing(true);
         call.enqueue(new Callback<CourseSearch>() {
             @Override
-            public void onResponse(Call<CourseSearch> call, Response<CourseSearch> response) {
+            public void onResponse(@NotNull Call<CourseSearch> call, @NotNull Response<CourseSearch> response) {
 
 
                 if (response.body() == null) {
@@ -237,7 +238,7 @@ public class SearchCourseFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<CourseSearch> call, Throwable t) {
+            public void onFailure(@NotNull Call<CourseSearch> call, @NotNull Throwable t) {
                 mLoading = false;
                 mSwipeToRefresh.setRefreshing(false);
                 Toast.makeText(getActivity(), "Check your Internet Connection", Toast.LENGTH_SHORT).show();
@@ -248,17 +249,13 @@ public class SearchCourseFragment extends Fragment {
 
     private static class SearchCourseAdapter extends RecyclerView.Adapter<SearchCourseAdapter.SearchCourseViewHolder> {
 
-        private LayoutInflater mLayoutInflater;
+        private final LayoutInflater mLayoutInflater;
         private List<SearchedCourseDetail> mCourses;
         private ClickListener mClickListener;
 
         SearchCourseAdapter(Context context, List<SearchedCourseDetail> courses) {
             mLayoutInflater = LayoutInflater.from(context);
             mCourses = courses;
-        }
-
-        public List<SearchedCourseDetail> getCourses() {
-            return mCourses;
         }
 
         void setCourses(List<SearchedCourseDetail> courses) {
@@ -282,8 +279,9 @@ public class SearchCourseFragment extends Fragment {
             this.mClickListener = clickListener;
         }
 
+        @NotNull
         @Override
-        public SearchCourseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public SearchCourseViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
             return new SearchCourseViewHolder(
                     mLayoutInflater.inflate(R.layout.row_search_course, parent, false)
             );
@@ -304,7 +302,7 @@ public class SearchCourseFragment extends Fragment {
 
         class SearchCourseViewHolder extends RecyclerView.ViewHolder {
 
-            TextView mSearchCourseDisplayName;
+            final TextView mSearchCourseDisplayName;
 
             SearchCourseViewHolder(View itemView) {
                 super(itemView);

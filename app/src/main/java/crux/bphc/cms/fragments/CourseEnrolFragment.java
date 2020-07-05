@@ -1,7 +1,7 @@
 package crux.bphc.cms.fragments;
 
-
 import android.app.ProgressDialog;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -14,28 +14,28 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
-import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.R;
+import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.helper.MoodleServices;
 import crux.bphc.cms.models.course.Course;
+import crux.bphc.cms.models.enrol.Contact;
+import crux.bphc.cms.models.enrol.SearchedCourseDetail;
+import crux.bphc.cms.models.enrol.SelfEnrol;
 import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import crux.bphc.cms.models.enrol.SelfEnrol;
-import crux.bphc.cms.models.enrol.Contact;
-import crux.bphc.cms.models.enrol.SearchedCourseDetail;
 
 import static crux.bphc.cms.app.Constants.API_URL;
-
 
 public class CourseEnrolFragment extends Fragment {
 
@@ -75,7 +75,7 @@ public class CourseEnrolFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NotNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         TextView mCourseDisplayName = view.findViewById(R.id.course_enrol_course_display_name);
@@ -87,21 +87,18 @@ public class CourseEnrolFragment extends Fragment {
         LinearLayout mTeachers = view.findViewById(R.id.course_enrol_teachers);
         List<Contact> teachers = course.getContacts();
         TextView noTeacherInfo = view.findViewById(R.id.course_enrol_teacher_no_info);
-        if (teachers.size() == 0 || teachers == null) {
+        if (teachers == null || teachers.size() == 0) {
             noTeacherInfo.setVisibility(View.VISIBLE);
         } else {
             LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) noTeacherInfo.getLayoutParams();
             layoutParams.setMargins(0, 8, 0, 0);
 
-            // TODO: shift this to XML as ?android:textColorPrimary if possible
-            // using TypedValue and getting android.R.attr.textColorPrimary did not work
-
-            int textColor;
-            if (MyApplication.getInstance().isDarkModeEnabled()) {
-                textColor = ContextCompat.getColor(getContext(), R.color.text_primary_dark);
-            } else {
-                textColor = ContextCompat.getColor(getContext(), R.color.text_primary_light);
-            }
+            TypedValue typedValue = new TypedValue();
+            requireActivity().getTheme().resolveAttribute(android.R.attr.textColorPrimary, typedValue, true);
+            TypedArray arr = requireActivity().obtainStyledAttributes(typedValue.data, new int[]{
+                    android.R.attr.textColorPrimary});
+            int textColor = arr.getColor(0, -1);
+            arr.recycle();
 
             for (Contact contact : teachers) {
                 TextView teacherName = new TextView(getActivity());
@@ -123,9 +120,9 @@ public class CourseEnrolFragment extends Fragment {
         AlertDialog.Builder builder;
 
         if (MyApplication.getInstance().isDarkModeEnabled()) {
-            builder = new AlertDialog.Builder(getContext(),R.style.Theme_AppCompat_Dialog_Alert);
+            builder = new AlertDialog.Builder(requireContext(),R.style.Theme_AppCompat_Dialog_Alert);
         } else {
-            builder = new AlertDialog.Builder(getContext(),R.style.Theme_AppCompat_Light_Dialog_Alert);
+            builder = new AlertDialog.Builder(requireContext(),R.style.Theme_AppCompat_Light_Dialog_Alert);
         }
 
         builder.setMessage(R.string.course_enrol_confirmation_msg);
@@ -152,17 +149,16 @@ public class CourseEnrolFragment extends Fragment {
         System.out.println(call.request().url());
         call.enqueue(new Callback<SelfEnrol>() {
             @Override
-            public void onResponse(Call<SelfEnrol> call, Response<SelfEnrol> response) {
+            public void onResponse(@NotNull Call<SelfEnrol> call, @NotNull Response<SelfEnrol> response) {
                 progressDialog.dismiss();
-                boolean status = response.body().getStatus();
-                System.out.println("status is: " + status);
-                if (status) {
+                SelfEnrol body;
+                if ((body = response.body()) != null && body.getStatus()) {
                     Toast.makeText(
                             getActivity(),
                             "Successfully enrolled in " + course.getDisplayName(),
                             Toast.LENGTH_SHORT).show();
 
-                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
 
                     CourseContentFragment courseSectionFragment = CourseContentFragment
                             .newInstance(TOKEN, course.getId());
@@ -183,7 +179,7 @@ public class CourseEnrolFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<SelfEnrol> call, Throwable t) {
+            public void onFailure(@NotNull Call<SelfEnrol> call, @NotNull Throwable t) {
                 progressDialog.dismiss();
                 Toast.makeText(getActivity(), "Unable to connect to server", Toast.LENGTH_SHORT).show();
             }

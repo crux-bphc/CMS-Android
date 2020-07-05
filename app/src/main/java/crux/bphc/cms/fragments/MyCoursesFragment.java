@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +25,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -50,7 +51,6 @@ import static android.content.Context.INPUT_METHOD_SERVICE;
 
 public class MyCoursesFragment extends Fragment {
 
-    private static final String ARG_PARAM1 = "param1";
     private static final int COURSE_SECTION_ACTIVITY = 105;
     RecyclerView mRecyclerView;
     EditText mSearch;
@@ -59,9 +59,8 @@ public class MyCoursesFragment extends Fragment {
     View empty;
     ImageView mSearchIcon;
     boolean isClearIconSet = false;
-    List<CourseDownloader.DownloadReq> requestedDownloads;
     String mSearchedText = "";
-    private MyAdapter mAdapter;
+    private Adapter mAdapter;
     private int coursesUpdated;
 
     private MoreOptionsFragment.OptionsViewModel moreOptionsViewModel;
@@ -104,10 +103,8 @@ public class MyCoursesFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NotNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        requestedDownloads = new ArrayList<>();
 
         empty = view.findViewById(R.id.empty);
         courses = new ArrayList<>();
@@ -119,7 +116,7 @@ public class MyCoursesFragment extends Fragment {
         mSearchIcon = view.findViewById(R.id.searchIcon);
 
         moreOptionsViewModel = new ViewModelProvider(requireActivity()).get(MoreOptionsFragment.OptionsViewModel.class);
-        mAdapter = new MyAdapter(getActivity(), courses);
+        mAdapter = new Adapter(getActivity(), courses);
         mAdapter.setClickListener((object, position) -> {
             Course course = (Course) object;
 
@@ -158,8 +155,15 @@ public class MyCoursesFragment extends Fragment {
                         mSearchIcon.setImageResource(R.drawable.ic_search);
                         mSearchIcon.setOnClickListener(null);
                         isClearIconSet = false;
-                        InputMethodManager inputManager = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
-                        inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                        InputMethodManager inputManager;
+                        if ((inputManager = (InputMethodManager) requireActivity()
+                                .getSystemService(INPUT_METHOD_SERVICE)) != null) {
+                            View currentFocus;
+                            if ((currentFocus = requireActivity().getCurrentFocus()) != null) {
+                                inputManager.hideSoftInputFromWindow(currentFocus.getWindowToken(),
+                                        InputMethodManager.HIDE_NOT_ALWAYS);
+                            }
+                        }
                     });
                 }
                 if (mSearchedText.isEmpty()) {
@@ -255,7 +259,7 @@ public class MyCoursesFragment extends Fragment {
             @Override
             public void onFailure(String message, Throwable t) {
                 mSwipeRefreshLayout.setRefreshing(false);
-                if (t.getMessage().contains("Invalid token")) {
+                if (message != null && message.contains("Invalid token")) {
                     Toast.makeText(
                             getActivity(),
                             "Invalid token! Probably your token was reset.",
@@ -282,13 +286,15 @@ public class MyCoursesFragment extends Fragment {
                                 List<Module> modules = courseSection.getModules();
                                 for (Module module : modules) {
                                     if (module.getModType() == Module.Type.FORUM) {
-                                        courseRequestHandler.getForumDiscussions(module.getInstance(), new CourseRequestHandler.CallBack<List<Discussion>>() {
+                                        courseRequestHandler.getForumDiscussions(module.getInstance(), new
+                                                CourseRequestHandler.CallBack<List<Discussion>>() {
                                             @Override
                                             public void onResponse(List<Discussion> responseObject) {
                                                 for (Discussion d : responseObject) {
                                                     d.setForumId(module.getInstance());
                                                 }
-                                                List<Discussion> newDiscussions = courseDataHandler.setForumDiscussions(module.getInstance(), responseObject);
+                                                List<Discussion> newDiscussions = courseDataHandler.
+                                                        setForumDiscussions(module.getInstance(), responseObject);
                                                 if (newDiscussions.size() > 0)
                                                     courseDataHandler.markModuleAsReadOrUnread(module, true);
                                             }
@@ -301,14 +307,15 @@ public class MyCoursesFragment extends Fragment {
                                     }
                                 }
                             }
-                            List<CourseSection> newPartsinSections = courseDataHandler.setCourseData(course.getCourseId(), responseObject);
-                            if (newPartsinSections.size() > 0) {
+                            List<CourseSection> newPartsInSections = courseDataHandler
+                                    .setCourseData(course.getCourseId(), responseObject);
+                            if (newPartsInSections.size() > 0) {
                                 coursesUpdated++;
                             }
                             //Refresh the recycler view for the last course
                             if (course.getCourseId() == courses.get(courses.size() - 1).getCourseId()) {
                                 mSwipeRefreshLayout.setRefreshing(false);
-                                mRecyclerView.getAdapter().notifyDataSetChanged();
+                                mAdapter.notifyDataSetChanged();
                                 String message;
                                 if (coursesUpdated == 0) {
                                     message = getString(R.string.upToDate);
@@ -343,15 +350,15 @@ public class MyCoursesFragment extends Fragment {
         }
     }
 
-    private class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
+    private class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
 
-        LayoutInflater inflater;
-        Context context;
-        ClickListener clickListener;
-        ClickListener downloadClickListener;
+        private final LayoutInflater inflater;
+        private final Context context;
+        private ClickListener clickListener;
+        private ClickListener downloadClickListener;
         private List<Course> mCourseList;
 
-        MyAdapter(Context context, List<Course> courseList) {
+        Adapter(Context context, List<Course> courseList) {
             this.context = context;
             inflater = LayoutInflater.from(context);
             mCourseList = courseList;
@@ -362,8 +369,9 @@ public class MyCoursesFragment extends Fragment {
             this.clickListener = clickListener;
         }
 
+        @NotNull
         @Override
-        public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public MyViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
             return new MyViewHolder(inflater.inflate(R.layout.row_course, parent, false));
         }
 
@@ -391,19 +399,16 @@ public class MyCoursesFragment extends Fragment {
 
         class MyViewHolder extends RecyclerView.ViewHolder {
 
-            HtmlTextView courseNumber;
-            HtmlTextView courseName;
-            View rowClickWrapper;
-            ImageView more;
-            ProgressBar progressBar;
-            TextView unreadCount;
-
+            final HtmlTextView courseNumber;
+            final HtmlTextView courseName;
+            final View rowClickWrapper;
+            final ImageView more;
+            final TextView unreadCount;
 
             MyViewHolder(View itemView) {
                 super(itemView);
                 courseNumber = itemView.findViewById(R.id.course_number);
                 courseName = itemView.findViewById(R.id.course_name);
-                progressBar = itemView.findViewById(R.id.progress_bar);
                 more = itemView.findViewById(R.id.more);
                 unreadCount = itemView.findViewById(R.id.unreadCount);
                 rowClickWrapper = itemView.findViewById(R.id.click_wrapper);
@@ -457,19 +462,6 @@ public class MyCoursesFragment extends Fragment {
                 courseNumber.setText(course.getCourseName()[0]);
                 String name = course.getCourseName()[1] + " " + course.getCourseName()[2];
                 courseName.setText(name);
-                /*if (course.getDownloadStatus() == -1) {
-                    progressBar.setVisibility(View.GONE);
-                } else {
-                    //the course is downloading and is in midway
-                    progressBar.setVisibility(View.VISIBLE);
-                    downloadIcon.setVisibility(View.INVISIBLE);
-                    if (course.getDownloadStatus() == 0)   // downloading section data
-                        downloadText.setText("Downloading course information... ");
-                    else if (course.getDownloadStatus() == 1)
-                        downloadText.setText("Downloading files... ( " + course.getDownloadedFiles() + " / " + course.getTotalFiles() + " )");
-                    else
-                        downloadText.setText("Downloaded");
-                }*/
                 int count = courseDataHandler.getUnreadCount(course.getId());
                 unreadCount.setText(DecimalFormat.getIntegerInstance().format(count));
                 unreadCount.setVisibility(count == 0 ? View.INVISIBLE : View.VISIBLE);

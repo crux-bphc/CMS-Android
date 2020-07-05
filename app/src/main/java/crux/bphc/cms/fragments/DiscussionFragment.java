@@ -32,6 +32,7 @@ import crux.bphc.cms.helper.PropertiesAlertDialog;
 import crux.bphc.cms.models.forum.Attachment;
 import crux.bphc.cms.models.forum.Discussion;
 import io.realm.Realm;
+import io.realm.RealmList;
 
 
 public class DiscussionFragment extends Fragment {
@@ -65,7 +66,7 @@ public class DiscussionFragment extends Fragment {
             mCourseName = getArguments().getString("courseName");
         }
         realm = MyApplication.getInstance().getRealmInstance();
-        mFileManager = new FileManager(getActivity(), mCourseName);
+        mFileManager = new FileManager(requireActivity(), mCourseName);
     }
 
     @Override
@@ -90,114 +91,119 @@ public class DiscussionFragment extends Fragment {
         mMessage.setMovementMethod(LinkMovementMethod.getInstance());
 
         Discussion discussion = realm.where(Discussion.class).equalTo("id", id).findFirst();
-        mFileManager.registerDownloadReceiver();
-        mFileManager.setCallback(filename -> {
-            int child = mAttachmentContainer.getChildCount();
-            for (int i = 0; i < child; i++) {
-                View childView = mAttachmentContainer.getChildAt(i);
-                TextView fileNameTextView = childView.findViewById(R.id.name);
-                if (fileNameTextView != null &&
-                        fileNameTextView.getText().toString().equalsIgnoreCase(filename)) {
-                    ImageView downloadIcon = childView.findViewById(R.id.download);
-                    downloadIcon.setImageResource(R.drawable.eye);
-                    ImageView ellipsis = childView.findViewById(R.id.more);
-                    ellipsis.setVisibility(View.VISIBLE);
-                    break;
+        if (discussion != null) {
+            RealmList<Attachment> attachments = discussion.getAttachments();
+
+            mFileManager.registerDownloadReceiver();
+            mFileManager.setCallback(filename -> {
+                int child = mAttachmentContainer.getChildCount();
+                for (int i = 0; i < child; i++) {
+                    View childView = mAttachmentContainer.getChildAt(i);
+                    TextView fileNameTextView = childView.findViewById(R.id.name);
+                    if (fileNameTextView != null &&
+                            fileNameTextView.getText().toString().equalsIgnoreCase(filename)) {
+                        ImageView downloadIcon = childView.findViewById(R.id.download);
+                        downloadIcon.setImageResource(R.drawable.eye);
+                        ImageView ellipsis = childView.findViewById(R.id.more);
+                        ellipsis.setVisibility(View.VISIBLE);
+                        break;
+                    }
                 }
-            }
-
-            Attachment attachment = discussion.getAttachments().where().equalTo("filename", filename).findFirst();
-            if (attachment != null)
-                mFileManager.openDiscussionAttachment(attachment);
-        });
-
-
-        Picasso.get().load(discussion.getUserPictureUrl()).into(mUserPic);
-
-        mSubject.setText(discussion.getSubject());
-        mUserName.setText(discussion.getUserFullName());
-        mTimeModified.setText(ForumFragment.formatDate(discussion.getTimeModified()));
-        mMessage.setText(HtmlTextView.parseHtml(discussion.getMessage()));
-
-
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        if (discussion.getAttachments().size() != 0) {
-            mAttachmentContainer.setVisibility(View.VISIBLE);
-            for (Attachment attachment : discussion.getAttachments()) {
-                View attachmentView = inflater.inflate(
-                        R.layout.row_attachment_detail_forum,
-                        mAttachmentContainer);
-
-                TextView fileName = attachmentView.findViewById(R.id.name);
-                View clickWrapper = attachmentView.findViewById(R.id.click_wrapper);
-                ImageView download = attachmentView.findViewById(R.id.download);
-                ImageView ellipsis = attachmentView.findViewById(R.id.more);
-
-                fileName.setText(attachment.getFileName());
-
-                boolean downloaded = mFileManager.isDiscussionAttachmentDownloaded(attachment);
-                if (downloaded) {
-                    download.setImageResource(R.drawable.eye);
-                    ellipsis.setVisibility(View.VISIBLE);
-                } else {
-                    download.setImageResource(R.drawable.download);
-                    ellipsis.setVisibility(View.GONE);
+                Attachment attachment;
+                if (attachments != null
+                        && (attachment = attachments.where().equalTo("fileName", filename).findFirst()) != null) {
+                    mFileManager.openDiscussionAttachment(attachment);
                 }
+            });
 
-                clickWrapper.setOnClickListener(v -> {
-                    if (!downloaded) {
-                        Toast.makeText(getActivity(), "Downloading file - " + attachment.getFileName(), Toast.LENGTH_SHORT).show();
-                        mFileManager.downloadDiscussionAttachment(attachment, discussion.getSubject(), mCourseName);
+            Picasso.get().load(discussion.getUserPictureUrl()).into(mUserPic);
+
+            mSubject.setText(discussion.getSubject());
+            mUserName.setText(discussion.getUserFullName());
+            mTimeModified.setText(ForumFragment.formatDate(discussion.getTimeModified()));
+            mMessage.setText(HtmlTextView.parseHtml(discussion.getMessage()));
+
+            LayoutInflater inflater = LayoutInflater.from(requireContext());
+            if (attachments != null && !attachments.isEmpty()) {
+                mAttachmentContainer.setVisibility(View.VISIBLE);
+                for (Attachment attachment : discussion.getAttachments()) {
+                    View attachmentView = inflater.inflate(
+                            R.layout.row_attachment_detail_forum,
+                            mAttachmentContainer);
+
+                    TextView fileName = attachmentView.findViewById(R.id.name);
+                    View clickWrapper = attachmentView.findViewById(R.id.click_wrapper);
+                    ImageView download = attachmentView.findViewById(R.id.download);
+                    ImageView ellipsis = attachmentView.findViewById(R.id.more);
+
+                    fileName.setText(attachment.getFileName());
+
+                    boolean downloaded = mFileManager.isDiscussionAttachmentDownloaded(attachment);
+                    if (downloaded) {
+                        download.setImageResource(R.drawable.eye);
+                        ellipsis.setVisibility(View.VISIBLE);
                     } else {
-                        mFileManager.openDiscussionAttachment(attachment);
+                        download.setImageResource(R.drawable.download);
+                        ellipsis.setVisibility(View.GONE);
                     }
-                });
 
-                ellipsis.setOnClickListener(v -> {
-                    // Check if downloaded once again, for consistency (user downloaded and then opens ellipsis immediately)
-                    boolean isDownloaded = mFileManager.isDiscussionAttachmentDownloaded(attachment);
-                    if (isDownloaded) {
-                        Observer<MoreOptionsFragment.Option> observer;  // to handle the selection
+                    clickWrapper.setOnClickListener(v -> {
+                        if (!downloaded) {
+                            Toast.makeText(getActivity(), "Downloading file - " + attachment.getFileName(),
+                                    Toast.LENGTH_SHORT).show();
+                            mFileManager.downloadDiscussionAttachment(attachment, discussion.getSubject(), mCourseName);
+                        } else {
+                            mFileManager.openDiscussionAttachment(attachment);
+                        }
+                    });
 
-                        ArrayList<MoreOptionsFragment.Option> options = new ArrayList<>(Arrays.asList(
-                                new MoreOptionsFragment.Option(0, "View", R.drawable.eye),
-                                new MoreOptionsFragment.Option(1, "Re-Download", R.drawable.download),
-                                new MoreOptionsFragment.Option(2, "Share", R.drawable.ic_share),
-                                new MoreOptionsFragment.Option(3, "Properties", R.drawable.ic_info)
-                        ));
+                    ellipsis.setOnClickListener(v -> {
+                        // Check if downloaded once again, for consistency (user downloaded and then opens
+                        // ellipsis immediately)
+                        boolean isDownloaded = mFileManager.isDiscussionAttachmentDownloaded(attachment);
+                        if (isDownloaded) {
+                            Observer<MoreOptionsFragment.Option> observer;  // to handle the selection
 
-                        observer = option -> {
-                            if (option == null)
-                                return;
-                            switch (option.getId()) {
-                                case 0:
-                                    mFileManager.openDiscussionAttachment(attachment);
-                                    break;
-                                case 1:
-                                    Toast.makeText(getActivity(), "Downloading file - " + attachment.getFileName(),
-                                            Toast.LENGTH_SHORT).show();
-                                    mFileManager.downloadDiscussionAttachment(attachment, discussion.getSubject(),
-                                            mCourseName);
-                                    break;
-                                case 2:
-                                    mFileManager.shareDiscussionAttachment(attachment);
-                                    break;
-                                case 3:
-                                    new PropertiesAlertDialog(getContext(), attachment).show();
-                            }
-                            moreOptionsViewModel.getSelection().removeObservers((AppCompatActivity) getContext());
-                            moreOptionsViewModel.clearSelection();
-                        };
+                            ArrayList<MoreOptionsFragment.Option> options = new ArrayList<>(Arrays.asList(
+                                    new MoreOptionsFragment.Option(0, "View", R.drawable.eye),
+                                    new MoreOptionsFragment.Option(1, "Re-Download", R.drawable.download),
+                                    new MoreOptionsFragment.Option(2, "Share", R.drawable.ic_share),
+                                    new MoreOptionsFragment.Option(3, "Properties", R.drawable.ic_info)
+                            ));
 
-                        MoreOptionsFragment fragment = MoreOptionsFragment.newInstance(attachment.getFileName(), options);
-                        fragment.show(((AppCompatActivity) getContext()).getSupportFragmentManager(),
-                                fragment.getTag());
-                        moreOptionsViewModel.getSelection().observe((AppCompatActivity) getContext(), observer);
-                    }
-                });
+                            observer = option -> {
+                                if (option == null)
+                                    return;
+                                switch (option.getId()) {
+                                    case 0:
+                                        mFileManager.openDiscussionAttachment(attachment);
+                                        break;
+                                    case 1:
+                                        Toast.makeText(getActivity(), "Downloading file - " + attachment.getFileName(),
+                                                Toast.LENGTH_SHORT).show();
+                                        mFileManager.downloadDiscussionAttachment(attachment, discussion.getSubject(),
+                                                mCourseName);
+                                        break;
+                                    case 2:
+                                        mFileManager.shareDiscussionAttachment(attachment);
+                                        break;
+                                    case 3:
+                                        new PropertiesAlertDialog(requireActivity(), attachment).show();
+                                }
+                                moreOptionsViewModel.getSelection().removeObservers(requireActivity());
+                                moreOptionsViewModel.clearSelection();
+                            };
+
+                            MoreOptionsFragment fragment = MoreOptionsFragment.newInstance(attachment.getFileName(),
+                                    options);
+                            fragment.show(requireActivity().getSupportFragmentManager(), fragment.getTag());
+                            moreOptionsViewModel.getSelection().observe((AppCompatActivity) requireActivity(), observer);
+                        }
+                    });
+                }
+            } else {
+                mAttachmentContainer.setVisibility(View.GONE);
             }
-        } else {
-            mAttachmentContainer.setVisibility(View.GONE);
         }
     }
 
