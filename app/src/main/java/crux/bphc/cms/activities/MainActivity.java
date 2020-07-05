@@ -61,7 +61,6 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 1001;
-    private static final String KEY_FRAGMENT = "fragment";
     private UserAccount mUserAccount;
 
     @Override
@@ -139,7 +138,12 @@ public class MainActivity extends AppCompatActivity
         if(uri != null && action != null && action.equals("android.intent.action.VIEW")) {
             Realm realm = Realm.getInstance(MyApplication.getRealmConfiguration());
             List<Course> courses = realm.copyFromRealm(realm.where(Course.class).findAll());
-            int courseId = Integer.parseInt(uri.getQueryParameter("courseId"));
+
+            int courseId = -1;
+            String q = uri.getQueryParameter("courseId");
+            if (q != null) {
+                courseId = Integer.parseInt(q);
+            }
 
             boolean isEnrolled = false;
             for(Course course : courses) {
@@ -150,9 +154,15 @@ public class MainActivity extends AppCompatActivity
             }
 
             if(isEnrolled) {
-                String fileUrl = uri.getScheme() + "://" + uri.getHost() + uri.getPath().replace("/fileShare", "") + "?forcedownload=1&token=" + mUserAccount.getToken();
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(fileUrl));
-                startActivity(browserIntent);
+                String scheme = uri.getScheme();
+                String path = uri.getPath();
+                String host = uri.getHost();
+                if (scheme != null && host != null && path != null) {
+                    String fileUrl = String.format("%s://%s%s+?forcedownload=1&token=%s", scheme, host, path,
+                            mUserAccount.getToken());
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(fileUrl));
+                    startActivity(browserIntent);
+                }
             }
             else {
                 Toast.makeText(this, "You need to be enrolled in " + uri.getQueryParameter("courseName") + " in order to view", Toast.LENGTH_LONG).show();

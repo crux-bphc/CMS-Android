@@ -263,9 +263,9 @@ public class TokenActivity extends AppCompatActivity {
 
     static class CourseDataRetriever extends AsyncTask<Void, Integer, Boolean> {
 
-        private WeakReference<TokenActivity> activityRef;
-        private CourseDataHandler courseDataHandler;
-        private CourseRequestHandler courseRequestHandler;
+        private final WeakReference<TokenActivity> activityRef;
+        private final CourseDataHandler courseDataHandler;
+        private final CourseRequestHandler courseRequestHandler;
 
         private static final int PROGRESS_COURSE_LIST = 1;
         private static final int PROGRESS_COURSE_CONTENT = 2;
