@@ -6,7 +6,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import crux.bphc.cms.R;
 import crux.bphc.cms.app.MyApplication;
-import crux.bphc.cms.models.Content;
+import crux.bphc.cms.models.course.Content;
 import crux.bphc.cms.models.forum.Attachment;
 
 public class PropertiesAlertDialog {
@@ -27,11 +27,11 @@ public class PropertiesAlertDialog {
     }
 
     public PropertiesAlertDialog(Context context, Content content) {
-        this(context, content.getFilename(), content.getFilesize(), content.getTimecreated());
+        this(context, content.getFileName(), content.getFileSize(), content.getTimeCreated());
     }
 
     public PropertiesAlertDialog(Context context, Attachment attachment) {
-        this(context, attachment.getFilename(), attachment.getFileSize(), attachment.getTimemodified());
+        this(context, attachment.getFileName(), attachment.getFileSize(), attachment.getTimeModified());
     }
 
     public void show() {

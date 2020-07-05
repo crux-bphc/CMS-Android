@@ -45,9 +45,9 @@ import crux.bphc.cms.fragments.SettingsFragment;
 import crux.bphc.cms.helper.UserAccount;
 import crux.bphc.cms.helper.UserUtils;
 import crux.bphc.cms.helper.Util;
-import crux.bphc.cms.models.Course;
-import crux.bphc.cms.models.CourseSection;
-import crux.bphc.cms.models.Module;
+import crux.bphc.cms.models.course.Course;
+import crux.bphc.cms.models.course.CourseSection;
+import crux.bphc.cms.models.course.Module;
 import crux.bphc.cms.service.NotificationService;
 import io.realm.Realm;
 
@@ -214,7 +214,7 @@ public class MainActivity extends AppCompatActivity
 
         Realm realm = Realm.getInstance(MyApplication.getRealmConfiguration());
         List<CourseSection> courseSections = realm.copyFromRealm(realm.where(CourseSection.class)
-                .equalTo("courseID", courseId).findAll());
+                .equalTo("courseId", courseId).findAll());
         if (courseSections == null || courseSections.isEmpty()) return;
 
 

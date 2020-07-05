@@ -27,8 +27,8 @@ import crux.bphc.cms.helper.ClickListener;
 import crux.bphc.cms.helper.FileManager;
 import crux.bphc.cms.helper.FileUtils;
 import crux.bphc.cms.helper.PropertiesAlertDialog;
-import crux.bphc.cms.models.Content;
-import crux.bphc.cms.models.Module;
+import crux.bphc.cms.models.course.Content;
+import crux.bphc.cms.models.course.Module;
 import io.realm.Realm;
 import io.realm.RealmList;
 
@@ -119,7 +119,7 @@ public class FolderModuleFragment extends Fragment {
 
     private void downloadOrOpenFile(Content content, boolean forceDownload) {
         if (forceDownload || !mFileManager.isModuleContentDownloaded(content)) {
-            Toast.makeText(getActivity(), "Downloading file - " + content.getFilename(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Downloading file - " + content.getFileName(), Toast.LENGTH_SHORT).show();
             mFileManager.downloadModuleContent(content, module);
         } else {
             mFileManager.openModuleContent(content);
@@ -188,9 +188,9 @@ public class FolderModuleFragment extends Fragment {
             }
 
             public void bind(Content content) {
-                fileName.setText(content.getFilename());
+                fileName.setText(content.getFileName());
 
-                int icon = FileUtils.getDrawableIconFromFileName(content.getFilename());
+                int icon = FileUtils.getDrawableIconFromFileName(content.getFileName());
                 if (icon != -1) {
                     fileIcon.setImageResource(icon);
                 } else {
@@ -258,7 +258,7 @@ public class FolderModuleFragment extends Fragment {
                         moreOptionsViewModel.getSelection().removeObservers((AppCompatActivity) getContext());
                         moreOptionsViewModel.clearSelection();
                     }
-                    MoreOptionsFragment fragment = MoreOptionsFragment.newInstance(content.getFilename(), options);
+                    MoreOptionsFragment fragment = MoreOptionsFragment.newInstance(content.getFileName(), options);
                     fragment.show(((AppCompatActivity) getContext()).getSupportFragmentManager(),
                             fragment.getTag());
                     moreOptionsViewModel.getSelection().observe((AppCompatActivity) getContext(), observer);

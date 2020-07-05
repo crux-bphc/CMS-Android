@@ -25,8 +25,8 @@ import java.util.List;
 import crux.bphc.cms.BuildConfig;
 import crux.bphc.cms.app.Constants;
 import crux.bphc.cms.app.MyApplication;
-import crux.bphc.cms.models.Content;
-import crux.bphc.cms.models.Module;
+import crux.bphc.cms.models.course.Content;
+import crux.bphc.cms.models.course.Module;
 import crux.bphc.cms.models.forum.Attachment;
 
 /**
@@ -94,12 +94,12 @@ public class FileManager {
 
     public void downloadModuleContent(Content content, Module module) {
         deleteExistingModuleContent(content);
-        downloadFile(content.getFilename(), content.getFileurl(), module.getDescription(),  courseName, false);
+        downloadFile(content.getFileName(), content.getFileUrl(), module.getDescription(),  courseName, false);
     }
 
     public void downloadDiscussionAttachment(Attachment attachment, String description, String courseName) {
         deleteExistingDiscussionAttachment(attachment);
-        downloadFile(attachment.getFilename(), attachment.getFileurl(), description, courseName, true);
+        downloadFile(attachment.getFileName(), attachment.getFileUrl(), description, courseName, true);
     }
 
     private void downloadFile(String fileName, String fileUrl, String description, String courseName, boolean isForum) {
@@ -126,11 +126,11 @@ public class FileManager {
     }
 
     public void openModuleContent(Content content) {
-        openFile(content.getFilename());
+        openFile(content.getFileName());
     }
 
     public void openDiscussionAttachment(Attachment attachment) {
-        openFile(attachment.getFilename());
+        openFile(attachment.getFileName());
     }
 
     private void openFile(String filename) {
@@ -177,11 +177,11 @@ public class FileManager {
     }
 
     public void shareModuleContent(Content content) {
-        shareFile(content.getFilename());
+        shareFile(content.getFileName());
     }
 
     public void shareDiscussionAttachment(Attachment attachment) {
-        shareFile(attachment.getFilename());
+        shareFile(attachment.getFileName());
     }
 
     private void shareFile(String filename) {
@@ -228,11 +228,11 @@ public class FileManager {
     }
 
     public void deleteExistingModuleContent(Content content) {
-        deleteExistingFile(content.getFilename());
+        deleteExistingFile(content.getFileName());
     }
 
     public void deleteExistingDiscussionAttachment(Attachment attachment) {
-        deleteExistingFile(attachment.getFilename());
+        deleteExistingFile(attachment.getFileName());
     }
 
     public void deleteExistingFile(String filename) {
@@ -291,11 +291,11 @@ public class FileManager {
     }
 
     public boolean isModuleContentDownloaded(Content content) {
-        return isFileDownloaded(content.getFilename());
+        return isFileDownloaded(content.getFileName());
     }
 
     public boolean isDiscussionAttachmentDownloaded(Attachment attachment) {
-        return isFileDownloaded(attachment.getFilename());
+        return isFileDownloaded(attachment.getFileName());
     }
 
     private boolean isFileDownloaded(String fileName) {

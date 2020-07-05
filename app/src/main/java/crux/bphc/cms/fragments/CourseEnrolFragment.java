@@ -2,7 +2,6 @@ package crux.bphc.cms.fragments;
 
 
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -24,6 +23,7 @@ import java.util.List;
 import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.R;
 import crux.bphc.cms.helper.MoodleServices;
+import crux.bphc.cms.models.course.Course;
 import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,8 +31,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import crux.bphc.cms.models.enrol.SelfEnrol;
-import crux.bphc.cms.models.search.Contact;
-import crux.bphc.cms.models.search.Course;
+import crux.bphc.cms.models.enrol.Contact;
+import crux.bphc.cms.models.enrol.SearchedCourseDetail;
 
 import static crux.bphc.cms.app.Constants.API_URL;
 
@@ -43,13 +43,13 @@ public class CourseEnrolFragment extends Fragment {
     private static final String COURSE_KEY = "course";
 
     private String TOKEN;
-    private Course course;
+    private SearchedCourseDetail course;
 
     public CourseEnrolFragment() {
         // Required empty public constructor
     }
 
-    public static CourseEnrolFragment newInstance(String token, Course course) {
+    public static CourseEnrolFragment newInstance(String token, SearchedCourseDetail course) {
         CourseEnrolFragment fragment = new CourseEnrolFragment();
         Bundle args = new Bundle();
         args.putString(TOKEN_KEY, token);
@@ -79,10 +79,10 @@ public class CourseEnrolFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         TextView mCourseDisplayName = view.findViewById(R.id.course_enrol_course_display_name);
-        mCourseDisplayName.setText(course.getDisplayname());
+        mCourseDisplayName.setText(course.getDisplayName());
 
         TextView mCourseCategory = view.findViewById(R.id.course_enrol_course_category);
-        mCourseCategory.setText(course.getCategoryname());
+        mCourseCategory.setText(course.getCategoryName());
 
         LinearLayout mTeachers = view.findViewById(R.id.course_enrol_teachers);
         List<Contact> teachers = course.getContacts();
@@ -106,7 +106,7 @@ public class CourseEnrolFragment extends Fragment {
             for (Contact contact : teachers) {
                 TextView teacherName = new TextView(getActivity());
                 teacherName.setLayoutParams(layoutParams);
-                teacherName.setText(contact.getFullname());
+                teacherName.setText(contact.getFullName());
                 teacherName.setTextColor(textColor);
                 teacherName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
                 teacherName.setPaddingRelative(8, 0, 8, 0);
@@ -159,14 +159,14 @@ public class CourseEnrolFragment extends Fragment {
                 if (status) {
                     Toast.makeText(
                             getActivity(),
-                            "Successfully enrolled in " + course.getDisplayname(),
+                            "Successfully enrolled in " + course.getDisplayName(),
                             Toast.LENGTH_SHORT).show();
 
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 
                     CourseContentFragment courseSectionFragment = CourseContentFragment
                             .newInstance(TOKEN, course.getId());
-                    crux.bphc.cms.models.Course courseSet = new crux.bphc.cms.models.Course(course);
+                    Course courseSet = new Course(course);
 
                     Realm realm = MyApplication.getInstance().getRealmInstance();
                     realm.beginTransaction();

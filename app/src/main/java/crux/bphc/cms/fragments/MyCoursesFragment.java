@@ -40,9 +40,9 @@ import crux.bphc.cms.helper.CourseDownloader;
 import crux.bphc.cms.helper.CourseRequestHandler;
 import crux.bphc.cms.helper.HtmlTextView;
 import crux.bphc.cms.helper.UserUtils;
-import crux.bphc.cms.models.Course;
-import crux.bphc.cms.models.CourseSection;
-import crux.bphc.cms.models.Module;
+import crux.bphc.cms.models.course.Course;
+import crux.bphc.cms.models.course.CourseSection;
+import crux.bphc.cms.models.course.Module;
 import crux.bphc.cms.models.forum.Discussion;
 
 import static android.content.Context.INPUT_METHOD_SERVICE;
@@ -125,7 +125,7 @@ public class MyCoursesFragment extends Fragment {
 
             Intent intent = new Intent(getActivity(), CourseDetailActivity.class);
             intent.putExtra("courseId", course.getCourseId());
-            intent.putExtra("course_name", course.getShortname());
+            intent.putExtra("course_name", course.getShortName());
             startActivityForResult(intent, COURSE_SECTION_ACTIVITY);
             return true;
         });
@@ -335,7 +335,7 @@ public class MyCoursesFragment extends Fragment {
         } else {
             List<Course> filteredCourses = new ArrayList<>();
             for (Course course : courses) {
-                if (course.getFullname().toLowerCase().contains(searchedText)) {
+                if (course.getFullName().toLowerCase().contains(searchedText)) {
                     filteredCourses.add(course);
                 }
             }
@@ -446,7 +446,7 @@ public class MyCoursesFragment extends Fragment {
                         moreOptionsViewModel.clearSelection();
                     };
 
-                    String courseName = courses.get(getLayoutPosition()).getShortname();
+                    String courseName = courses.get(getLayoutPosition()).getShortName();
                     MoreOptionsFragment moreOptionsFragment = MoreOptionsFragment.newInstance(courseName, options);
                     moreOptionsFragment.show(((AppCompatActivity) context).getSupportFragmentManager(), moreOptionsFragment.getTag());
                     moreOptionsViewModel.getSelection().observe((AppCompatActivity) context, observer);

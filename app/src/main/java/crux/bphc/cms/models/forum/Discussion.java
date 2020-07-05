@@ -1,29 +1,92 @@
 package crux.bphc.cms.models.forum;
 
-import android.text.Html;
-
 import androidx.core.text.HtmlCompat;
+
+import com.google.gson.annotations.SerializedName;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
- * Created by siddhant on 1/17/17.
+ * Model class to represent a Discussion. A Discussion may be the initial post
+ * or a reply to a post. The lack of parent signifies it as the initial post.
+ * Discussions can also be infinitely nested. However, this class only represents
+ * the root discussion i.e the thread
+ *
+ * @author Siddhant Kumar Patel (17-Jan-2017)
  */
-
 public class Discussion extends RealmObject {
 
-    private int id;
-    private String name;
-    private int groupid;
-    private int timemodified;
-    private int usermodified;
-    private int discussion;
-    private int parent;
-    private int userid;
-    private int forumId;
-    private String subject;
-    private String message;
+    /**
+     * The ID of this object. Serves as a PK and nothing more.
+     */
+    @PrimaryKey
+    @SerializedName("id") private int id;
+
+    /**
+     * Discussion of the ID. Uniquely identifies a thread of discussions. Used
+     * when querying the replies in a thread.
+     */
+    @SuppressWarnings("unused")
+    @SerializedName("discussion") private int discussionId;
+
+    /**
+     * The name i.e subject of the thread.
+     */
+    @SuppressWarnings("unused")
+    @SerializedName("name") private String name;
+
+    /**
+     * Unix epoch when this was last modified
+     */
+    @SerializedName("timemodified") private int timeModified;
+
+    /**
+     * The parent of this discussion. Equals the <code>id</code> if a parent
+     * exists. Else, equals to 0.
+     */
+    @SuppressWarnings("unused")
+    @SerializedName("parent") private int parent;
+
+    /**
+     *
+     * Same as <code>name</code> if <code>parent</code> is 0. If may differ,
+     * eg. user supplies custom subject when replying to a discussion.
+     */
+    @SerializedName("subject") private String subject;
+
+    /**
+     * The content of this discussion.
+     */
+    @SerializedName("message") private String message;
+
+    /**
+     * List of attachments of this post
+     */
+    @SerializedName("attachments") private RealmList<Attachment> attachments;
+
+    /**
+     * Name of the user who made this discussion.
+     */
+    @SerializedName("userfullname") private String userFullName;
+
+    /**
+     * Url to the user's profile picture
+     */
+    @SerializedName("userpictureurl") private String userPictureUrl;
+
+    /**
+     * If the root discussion i.e the thread has been pinned or not.
+     */
+    @SerializedName("pinned") private boolean pinned;
+
+    /**
+     * The id of the Forum instance that the Discussion is a part of. This is not
+     * a part of the {@link crux.bphc.cms.helper.MoodleServices#getForumDiscussions}.
+     */
+    private int forumId; // TODO Move this into a separate ForumThread class.
+
 
     public Discussion() {
 
@@ -33,32 +96,8 @@ public class Discussion extends RealmObject {
         return id;
     }
 
-    public String getName() {
-        return HtmlCompat.fromHtml(name, HtmlCompat.FROM_HTML_MODE_COMPACT).toString().trim();
-    }
-
-    public int getGroupid() {
-        return groupid;
-    }
-
-    public int getTimemodified() {
-        return timemodified;
-    }
-
-    public int getUsermodified() {
-        return usermodified;
-    }
-
-    public int getDiscussion() {
-        return discussion;
-    }
-
-    public int getParent() {
-        return parent;
-    }
-
-    public int getUserid() {
-        return userid;
+    public int getTimeModified() {
+        return timeModified;
     }
 
     public String getSubject() {
@@ -69,36 +108,16 @@ public class Discussion extends RealmObject {
         return message;
     }
 
-    public String getAttachment() {
-        return attachment;
-    }
-
     public RealmList<Attachment> getAttachments() {
         return attachments;
     }
 
-    public int getTotalscore() {
-        return totalscore;
+    public String getUserFullName() {
+        return userFullName;
     }
 
-    public int getMailnow() {
-        return mailnow;
-    }
-
-    public String getUserfullname() {
-        return userfullname;
-    }
-
-    public String getUserpictureurl() {
-        return userpictureurl;
-    }
-
-    public String getNumreplies() {
-        return numreplies;
-    }
-
-    public int getNumunread() {
-        return numunread;
+    public String getUserPictureUrl() {
+        return userPictureUrl;
     }
 
     public boolean isPinned() {
@@ -110,15 +129,5 @@ public class Discussion extends RealmObject {
     }
 
     public int getForumid() { return forumId; }
-
-    private String attachment;
-    private RealmList<Attachment> attachments = null;
-    private int totalscore;
-    private int mailnow;
-    private String userfullname;
-    private String userpictureurl;
-    private String numreplies;
-    private int numunread;
-    private boolean pinned;
 
 }

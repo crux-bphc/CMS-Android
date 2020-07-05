@@ -3,7 +3,6 @@ package crux.bphc.cms.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.FrameLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -18,10 +17,11 @@ import crux.bphc.cms.fragments.CourseEnrolFragment;
 import crux.bphc.cms.fragments.CourseContentFragment;
 import crux.bphc.cms.fragments.DiscussionFragment;
 import crux.bphc.cms.fragments.ForumFragment;
+import crux.bphc.cms.models.enrol.SearchedCourseDetail;
 import io.realm.Realm;
-import crux.bphc.cms.models.Course;
+import crux.bphc.cms.models.course.Course;
 import crux.bphc.cms.models.forum.Discussion;
-import crux.bphc.cms.models.search.Contact;
+import crux.bphc.cms.models.enrol.Contact;
 
 import static crux.bphc.cms.app.Constants.COURSE_PARCEL_INTENT_KEY;
 import static crux.bphc.cms.app.Constants.TOKEN;
@@ -33,7 +33,7 @@ public class CourseDetailActivity extends AppCompatActivity {
     Course course;
     Realm realm;
     private FragmentManager fragmentManager;
-    private crux.bphc.cms.models.search.Course mEnrolCourse;
+    private SearchedCourseDetail mEnrolCourse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,10 +70,10 @@ public class CourseDetailActivity extends AppCompatActivity {
         if (course == null) {
             contacts = mEnrolCourse.getContacts();
             setCourseEnrol();
-            setTitle(mEnrolCourse.getShortname());
+            setTitle(mEnrolCourse.getShortName());
 
         } else {
-            setTitle(course.getShortname());
+            setTitle(course.getShortName());
             if (forumId == -1 && discussionId == -1) {
                 setCourseSection();
             } else if (forumId != -1 && discussionId == -1) {
@@ -117,7 +117,7 @@ public class CourseDetailActivity extends AppCompatActivity {
         fragmentManager.executePendingTransactions();
 
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        Fragment forumFragment = ForumFragment.newInstance(forumId, course.getShortname());
+        Fragment forumFragment = ForumFragment.newInstance(forumId, course.getShortName());
         fragmentTransaction.addToBackStack(null)
                 .replace(R.id.course_section_enrol_container, forumFragment, "Announcements");
         fragmentTransaction.commit();
@@ -128,7 +128,7 @@ public class CourseDetailActivity extends AppCompatActivity {
         fragmentManager.executePendingTransactions();
 
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        Fragment discussionFragment = DiscussionFragment.newInstance(discussionId, course.getShortname());
+        Fragment discussionFragment = DiscussionFragment.newInstance(discussionId, course.getShortName());
         fragmentTransaction.addToBackStack(null)
                 .replace(R.id.course_section_enrol_container, discussionFragment, "Discussion");
         fragmentTransaction.commit();

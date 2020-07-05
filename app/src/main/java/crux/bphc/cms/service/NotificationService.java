@@ -24,10 +24,9 @@ import crux.bphc.cms.helper.CourseDataHandler;
 import crux.bphc.cms.helper.CourseRequestHandler;
 import crux.bphc.cms.helper.UserAccount;
 import crux.bphc.cms.helper.UserUtils;
-import crux.bphc.cms.models.Course;
-import crux.bphc.cms.models.CourseSection;
-import crux.bphc.cms.models.Module;
-import crux.bphc.cms.models.NotificationSet;
+import crux.bphc.cms.models.course.Course;
+import crux.bphc.cms.models.course.CourseSection;
+import crux.bphc.cms.models.course.Module;
 import crux.bphc.cms.models.forum.Discussion;
 
 import static androidx.core.app.NotificationCompat.PRIORITY_DEFAULT;
@@ -265,5 +264,71 @@ public class NotificationService extends JobService {
             }
             mNotifyMgr.notify(notificationSet.getUniqueId(), mBuilder.build());
         }
+    }
+
+
+    /**
+     * A data class for Notification data
+     *
+     * @author Harshit Agarwal (18-01-2017)
+     * @author Abhijeet Viswa (05-July-2017)
+     */
+    private static class NotificationSet {
+
+        private final int uniqueId;
+        private final int bundleId;
+        private final String notifSummary;
+        private final String notifTitle;
+        private final String notifContent;
+
+        public NotificationSet(int uniqueId, int bundleId, String notifTitle, String notifContent, String notifSummary) {
+            this.uniqueId = uniqueId;
+            this.bundleId = bundleId;
+            this.notifTitle = notifTitle;
+            this.notifContent = notifContent;
+            this.notifSummary = notifSummary;
+        }
+
+        /**
+         *  Helper method to create NotificationSet object for a new module
+         */
+        public static NotificationSet createNotificationSet(Course course, CourseSection section, Module module) {
+            return new NotificationSet(module.getId(), course.getId(), section.getName(), module.getName(),
+                    course.getShortName());
+        }
+
+        /**
+         *  Helper method to create NotificationSet object for a new discussion
+         */
+        public static NotificationSet createNotificationSet(Course course, Module module, Discussion discussion) {
+            return new NotificationSet(discussion.getId(), course.getId(), module.getName(), discussion.getMessage(),
+                    course.getShortName());
+        }
+
+        public int getUniqueId() {
+            return uniqueId;
+        }
+
+        public int getBundleID() {
+            return bundleId;
+        }
+
+        public String getNotifSummary() {
+            return notifSummary;
+        }
+
+        public String getNotifTitle() {
+            return notifTitle;
+        }
+
+        public String getNotifContent() {
+            return notifContent;
+        }
+
+        public String getGroupKey() {
+            return notifSummary;
+
+        }
+
     }
 }

@@ -40,13 +40,13 @@ import crux.bphc.cms.helper.FileManager;
 import crux.bphc.cms.helper.PropertiesAlertDialog;
 import crux.bphc.cms.helper.Util;
 import crux.bphc.cms.interfaces.CourseContent;
-import crux.bphc.cms.models.Content;
-import crux.bphc.cms.models.CourseSection;
-import crux.bphc.cms.models.Module;
+import crux.bphc.cms.models.course.Content;
+import crux.bphc.cms.models.course.CourseSection;
+import crux.bphc.cms.models.course.Module;
 import crux.bphc.cms.models.forum.Discussion;
 
 import static crux.bphc.cms.helper.FileManager.DATA_DOWNLOADED;
-import static crux.bphc.cms.models.Module.Type.FORUM;
+import static crux.bphc.cms.models.course.Module.Type.FORUM;
 
 /**
  * @author Siddhant Kumar Patel, Abhijeet Viswa
@@ -208,7 +208,7 @@ public class CourseContentFragment extends Fragment {
                             if (!module.isDownloadable()) {
                                 return;
                             }
-                                Toast.makeText(getActivity(), "Downloading file - " + content.getFilename(),
+                                Toast.makeText(getActivity(), "Downloading file - " + content.getFileName(),
                                         Toast.LENGTH_SHORT).show();
                                 fileManager.downloadModuleContent(content, module);
                             break;
@@ -289,7 +289,7 @@ public class CourseContentFragment extends Fragment {
             switch (module.getModType()) {
                 case URL:
                     if (activity != null && content != null) {
-                        String url = content.getFileurl();
+                        String url = content.getFileUrl();
                         if (url != null && !url.isEmpty()) {
                             Util.openURLInBrowser(activity, url);
                         }
@@ -338,7 +338,7 @@ public class CourseContentFragment extends Fragment {
                         if (fileManager.isModuleContentDownloaded(content)) {
                             fileManager.openModuleContent(content);
                         } else {
-                            Toast.makeText(getActivity(), "Downloading file - " + content.getFilename(),
+                            Toast.makeText(getActivity(), "Downloading file - " + content.getFileName(),
                                     Toast.LENGTH_SHORT).show();
                             fileManager.downloadModuleContent(content, module);
                         }
@@ -355,7 +355,7 @@ public class CourseContentFragment extends Fragment {
         if (content == null)
                 return;
 
-        String toShare = content.getFileurl().replace("/moodle", "/fileShare/moodle") +
+        String toShare = content.getFileUrl().replace("/moodle", "/fileShare/moodle") +
                         "&courseName=" + courseName.replace(" ", "%20") + "&courseId=" + courseId;
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");

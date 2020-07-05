@@ -23,10 +23,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import crux.bphc.cms.models.Content;
-import crux.bphc.cms.models.Course;
-import crux.bphc.cms.models.CourseSection;
-import crux.bphc.cms.models.Module;
+import crux.bphc.cms.models.course.Content;
+import crux.bphc.cms.models.course.Course;
+import crux.bphc.cms.models.course.CourseSection;
+import crux.bphc.cms.models.course.Module;
 import crux.bphc.cms.models.forum.Discussion;
 import crux.bphc.cms.models.forum.ForumData;
 
@@ -237,7 +237,7 @@ public class CourseRequestHandler {
             }
         }
 
-        Set<Content> set = new TreeSet<>((c1, c2) -> c1.getFilename().compareTo(c2.getFilename()));
+        Set<Content> set = new TreeSet<>((c1, c2) -> c1.getFileName().compareTo(c2.getFileName()));
         for (Content c : contents) {
             while (!set.add(c)) {
                 changeName(c);
@@ -248,7 +248,7 @@ public class CourseRequestHandler {
     }
 
     private void changeName(Content content) {
-        String fileName = content.getFilename();
+        String fileName = content.getFileName();
         String newFileName = fileName;
         //Makes sure that the string fileName contains an extension
         if (!(fileName.lastIndexOf('.') == -1)) {
@@ -270,7 +270,7 @@ public class CourseRequestHandler {
                 }
             }
         }
-        content.setFilename(newFileName);
+        content.setFileName(newFileName);
     }
 
     public interface CallBack<T> {

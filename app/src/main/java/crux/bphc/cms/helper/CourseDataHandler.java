@@ -15,10 +15,10 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 import io.realm.Sort;
-import crux.bphc.cms.models.Content;
-import crux.bphc.cms.models.Course;
-import crux.bphc.cms.models.CourseSection;
-import crux.bphc.cms.models.Module;
+import crux.bphc.cms.models.course.Content;
+import crux.bphc.cms.models.course.Course;
+import crux.bphc.cms.models.course.CourseSection;
+import crux.bphc.cms.models.course.Module;
 import crux.bphc.cms.models.forum.Discussion;
 
 /**
@@ -40,7 +40,7 @@ public class CourseDataHandler {
     public static String getCourseName(int courseId) {
         Realm realm = Realm.getInstance(MyApplication.getRealmConfiguration());
         Course course = realm.where(Course.class).equalTo("id", courseId).findFirst();
-        String name = course.getShortname();
+        String name = course.getShortName();
         realm.close();
         return name;
     }
@@ -108,7 +108,7 @@ public class CourseDataHandler {
      * @param sectionList sectionList data
      * @return parts of section data structure which has new contents or null if userAccount is not logged in.
      */
-    public List<CourseSection> setCourseData(@NonNull int courseId, @NonNull List<CourseSection> sectionList) {
+    public List<CourseSection> setCourseData(int courseId, @NonNull List<CourseSection> sectionList) {
         if (!userAccount.isLoggedIn()) {
             return null;
         }
@@ -116,20 +116,17 @@ public class CourseDataHandler {
 
         Realm realm = Realm.getInstance(MyApplication.getRealmConfiguration());
         //check if course initially had no data
-        if (realm.where(CourseSection.class).equalTo("courseID", courseId).findFirst() == null) {
-            for (CourseSection section : sectionList) {
-                section.setCourseID(courseId);
-            }
+        if (realm.where(CourseSection.class).equalTo("courseId", courseId).findFirst() == null) {
+            sectionList.forEach(s -> s.setCourseId(courseId));
             realm.beginTransaction();
             realm.copyToRealmOrUpdate(sectionList);
             realm.commitTransaction();
             newPartsInSections = sectionList; //returns the whole sectionList as the whole course is new
-
         } else {        //not a new course, compare parts for new data
             for (CourseSection section : sectionList) {
                 if (realm.where(CourseSection.class).equalTo("id", section.getId()).findFirst() == null) {
-                    //whole section is new
-                    section.setCourseID(courseId);
+                    // whole section is new
+                    section.setCourseId(courseId);
                     newPartsInSections.add(section);
                 } else {
                     CourseSection realmSection =
@@ -138,13 +135,12 @@ public class CourseDataHandler {
                     if (newPartInSection != null) {
                         newPartsInSections.add(newPartInSection);
                     }
-                    section.setCourseID(courseId);
-                    // newPartsInSections.add(trimmedSection);
+                    section.setCourseId(courseId);
                 }
             }
 
             realm.beginTransaction();
-            realm.where(CourseSection.class).equalTo("courseID", courseId).findAll().deleteAllFromRealm();
+            realm.where(CourseSection.class).equalTo("courseId", courseId).findAll().deleteAllFromRealm();
             realm.copyToRealmOrUpdate(sectionList);
             realm.commitTransaction();
         }
@@ -196,8 +192,8 @@ public class CourseDataHandler {
         }
         for (Content content : module.getContents()) {
             Content realmContent = realm.where(Content.class)
-                    .equalTo("timemodified", content.getTimemodified())
-                    .equalTo("fileurl", content.getFileurl())
+                    .equalTo("fileUrl", content.getFileUrl())
+                    .equalTo("fileName", content.getFileName())
                     .findFirst();
             Content newContent = realmContent == null ? content : null;
             if (newContent != null) {
@@ -238,7 +234,7 @@ public class CourseDataHandler {
         Realm realm = Realm.getInstance(MyApplication.getRealmConfiguration());
         realm.beginTransaction();
         realm.where(Course.class).equalTo("id", courseId).findAll().deleteAllFromRealm();
-        realm.where(CourseSection.class).equalTo("courseID", courseId).findAll().deleteAllFromRealm();
+        realm.where(CourseSection.class).equalTo("courseId", courseId).findAll().deleteAllFromRealm();
         realm.commitTransaction();
         realm.close();
     }
@@ -248,7 +244,7 @@ public class CourseDataHandler {
         Realm realm = Realm.getInstance(MyApplication.getRealmConfiguration());
         courseSections = realm.copyFromRealm(realm
                 .where(CourseSection.class)
-                .equalTo("courseID", courseId)
+                .equalTo("courseId", courseId)
                 .findAll()
                 .sort("id", Sort.ASCENDING));
         realm.close();

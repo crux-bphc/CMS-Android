@@ -17,7 +17,7 @@ import java.util.List;
 
 import crux.bphc.cms.R;
 import crux.bphc.cms.interfaces.CourseContent;
-import crux.bphc.cms.models.CourseSection;
+import crux.bphc.cms.models.course.CourseSection;
 import crux.bphc.cms.widgets.CollapsibleTextView;
 
 /**

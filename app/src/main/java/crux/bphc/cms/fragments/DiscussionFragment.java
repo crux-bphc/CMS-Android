@@ -112,11 +112,11 @@ public class DiscussionFragment extends Fragment {
         });
 
 
-        Picasso.get().load(discussion.getUserpictureurl()).into(mUserPic);
+        Picasso.get().load(discussion.getUserPictureUrl()).into(mUserPic);
 
         mSubject.setText(discussion.getSubject());
-        mUserName.setText(discussion.getUserfullname());
-        mTimeModified.setText(ForumFragment.formatDate(discussion.getTimemodified()));
+        mUserName.setText(discussion.getUserFullName());
+        mTimeModified.setText(ForumFragment.formatDate(discussion.getTimeModified()));
         mMessage.setText(HtmlTextView.parseHtml(discussion.getMessage()));
 
 
@@ -133,7 +133,7 @@ public class DiscussionFragment extends Fragment {
                 ImageView download = attachmentView.findViewById(R.id.download);
                 ImageView ellipsis = attachmentView.findViewById(R.id.more);
 
-                fileName.setText(attachment.getFilename());
+                fileName.setText(attachment.getFileName());
 
                 boolean downloaded = mFileManager.isDiscussionAttachmentDownloaded(attachment);
                 if (downloaded) {
@@ -146,7 +146,7 @@ public class DiscussionFragment extends Fragment {
 
                 clickWrapper.setOnClickListener(v -> {
                     if (!downloaded) {
-                        Toast.makeText(getActivity(), "Downloading file - " + attachment.getFilename(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Downloading file - " + attachment.getFileName(), Toast.LENGTH_SHORT).show();
                         mFileManager.downloadDiscussionAttachment(attachment, discussion.getSubject(), mCourseName);
                     } else {
                         mFileManager.openDiscussionAttachment(attachment);
@@ -174,7 +174,7 @@ public class DiscussionFragment extends Fragment {
                                     mFileManager.openDiscussionAttachment(attachment);
                                     break;
                                 case 1:
-                                    Toast.makeText(getActivity(), "Downloading file - " + attachment.getFilename(),
+                                    Toast.makeText(getActivity(), "Downloading file - " + attachment.getFileName(),
                                             Toast.LENGTH_SHORT).show();
                                     mFileManager.downloadDiscussionAttachment(attachment, discussion.getSubject(),
                                             mCourseName);
@@ -189,7 +189,7 @@ public class DiscussionFragment extends Fragment {
                             moreOptionsViewModel.clearSelection();
                         };
 
-                        MoreOptionsFragment fragment = MoreOptionsFragment.newInstance(attachment.getFilename(), options);
+                        MoreOptionsFragment fragment = MoreOptionsFragment.newInstance(attachment.getFileName(), options);
                         fragment.show(((AppCompatActivity) getContext()).getSupportFragmentManager(),
                                 fragment.getTag());
                         moreOptionsViewModel.getSelection().observe((AppCompatActivity) getContext(), observer);

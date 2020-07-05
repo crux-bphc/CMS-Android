@@ -25,7 +25,7 @@ import crux.bphc.cms.helper.ClickListener;
 import crux.bphc.cms.helper.FileManager;
 import crux.bphc.cms.helper.HtmlTextView;
 import crux.bphc.cms.interfaces.CourseContent;
-import crux.bphc.cms.models.Module;
+import crux.bphc.cms.models.course.Module;
 import crux.bphc.cms.widgets.CollapsibleTextView;
 
 /**
@@ -117,7 +117,7 @@ public class CourseModuleDelegate extends AdapterDelegate<List<CourseContent>> {
             vh.modIcon.setVisibility(View.GONE);
             if (module.getModType() != Module.Type.LABEL) {
                 vh.progressBar.setVisibility(View.VISIBLE);
-                Picasso.get().load(module.getModicon()).into(vh.modIcon, new Callback() {
+                Picasso.get().load(module.getModIcon()).into(vh.modIcon, new Callback() {
                     @Override
                     public void onSuccess() {
                         vh.progressBar.setVisibility(View.GONE);
