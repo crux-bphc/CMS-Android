@@ -1,7 +1,9 @@
 package crux.bphc.cms.app;
 
 /**
- * Created by harsu on 16-12-2016.
+ * Class that contains constants and other near-constant information
+ *
+ * @author Harshit Agarwal (16-12-2016)
  */
 
 public class Constants {
@@ -9,14 +11,12 @@ public class Constants {
     // used for intent from CourseSearch to CorseDetailActivity for CourseEnrolFrag
     public static final String COURSE_PARCEL_INTENT_KEY = "course_parcel";
     public static final String WEBSITE_URL = "https://crux-bphc.github.io/";
-    public static final String GITHUB_URL = "https://github.com/CRUx-BPHC/CMS-Android/";
-    public static final String GITHUB_URL_ISSUE = GITHUB_URL + "issues/";
-    //"https://goo.gl/forms/wKCukHQTCDCp7HsG3";//GITHUB_URL + "issues/";
 
-    public static String API_URL = "https://td.bits-hyderabad.ac.in/moodle/";
-    public static String SSO_LOGIN_URL = API_URL + "/admin/tool/mobile/launch.php?service=moodle_mobile_app&passport=%s&urlscheme=%s&oauthsso=1";
-    public static String COURSE_URL = API_URL + "/course/view.php";
-    public static String SSO_URL_SCHEME = "cmsbphc";
+    public static final String API_URL = "https://td.bits-hyderabad.ac.in/moodle/";
+    public static final String SSO_LOGIN_URL = API_URL +
+            "/admin/tool/mobile/launch.php?service=moodle_mobile_app&passport=%s&urlscheme=%s&oauthsso=1";
+    public static final String COURSE_URL = API_URL + "/course/view.php";
+    public static final String SSO_URL_SCHEME = "cmsbphc";
 
     public static String TOKEN;
 
