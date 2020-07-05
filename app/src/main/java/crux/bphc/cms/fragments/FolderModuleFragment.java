@@ -10,12 +10,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,29 +71,28 @@ public class FolderModuleFragment extends Fragment {
 
         Realm realm = MyApplication.getInstance().getRealmInstance();
 
-        // If we NPE, lite
         module = realm.where(Module.class).equalTo("instance", MODULE_INSTANCE).findFirst();
-        contents = module.getContents();
+        contents = module != null ? module.getContents() : null;
 
-        mFileManager = new FileManager(getActivity(), COURSE_NAME);
+        mFileManager = new FileManager(requireActivity(), COURSE_NAME);
         mFileManager.registerDownloadReceiver();
         mFileManager.setCallback(fileName -> {
             mAdapter.notifyDataSetChanged();
-            Content content = contents.where().equalTo("filename", fileName).findFirst();
-            if (content != null)
+            Content content;
+            if (contents != null && (content = contents.where().equalTo("fileName", fileName).findFirst()) != null) {
                 mFileManager.openModuleContent(content);
+            }
         });
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_folder_module, container, false);
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NotNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         moreOptionsViewModel = new ViewModelProvider(requireActivity()).get(MoreOptionsFragment.OptionsViewModel.class);
@@ -129,8 +129,8 @@ public class FolderModuleFragment extends Fragment {
 
     private class FolderModuleAdapter extends RecyclerView.Adapter<FolderModuleFragment.FolderModuleAdapter.FolderModuleViewHolder> {
 
-        private List<Content> mContents;
-        private ClickListener mClickListener;
+        private final List<Content> mContents;
+        private final ClickListener mClickListener;
 
         public FolderModuleAdapter(ClickListener clickListener, List<Content> contents) {
             mClickListener = clickListener;
@@ -142,15 +142,7 @@ public class FolderModuleFragment extends Fragment {
             notifyDataSetChanged();
         }
 
-        public List<Content> getContents() {
-            return mContents;
-        }
-
-        public void clearContents() {
-            mContents.clear();
-            notifyDataSetChanged();
-        }
-
+        @NotNull
         @Override
         public FolderModuleFragment.FolderModuleAdapter.FolderModuleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
@@ -171,11 +163,11 @@ public class FolderModuleFragment extends Fragment {
 
         public class FolderModuleViewHolder extends RecyclerView.ViewHolder {
 
-            private TextView fileName;
-            private ImageView fileIcon;
-            private ImageView download;
-            private ImageView ellipsis;
-            private LinearLayout clickWrapper;
+            private final TextView fileName;
+            private final ImageView fileIcon;
+            private final ImageView download;
+            private final ImageView ellipsis;
+            private final LinearLayout clickWrapper;
             
             public FolderModuleViewHolder(View itemView) {
                 super(itemView);
@@ -235,7 +227,7 @@ public class FolderModuleFragment extends Fragment {
                                 case 3:
                                     new PropertiesAlertDialog(getContext(), content).show();
                             }
-                            moreOptionsViewModel.getSelection().removeObservers((AppCompatActivity) getContext());
+                            moreOptionsViewModel.getSelection().removeObservers(requireActivity());
                             moreOptionsViewModel.clearSelection();
                         };
                     } else {
@@ -255,13 +247,13 @@ public class FolderModuleFragment extends Fragment {
                                     break;
                             }
                         };
-                        moreOptionsViewModel.getSelection().removeObservers((AppCompatActivity) getContext());
+                        moreOptionsViewModel.getSelection().removeObservers(requireActivity());
                         moreOptionsViewModel.clearSelection();
                     }
                     MoreOptionsFragment fragment = MoreOptionsFragment.newInstance(content.getFileName(), options);
-                    fragment.show(((AppCompatActivity) getContext()).getSupportFragmentManager(),
+                    fragment.show(requireActivity().getSupportFragmentManager(),
                             fragment.getTag());
-                    moreOptionsViewModel.getSelection().observe((AppCompatActivity) getContext(), observer);
+                    moreOptionsViewModel.getSelection().observe(requireActivity(), observer);
                 });
             }
         }

@@ -86,15 +86,15 @@ public class MoreOptionsFragment extends BottomSheetDialogFragment {
         }
 
         // create the list
-        Context context = getContext();
         ListView listView = view.findViewById(R.id.more_options_list);
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(), R.layout.row_more_options) {
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(requireActivity(), R.layout.row_more_options) {
             OptionViewHolder vh;
 
             @Override
             public @NonNull
-            View getView(int position, View convertView, ViewGroup parent) {
-                LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View getView(int position, View convertView, @NotNull ViewGroup parent) {
+                LayoutInflater inflater = (LayoutInflater) requireActivity()
+                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 if (convertView == null) {
                     convertView = inflater.inflate(R.layout.row_more_options, parent, false);
                     vh = new OptionViewHolder();
@@ -130,9 +130,9 @@ public class MoreOptionsFragment extends BottomSheetDialogFragment {
      * Wrapper class specifying an option.
      */
     public static class Option implements Parcelable {
-        int id;
-        String optionText;
-        int drawableIcon;
+        final int id;
+        final String optionText;
+        final int drawableIcon;
 
         /**
          * Constructor for a new <code>Option</code>
@@ -187,7 +187,7 @@ public class MoreOptionsFragment extends BottomSheetDialogFragment {
      *  <code>ViewModel</code> to observe selection events.
      */
     public static class OptionsViewModel extends ViewModel {
-        private MutableLiveData<Option> selection = new MutableLiveData<>();
+        private final MutableLiveData<Option> selection = new MutableLiveData<>();
 
         public OptionsViewModel() {
         }

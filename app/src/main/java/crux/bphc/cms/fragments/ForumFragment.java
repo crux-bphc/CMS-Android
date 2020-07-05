@@ -3,7 +3,6 @@ package crux.bphc.cms.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,26 +19,23 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.squareup.picasso.Picasso;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
-import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.R;
+import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.helper.ClickListener;
 import crux.bphc.cms.helper.CourseRequestHandler;
 import crux.bphc.cms.helper.CourseRequestHandler.CallBack;
 import crux.bphc.cms.helper.HtmlTextView;
-import crux.bphc.cms.helper.MoodleServices;
+import crux.bphc.cms.models.forum.Discussion;
 import io.realm.Realm;
 import io.realm.RealmResults;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-import crux.bphc.cms.models.forum.Discussion;
-
-import static crux.bphc.cms.app.Constants.API_URL;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -50,12 +46,9 @@ public class ForumFragment extends Fragment {
 
     public static final String FORUM_ID_KEY = "forum_id";
     public static final String COURSE_NAME_KEY = "courseName";
-    private final int PER_PAGE = 20;
 
     private int FORUM_ID = 1;
     private String COURSE_NAME;
-    private int page = 0;
-    private boolean mLoading = false;
 
     private ForumAdapter mAdapter;
     private Realm realm;
@@ -112,40 +105,31 @@ public class ForumFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NotNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         mEmptyView = view.findViewById(R.id.tv_empty);
 
         mSwipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
-        mSwipeRefreshLayout.setOnRefreshListener(() -> {
-            page = 0;
-            mLoading = false;
-            makeRequest();
-        });
+        mSwipeRefreshLayout.setOnRefreshListener(this::makeRequest);
 
         ClickListener mClickListener = (object, position) -> {
             Discussion discussion = (Discussion) object;
             DiscussionFragment fragment = DiscussionFragment.newInstance(discussion.getId(), COURSE_NAME);
-            FragmentTransaction transaction = getActivity()
+            FragmentTransaction transaction = requireActivity()
                     .getSupportFragmentManager()
                     .beginTransaction();
+
             transaction.addToBackStack(null);
-            transaction.replace(((ViewGroup) getView().getParent()).getId(), fragment, "ForumDetail");
+            transaction.replace(((ViewGroup) requireView().getParent()).getId(), fragment, "ForumDetail");
             transaction.commit();
+
             return true;
         };
 
         RecyclerView mRecyclerView = view.findViewById(R.id.site_news);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         mRecyclerView.setLayoutManager(layoutManager);
-
-        // Instantiate retrofit instance for sending requests
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(API_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        MoodleServices moodleServices = retrofit.create(MoodleServices.class);
 
         mAdapter = new ForumAdapter(mClickListener, new ArrayList<>());
         mRecyclerView.setAdapter(mAdapter);
@@ -174,16 +158,12 @@ public class ForumFragment extends Fragment {
                         results.deleteAllFromRealm();
                         realm.copyToRealm(mAdapter.getDiscussions());
                     });
-                    mLoading = false;
                     mSwipeRefreshLayout.setRefreshing(false);
                 }
             }
 
             @Override
             public void onFailure(String message, Throwable t){
-                Log.e("ForumFragment", t.toString());
-                System.err.println(t.getStackTrace());
-                mLoading = false;
                 mSwipeRefreshLayout.setRefreshing(false);
 
                 // Load and display cached discussion data from database, if present
@@ -215,8 +195,8 @@ public class ForumFragment extends Fragment {
 
     private static class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.ForumViewHolder> {
 
-        private List<Discussion> mDiscussions = new ArrayList<>();
-        private ClickListener mClickListener;
+        private final List<Discussion> mDiscussions;
+        private final ClickListener mClickListener;
 
         public ForumAdapter(ClickListener clickListener, List<Discussion> discussions) {
             mClickListener = clickListener;
@@ -237,6 +217,7 @@ public class ForumFragment extends Fragment {
             notifyDataSetChanged();
         }
 
+        @NotNull
         @Override
         public ForumViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
@@ -258,11 +239,12 @@ public class ForumFragment extends Fragment {
 
         public class ForumViewHolder extends RecyclerView.ViewHolder {
 
-            private ImageView mUserPic, mPinned;
-            private TextView mSubject;
-            private TextView mUserName;
-            private TextView mModifiedTime;
-            private HtmlTextView mMessage;
+            private final ImageView mUserPic;
+            private final ImageView mPinned;
+            private final TextView mSubject;
+            private final TextView mUserName;
+            private final TextView mModifiedTime;
+            private final HtmlTextView mMessage;
 
             public ForumViewHolder(View itemView) {
                 super(itemView);
