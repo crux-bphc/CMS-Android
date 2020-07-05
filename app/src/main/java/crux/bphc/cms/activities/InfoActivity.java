@@ -4,9 +4,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import crux.bphc.cms.R;
@@ -29,8 +29,7 @@ public class InfoActivity extends AppCompatActivity {
             Intent viewIntent = new Intent("android.intent.action.VIEW", Uri.parse(Constants.WEBSITE_URL));
             startActivity(viewIntent);
         });
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_clear_white);
+
         findViewById(R.id.crux).setOnClickListener(view -> {
             Intent viewIntent = new Intent("android.intent.action.VIEW", Uri.parse(Constants.WEBSITE_URL));
             startActivity(viewIntent);
@@ -40,6 +39,12 @@ public class InfoActivity extends AppCompatActivity {
         /* Set the description text */
         HtmlTextView desc = findViewById(R.id.description);
         desc.setText(HtmlTextView.parseHtml(this.getApplicationContext().getResources().getString(R.string.app_info)));
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_clear_white);
+        }
     }
 
     @Override
