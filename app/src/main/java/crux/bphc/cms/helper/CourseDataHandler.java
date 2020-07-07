@@ -29,11 +29,9 @@ public class CourseDataHandler {
 
     private final static String TAG = CourseDataHandler.class.getName();
 
-    Context context;
-    UserAccount userAccount;
+    final UserAccount userAccount;
 
     public CourseDataHandler(Context context) {
-        this.context = context;
         userAccount = new UserAccount(context);
     }
 
@@ -59,7 +57,7 @@ public class CourseDataHandler {
             Gson gson = new Gson();
             return gson.fromJson(gson.toJson(object, type), type);
         } catch (Exception e) {
-            Log.e(TAG, "Error while deepcopy of type ", e);
+            Log.e(TAG, "Error while deep copy of type ", e);
             return null;
         }
     }

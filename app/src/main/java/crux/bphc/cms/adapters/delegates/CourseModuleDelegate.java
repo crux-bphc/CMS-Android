@@ -21,9 +21,9 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import crux.bphc.cms.R;
-import crux.bphc.cms.helper.ClickListener;
-import crux.bphc.cms.helper.FileManager;
-import crux.bphc.cms.helper.HtmlTextView;
+import crux.bphc.cms.interfaces.ClickListener;
+import crux.bphc.cms.io.FileManager;
+import crux.bphc.cms.widgets.HtmlTextView;
 import crux.bphc.cms.interfaces.CourseContent;
 import crux.bphc.cms.models.course.Module;
 import crux.bphc.cms.widgets.CollapsibleTextView;

@@ -5,6 +5,7 @@ import android.content.Context;
 
 import java.util.List;
 
+import crux.bphc.cms.io.FileManager;
 import crux.bphc.cms.models.course.Content;
 import crux.bphc.cms.models.course.CourseSection;
 import crux.bphc.cms.models.course.Module;
@@ -18,9 +19,9 @@ import io.realm.RealmResults;
 
 public class CourseDownloader implements FileManager.Callback {
     private DownloadCallback downloadCallback;
-    private FileManager fileManager;
-    private Realm realm;
-    private Context context;
+    private final FileManager fileManager;
+    private final Realm realm;
+    private final Context context;
 
     public CourseDownloader(Activity activity, String courseName) {
         this.context = activity;
@@ -55,7 +56,7 @@ public class CourseDownloader implements FileManager.Callback {
                 if (downloadCallback != null)
                     downloadCallback.onCourseDataDownloaded();
                 for (CourseSection section : sectionList) {
-                    downloadSection(section, CourseDataHandler.getCourseName(courseId));
+                    downloadSection(section);
                 }
 
             }
@@ -69,7 +70,7 @@ public class CourseDownloader implements FileManager.Callback {
     }
 
 
-    public void downloadSection(CourseSection section, String courseName) {
+    public void downloadSection(CourseSection section) {
         fileManager.reloadFileList();
         List<Module> modules = section.getModules();
         for (Module module : modules) {
@@ -136,33 +137,5 @@ public class CourseDownloader implements FileManager.Callback {
         void onCourseContentDownloaded();
 
         void onFailure();
-    }
-
-    public static class DownloadReq {
-        int position;
-        int id;
-        String fileName;
-
-        public DownloadReq(int position, int id, String fileName) {
-            this.position = position;
-            this.id = id;
-            this.fileName = fileName;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public String getFileName() {
-            return fileName;
-        }
-
-        public int getPosition() {
-            return position;
-        }
-
-        public void setPosition(int position) {
-            this.position = position;
-        }
     }
 }

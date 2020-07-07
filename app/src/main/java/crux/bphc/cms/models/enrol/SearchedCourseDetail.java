@@ -9,9 +9,11 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+import crux.bphc.cms.network.MoodleServices;
+
 /**
  * Model class to represent objects in the <code>courses</code> list from
- * {@link crux.bphc.cms.helper.MoodleServices#getSearchedCourses}.
+ * {@link MoodleServices#searchCourses}.
  *
  * @author Siddhant Kumar Patel (17-Dec-2016)
  */

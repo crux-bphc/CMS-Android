@@ -3,6 +3,8 @@ package crux.bphc.cms.helper;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import crux.bphc.cms.models.core.UserDetail;
+
 import static android.content.Context.MODE_PRIVATE;
 
 /**
@@ -12,7 +14,7 @@ import static android.content.Context.MODE_PRIVATE;
 public class UserAccount {
 
     private static final String MY_PREFS_NAME = "CMS.userAccount3";
-    private SharedPreferences prefs;
+    private final SharedPreferences prefs;
 
     public UserAccount(Context context) {
         prefs = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
@@ -27,11 +29,10 @@ public class UserAccount {
         prefs.edit()
                 .putString("username", userDetail.getUsername())
                 .putString("token", userDetail.getToken())
-                .putString("firstname", userDetail.getFirstname())
-                .putString("lastname", userDetail.getLastname())
+                .putString("firstname", userDetail.getFirstName())
+                .putString("lastname", userDetail.getLastName())
                 .putString("userpictureurl", userDetail.getUserPictureUrl())
-                .putInt("userid", userDetail.getUserid())
-                .putString("password", userDetail.getPassword())
+                .putInt("userid", userDetail.getUserId())
                 .apply();
     }
 

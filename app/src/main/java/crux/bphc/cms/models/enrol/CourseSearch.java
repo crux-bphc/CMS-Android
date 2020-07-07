@@ -4,9 +4,11 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+import crux.bphc.cms.network.MoodleServices;
+
 /**
  * Model class to represent response from
- * {@link crux.bphc.cms.helper.MoodleServices#getSearchedCourses}.
+ * {@link MoodleServices#searchCourses}.
  *
  * @author Siddhant Kumar Patel (17-Dec-2016)
  */

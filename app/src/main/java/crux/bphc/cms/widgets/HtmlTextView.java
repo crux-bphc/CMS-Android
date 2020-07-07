@@ -1,4 +1,4 @@
-package crux.bphc.cms.helper;
+package crux.bphc.cms.widgets;
 
 import android.content.Context;
 import android.os.Build;

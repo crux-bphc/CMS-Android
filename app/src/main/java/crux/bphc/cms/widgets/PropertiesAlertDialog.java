@@ -1,4 +1,4 @@
-package crux.bphc.cms.helper;
+package crux.bphc.cms.widgets;
 
 import android.content.Context;
 
@@ -8,10 +8,11 @@ import crux.bphc.cms.R;
 import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.models.course.Content;
 import crux.bphc.cms.models.forum.Attachment;
+import crux.bphc.cms.utils.Utils;
 
 public class PropertiesAlertDialog {
 
-    AlertDialog.Builder alertDialog;
+    final AlertDialog.Builder alertDialog;
 
     public PropertiesAlertDialog(Context context, String filename, int fileSize, long epoch) {
         if (MyApplication.getInstance().isDarkModeEnabled()) {
@@ -21,8 +22,8 @@ public class PropertiesAlertDialog {
         }
 
         alertDialog.setTitle(filename);
-        String properties = String.format("File Size: %s\n", Util.humanReadableByteCount(fileSize, false));
-        properties += String.format("Created: %s", Util.epochToDateTime(epoch));
+        String properties = String.format("File Size: %s\n", Utils.humanReadableByteCount(fileSize, false));
+        properties += String.format("Created: %s", Utils.epochToDateTime(epoch));
         alertDialog.setMessage(properties);
     }
 

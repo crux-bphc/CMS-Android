@@ -35,12 +35,12 @@ import java.util.List;
 
 import crux.bphc.cms.R;
 import crux.bphc.cms.activities.CourseDetailActivity;
-import crux.bphc.cms.helper.ClickListener;
+import crux.bphc.cms.interfaces.ClickListener;
 import crux.bphc.cms.helper.CourseDataHandler;
 import crux.bphc.cms.helper.CourseDownloader;
 import crux.bphc.cms.helper.CourseRequestHandler;
-import crux.bphc.cms.helper.HtmlTextView;
-import crux.bphc.cms.helper.UserUtils;
+import crux.bphc.cms.widgets.HtmlTextView;
+import crux.bphc.cms.utils.UserUtils;
 import crux.bphc.cms.models.course.Course;
 import crux.bphc.cms.models.course.CourseSection;
 import crux.bphc.cms.models.course.Module;

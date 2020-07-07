@@ -24,8 +24,8 @@ import java.util.List;
 
 import crux.bphc.cms.activities.CourseDetailActivity;
 import crux.bphc.cms.R;
-import crux.bphc.cms.helper.ClickListener;
-import crux.bphc.cms.helper.MoodleServices;
+import crux.bphc.cms.interfaces.ClickListener;
+import crux.bphc.cms.network.MoodleServices;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -186,7 +186,7 @@ public class SearchCourseFragment extends Fragment {
         empty.setVisibility(View.GONE);
 
 
-        call = moodleServices.getSearchedCourses(
+        call = moodleServices.searchCourses(
                 TOKEN,
                 searchString,
                 page,

@@ -25,7 +25,7 @@
             android:clipToPadding="false"
             android:focusable="true">
 
-            <crux.bphc.cms.helper.HtmlTextView
+            <crux.bphc.cms.widgets.HtmlTextView
                 android:id="@+id/course_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
                 app:layout_constraintEnd_toStartOf="@id/more" />
 
 
-            <crux.bphc.cms.helper.HtmlTextView
+            <crux.bphc.cms.widgets.HtmlTextView
                 android:id="@+id/course_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

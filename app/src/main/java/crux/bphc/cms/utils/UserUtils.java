@@ -1,4 +1,4 @@
-package crux.bphc.cms.helper;
+package crux.bphc.cms.utils;
 
 import android.app.Activity;
 import android.content.Context;
@@ -10,8 +10,10 @@ import java.io.IOException;
 
 import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.activities.TokenActivity;
+import crux.bphc.cms.helper.UserAccount;
+import crux.bphc.cms.models.core.UserDetail;
+import crux.bphc.cms.network.MoodleServices;
 import io.realm.Realm;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -50,23 +52,18 @@ public class UserUtils {
                 .build();
         MoodleServices moodleServices = retrofit.create(MoodleServices.class);
 
-        Call<ResponseBody> userDetailCall = moodleServices.checkToken(userAccount.getToken());
+        Call<UserDetail> userDetailCall = moodleServices.fetchUserDetail(userAccount.getToken());
         try {
-            //todo check token validity checker logic
-            //auto logout logic, finish current activity. clear back stack. start login activity
-
-            Response<ResponseBody> tokenResponse = userDetailCall.execute();
-            if (tokenResponse.code() == 500 || tokenResponse.code() == 404) {
+            Response<UserDetail> tokenResponse = userDetailCall.execute();
+            if (!tokenResponse.isSuccessful()) {
                 logoutAndClearBackStack(context);
-                return;
+            } else {
+                // Moodle returns 200 OK for everything
+                UserDetail user;
+                if ((user = tokenResponse.body()) == null || user.getUsername() == null) {
+                    logoutAndClearBackStack(context);
+                }
             }
-            if (tokenResponse.code() != 200) {
-                return;
-            }
-            if (tokenResponse.body() == null || tokenResponse.body().string() == null || tokenResponse.body().string().contains("Invalid token")) {
-                logoutAndClearBackStack(context);
-            }
-
         } catch (IOException e) {
             Log.wtf(TAG, e);
             logoutAndClearBackStack(context);
@@ -74,7 +71,6 @@ public class UserUtils {
     }
 
     public static void logoutAndClearBackStack(Context context) {
-
         logout(context);
         if (context instanceof Activity) {
             ((Activity) context).finishAffinity();

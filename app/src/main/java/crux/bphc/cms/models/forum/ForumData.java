@@ -4,9 +4,11 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+import crux.bphc.cms.network.MoodleServices;
+
 /**
  * Model class to represent the response from
- * {@link crux.bphc.cms.helper.MoodleServices#getForumDiscussions}
+ * {@link MoodleServices#getForumDiscussions}
  *
  * @author Siddhant Kumar Patel (17-Jan-2017)
  * Created by siddhant on 1/17/17.

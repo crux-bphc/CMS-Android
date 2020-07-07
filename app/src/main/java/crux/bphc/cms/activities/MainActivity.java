@@ -43,19 +43,19 @@ import crux.bphc.cms.fragments.MyCoursesFragment;
 import crux.bphc.cms.fragments.SearchCourseFragment;
 import crux.bphc.cms.fragments.SettingsFragment;
 import crux.bphc.cms.helper.UserAccount;
-import crux.bphc.cms.helper.UserUtils;
-import crux.bphc.cms.helper.Util;
+import crux.bphc.cms.utils.UserUtils;
+import crux.bphc.cms.utils.Utils;
 import crux.bphc.cms.models.course.Course;
 import crux.bphc.cms.models.course.CourseSection;
 import crux.bphc.cms.models.course.Module;
-import crux.bphc.cms.service.NotificationService;
+import crux.bphc.cms.services.NotificationService;
 import io.realm.Realm;
 
 import static crux.bphc.cms.app.Constants.API_URL;
 import static crux.bphc.cms.app.Constants.TOKEN;
-import static crux.bphc.cms.helper.Util.userDetails;
-import static crux.bphc.cms.service.NotificationService.NOTIFICATION_CHANNEL_UPDATES;
-import static crux.bphc.cms.service.NotificationService.NOTIFICATION_CHANNEL_UPDATES_BUNDLE;
+import static crux.bphc.cms.utils.Utils.userDetails;
+import static crux.bphc.cms.services.NotificationService.NOTIFICATION_CHANNEL_UPDATES;
+import static crux.bphc.cms.services.NotificationService.NOTIFICATION_CHANNEL_UPDATES_BUNDLE;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -338,7 +338,7 @@ public class MainActivity extends AppCompatActivity
                 pushView(SearchCourseFragment.newInstance(TOKEN), "Course Search", false);
                 break;
             case R.id.website:
-                Util.openURLInBrowser(this, API_URL + "my/");
+                Utils.openURLInBrowser(this, API_URL + "my/");
                 break;
 
             case R.id.settings:
@@ -354,7 +354,7 @@ public class MainActivity extends AppCompatActivity
                 startActivity(sendIntent);
                 break;
             case R.id.issue:
-                Util.openURLInBrowser(this, Constants.getFeedbackURL(mUserAccount.getFirstName(), mUserAccount.getUsername()));
+                Utils.openURLInBrowser(this, Constants.getFeedbackURL(mUserAccount.getFirstName(), mUserAccount.getUsername()));
                 break;
             case R.id.about:
                 startActivity(new Intent(this, InfoActivity.class));

@@ -5,7 +5,7 @@ import androidx.core.text.HtmlCompat;
 import com.google.gson.annotations.SerializedName;
 
 import crux.bphc.cms.R;
-import crux.bphc.cms.helper.FileUtils;
+import crux.bphc.cms.utils.FileUtils;
 import crux.bphc.cms.interfaces.CourseContent;
 import io.realm.RealmList;
 import io.realm.RealmObject;
