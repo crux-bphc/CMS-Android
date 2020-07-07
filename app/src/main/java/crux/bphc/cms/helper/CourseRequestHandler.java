@@ -11,12 +11,15 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import crux.bphc.cms.network.MoodleServices;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -43,13 +46,11 @@ public class CourseRequestHandler {
     public static final String NETWORK_ERROR = "Network error";
     public static final String ACCESS_EXCEPTION = "accessexception";
 
-    UserAccount userAccount;
-    Context context;
-    MoodleServices moodleServices;
+    final UserAccount userAccount;
+    final MoodleServices moodleServices;
 
     public CourseRequestHandler(Context context) {
         userAccount = new UserAccount(context);
-        this.context = context;
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(API_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -61,11 +62,11 @@ public class CourseRequestHandler {
      * Async call for getting user Courses
      */
     public void getCourseList(@Nullable final CallBack<List<Course>> callBack) {
-        Call<ResponseBody> courseCall = moodleServices.getCourses(userAccount.getToken(), userAccount.getUserID());
+        Call<ResponseBody> courseCall = moodleServices.fetchCourses(userAccount.getToken(), userAccount.getUserID());
 
         courseCall.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            public void onResponse(@NotNull Call<ResponseBody> call, @NotNull Response<ResponseBody> response) {
                 try {
                     if (response.body() == null) {
                         return;
@@ -109,7 +110,7 @@ public class CourseRequestHandler {
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            public void onFailure(@NotNull Call<ResponseBody> call, @NotNull Throwable t) {
                 if (callBack != null) {
                     callBack.onFailure(NETWORK_ERROR, t);
                 }
@@ -123,7 +124,7 @@ public class CourseRequestHandler {
      */
     public List<Course> getCourseList(Context context) {
 
-        Call<ResponseBody> courseListCall = moodleServices.getCourses(userAccount.getToken(), userAccount.getUserID());
+        Call<ResponseBody> courseListCall = moodleServices.fetchCourses(userAccount.getToken(), userAccount.getUserID());
 
         try {
             Response<ResponseBody> courseListResp = courseListCall.execute(); // sync call
@@ -151,7 +152,7 @@ public class CourseRequestHandler {
 
     public List<CourseSection> getCourseData(Course course) {
 
-        Call<List<CourseSection>> courseCall = moodleServices.getCourseContent(userAccount.getToken(), course.getId());
+        Call<List<CourseSection>> courseCall = moodleServices.fetchCourseContent(userAccount.getToken(), course.getId());
         try {
             Response<List<CourseSection>> response = courseCall.execute();
             if (response.code() != 200) {
@@ -167,7 +168,7 @@ public class CourseRequestHandler {
 
     public void getCourseData(int courseId, @Nullable final CallBack<List<CourseSection>> callBack) {
 
-        Call<List<CourseSection>> courseCall = moodleServices.getCourseContent(userAccount.getToken(), courseId);
+        Call<List<CourseSection>> courseCall = moodleServices.fetchCourseContent(userAccount.getToken(), courseId);
         courseCall.enqueue(new Callback<List<CourseSection>>() {
             @Override
             public void onResponse(@NonNull Call<List<CourseSection>> call, @NonNull Response<List<CourseSection>> response) {
@@ -179,7 +180,7 @@ public class CourseRequestHandler {
             }
 
             @Override
-            public void onFailure(Call<List<CourseSection>> call, Throwable t) {
+            public void onFailure(@NotNull Call<List<CourseSection>> call, @NotNull Throwable t) {
                 if (callBack != null) {
                     callBack.onFailure(t.getMessage(), t);
                 }
@@ -209,7 +210,7 @@ public class CourseRequestHandler {
         Call<ForumData> call = moodleServices.getForumDiscussions(userAccount.getToken(), moduleId, 0, 0);
         call.enqueue(new Callback<ForumData>() {
             @Override
-            public void onResponse(Call<ForumData> call, Response<ForumData> response) {
+            public void onResponse(@NotNull Call<ForumData> call, @NotNull Response<ForumData> response) {
                 List<Discussion> discussions = response.body().getDiscussions();
                 if (callBack != null) {
                     callBack.onResponse(discussions);
@@ -217,7 +218,7 @@ public class CourseRequestHandler {
             }
 
             @Override
-            public void onFailure(Call<ForumData> call, Throwable t) {
+            public void onFailure(@NotNull Call<ForumData> call, @NotNull Throwable t) {
                 if (callBack != null) {
                     callBack.onFailure(NETWORK_ERROR, t);
                 }

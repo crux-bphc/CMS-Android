@@ -29,10 +29,10 @@ import java.util.Locale;
 
 import crux.bphc.cms.R;
 import crux.bphc.cms.app.MyApplication;
-import crux.bphc.cms.helper.ClickListener;
+import crux.bphc.cms.interfaces.ClickListener;
 import crux.bphc.cms.helper.CourseRequestHandler;
 import crux.bphc.cms.helper.CourseRequestHandler.CallBack;
-import crux.bphc.cms.helper.HtmlTextView;
+import crux.bphc.cms.widgets.HtmlTextView;
 import crux.bphc.cms.models.forum.Discussion;
 import io.realm.Realm;
 import io.realm.RealmResults;

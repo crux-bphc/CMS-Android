@@ -2,9 +2,11 @@ package crux.bphc.cms.models.enrol;
 
 import com.google.gson.annotations.SerializedName;
 
+import crux.bphc.cms.network.MoodleServices;
+
 /**
  * Model class to represent the response from
- * {@link crux.bphc.cms.helper.MoodleServices#selfEnrolUserInCourse}.
+ * {@link MoodleServices#selfEnrolUserInCourse}.
  *
  * @author Siddhant Kumar Patel (19-Dec-2016)
  */

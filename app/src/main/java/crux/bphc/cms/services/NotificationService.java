@@ -1,4 +1,4 @@
-package crux.bphc.cms.service;
+package crux.bphc.cms.services;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -23,14 +23,14 @@ import crux.bphc.cms.activities.TokenActivity;
 import crux.bphc.cms.helper.CourseDataHandler;
 import crux.bphc.cms.helper.CourseRequestHandler;
 import crux.bphc.cms.helper.UserAccount;
-import crux.bphc.cms.helper.UserUtils;
+import crux.bphc.cms.utils.UserUtils;
 import crux.bphc.cms.models.course.Course;
 import crux.bphc.cms.models.course.CourseSection;
 import crux.bphc.cms.models.course.Module;
 import crux.bphc.cms.models.forum.Discussion;
 
 import static androidx.core.app.NotificationCompat.PRIORITY_DEFAULT;
-import static crux.bphc.cms.helper.HtmlTextView.parseHtml;
+import static crux.bphc.cms.widgets.HtmlTextView.parseHtml;
 
 public class NotificationService extends JobService {
     private static boolean mJobRunning;

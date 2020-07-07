@@ -1,4 +1,4 @@
-package crux.bphc.cms.helper;
+package crux.bphc.cms.utils;
 
 import android.webkit.MimeTypeMap;
 

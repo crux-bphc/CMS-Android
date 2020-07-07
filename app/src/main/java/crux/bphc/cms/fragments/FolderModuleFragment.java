@@ -24,10 +24,10 @@ import java.util.List;
 
 import crux.bphc.cms.R;
 import crux.bphc.cms.app.MyApplication;
-import crux.bphc.cms.helper.ClickListener;
-import crux.bphc.cms.helper.FileManager;
-import crux.bphc.cms.helper.FileUtils;
-import crux.bphc.cms.helper.PropertiesAlertDialog;
+import crux.bphc.cms.interfaces.ClickListener;
+import crux.bphc.cms.io.FileManager;
+import crux.bphc.cms.utils.FileUtils;
+import crux.bphc.cms.widgets.PropertiesAlertDialog;
 import crux.bphc.cms.models.course.Content;
 import crux.bphc.cms.models.course.Module;
 import io.realm.Realm;

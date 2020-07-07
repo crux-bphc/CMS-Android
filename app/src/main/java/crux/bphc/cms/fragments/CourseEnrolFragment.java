@@ -23,7 +23,7 @@ import java.util.List;
 
 import crux.bphc.cms.R;
 import crux.bphc.cms.app.MyApplication;
-import crux.bphc.cms.helper.MoodleServices;
+import crux.bphc.cms.network.MoodleServices;
 import crux.bphc.cms.models.course.Course;
 import crux.bphc.cms.models.enrol.Contact;
 import crux.bphc.cms.models.enrol.SearchedCourseDetail;

@@ -26,9 +26,9 @@ import java.util.Arrays;
 
 import crux.bphc.cms.R;
 import crux.bphc.cms.app.MyApplication;
-import crux.bphc.cms.helper.FileManager;
-import crux.bphc.cms.helper.HtmlTextView;
-import crux.bphc.cms.helper.PropertiesAlertDialog;
+import crux.bphc.cms.io.FileManager;
+import crux.bphc.cms.widgets.HtmlTextView;
+import crux.bphc.cms.widgets.PropertiesAlertDialog;
 import crux.bphc.cms.models.forum.Attachment;
 import crux.bphc.cms.models.forum.Discussion;
 import io.realm.Realm;

@@ -1,4 +1,4 @@
-package crux.bphc.cms.helper;
+package crux.bphc.cms.network;
 
 import crux.bphc.cms.app.Constants;
 import crux.bphc.cms.BuildConfig;
@@ -15,9 +15,8 @@ public class APIClient {
 
     private static Retrofit retrofit = null;
 
-    private static HttpLoggingInterceptor interceptor =
-            new HttpLoggingInterceptor();
-    private static OkHttpClient.Builder builder = new OkHttpClient.Builder();
+    private static final HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+    private static final OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
     private APIClient() {
     }

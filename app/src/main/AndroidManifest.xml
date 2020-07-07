@@ -62,7 +62,7 @@
             android:screenOrientation="portrait" />
 
         <service
-            android:name=".service.NotificationService"
+            android:name=".services.NotificationService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 

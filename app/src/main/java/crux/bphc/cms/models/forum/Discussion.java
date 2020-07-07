@@ -4,6 +4,7 @@ import androidx.core.text.HtmlCompat;
 
 import com.google.gson.annotations.SerializedName;
 
+import crux.bphc.cms.network.MoodleServices;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -83,7 +84,7 @@ public class Discussion extends RealmObject {
 
     /**
      * The id of the Forum instance that the Discussion is a part of. This is not
-     * a part of the {@link crux.bphc.cms.helper.MoodleServices#getForumDiscussions}.
+     * a part of the {@link MoodleServices#getForumDiscussions}.
      */
     private int forumId; // TODO Move this into a separate ForumThread class.
 

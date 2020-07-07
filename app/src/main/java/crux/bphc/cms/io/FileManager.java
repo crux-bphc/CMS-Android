@@ -1,4 +1,4 @@
-package crux.bphc.cms.helper;
+package crux.bphc.cms.io;
 
 import android.app.Activity;
 import android.app.DownloadManager;
@@ -25,6 +25,7 @@ import java.util.List;
 import crux.bphc.cms.BuildConfig;
 import crux.bphc.cms.app.Constants;
 import crux.bphc.cms.app.MyApplication;
+import crux.bphc.cms.utils.FileUtils;
 import crux.bphc.cms.models.course.Content;
 import crux.bphc.cms.models.course.Module;
 import crux.bphc.cms.models.forum.Attachment;
@@ -55,12 +56,12 @@ public class FileManager {
     private static final String ROOT_FOLDER = "CMS";
 
     private List<String> fileList;
-    private Activity activity;
-    private ArrayList<String> requestedDownloads;
+    private final Activity activity;
+    private final ArrayList<String> requestedDownloads;
     private Callback callback;
-    private String courseName;
-    private String courseDirName;
-    private BroadcastReceiver onComplete;
+    private final String courseName;
+    private final String courseDirName;
+    private final BroadcastReceiver onComplete;
 
     /**
      * @param activity An Activity context, to launch new activities when
@@ -328,7 +329,6 @@ public class FileManager {
     public void setCallback(Callback callback) {
         this.callback = callback;
     }
-
 
     public interface Callback {
         void onDownloadCompleted(String fileName);

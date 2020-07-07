@@ -33,19 +33,19 @@ import crux.bphc.cms.R;
 import crux.bphc.cms.adapters.CourseContentAdapter;
 import crux.bphc.cms.app.Constants;
 import crux.bphc.cms.app.MyApplication;
-import crux.bphc.cms.helper.ClickListener;
+import crux.bphc.cms.interfaces.ClickListener;
 import crux.bphc.cms.helper.CourseDataHandler;
 import crux.bphc.cms.helper.CourseRequestHandler;
-import crux.bphc.cms.helper.FileManager;
-import crux.bphc.cms.helper.PropertiesAlertDialog;
-import crux.bphc.cms.helper.Util;
+import crux.bphc.cms.io.FileManager;
+import crux.bphc.cms.widgets.PropertiesAlertDialog;
+import crux.bphc.cms.utils.Utils;
 import crux.bphc.cms.interfaces.CourseContent;
 import crux.bphc.cms.models.course.Content;
 import crux.bphc.cms.models.course.CourseSection;
 import crux.bphc.cms.models.course.Module;
 import crux.bphc.cms.models.forum.Discussion;
 
-import static crux.bphc.cms.helper.FileManager.DATA_DOWNLOADED;
+import static crux.bphc.cms.io.FileManager.DATA_DOWNLOADED;
 import static crux.bphc.cms.models.course.Module.Type.FORUM;
 
 /**
@@ -291,14 +291,14 @@ public class CourseContentFragment extends Fragment {
                     if (activity != null && content != null) {
                         String url = content.getFileUrl();
                         if (url != null && !url.isEmpty()) {
-                            Util.openURLInBrowser(activity, url);
+                            Utils.openURLInBrowser(activity, url);
                         }
                     }
                     break;
                 case PAGE:
                     String url = module.getUrl();
                     if (activity != null && url != null) {
-                        Util.openURLInBrowser(activity, module.getUrl());
+                        Utils.openURLInBrowser(activity, module.getUrl());
                     }
                     break;
                 case FORUM:
@@ -454,7 +454,7 @@ public class CourseContentFragment extends Fragment {
             return true;
         }
         if (item.getItemId() == R.id.action_open_in_browser) {
-            Util.openURLInBrowser(requireActivity(), Constants.getCourseURL(courseId));
+            Utils.openURLInBrowser(requireActivity(), Constants.getCourseURL(courseId));
         }
         return super.onOptionsItemSelected(item);
     }

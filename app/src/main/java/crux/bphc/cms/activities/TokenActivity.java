@@ -11,11 +11,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.gson.Gson;
-
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -29,19 +26,18 @@ import butterknife.OnClick;
 import crux.bphc.cms.R;
 import crux.bphc.cms.app.Constants;
 import crux.bphc.cms.app.MyApplication;
-import crux.bphc.cms.helper.APIClient;
+import crux.bphc.cms.network.APIClient;
 import crux.bphc.cms.helper.CourseDataHandler;
 import crux.bphc.cms.helper.CourseRequestHandler;
-import crux.bphc.cms.helper.MoodleServices;
+import crux.bphc.cms.network.MoodleServices;
 import crux.bphc.cms.helper.UserAccount;
-import crux.bphc.cms.helper.UserDetail;
-import crux.bphc.cms.helper.UserUtils;
-import crux.bphc.cms.helper.Util;
+import crux.bphc.cms.models.core.UserDetail;
+import crux.bphc.cms.utils.UserUtils;
+import crux.bphc.cms.utils.Utils;
 import crux.bphc.cms.models.course.Course;
 import crux.bphc.cms.models.course.CourseSection;
 import crux.bphc.cms.models.course.Module;
 import crux.bphc.cms.models.forum.Discussion;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -87,7 +83,7 @@ public class TokenActivity extends AppCompatActivity {
                 if (scheme != null && !scheme.equals(Constants.SSO_URL_SCHEME)) {
                     Toast.makeText(this, "Invalid token URI Schema.",
                             Toast.LENGTH_SHORT).show();
-                    Util.showBadTokenDialog(this);
+                    Utils.showBadTokenDialog(this);
                     return;
                 }
                 final String host_scheme = "token=";
@@ -98,7 +94,7 @@ public class TokenActivity extends AppCompatActivity {
                     if (!host.contains(host_scheme)) {
                         Toast.makeText(this, "Invalid token URI Schema.",
                                 Toast.LENGTH_SHORT).show();
-                        Util.showBadTokenDialog(this);
+                        Utils.showBadTokenDialog(this);
                         return;
                     }
 
@@ -112,7 +108,7 @@ public class TokenActivity extends AppCompatActivity {
                     if (parts.length != 2) {
                         Toast.makeText(this, "Invalid token signature",
                                 Toast.LENGTH_SHORT).show();
-                        Util.showBadTokenDialog(this);
+                        Utils.showBadTokenDialog(this);
                         return;
                     }
 
@@ -123,12 +119,12 @@ public class TokenActivity extends AppCompatActivity {
                     String signature = launchData.get("SITE_URL") + launchData.get("PASSPORT");
 
                     try {
-                        if (!(Util.bytesToHex(MessageDigest.getInstance("md5")
+                        if (!(Utils.bytesToHex(MessageDigest.getInstance("md5")
                                 .digest(signature.getBytes(StandardCharsets.US_ASCII)))
                                 .equals(digest))) {
                             Toast.makeText(this, "Invalid token signature",
                                     Toast.LENGTH_SHORT).show();
-                            Util.showBadTokenDialog(this);
+                            Utils.showBadTokenDialog(this);
                             return;
                         }
                     } catch (NoSuchAlgorithmException e) {
@@ -156,53 +152,34 @@ public class TokenActivity extends AppCompatActivity {
 
     private void loginUsingToken(String token) {
         showProgress(true, "Fetching your details");
-        Call<ResponseBody> call = moodleServices.fetchUserDetail(token);
-        call.enqueue(new Callback<ResponseBody>() {
+        Call<UserDetail> call = moodleServices.fetchUserDetail(token);
+        call.enqueue(new Callback<UserDetail>() {
             @Override
-            public void onResponse(@NotNull Call<ResponseBody> call, @NotNull Response<ResponseBody> response) {
-                String responseString = "";
-                try {
-                    if (response.body() != null) {
-                        responseString = response.body().string();
+            public void onResponse(@NotNull Call<UserDetail> call, @NotNull Response<UserDetail> response) {
+                if (response.isSuccessful()) {
+                    UserDetail userDetail;
+                    if ((userDetail = response.body()) != null) {
+                        if (userDetail.getUsername() == null) {
+                            // No `username` field i.e token invalid
+                            String responseString = response.toString();
+
+                            if (responseString.contains("Invalid token")
+                                || responseString.contains("accessexception")) {
+                                showProgress(false, "");
+                                Utils.showBadTokenDialog(TokenActivity.this);
+                                return;
+                            }
+                        }
+                        userDetail.setToken(token);
+                        userAccount.setUser(userDetail);
+                        fetchUserData();
                     }
-                } catch (IOException e) {
-                    Log.e(TAG, "IOException while fetching user details", e);
-                    return;
-                }
-                if (responseString.contains("Invalid token")) {
-                    Toast.makeText(
-                            TokenActivity.this,
-                            "Invalid token provided!",
-                            Toast.LENGTH_SHORT).show();
-                    showProgress(false, "");
-                    Util.showBadTokenDialog(TokenActivity.this);
-                    return;
-                }
-
-                if (responseString.contains("accessexception")) {
-                    Toast.makeText(
-                            TokenActivity.this,
-                            "Please provide the Moodle Mobile web service Token",
-                            Toast.LENGTH_SHORT).show();
-                    showProgress(false, "");
-                    return;
-                }
-
-                if (responseString.length() > 0) {
-                    UserDetail userDetail = new Gson().fromJson(responseString, UserDetail.class);
-                    userDetail.setToken(token);
-                    userDetail.setPassword(""); // because SSO login
-
-                    userAccount.setUser(userDetail);
-
-                    // now get users courses
-                    fetchUserData();
                 }
             }
 
             @Override
-            public void onFailure(@NotNull Call<ResponseBody> call, @NotNull Throwable t) {
-                t.printStackTrace();
+            public void onFailure(@NotNull Call<UserDetail> call, @NotNull Throwable t) {
+                Log.wtf(TAG, t);
                 showProgress(false, "");
             }
         });

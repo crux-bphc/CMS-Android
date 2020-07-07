@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import crux.bphc.cms.R;
 import crux.bphc.cms.app.Constants;
 import crux.bphc.cms.app.MyApplication;
-import crux.bphc.cms.helper.HtmlTextView;
+import crux.bphc.cms.widgets.HtmlTextView;
 
 public class InfoActivity extends AppCompatActivity {
 
