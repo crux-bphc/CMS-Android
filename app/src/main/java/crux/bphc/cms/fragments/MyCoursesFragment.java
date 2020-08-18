@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -26,8 +27,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,16 +34,17 @@ import java.util.List;
 
 import crux.bphc.cms.R;
 import crux.bphc.cms.activities.CourseDetailActivity;
-import crux.bphc.cms.interfaces.ClickListener;
 import crux.bphc.cms.helper.CourseDataHandler;
 import crux.bphc.cms.helper.CourseDownloader;
 import crux.bphc.cms.helper.CourseRequestHandler;
-import crux.bphc.cms.widgets.HtmlTextView;
-import crux.bphc.cms.utils.UserUtils;
+import crux.bphc.cms.interfaces.ClickListener;
 import crux.bphc.cms.models.course.Course;
 import crux.bphc.cms.models.course.CourseSection;
 import crux.bphc.cms.models.course.Module;
 import crux.bphc.cms.models.forum.Discussion;
+import crux.bphc.cms.utils.UserUtils;
+import crux.bphc.cms.widgets.HtmlTextView;
+import io.realm.Realm;
 
 import static android.content.Context.INPUT_METHOD_SERVICE;
 
@@ -52,16 +52,22 @@ import static android.content.Context.INPUT_METHOD_SERVICE;
 public class MyCoursesFragment extends Fragment {
 
     private static final int COURSE_SECTION_ACTIVITY = 105;
-    RecyclerView mRecyclerView;
-    EditText mSearch;
-    SwipeRefreshLayout mSwipeRefreshLayout;
-    List<Course> courses;
-    View empty;
-    ImageView mSearchIcon;
-    boolean isClearIconSet = false;
-    String mSearchedText = "";
-    private Adapter mAdapter;
+
+    Realm realm;
+
+    CourseDataHandler courseDataHandler;
+
+    private EditText mSearch;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private View empty;
+    private ImageView mSearchIcon;
+
+    private boolean isClearIconSet = false;
+    private String mSearchedText = "";
     private int coursesUpdated;
+
+    private List<Course> courses;
+    private Adapter mAdapter;
 
     private MoreOptionsFragment.OptionsViewModel moreOptionsViewModel;
 
@@ -74,22 +80,17 @@ public class MyCoursesFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        courseDataHandler = new CourseDataHandler(getActivity());
-    }
-
-    @Override
     public void onStart() {
+        super.onStart();
         if(getActivity() != null) {
             getActivity().setTitle("My Courses");
         }
-        super.onStart();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        realm = Realm.getDefaultInstance();
         return inflater.inflate(R.layout.fragment_my_courses, container, false);
     }
 
@@ -103,17 +104,19 @@ public class MyCoursesFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NotNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        empty = view.findViewById(R.id.empty);
+
         courses = new ArrayList<>();
+        courseDataHandler = new CourseDataHandler(requireContext(), realm);
         courses = courseDataHandler.getCourseList();
 
-        mRecyclerView = view.findViewById(R.id.recyclerView);
+        RecyclerView mRecyclerView = view.findViewById(R.id.recyclerView);
         mSearch = view.findViewById(R.id.searchET);
         mSwipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         mSearchIcon = view.findViewById(R.id.searchIcon);
+        empty = view.findViewById(R.id.empty);
 
         moreOptionsViewModel = new ViewModelProvider(requireActivity()).get(MoreOptionsFragment.OptionsViewModel.class);
         mAdapter = new Adapter(getActivity(), courses);
@@ -186,7 +189,7 @@ public class MyCoursesFragment extends Fragment {
             course.setDownloadStatus(0);
             mAdapter.notifyItemChanged(position);
             final CourseDownloader courseDownloader = new CourseDownloader(getActivity(),
-                    CourseDataHandler.getCourseName(course.getId()));
+                    courseDataHandler.getCourseName(course.getId()));
             courseDownloader.setDownloadCallback(new CourseDownloader.DownloadCallback() {
                 @Override
                 public void onCourseDataDownloaded() {
@@ -242,8 +245,6 @@ public class MyCoursesFragment extends Fragment {
         }
     }
 
-    CourseDataHandler courseDataHandler;
-
     private void makeRequest() {
         CourseRequestHandler courseRequestHandler = new CourseRequestHandler(getActivity());
         courseRequestHandler.getCourseList(new CourseRequestHandler.CallBack<List<Course>>() {
@@ -273,7 +274,7 @@ public class MyCoursesFragment extends Fragment {
     }
 
     private void updateCourseContent(List<Course> courses) {
-        courseDataHandler.setCourseList(courses);
+        courseDataHandler.replaceCourses(courses);
         CourseRequestHandler courseRequestHandler = new CourseRequestHandler(getActivity());
         coursesUpdated = 0;
         if (courses.size() == 0) mSwipeRefreshLayout.setRefreshing(false);
@@ -281,8 +282,8 @@ public class MyCoursesFragment extends Fragment {
             courseRequestHandler.getCourseData(course.getCourseId(),
                     new CourseRequestHandler.CallBack<List<CourseSection>>() {
                         @Override
-                        public void onResponse(List<CourseSection> responseObject) {
-                            for (CourseSection courseSection : responseObject) {
+                        public void onResponse(List<CourseSection> sections) {
+                            for (CourseSection courseSection : sections) {
                                 List<Module> modules = courseSection.getModules();
                                 for (Module module : modules) {
                                     if (module.getModType() == Module.Type.FORUM) {
@@ -308,8 +309,9 @@ public class MyCoursesFragment extends Fragment {
                                 }
                             }
                             List<CourseSection> newPartsInSections = courseDataHandler
-                                    .setCourseData(course.getCourseId(), responseObject);
-                            if (newPartsInSections.size() > 0) {
+                                    .isolateNewCourseData(course.getCourseId(), sections);
+                            courseDataHandler.replaceCourseData(course.getCourseId(), sections);
+                            if (!newPartsInSections.isEmpty()) {
                                 coursesUpdated++;
                             }
                             //Refresh the recycler view for the last course
@@ -350,6 +352,12 @@ public class MyCoursesFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        realm.close();
+    }
+
     private class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
 
         private final LayoutInflater inflater;
@@ -369,9 +377,9 @@ public class MyCoursesFragment extends Fragment {
             this.clickListener = clickListener;
         }
 
-        @NotNull
+        @NonNull
         @Override
-        public MyViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
+        public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             return new MyViewHolder(inflater.inflate(R.layout.row_course, parent, false));
         }
 
@@ -496,6 +504,4 @@ public class MyCoursesFragment extends Fragment {
         }
 
     }
-
-
 }

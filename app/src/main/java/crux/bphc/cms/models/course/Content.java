@@ -2,6 +2,8 @@ package crux.bphc.cms.models.course;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Objects;
+
 import io.realm.RealmObject;
 
 /**
@@ -16,9 +18,22 @@ public class Content extends RealmObject {
     @SerializedName("fileurl") private String fileUrl;
     @SerializedName("filesize") private int fileSize;
     @SerializedName("timecreated") private long timeCreated;
+    @SerializedName("timemodified") private long timeModified;
+
+    private int moduleId;
 
     @SuppressWarnings("unused")
     public Content() {
+    }
+
+    public Content(Content content) {
+        this.fileName = content.fileName;
+        this.fileUrl = content.fileUrl;
+        this.fileSize = content.fileSize;
+        this.timeCreated = content.timeCreated;
+        this.timeModified = content.timeModified;
+
+        this.moduleId = content.moduleId;
     }
 
     public String getFileName() {
@@ -39,6 +54,24 @@ public class Content extends RealmObject {
 
     public long getTimeCreated() {
         return timeCreated;
+    }
+
+    public long getTimeModified() {
+        return timeModified;
+    }
+
+    public void setModuleId(int moduleId){
+        this.moduleId = moduleId;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Content && obj.hashCode() == hashCode();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(fileName, fileUrl, timeModified);
     }
 }
 

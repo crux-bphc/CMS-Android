@@ -10,7 +10,6 @@ import crux.bphc.cms.models.course.Content;
 import crux.bphc.cms.models.course.CourseSection;
 import crux.bphc.cms.models.course.Module;
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 
 /**
@@ -25,10 +24,7 @@ public class CourseDownloader implements FileManager.Callback {
 
     public CourseDownloader(Activity activity, String courseName) {
         this.context = activity;
-        RealmConfiguration config = new RealmConfiguration.Builder()
-                .deleteRealmIfMigrationNeeded()
-                .build();
-        realm = Realm.getInstance(config);
+        realm = Realm.getDefaultInstance();
         fileManager = new FileManager(activity, courseName);
         fileManager.registerDownloadReceiver();
         fileManager.setCallback(this);
@@ -39,9 +35,8 @@ public class CourseDownloader implements FileManager.Callback {
     }
 
     public void downloadCourseData(final int courseId) {
-
         CourseRequestHandler courseRequestHandler = new CourseRequestHandler(context);
-        final CourseDataHandler courseDataHandler = new CourseDataHandler(context);
+        final CourseDataHandler courseDataHandler = new CourseDataHandler(context, realm);
         courseRequestHandler.getCourseData(courseId, new CourseRequestHandler.CallBack<List<CourseSection>>() {
             @Override
             public void onResponse(List<CourseSection> sectionList) {
@@ -51,7 +46,7 @@ public class CourseDownloader implements FileManager.Callback {
                     return;
                 }
 
-                courseDataHandler.setCourseData(courseId, sectionList);
+                courseDataHandler.replaceCourseData(courseId, sectionList);
 
                 if (downloadCallback != null)
                     downloadCallback.onCourseDataDownloaded();

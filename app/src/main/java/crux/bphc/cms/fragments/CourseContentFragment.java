@@ -44,6 +44,7 @@ import crux.bphc.cms.models.course.Content;
 import crux.bphc.cms.models.course.CourseSection;
 import crux.bphc.cms.models.course.Module;
 import crux.bphc.cms.models.forum.Discussion;
+import io.realm.Realm;
 
 import static crux.bphc.cms.io.FileManager.DATA_DOWNLOADED;
 import static crux.bphc.cms.models.course.Module.Type.FORUM;
@@ -59,8 +60,9 @@ public class CourseContentFragment extends Fragment {
     private static final String COURSE_ID_KEY = "id";
     private static final int MODULE_ACTIVITY = 101;
 
-    FileManager fileManager;
-    CourseDataHandler courseDataHandler;
+    private FileManager fileManager;
+    private CourseDataHandler courseDataHandler;
+    private Realm realm;
 
     private int courseId;
     private String courseName;
@@ -101,8 +103,10 @@ public class CourseContentFragment extends Fragment {
         if (args != null) {
             courseId = args.getInt(COURSE_ID_KEY);
         }
-        courseDataHandler = new CourseDataHandler(getActivity());
-        courseName = CourseDataHandler.getCourseName(courseId);
+        // Initialize realm here instead of onCreateView so that other classes can be initialized
+        realm = Realm.getDefaultInstance();
+        courseDataHandler = new CourseDataHandler(getActivity(), realm);
+        courseName = courseDataHandler.getCourseName(courseId);
 
         fileManager = new FileManager(requireActivity(), courseName);
         fileManager.registerDownloadReceiver();
@@ -112,7 +116,7 @@ public class CourseContentFragment extends Fragment {
 
     @Override
     public void onStart() {
-        String title = courseDataHandler.getActionBarTitle(courseId);
+        String title = courseDataHandler.getCourseNameForActionBarTitle(courseId);
         if(getActivity() != null) {
             getActivity().setTitle(title);
         }
@@ -400,7 +404,7 @@ public class CourseContentFragment extends Fragment {
                     }
                 }
                 courseSections = sectionList;
-                courseDataHandler.setCourseData(courseId, sectionList);
+                courseDataHandler.replaceCourseData(courseId, sectionList);
                 setCourseContentsOnAdapter();
                 mSwipeRefreshLayout.setRefreshing(false);
             }
@@ -469,5 +473,6 @@ public class CourseContentFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         fileManager.unregisterDownloadReceiver();
+        realm.close();
     }
 }

@@ -1,12 +1,15 @@
 package crux.bphc.cms.models.course;
 
+import androidx.annotation.NonNull;
 import androidx.core.text.HtmlCompat;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 import crux.bphc.cms.R;
-import crux.bphc.cms.utils.FileUtils;
 import crux.bphc.cms.interfaces.CourseContent;
+import crux.bphc.cms.utils.FileUtils;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
@@ -33,13 +36,36 @@ public class Module extends RealmObject implements CourseContent {
     @SerializedName("description") private String description;
     @SerializedName("contents") private RealmList<Content> contents;
 
+    private int courseSectionId;
+    private boolean isUnread;
+
     @Ignore private Type modType;
-    private boolean isNewContent;
 
     @SuppressWarnings("unused")
     public Module() {
         modType = Type.DEFAULT;
+        contents = new RealmList<>();
     }
+
+    public Module(Module module) {
+        this.id = module.id;
+        this.instance = module.instance;
+        this.name = module.name;
+        this.url = module.url;
+        this.modIcon = module.modIcon;
+        this.modName = module.modName;
+        this.description = module.description;
+        this.contents = new RealmList<>();
+
+        for (Content content : module.getContents()) {
+            this.contents.add(new Content(content));
+        }
+
+        this.courseSectionId = module.courseSectionId;
+        this.modType = module.modType;
+        this.isUnread = module.isUnread;
+    }
+
 
     /**
      * @return True if module is a downloadable resource
@@ -84,24 +110,6 @@ public class Module extends RealmObject implements CourseContent {
         return -1;
     }
 
-    public boolean isNewContent() {
-        return isNewContent;
-    }
-
-    public void setNewContent(boolean newContent) {
-        isNewContent = newContent;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Type getModType() {
-        if (modType == Type.DEFAULT)
-            modType = inferModuleTypefromModuleName();
-        return modType;
-    }
-
     private Type inferModuleTypefromModuleName() {
         switch (modName.toLowerCase()) {
             case "resource":
@@ -125,6 +133,24 @@ public class Module extends RealmObject implements CourseContent {
         }
     }
 
+    public boolean isUnread() {
+        return isUnread;
+    }
+
+    public void setIsUnread(boolean isUnread) {
+        this.isUnread = isUnread;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Type getModType() {
+        if (modType == Type.DEFAULT)
+            modType = inferModuleTypefromModuleName();
+        return modType;
+    }
+
     public int getId() {
         return id;
     }
@@ -145,16 +171,22 @@ public class Module extends RealmObject implements CourseContent {
         return modIcon;
     }
 
+    public void setCourseSectionId(int courseSectionId) {
+        this.courseSectionId = courseSectionId;
+    }
+
+    @NonNull
     public RealmList<Content> getContents() {
+        if (contents == null) contents = new RealmList<>();
         return contents;
     }
 
-    public void setContents(RealmList<Content> contents) {
-        this.contents = contents;
+    public void setContents(@NonNull List<Content> contents) {
+        this.contents.addAll(contents);
     }
 
     public boolean hasContents() {
-        return getContents() != null && getContents().size() != 0;
+        return getContents().size() != 0;
     }
 
     @Override

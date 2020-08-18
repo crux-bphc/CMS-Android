@@ -23,13 +23,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import crux.bphc.cms.R;
-import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.interfaces.ClickListener;
 import crux.bphc.cms.io.FileManager;
-import crux.bphc.cms.utils.FileUtils;
-import crux.bphc.cms.widgets.PropertiesAlertDialog;
 import crux.bphc.cms.models.course.Content;
 import crux.bphc.cms.models.course.Module;
+import crux.bphc.cms.utils.FileUtils;
+import crux.bphc.cms.widgets.PropertiesAlertDialog;
 import io.realm.Realm;
 import io.realm.RealmList;
 
@@ -37,6 +36,8 @@ public class FolderModuleFragment extends Fragment {
 
     private static final String MODULE_ID_KEY = "moduleID";
     private static final String COURSE_NAME_KEY = "courseName";
+
+    Realm realm;
 
     private int MODULE_INSTANCE = 0;
     private String COURSE_NAME = "";
@@ -69,11 +70,6 @@ public class FolderModuleFragment extends Fragment {
             COURSE_NAME = getArguments().getString(COURSE_NAME_KEY);
         }
 
-        Realm realm = MyApplication.getInstance().getRealmInstance();
-
-        module = realm.where(Module.class).equalTo("instance", MODULE_INSTANCE).findFirst();
-        contents = module != null ? module.getContents() : null;
-
         mFileManager = new FileManager(requireActivity(), COURSE_NAME);
         mFileManager.registerDownloadReceiver();
         mFileManager.setCallback(fileName -> {
@@ -88,6 +84,7 @@ public class FolderModuleFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        realm = Realm.getDefaultInstance();
         return inflater.inflate(R.layout.fragment_folder_module, container, false);
     }
 
@@ -102,6 +99,9 @@ public class FolderModuleFragment extends Fragment {
             downloadOrOpenFile(content, false);
             return true;
         };
+
+        module = realm.where(Module.class).equalTo("instance", MODULE_INSTANCE).findFirst();
+        contents = module != null ? module.getContents() : null;
 
         RecyclerView mRecyclerView = view.findViewById(R.id.files);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -126,6 +126,11 @@ public class FolderModuleFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        realm.close();
+    }
 
     private class FolderModuleAdapter extends RecyclerView.Adapter<FolderModuleFragment.FolderModuleAdapter.FolderModuleViewHolder> {
 

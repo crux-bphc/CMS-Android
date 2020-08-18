@@ -25,12 +25,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import crux.bphc.cms.R;
-import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.io.FileManager;
-import crux.bphc.cms.widgets.HtmlTextView;
-import crux.bphc.cms.widgets.PropertiesAlertDialog;
 import crux.bphc.cms.models.forum.Attachment;
 import crux.bphc.cms.models.forum.Discussion;
+import crux.bphc.cms.widgets.HtmlTextView;
+import crux.bphc.cms.widgets.PropertiesAlertDialog;
 import io.realm.Realm;
 import io.realm.RealmList;
 
@@ -65,13 +64,13 @@ public class DiscussionFragment extends Fragment {
             id = getArguments().getInt("id");
             mCourseName = getArguments().getString("courseName");
         }
-        realm = MyApplication.getInstance().getRealmInstance();
         mFileManager = new FileManager(requireActivity(), mCourseName);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        realm = Realm.getDefaultInstance();
         return inflater.inflate(R.layout.fragment_discussion, container, false);
     }
 
@@ -208,8 +207,9 @@ public class DiscussionFragment extends Fragment {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
         mFileManager.unregisterDownloadReceiver();
+        realm.close();
     }
 }

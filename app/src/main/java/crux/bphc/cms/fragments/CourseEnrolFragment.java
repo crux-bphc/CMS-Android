@@ -42,6 +42,8 @@ public class CourseEnrolFragment extends Fragment {
     private static final String TOKEN_KEY = "token";
     private static final String COURSE_KEY = "course";
 
+    private Realm realm;
+
     private String TOKEN;
     private SearchedCourseDetail course;
 
@@ -71,6 +73,7 @@ public class CourseEnrolFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        realm = Realm.getDefaultInstance();
         return inflater.inflate(R.layout.fragment_course_enrol, container, false);
     }
 
@@ -164,10 +167,7 @@ public class CourseEnrolFragment extends Fragment {
                             .newInstance(TOKEN, course.getId());
                     Course courseSet = new Course(course);
 
-                    Realm realm = MyApplication.getInstance().getRealmInstance();
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(courseSet);
-                    realm.commitTransaction();
+                    realm.executeTransaction(r -> r.copyToRealmOrUpdate(courseSet));
 
                     fragmentManager
                             .beginTransaction()
@@ -186,4 +186,9 @@ public class CourseEnrolFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        realm.close();
+    }
 }

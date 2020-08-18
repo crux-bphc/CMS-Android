@@ -28,12 +28,11 @@ import java.util.List;
 import java.util.Locale;
 
 import crux.bphc.cms.R;
-import crux.bphc.cms.app.MyApplication;
-import crux.bphc.cms.interfaces.ClickListener;
 import crux.bphc.cms.helper.CourseRequestHandler;
 import crux.bphc.cms.helper.CourseRequestHandler.CallBack;
-import crux.bphc.cms.widgets.HtmlTextView;
+import crux.bphc.cms.interfaces.ClickListener;
 import crux.bphc.cms.models.forum.Discussion;
+import crux.bphc.cms.widgets.HtmlTextView;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
@@ -84,7 +83,7 @@ public class ForumFragment extends Fragment {
             FORUM_ID = getArguments().getInt(FORUM_ID_KEY);
             COURSE_NAME = getArguments().getString(COURSE_NAME_KEY);
         }
-        realm = MyApplication.getInstance().getRealmInstance();
+        realm = Realm.getDefaultInstance();
         courseRequestHandler = new CourseRequestHandler(this.getActivity());
         context = getContext();
     }
@@ -100,7 +99,7 @@ public class ForumFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        realm = Realm.getDefaultInstance();
         return inflater.inflate(R.layout.fragment_forum, container, false);
     }
 
@@ -191,6 +190,12 @@ public class ForumFragment extends Fragment {
                 Locale.getDefault());
         int year = cal.get(Calendar.YEAR);
         return day + " " + month + ", " + year;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        realm.close();
     }
 
     private static class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.ForumViewHolder> {

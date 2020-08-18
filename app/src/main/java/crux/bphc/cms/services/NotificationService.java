@@ -28,6 +28,7 @@ import crux.bphc.cms.models.course.Course;
 import crux.bphc.cms.models.course.CourseSection;
 import crux.bphc.cms.models.course.Module;
 import crux.bphc.cms.models.forum.Discussion;
+import io.realm.Realm;
 
 import static androidx.core.app.NotificationCompat.PRIORITY_DEFAULT;
 import static crux.bphc.cms.widgets.HtmlTextView.parseHtml;
@@ -142,7 +143,8 @@ public class NotificationService extends JobService {
             return;
         }
 
-        CourseDataHandler courseDataHandler = new CourseDataHandler(this);
+        Realm realm = Realm.getDefaultInstance();
+        CourseDataHandler courseDataHandler = new CourseDataHandler(this, realm);
         CourseRequestHandler courseRequestHandler = new CourseRequestHandler(this);
         mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
@@ -152,11 +154,13 @@ public class NotificationService extends JobService {
         if (courseList == null) {
             UserUtils.checkTokenValidity(this);
             jobFinished(job, true); // TODO is this reschedule needed
+            realm.close();
             return;
         }
 
         // replace the list of courses in db, and get new inserts
-        List<Course> newCourses = courseDataHandler.setCourseList(courseList);
+        List<Course> newCourses = courseDataHandler.isolateNewCourses(courseList);
+        courseDataHandler.replaceCourses(courseList);
 
         for (final Course course : courseList) {
             List<CourseSection> courseSections = courseRequestHandler.getCourseData(course);
@@ -167,7 +171,9 @@ public class NotificationService extends JobService {
 
             // update the sections of the course, and get new parts
             // Since new course notifications are skipped, default modules like "Announcements" will not get a notif
-            List<CourseSection> newPartsInSection = courseDataHandler.setCourseData(course.getCourseId(), courseSections);
+            List<CourseSection> newPartsInSection = courseDataHandler.isolateNewCourseData(course.getCourseId(),
+                    courseSections);
+            courseDataHandler.replaceCourseData(course.getCourseId(), courseSections);
 
             // Generate notifications only if it is not a new course
             if (!newCourses.contains(course)) {
@@ -206,6 +212,7 @@ public class NotificationService extends JobService {
             }
         }
 
+        realm.close();
         mJobRunning = false;
         jobFinished(job, false);
     }

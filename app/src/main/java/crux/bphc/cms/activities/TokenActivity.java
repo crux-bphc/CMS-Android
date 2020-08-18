@@ -38,6 +38,7 @@ import crux.bphc.cms.models.course.Course;
 import crux.bphc.cms.models.course.CourseSection;
 import crux.bphc.cms.models.course.Module;
 import crux.bphc.cms.models.forum.Discussion;
+import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -240,23 +241,25 @@ public class TokenActivity extends AppCompatActivity {
 
     static class CourseDataRetriever extends AsyncTask<Void, Integer, Boolean> {
 
-        private final WeakReference<TokenActivity> activityRef;
-        private final CourseDataHandler courseDataHandler;
-        private final CourseRequestHandler courseRequestHandler;
-
         private static final int PROGRESS_COURSE_LIST = 1;
         private static final int PROGRESS_COURSE_CONTENT = 2;
         private static final int PROGRESS_SITE_NEWS = 3;
 
-        CourseDataRetriever(
-                TokenActivity activity) {
+        private final WeakReference<TokenActivity> activityRef;
+        private final CourseDataHandler courseDataHandler;
+        private final CourseRequestHandler courseRequestHandler;
+
+        CourseDataRetriever(TokenActivity activity) {
             activityRef = new WeakReference<>(activity);
-            courseDataHandler = new CourseDataHandler(activityRef.get());
+            courseDataHandler = new CourseDataHandler(activityRef.get(), null);
             courseRequestHandler = new CourseRequestHandler(activityRef.get());
         }
 
         @Override
         protected Boolean doInBackground(Void... voids) {
+            // We set the realm instance for this worker thread
+            courseDataHandler.setRealmInstance(Realm.getDefaultInstance());
+
             /* Fetch User's Course List */
             publishProgress(PROGRESS_COURSE_LIST);
             List<Course> courseList = courseRequestHandler.getCourseList(activityRef.get());
@@ -264,7 +267,7 @@ public class TokenActivity extends AppCompatActivity {
                 UserUtils.checkTokenValidity(activityRef.get());
                 return false;
             }
-            courseDataHandler.setCourseList(courseList);
+            courseDataHandler.replaceCourses(courseList);
 
             /* Fetch Course Content */
             publishProgress(PROGRESS_COURSE_CONTENT);
@@ -288,7 +291,7 @@ public class TokenActivity extends AppCompatActivity {
                         }
                     }
                 }
-                courseDataHandler.setCourseData(course.getCourseId(), courseSections);
+                courseDataHandler.replaceCourseData(course.getCourseId(), courseSections);
             }
 
             /* Fetch Site News */
