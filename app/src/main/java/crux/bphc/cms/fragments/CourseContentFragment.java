@@ -105,7 +105,7 @@ public class CourseContentFragment extends Fragment {
         }
         // Initialize realm here instead of onCreateView so that other classes can be initialized
         realm = Realm.getDefaultInstance();
-        courseDataHandler = new CourseDataHandler(getActivity(), realm);
+        courseDataHandler = new CourseDataHandler(requireActivity(), realm);
         courseName = courseDataHandler.getCourseName(courseId);
 
         fileManager = new FileManager(requireActivity(), courseName);
@@ -205,8 +205,7 @@ public class CourseContentFragment extends Fragment {
                         return;
                     switch (option.getId()) {
                         case 0:
-                            if (module.getContents() != null)
-                                fileManager.openModuleContent(content);
+                            fileManager.openModuleContent(content);
                             break;
                         case 1:
                             if (!module.isDownloadable()) {
@@ -217,9 +216,7 @@ public class CourseContentFragment extends Fragment {
                                 fileManager.downloadModuleContent(content, module);
                             break;
                         case 2:
-                            if (module.getContents() != null) {
-                                fileManager.shareModuleContent(content);
-                            }
+                            fileManager.shareModuleContent(content);
                             break;
                         case 3:
                             courseDataHandler.markModuleAsReadOrUnread(module, true);
@@ -249,8 +246,8 @@ public class CourseContentFragment extends Fragment {
                     FragmentActivity activity = getActivity();
                     switch (option.getId()) {
                         case 0:
-                            if (!module.getContents().isEmpty()) {
-                                fileManager.downloadModuleContent(module.getContents().first(), module);
+                            if (content != null) {
+                                fileManager.downloadModuleContent(content, module);
                             }
                             break;
                         case 1:
@@ -437,8 +434,7 @@ public class CourseContentFragment extends Fragment {
 
     private List<CourseContent> getCourseContents() {
         ArrayList<CourseContent> contents = new ArrayList<>();
-        courseSections.stream().filter(courseSection -> !(
-                (courseSection.getModules() == null || courseSection.getModules().isEmpty())
+        courseSections.stream().filter(courseSection -> !(courseSection.getModules().isEmpty()
                 && (courseSection.getSummary() == null || courseSection.getSummary().isEmpty())
                 && (courseSection.getName().matches("Topic \\d"))
         )).forEach(courseSection -> {

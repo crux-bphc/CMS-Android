@@ -22,7 +22,7 @@ import crux.bphc.cms.R;
 import crux.bphc.cms.activities.TokenActivity;
 import crux.bphc.cms.helper.CourseDataHandler;
 import crux.bphc.cms.helper.CourseRequestHandler;
-import crux.bphc.cms.helper.UserAccount;
+import crux.bphc.cms.models.UserAccount;
 import crux.bphc.cms.utils.UserUtils;
 import crux.bphc.cms.models.course.Course;
 import crux.bphc.cms.models.course.CourseSection;

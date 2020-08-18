@@ -17,6 +17,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -93,18 +95,20 @@ public class FileManager {
         };
     }
 
-    public void downloadModuleContent(Content content, Module module) {
+    public void downloadModuleContent(@NotNull Content content, @NotNull Module module) {
         deleteExistingModuleContent(content);
         downloadFile(content.getFileName(), content.getFileUrl(), module.getDescription(),  courseName, false);
     }
 
-    public void downloadDiscussionAttachment(Attachment attachment, String description, String courseName) {
+    public void downloadDiscussionAttachment(@NotNull Attachment attachment, @NotNull String description,
+                                             @NotNull String courseName) {
         deleteExistingDiscussionAttachment(attachment);
         downloadFile(attachment.getFileName(), attachment.getFileUrl(), description, courseName, true);
     }
 
-    private void downloadFile(String fileName, String fileUrl, String description, String courseName, boolean isForum) {
-        String url = "";
+    private void downloadFile(@NotNull String fileName, @NotNull String fileUrl, @NotNull String description,
+                              @NotNull String courseName, boolean isForum) {
+        String url;
         if (isForum) {
             url = fileUrl + "?token=" + Constants.TOKEN;
         } else {
@@ -126,15 +130,15 @@ public class FileManager {
                 .enqueue(request);
     }
 
-    public void openModuleContent(Content content) {
+    public void openModuleContent(@NotNull Content content) {
         openFile(content.getFileName());
     }
 
-    public void openDiscussionAttachment(Attachment attachment) {
+    public void openDiscussionAttachment(@NotNull Attachment attachment) {
         openFile(attachment.getFileName());
     }
 
-    private void openFile(String filename) {
+    private void openFile(@NotNull String filename) {
         Uri fileUri = null;
 
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
@@ -157,9 +161,11 @@ public class FileManager {
                     args,
                     order_by
             )){
-                int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Downloads._ID);
-                if (cursor.moveToNext()) {
-                    fileUri = Uri.withAppendedPath(BASE_CONTENT_URI, "" + cursor.getInt(idColumn));
+                if (cursor != null) {
+                    int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Downloads._ID);
+                    if (cursor.moveToNext()) {
+                        fileUri = Uri.withAppendedPath(BASE_CONTENT_URI, "" + cursor.getInt(idColumn));
+                    }
                 }
             }
         }
@@ -208,9 +214,11 @@ public class FileManager {
                     args,
                     order_by
             )){
-                int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Downloads._ID);
-                if (cursor.moveToNext()) {
-                    fileUri = Uri.withAppendedPath(BASE_CONTENT_URI, "" + cursor.getInt(idColumn));
+                if (cursor != null) {
+                    int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Downloads._ID);
+                    if (cursor.moveToNext()) {
+                        fileUri = Uri.withAppendedPath(BASE_CONTENT_URI, "" + cursor.getInt(idColumn));
+                    }
                 }
             }
         }
@@ -243,6 +251,7 @@ public class FileManager {
                     + getRelativeFilePath(courseName, filename);
             File file = new File(path);
             if (file.exists()) {
+                //noinspection ResultOfMethodCallIgnored
                 file.delete();
             }
         } else {
@@ -266,7 +275,10 @@ public class FileManager {
                     + courseDirName;
             File courseDir = new File(path);
             if (courseDir.isDirectory()) {
-                fileList.addAll(Arrays.asList(courseDir.list()));
+                String[] files = courseDir.list();
+                if (files != null) {
+                    fileList.addAll(Arrays.asList(files));
+                }
             }
         } else {
             // MediaStore is backed by an SQLite database. We simply construct
@@ -283,9 +295,11 @@ public class FileManager {
                     args,
                     order_by
             )){
-                int nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Downloads.DISPLAY_NAME);
-                while (cursor.moveToNext()) {
-                    fileList.add(cursor.getString(nameColumn));
+                if (cursor != null) {
+                    int nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Downloads.DISPLAY_NAME);
+                    while (cursor.moveToNext()) {
+                        fileList.add(cursor.getString(nameColumn));
+                    }
                 }
             }
         }
@@ -331,6 +345,7 @@ public class FileManager {
     }
 
     public interface Callback {
-        void onDownloadCompleted(String fileName);
+        // False positive warning, suppress it
+        void onDownloadCompleted(@SuppressWarnings("unused") String fileName);
     }
 }

@@ -30,7 +30,7 @@ import crux.bphc.cms.network.APIClient;
 import crux.bphc.cms.helper.CourseDataHandler;
 import crux.bphc.cms.helper.CourseRequestHandler;
 import crux.bphc.cms.network.MoodleServices;
-import crux.bphc.cms.helper.UserAccount;
+import crux.bphc.cms.models.UserAccount;
 import crux.bphc.cms.models.core.UserDetail;
 import crux.bphc.cms.utils.UserUtils;
 import crux.bphc.cms.utils.Utils;

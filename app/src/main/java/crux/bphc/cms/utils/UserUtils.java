@@ -9,7 +9,7 @@ import android.widget.Toast;
 import java.io.IOException;
 
 import crux.bphc.cms.activities.TokenActivity;
-import crux.bphc.cms.helper.UserAccount;
+import crux.bphc.cms.models.UserAccount;
 import crux.bphc.cms.models.core.UserDetail;
 import crux.bphc.cms.network.MoodleServices;
 import io.realm.Realm;
