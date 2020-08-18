@@ -264,7 +264,10 @@ public class TokenActivity extends AppCompatActivity {
             publishProgress(PROGRESS_COURSE_LIST);
             List<Course> courseList = courseRequestHandler.getCourseList(activityRef.get());
             if (courseList == null) {
-                UserUtils.checkTokenValidity(activityRef.get());
+                if (!UserUtils.isValidToken(new UserAccount(activityRef.get()).getToken())) {
+                    UserUtils.logout(activityRef.get());
+                    UserUtils.clearBackStackAndLaunchTokenActivity(activityRef.get());
+                }
                 return false;
             }
             courseDataHandler.replaceCourses(courseList);

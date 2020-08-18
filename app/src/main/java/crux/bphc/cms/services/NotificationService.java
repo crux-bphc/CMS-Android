@@ -152,7 +152,9 @@ public class NotificationService extends JobService {
         List<Course> courseList = courseRequestHandler.getCourseList((Context) null);
 
         if (courseList == null) {
-            UserUtils.checkTokenValidity(this);
+            if (!UserUtils.isValidToken(userAccount.getToken())) {
+                UserUtils.logout(this);
+            }
             jobFinished(job, true); // TODO is this reschedule needed
             realm.close();
             return;
