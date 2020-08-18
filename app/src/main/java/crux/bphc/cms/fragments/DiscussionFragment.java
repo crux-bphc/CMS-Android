@@ -12,7 +12,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -196,7 +195,7 @@ public class DiscussionFragment extends Fragment {
                             MoreOptionsFragment fragment = MoreOptionsFragment.newInstance(attachment.getFileName(),
                                     options);
                             fragment.show(requireActivity().getSupportFragmentManager(), fragment.getTag());
-                            moreOptionsViewModel.getSelection().observe((AppCompatActivity) requireActivity(), observer);
+                            moreOptionsViewModel.getSelection().observe(requireActivity(), observer);
                         }
                     });
                 }

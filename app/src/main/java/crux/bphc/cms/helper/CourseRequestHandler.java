@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import crux.bphc.cms.models.UserAccount;
 import crux.bphc.cms.network.MoodleServices;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -36,7 +37,9 @@ import crux.bphc.cms.models.forum.ForumData;
 import static crux.bphc.cms.app.Constants.API_URL;
 
 /**
- * Created by Harshit Agarwal on 24-11-2017.
+ * Class responsible for making API requests
+ *
+ * @author Harshit Agarwal
  */
 
 public class CourseRequestHandler {
@@ -131,6 +134,7 @@ public class CourseRequestHandler {
             if (courseListResp.code() != 200) {
                 return null;
             }
+            if (courseListResp.body() == null) return null;
             String responseString = courseListResp.body().string();
             if (responseString.contains("Invalid token")) {
                 return null;
@@ -159,6 +163,7 @@ public class CourseRequestHandler {
                 return null;
             }
             List<CourseSection> responseCourseSections = response.body();
+            if (responseCourseSections == null) return new ArrayList<>();
             return resolve(responseCourseSections);
         } catch (IOException e) {
             Log.w(TAG, "IOException while getting course data", e);
@@ -173,6 +178,7 @@ public class CourseRequestHandler {
             @Override
             public void onResponse(@NonNull Call<List<CourseSection>> call, @NonNull Response<List<CourseSection>> response) {
                 List<CourseSection> responseCourseSections = response.body();
+                if (responseCourseSections == null) return;
                 List<CourseSection> sectionList = resolve(responseCourseSections);
                 if (callBack != null) {
                     callBack.onResponse(sectionList);
@@ -211,6 +217,7 @@ public class CourseRequestHandler {
         call.enqueue(new Callback<ForumData>() {
             @Override
             public void onResponse(@NotNull Call<ForumData> call, @NotNull Response<ForumData> response) {
+                if (response.body() == null) return;
                 List<Discussion> discussions = response.body().getDiscussions();
                 if (callBack != null) {
                     callBack.onResponse(discussions);
@@ -232,9 +239,7 @@ public class CourseRequestHandler {
         for (CourseSection courseSection : courseSections) {
             for (Module module : courseSection.getModules()) {
                 List<Content> currContents = module.getContents();
-                if (currContents != null) {
                     contents.addAll(currContents);
-                }
             }
         }
 

@@ -1,4 +1,4 @@
-package crux.bphc.cms.helper;
+package crux.bphc.cms.models;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -22,7 +22,8 @@ public class UserAccount {
 
 
     public boolean isLoggedIn() {
-        return !(prefs.getString("token", "").isEmpty());
+        String token = prefs.getString("token", "");
+        return token != null && !token.isEmpty();
     }
 
     public void setUser(UserDetail userDetail) {

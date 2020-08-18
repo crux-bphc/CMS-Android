@@ -42,7 +42,7 @@ import crux.bphc.cms.fragments.ForumFragment;
 import crux.bphc.cms.fragments.MyCoursesFragment;
 import crux.bphc.cms.fragments.SearchCourseFragment;
 import crux.bphc.cms.fragments.SettingsFragment;
-import crux.bphc.cms.helper.UserAccount;
+import crux.bphc.cms.models.UserAccount;
 import crux.bphc.cms.utils.UserUtils;
 import crux.bphc.cms.utils.Utils;
 import crux.bphc.cms.models.course.Course;

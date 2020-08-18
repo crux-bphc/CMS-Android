@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import crux.bphc.cms.R;
 import crux.bphc.cms.app.MyApplication;
-import crux.bphc.cms.helper.UserAccount;
+import crux.bphc.cms.models.UserAccount;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
 

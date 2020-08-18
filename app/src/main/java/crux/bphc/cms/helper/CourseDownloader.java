@@ -13,7 +13,7 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 /**
- * Created by harsu on 21-12-2016.
+ * @author Harshit Agarwal
  */
 
 public class CourseDownloader implements FileManager.Callback {
