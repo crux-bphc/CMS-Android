@@ -10,10 +10,12 @@ Dates are in `yyyy-mm-dd`.
 *NOTE: The minimum supported version is now Android 7.0 (API Level 24)*
 
 ### Added
+* Add APK version and commit hash to navigation drawer
 
-## Changed
+### Changed
 
-## Fixed
+### Fixed
+
 * Full Course Names not being displayed (regression in **v1.7.0-beta1**)
 * Module Read/Unread Visual Bug (regression in **v1.7.0-beta1**)
 ## Version 1.7.0-beta.1 (verCode 1070001), 2020-05-09
