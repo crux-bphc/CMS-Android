@@ -41,7 +41,7 @@ public class CourseDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_course_detail);
 
-        realm = MyApplication.getInstance().getRealmInstance();
+        realm = Realm.getDefaultInstance();
         fragmentManager = getSupportFragmentManager();
 
         Intent intent = getIntent();

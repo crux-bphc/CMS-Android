@@ -4,6 +4,8 @@ import androidx.core.text.HtmlCompat;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 import crux.bphc.cms.interfaces.CourseContent;
@@ -15,7 +17,7 @@ import io.realm.annotations.PrimaryKey;
  * @author Harshit Agarwal (17-Dec-2016)
  */
 
-public class CourseSection extends RealmObject implements CourseContent {
+public class CourseSection extends RealmObject implements CourseContent{
 
     @PrimaryKey
     @SerializedName("id") private int id;
@@ -27,6 +29,19 @@ public class CourseSection extends RealmObject implements CourseContent {
 
     @SuppressWarnings("unused")
     public CourseSection() {
+    }
+
+    public CourseSection(CourseSection section) {
+        this.id = section.id;
+        this.name = section.name;
+        this.summary = section.summary;
+        this.modules = new RealmList<>();
+
+        for (Module module : section.getModules()) {
+            this.modules.add(new Module(module));
+        }
+
+        this.courseId = section.courseId;
     }
 
     public int getId() {
@@ -49,11 +64,13 @@ public class CourseSection extends RealmObject implements CourseContent {
         return summary;
     }
 
+    @NotNull
     public List<Module> getModules() {
+        if (modules == null) modules = new RealmList<>();
         return modules;
     }
 
-    public void setModules(List<Module> modules) {
+    public void setModules(@NotNull List<Module> modules) {
         this.modules.clear();
         this.modules.addAll(modules);
     }

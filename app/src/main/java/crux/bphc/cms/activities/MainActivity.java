@@ -61,6 +61,8 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 1001;
+
+    private Realm realm;
     private UserAccount mUserAccount;
 
     @Override
@@ -77,6 +79,7 @@ public class MainActivity extends AppCompatActivity
 
         mUserAccount = new UserAccount(this);
         Constants.TOKEN = mUserAccount.getToken();
+        realm = Realm.getDefaultInstance();
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -136,7 +139,6 @@ public class MainActivity extends AppCompatActivity
         String action = intent.getAction();
         Uri uri = intent.getData();
         if(uri != null && action != null && action.equals("android.intent.action.VIEW")) {
-            Realm realm = Realm.getInstance(MyApplication.getRealmConfiguration());
             List<Course> courses = realm.copyFromRealm(realm.where(Course.class).findAll());
 
             int courseId = -1;
@@ -167,9 +169,6 @@ public class MainActivity extends AppCompatActivity
             else {
                 Toast.makeText(this, "You need to be enrolled in " + uri.getQueryParameter("courseName") + " in order to view", Toast.LENGTH_LONG).show();
             }
-
-            realm.close();
-
         }
     }
 
@@ -222,7 +221,7 @@ public class MainActivity extends AppCompatActivity
             return;
         }
 
-        Realm realm = Realm.getInstance(MyApplication.getRealmConfiguration());
+        Realm realm = Realm.getDefaultInstance();
         List<CourseSection> courseSections = realm.copyFromRealm(realm.where(CourseSection.class)
                 .equalTo("courseId", courseId).findAll());
         if (courseSections == null || courseSections.isEmpty()) return;
@@ -372,5 +371,11 @@ public class MainActivity extends AppCompatActivity
         for (int i = 0; i < getSupportFragmentManager().getBackStackEntryCount(); ++i) {
             getSupportFragmentManager().popBackStack();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        realm.close();
     }
 }

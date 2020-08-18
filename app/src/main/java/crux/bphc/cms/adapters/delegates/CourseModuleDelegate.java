@@ -79,7 +79,7 @@ public class CourseModuleDelegate extends AdapterDelegate<List<CourseContent>> {
 
     private void setLayoutTheme(CourseModuleViewHolder vh, Module module) {
         TypedValue value = new TypedValue();
-        if (module.isNewContent()) {
+        if (module.isUnread()) {
             activity.getTheme().resolveAttribute(R.attr.unReadModule, value, true);
         } else {
             activity.getTheme().resolveAttribute(R.attr.cardBgColor, value, true);

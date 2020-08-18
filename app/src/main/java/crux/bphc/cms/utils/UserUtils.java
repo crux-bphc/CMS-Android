@@ -8,7 +8,6 @@ import android.widget.Toast;
 
 import java.io.IOException;
 
-import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.activities.TokenActivity;
 import crux.bphc.cms.helper.UserAccount;
 import crux.bphc.cms.models.core.UserDetail;
@@ -30,10 +29,8 @@ public class UserUtils {
     public static final String TAG = UserUtils.class.getName();
 
     public static void logout(Context context) {
-        Realm realm = MyApplication.getInstance().getRealmInstance();
-        realm.beginTransaction();
-        realm.deleteAll();
-        realm.commitTransaction();
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransactionAsync(r -> r.deleteAll());
         UserAccount userAccount = new UserAccount(context);
         userAccount.logout();
     }
