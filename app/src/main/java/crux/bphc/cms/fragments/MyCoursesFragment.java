@@ -261,11 +261,10 @@ public class MyCoursesFragment extends Fragment {
             public void onFailure(String message, Throwable t) {
                 mSwipeRefreshLayout.setRefreshing(false);
                 if (message != null && message.contains("Invalid token")) {
-                    Toast.makeText(
-                            getActivity(),
-                            "Invalid token! Probably your token was reset.",
-                            Toast.LENGTH_SHORT).show();
-                    UserUtils.logoutAndClearBackStack(getActivity());
+                    Toast.makeText(getActivity(), "Invalid token! Probably your token was reset.", Toast.LENGTH_SHORT)
+                            .show();
+                    UserUtils.logout(requireActivity());
+                    UserUtils.clearBackStackAndLaunchTokenActivity(requireActivity());
                     return;
                 }
                 Toast.makeText(getActivity(), "Unable to connect to server!", Toast.LENGTH_SHORT).show();
