@@ -104,7 +104,7 @@ public class DiscussionFragment extends Fragment {
                 }
             }
 
-            Attachment attachment = discussion.getAttachments().where().equalTo("fileName", filename).findFirst();
+            Attachment attachment = discussion.getAttachments().where().equalTo("filename", filename).findFirst();
             if (attachment != null)
                 mFileManager.openDiscussionAttachment(attachment);
         });

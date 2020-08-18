@@ -120,6 +120,7 @@ public class FileManager {
             request.allowScanningByMediaScanner();
         }
 
+        requestedDownloads.add(fileName);
         ((DownloadManager) MyApplication.getInstance().getSystemService(Context.DOWNLOAD_SERVICE))
                 .enqueue(request);
     }
