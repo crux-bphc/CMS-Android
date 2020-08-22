@@ -13,6 +13,7 @@ Dates are in `yyyy-mm-dd`.
 * Add APK version and commit hash to navigation drawer
 
 ### Changed
+* Launcher icon
 
 ### Fixed
 
@@ -30,7 +31,6 @@ Dates are in `yyyy-mm-dd`.
 * Re-download option rewrites the file
 * Replace dialog boxes with bottom sheets
 * Show only Course and Section number as title of Course fragment
-* Launcher icon 
 
 ### Fixed
 * HTML encoded entities in course names
