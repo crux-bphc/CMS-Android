@@ -45,10 +45,8 @@ jobs:
     - name: Run lint
       run: bash ./gradlew lintDebug --stacktrace
     - name: Create report artifact
+      if: ${{ always() }}
       uses: actions/upload-artifact@v2
       with:
         name: lint-report
         path: app/build/reports/
-
-      
-        
