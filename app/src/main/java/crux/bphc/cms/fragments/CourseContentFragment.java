@@ -220,6 +220,7 @@ public class CourseContentFragment extends Fragment {
                             break;
                         case 3:
                             courseDataHandler.markModuleAsReadOrUnread(module, true);
+                            adapter.notifyItemChanged(position);
                             break;
                         case 4:
                             new PropertiesAlertDialog(getActivity(), content).show();
