@@ -74,7 +74,7 @@
             android:layout_gravity="center_vertical"
             android:layout_margin="14dp"
             android:contentDescription="@string/download_go"
-            android:tint="?iconTintColor"
+            app:tint="?iconTintColor"
             app:layout_constraintBottom_toTopOf="@id/nameAndDescriptionDivider"
 
             app:layout_constraintEnd_toStartOf="@id/more"
@@ -103,7 +103,7 @@
             android:clickable="true"
             android:contentDescription="@string/more_options_btn"
             android:focusable="true"
-            android:tint="?iconTintColor"
+            app:tint="?iconTintColor"
             app:layout_constraintBottom_toTopOf="@id/nameAndDescriptionDivider"
 
             app:layout_constraintEnd_toEndOf="parent"

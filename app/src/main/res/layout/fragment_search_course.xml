@@ -48,7 +48,7 @@
                 android:layout_marginRight="12dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@android:string/search_go"
-                android:tint="?iconTintColor"
+                app:tint="?iconTintColor"
                 app:srcCompat="@drawable/ic_search" />
 
         </LinearLayout>

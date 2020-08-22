@@ -60,7 +60,7 @@
                 android:layout_gravity="center_vertical"
                 android:contentDescription="@string/download_go"
                 android:padding="14dp"
-                android:tint="?iconTintColor"
+                app:tint="?iconTintColor"
                 app:srcCompat="@drawable/download" />
         </LinearLayout>
 
@@ -75,7 +75,7 @@
             android:contentDescription="@string/more_options_btn"
             android:focusable="true"
             android:padding="8dp"
-            android:tint="?iconTintColor"
+            app:tint="?iconTintColor"
             app:srcCompat="@drawable/dots_horizontal" />
     </RelativeLayout>
 </androidx.cardview.widget.CardView>
