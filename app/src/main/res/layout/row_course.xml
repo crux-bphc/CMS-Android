@@ -79,7 +79,7 @@
                 android:contentDescription="@string/more_options_btn"
                 android:focusable="true"
                 android:rotation="90"
-                android:tint="?iconTintColor"
+                app:tint="?iconTintColor"
                 app:layout_constraintBottom_toBottomOf="parent"
 
                 app:layout_constraintEnd_toEndOf="parent"

@@ -14,7 +14,7 @@
         android:elevation="-1dp"
         android:scaleType="centerCrop"
         android:src="@drawable/intro_bg"
-        android:tint="?tokenImageTint" />
+        app:tint="?tokenImageTint" />
 
     <ImageView
         android:id="@+id/logo"
