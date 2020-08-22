@@ -328,7 +328,7 @@ public class CourseDataHandler {
             realm.commitTransaction();
         }
     }
-
+    
     public String getCourseName(int courseId) {
         Course course = realm.where(Course.class).equalTo("id", courseId).findFirst();
         if (course == null) return "";
@@ -361,7 +361,7 @@ public class CourseDataHandler {
     public int getUnreadCount(int courseId) {
         return realm.where(Module.class)
                 .in("courseSectionId", getCourseData(courseId).stream()
-                        .map(CourseSection::getCourseId)
+                        .map(CourseSection::getId)
                         .toArray(Integer[]::new)
                 ).equalTo("isUnread", true)
                 .findAll().size();
