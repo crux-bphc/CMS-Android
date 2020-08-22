@@ -31,6 +31,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import crux.bphc.cms.R;
 import crux.bphc.cms.activities.CourseDetailActivity;
@@ -147,7 +148,7 @@ public class MyCoursesFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                mSearchedText = s.toString().toLowerCase().trim();
+                mSearchedText = s.toString().toLowerCase(Locale.ROOT).trim();
                 filterMyCourses(mSearchedText);
 
                 if (!isClearIconSet) {
@@ -343,7 +344,7 @@ public class MyCoursesFragment extends Fragment {
         } else {
             List<Course> filteredCourses = new ArrayList<>();
             for (Course course : courses) {
-                if (course.getFullName().toLowerCase().contains(searchedText)) {
+                if (course.getFullName().toLowerCase(Locale.ROOT).contains(searchedText)) {
                     filteredCourses.add(course);
                 }
             }

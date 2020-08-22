@@ -19,6 +19,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import butterknife.ButterKnife;
@@ -26,18 +27,18 @@ import butterknife.OnClick;
 import crux.bphc.cms.R;
 import crux.bphc.cms.app.Constants;
 import crux.bphc.cms.app.MyApplication;
-import crux.bphc.cms.network.APIClient;
 import crux.bphc.cms.helper.CourseDataHandler;
 import crux.bphc.cms.helper.CourseRequestHandler;
-import crux.bphc.cms.network.MoodleServices;
 import crux.bphc.cms.models.UserAccount;
 import crux.bphc.cms.models.core.UserDetail;
-import crux.bphc.cms.utils.UserUtils;
-import crux.bphc.cms.utils.Utils;
 import crux.bphc.cms.models.course.Course;
 import crux.bphc.cms.models.course.CourseSection;
 import crux.bphc.cms.models.course.Module;
 import crux.bphc.cms.models.forum.Discussion;
+import crux.bphc.cms.network.APIClient;
+import crux.bphc.cms.network.MoodleServices;
+import crux.bphc.cms.utils.UserUtils;
+import crux.bphc.cms.utils.Utils;
 import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -113,7 +114,7 @@ public class TokenActivity extends AppCompatActivity {
                         return;
                     }
 
-                    String digest = parts[0].toUpperCase();
+                    String digest = parts[0].toUpperCase(Locale.ROOT);
                     String token = parts[1];
 
                     HashMap<String, String> launchData = MyApplication.getInstance().getLoginLaunchData();
