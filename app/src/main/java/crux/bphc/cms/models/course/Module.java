@@ -6,6 +6,7 @@ import androidx.core.text.HtmlCompat;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
+import java.util.Locale;
 
 import crux.bphc.cms.R;
 import crux.bphc.cms.interfaces.CourseContent;
@@ -110,8 +111,8 @@ public class Module extends RealmObject implements CourseContent {
         return -1;
     }
 
-    private Type inferModuleTypefromModuleName() {
-        switch (modName.toLowerCase()) {
+    private Type inferModuleTypeFromModuleName() {
+        switch (modName.toLowerCase(Locale.ROOT)) {
             case "resource":
                 return Type.RESOURCE;
             case "forum":
@@ -147,7 +148,7 @@ public class Module extends RealmObject implements CourseContent {
 
     public Type getModType() {
         if (modType == Type.DEFAULT)
-            modType = inferModuleTypefromModuleName();
+            modType = inferModuleTypeFromModuleName();
         return modType;
     }
 
