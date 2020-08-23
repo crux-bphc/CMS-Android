@@ -101,7 +101,7 @@
                 android:padding="2dp"
                 android:clickable="true"
                 android:focusable="true"
-                android:tint="#FF808080"
+                app:tint="#FF808080"
                 app:srcCompat="@drawable/star"
                 android:contentDescription="@string/favorite"
 
