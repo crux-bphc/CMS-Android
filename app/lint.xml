@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- This contains a list of lint issues we'd like to either
+         ignore or be warned about. Any issues not listed here
+         will be an error. Do not expand the list just so that 
+         a lint check can pass and a commit can be merged. 
+         Expansions should be conservatively done. -->
+    
+    <!-- Warn when not targetting latest API -->
+    <issue id="OldTargetApi" severity="warning" />
+
+    <!-- Warn when new versions of dependencies release -->
+    <issue id="GradleDependency" severity="warning" />
+
+    <issue id="ConvertToWebp" severity="warning" />
+
+    <issue id="UnknownNullness" severity="warning" />
+
+    <issue id="KotlinPropertyAccess" severity="warning" />
+
+    <!-- Ignore multiorientation, we aren't doing that -->
+    <issue id="LockedOrientationActivity" severity="ignore" />
+
+    <!--  Ignore this, not making anything package-private.
+          Consider moving to getter methods later on (if they exist). -->
+    <issue id="SyntheticAccessor" severity="ignore" />
+
+    <issue id="GoogleAppIndexingApiWarning" severity="ignore" />
+
+    <!-- Keep this at the bottom, anything above will treated
+         as a warning or ignored -->
+    <issue id="all" severity="error" />
+
+</lint>
