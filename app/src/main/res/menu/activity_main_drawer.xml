@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single"
-        android:id="@+id/group_item_1">
+    <group android:checkableBehavior="single">
         <item
             android:id="@+id/my_courses"
             android:checked="true"
@@ -29,8 +28,7 @@
     </group>
 
 
-    <group
-        android:id="@+id/group_item_2">
+    <group>
             <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_share_variant"
@@ -40,8 +38,6 @@
                 android:icon="@drawable/ic_bug"
                 android:title="@string/nav_bar_feedback" />
 
-
-
             <item
                 android:id="@+id/about"
                 android:icon="@drawable/ic_information"
@@ -49,12 +45,11 @@
 
     </group>
 
-    <group
-        android:id="@+id/group_item_3">
-    <item
-        android:id="@+id/logout"
-        android:icon="@drawable/ic_logout"
-        android:title="@string/nav_bar_logout" />
+    <group>
+        <item
+            android:id="@+id/logout"
+            android:icon="@drawable/ic_logout"
+            android:title="@string/nav_bar_logout" />
     </group>
 
 </menu>

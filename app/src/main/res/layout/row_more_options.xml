@@ -25,5 +25,6 @@
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
         android:textSize="17sp"
-        android:textColor="?android:textColorPrimary" />
+        android:textColor="?android:textColorPrimary"
+        android:textIsSelectable="false" />
 </LinearLayout>

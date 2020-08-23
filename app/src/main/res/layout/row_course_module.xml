@@ -25,7 +25,6 @@
             android:layout_gravity="center_vertical"
             android:layout_marginStart="12dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="-6dp"
             android:layout_marginBottom="8dp"
             android:contentDescription="@null"
             app:layout_constraintBottom_toTopOf="@id/nameAndDescriptionDivider"
@@ -41,7 +40,6 @@
             android:layout_gravity="center_vertical"
             android:layout_marginStart="12dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="-6dp"
             android:layout_marginBottom="8dp"
             android:visibility="gone"
 
