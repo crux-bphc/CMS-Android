@@ -83,7 +83,6 @@ class MainActivity : AppCompatActivity() {
         NotificationService.startService(this, false)
         resolveIntent()
         resolveModuleLinkShare()
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
     }
 
     private fun resolveModuleLinkShare() {
