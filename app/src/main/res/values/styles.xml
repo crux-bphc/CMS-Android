@@ -5,6 +5,7 @@
         <item name="colorPrimary">@color/orange</item>
         <item name="colorPrimaryDark">@color/orangeDark</item>
         <item name="colorAccent">@color/blueAccent</item>
+        <item name="android:windowLightStatusBar">true</item>
         <item name="android:textColorPrimary">@color/text_primary_light</item>
         <item name="android:textColorSecondary">@color/text_secondary_light</item>
         <item name="textButtonColor">@color/orange</item>
@@ -14,7 +15,7 @@
         <item name="navBarColorStates">@color/navbar_itemcolor_light</item>
         <item name="navBarAppearance">@style/navBarLight</item>
         <item name="navBarHeaderDrawable">@drawable/navbar_header_light</item>
-        <item name="iconTintColor">@android:color/transparent</item> <!-- This is equivalent to no tint-->
+        <item name="iconTintColor">@color/black</item> <!-- This is equivalent to no tint-->
         <item name="android:tintMode">src_atop</item>
         <item name="tokenImageTint">@android:color/transparent</item>
         <item name="cardBgColor">@color/cardBackgroundLight</item>
@@ -29,6 +30,7 @@
     <style name="AppTheme.Dark" parent="AppTheme">
         <item name="colorPrimary">@color/gray13</item>
         <item name="colorPrimaryDark">@color/black</item>
+        <item name="android:windowLightStatusBar">false</item>
         <item name="android:textColorPrimary">@color/text_primary_dark</item>
         <item name="android:textColorSecondary">@color/text_secondary_dark</item>
         <item name="textButtonColor">@color/orange</item>

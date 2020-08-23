@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,8 +23,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import crux.bphc.cms.R;
 import crux.bphc.cms.app.Constants;
 import crux.bphc.cms.app.MyApplication;
@@ -63,7 +62,6 @@ public class TokenActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_token);
-//        ButterKnife.bind(this);
 
         progressDialog = new ProgressDialog(this);
 
@@ -71,6 +69,8 @@ public class TokenActivity extends AppCompatActivity {
         moodleServices = retrofit.create(MoodleServices.class);
 
         userAccount = new UserAccount(this);
+
+        findViewById(R.id.google_login).setOnClickListener(v -> onLogin());
     }
 
     @Override
@@ -187,7 +187,6 @@ public class TokenActivity extends AppCompatActivity {
         });
     }
 
-    @OnClick(R.id.google_login)
     void onLogin() {
         /*
             We'll just create an into a specific Moodle endpoint. The Moodle website will handle the authentication,
