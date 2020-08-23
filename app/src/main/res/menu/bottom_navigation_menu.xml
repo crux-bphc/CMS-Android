@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/myCoursesFragment"
+        android:icon="@drawable/ic_book_multiple_variant"
+        android:title="@string/nav_bar_my_courses" />
+
+    <item
+        android:id="@+id/searchCourseFragment"
+        android:icon="@drawable/ic_search"
+        android:title="@string/nav_bar_search_course" />
+
+    <item
+        android:id="@+id/forumFragment"
+        android:icon="@drawable/ic_newspaper"
+        android:title="@string/nav_bar_site_news" />
+
+    <item
+        android:id="@+id/moreFragment"
+        android:icon="@drawable/outline_more_horiz_24"
+        android:title="@string/nav_bar_more" />
+
+</menu>

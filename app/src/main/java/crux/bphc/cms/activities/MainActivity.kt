@@ -3,32 +3,19 @@ package crux.bphc.cms.activities
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.view.MenuItem
-import android.view.View
 import android.view.WindowManager
-import android.view.inputmethod.InputMethodManager
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.navigation.NavigationView
-import crux.bphc.cms.BuildConfig
 import crux.bphc.cms.R
 import crux.bphc.cms.app.Constants
 import crux.bphc.cms.app.MyApplication
@@ -38,17 +25,13 @@ import crux.bphc.cms.models.course.Course
 import crux.bphc.cms.models.course.CourseSection
 import crux.bphc.cms.models.course.Module
 import crux.bphc.cms.services.NotificationService
-import crux.bphc.cms.utils.UserUtils
-import crux.bphc.cms.utils.Utils
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.app_bar_main.*
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var _realm: Realm
     private lateinit var _userAccount: UserAccount
-
     override fun onCreate(savedInstanceState: Bundle?) {
         if (MyApplication.getInstance().isDarkModeEnabled) {
             setTheme(R.style.AppTheme_NoActionBar_Dark)
@@ -61,50 +44,45 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         _userAccount = UserAccount(this)
         Constants.TOKEN = _userAccount.token
         _realm = Realm.getDefaultInstance()
-        val toggle: ActionBarDrawerToggle = object : ActionBarDrawerToggle(
-                this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
-            override fun onDrawerOpened(drawerView: View) {
-                super.onDrawerOpened(drawerView)
-                val view = currentFocus
-                if (view != null) {
-                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    imm.hideSoftInputFromWindow(view.windowToken, 0)
+
+        bottom_nav.setOnNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.myCoursesFragment -> {
+                    pushView(MyCoursesFragment.newInstance(), "My Courses", true)
+                    return@setOnNavigationItemSelectedListener true
                 }
+                R.id.searchCourseFragment -> {
+                    pushView(SearchCourseFragment.newInstance(Constants.TOKEN), "Course Search", false)
+                    return@setOnNavigationItemSelectedListener true
+                }
+                R.id.forumFragment -> {
+                    pushView(ForumFragment.newInstance(), "Site News", false)
+                    return@setOnNavigationItemSelectedListener true
+                }
+                R.id.moreFragment -> {
+                    pushView(MoreFragment.newInstance(), "More", false)
+                    return@setOnNavigationItemSelectedListener true
+                }
+                else -> return@setOnNavigationItemSelectedListener false
             }
         }
-        drawer_layout.addDrawerListener(toggle)
-        toggle.syncState()
 
-        // Set the nav panel up
-        nav_view.setNavigationItemSelectedListener(this)
-        val headerView = nav_view.getHeaderView(0)
-        val username = headerView.findViewById<TextView>(R.id.username)
-        val fullName = headerView.findViewById<TextView>(R.id.firstname)
-        val details = Utils.userDetails(_userAccount.firstName, _userAccount.username)
-        fullName.text = details[0]
-        username.text = details[1]
-
-        // Set version code and commit hash
-        app_version_name.text = BuildConfig.VERSION_NAME
-        commit_hash.text = BuildConfig.COMMIT_HASH
-
-        // Set up fragments
         if (savedInstanceState == null) {
             pushView(MyCoursesFragment.newInstance(), "My Courses", true)
         }
+
         supportFragmentManager.addOnBackStackChangedListener {
-            val frag = supportFragmentManager.findFragmentById(R.id.content_main)
+            val frag = supportFragmentManager.findFragmentById(R.id.content_frame)
             if (frag is MyCoursesFragment) {
-                nav_view.setCheckedItem(R.id.my_courses)
+                bottom_nav.selectedItemId = R.id.myCoursesFragment
             }
         }
+
         askPermission()
         createNotificationChannels() // initialize channels before starting background service
         NotificationService.startService(this, false)
         resolveIntent()
         resolveModuleLinkShare()
-        window.setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
     }
 
     private fun resolveModuleLinkShare() {
@@ -237,67 +215,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         askPermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     }
 
-    private fun pushView(fragment: Fragment, tag: String, rootFrag: Boolean) {
+    fun pushView(fragment: Fragment, tag: String, rootFrag: Boolean) {
         if (rootFrag) {
             clearBackStack()
         }
         val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.content_main, fragment, tag)
+        transaction.replace(R.id.content_frame, fragment, tag)
         if (!rootFrag) {
             transaction.addToBackStack(null)
         }
         transaction.commit()
-    }
-
-    private fun askToLogout(): AlertDialog {
-        val dialog = MaterialAlertDialogBuilder(this)
-                .setMessage("Are you sure you want to logout?")
-                .setPositiveButton("Yes") { _, _ ->
-                    logout()
-                }
-                .setNegativeButton("Cancel") { _, _ ->
-                    // Do nothing
-                }
-        return dialog.create()
-    }
-
-    private fun logout() {
-        UserUtils.logout(this)
-        startActivity(Intent(this, TokenActivity::class.java))
-        finish()
-    }
-
-    override fun onBackPressed() {
-        if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
-            drawer_layout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
-        }
-    }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        // Handle navigation view item clicks here.
-        when (item.itemId) {
-            R.id.my_courses -> pushView(MyCoursesFragment.newInstance(), "My Courses", true)
-            R.id.site_news -> pushView(ForumFragment.newInstance(), "Site News", false)
-            R.id.course_search -> pushView(SearchCourseFragment.newInstance(Constants.TOKEN), "Course Search", false)
-            R.id.website -> Utils.openURLInBrowser(this, Constants.API_URL + "my/")
-            R.id.settings -> pushView(SettingsFragment(), "Settings", false)
-            R.id.nav_share -> {
-                val appPackageName = BuildConfig.APPLICATION_ID
-                val sendIntent = Intent()
-                sendIntent.action = Intent.ACTION_SEND
-                sendIntent.putExtra(Intent.EXTRA_TEXT,
-                        "Check out the CMS App: https://play.google.com/store/apps/details?id=$appPackageName")
-                sendIntent.type = "text/plain"
-                startActivity(sendIntent)
-            }
-            R.id.issue -> Utils.openURLInBrowser(this, Constants.getFeedbackURL(_userAccount.firstName, _userAccount.username))
-            R.id.about -> startActivity(Intent(this, InfoActivity::class.java))
-            R.id.logout -> askToLogout().show()
-        }
-        drawer_layout.closeDrawer(GravityCompat.START)
-        return true
     }
 
     private fun clearBackStack() {
