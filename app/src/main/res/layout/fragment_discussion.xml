@@ -15,7 +15,7 @@
             app:cardBackgroundColor="?cardBgColor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:context="crux.bphc.cms.fragments.ForumFragment"
+            tools:context="crux.bphc.cms.fragments.DiscussionFragment"
             android:layout_margin="8dp"
             app:cardCornerRadius="10dp"
             app:cardElevation="10dp">
@@ -34,26 +34,28 @@
 
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toTopOf="@id/barrier_message"  />
+                    app:layout_constraintBottom_toTopOf="@id/barrier_message"
+                    app:layout_constraintVertical_bias="0.5"/>
+
+                <TextView
+                    android:id="@+id/subject"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/example_discussion_title"
+                    android:textColor="?android:textColorPrimary"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+
+                    app:layout_constraintBottom_toTopOf="@id/user_name"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/barrier_profile_pic"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="1.0" />
 
                 <TextView
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/subject"
-                    android:text="@string/example_discussion_title"
-                    android:textSize="20sp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:textColor="?android:textColorPrimary"
-                    android:textStyle="bold"
-
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toTopOf="@id/user_name"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@id/barrier_profile_pic" />
-
-                <TextView
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:id="@+id/user_name"
@@ -61,19 +63,23 @@
                     android:text="@string/example_discussion_prof"
                     android:textSize="16sp"
 
-                    app:layout_constraintBottom_toTopOf="@id/barrier_message"
+                    app:layout_constraintTop_toBottomOf="@id/subject"
+                    app:layout_constraintBottom_toBottomOf="@id/barrier_message"
+                    app:layout_constraintVertical_bias="1"
                     app:layout_constraintStart_toEndOf="@id/barrier_profile_pic" />
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:id="@+id/modified_time"
-                    android:textColor="?android:textColorSecondary"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:text="@string/example_date"
+                    android:textColor="?android:textColorSecondary"
                     android:textSize="16sp"
 
-                    app:layout_constraintBottom_toTopOf="@id/barrier_message"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    app:layout_constraintBottom_toBottomOf="@id/barrier_message"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/subject"
+                    app:layout_constraintVertical_bias="1" />
 
                 <View
                     android:layout_width="match_parent"
