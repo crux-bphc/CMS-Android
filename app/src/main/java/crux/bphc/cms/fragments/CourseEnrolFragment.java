@@ -93,13 +93,14 @@ public class CourseEnrolFragment extends Fragment {
         if (teachers == null || teachers.size() == 0) {
             noTeacherInfo.setVisibility(View.VISIBLE);
         } else {
+            noTeacherInfo.setVisibility(View.GONE);
             LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) noTeacherInfo.getLayoutParams();
             layoutParams.setMargins(0, 8, 0, 0);
 
             TypedValue typedValue = new TypedValue();
             requireActivity().getTheme().resolveAttribute(android.R.attr.textColorPrimary, typedValue, true);
             TypedArray arr = requireActivity().obtainStyledAttributes(typedValue.data, new int[]{
-                    android.R.attr.textColorPrimary});
+                    android.R.attr.textColorSecondary});
             int textColor = arr.getColor(0, -1);
             arr.recycle();
 
