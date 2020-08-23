@@ -16,6 +16,7 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -44,8 +45,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-
-    private val MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 1001
 
     private lateinit var _realm: Realm
     private lateinit var _userAccount: UserAccount
@@ -218,27 +217,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 MaterialAlertDialogBuilder(this)
-                        .setTitle("Permissions Request")
-                        .setMessage("Need Write Permissions to seamlessly download Files...")
+                        .setTitle("Permission required")
+                        .setMessage("We need permission to download course content onto your phone")
                         .setPositiveButton("OK") { _, _ ->
-                            ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                                    MY_PERMISSIONS_REQUEST_WRITE_STORAGE)
+                            requestWriteStoragePermission()
                         }
                         .show()
             } else {
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                        MY_PERMISSIONS_REQUEST_WRITE_STORAGE)
+                requestWriteStoragePermission()
             }
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_STORAGE) {
-            if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+    private fun requestWriteStoragePermission() {
+        val askPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (!granted)
                 askPermission()
-            }
         }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        askPermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     }
 
     private fun pushView(fragment: Fragment, tag: String, rootFrag: Boolean) {
