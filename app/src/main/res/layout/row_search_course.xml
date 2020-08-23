@@ -18,6 +18,7 @@
         android:id="@+id/search_course_display_name"
         android:gravity="center_vertical"
         android:padding="8dp"
-        android:layout_marginStart="4dp"/>
+        android:layout_marginStart="4dp"
+        android:textIsSelectable="false" />
 
 </androidx.cardview.widget.CardView>
