@@ -63,7 +63,7 @@ public class TokenActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_token);
-        ButterKnife.bind(this);
+//        ButterKnife.bind(this);
 
         progressDialog = new ProgressDialog(this);
 
