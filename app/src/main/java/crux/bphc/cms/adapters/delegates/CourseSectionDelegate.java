@@ -18,6 +18,7 @@ import java.util.List;
 import crux.bphc.cms.R;
 import crux.bphc.cms.interfaces.CourseContent;
 import crux.bphc.cms.models.course.CourseSection;
+import crux.bphc.cms.utils.Utils;
 import crux.bphc.cms.widgets.CollapsibleTextView;
 
 /**
@@ -56,8 +57,8 @@ public class CourseSectionDelegate extends AdapterDelegate<List<CourseContent>> 
         vh.sectionName.setText(section.getName());
         if (!section.getSummary().isEmpty()) {
             vh.sectionDescription.setVisibility(View.VISIBLE);
-            vh.sectionDescription.setFullText(HtmlCompat.fromHtml(section.getSummary(),
-                    HtmlCompat.FROM_HTML_MODE_COMPACT));
+            vh.sectionDescription.setFullText(Utils.trimWhiteSpace(HtmlCompat.fromHtml(section.getSummary().trim(),
+                    HtmlCompat.FROM_HTML_MODE_COMPACT)));
             vh.sectionDescription.setMovementMethod(LinkMovementMethod.getInstance());
         } else {
             vh.sectionDescription.setVisibility(View.GONE);
