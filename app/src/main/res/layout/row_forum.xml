@@ -37,44 +37,52 @@
                 android:id="@+id/subject"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginBottom="8dp"
                 android:text="@string/example_discussion_title"
                 android:textColor="?android:textColorPrimary"
                 android:textSize="16sp"
                 android:textStyle="bold"
 
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/user_name"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@id/barrier_profile_pic" />
 
             <TextView
                 android:id="@+id/user_name"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:layout_marginStart="8dp"
                 android:text="@string/example_discussion_prof"
                 android:textColor="?android:textColorSecondary"
 
                 android:textSize="14sp"
                 app:layout_constraintStart_toEndOf="@id/barrier_profile_pic"
+                app:layout_constraintEnd_toStartOf="@id/modified_time"
+                app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintTop_toBottomOf="@id/subject"
                 app:layout_constraintBottom_toBottomOf="@id/barrier_message"
-                app:layout_constraintVertical_bias="1" />
+                app:layout_constraintHorizontal_chainStyle="spread_inside"
+                app:layout_constraintHorizontal_weight="2.5" />
 
             <TextView
                 android:id="@+id/modified_time"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:text="@string/example_date"
+                android:gravity="end"
                 android:textColor="?android:textColorSecondary"
                 android:textSize="14sp"
 
                 app:layout_constraintTop_toBottomOf="@id/subject"
                 app:layout_constraintBottom_toBottomOf="@id/barrier_message"
+                app:layout_constraintHorizontal_bias="1"
+                app:layout_constraintStart_toEndOf="@id/user_name"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintVertical_bias="1" />
+                app:layout_constraintHorizontal_chainStyle="spread_inside"
+                app:layout_constraintHorizontal_weight="1"/>
 
             <View
                 android:id="@+id/nameAndDescriptionDivider"
