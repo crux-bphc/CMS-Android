@@ -5,7 +5,6 @@
     <color name="blueAccent">#00bcd4</color>
 
     <color name="white">#ffffffff</color>
-    <color name="white_alpha26">#42ffffff</color>
     <color name="white_alpha50">#80ffffff</color> <!-- default disabled text primary Dark -->
 
     <color name="gray13">#ff212121</color>
@@ -22,8 +21,6 @@
 
     <color name="cardBackgroundLight">@color/white</color>
     <color name="cardBackgroundDark">@color/gray13</color>
-
-    <color name="navBarSelected">#42C0C0C0</color>
 
     <color name="moduleUnreadDark">#42C0C0C0</color>
     <color name="moduleUnreadLight">#2F323232</color>

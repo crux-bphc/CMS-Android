@@ -4,8 +4,6 @@
     <string name="powered_by_crux">Powered by Crux</string>
 
     <!-- Main Activity Navigation Menu -->
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_bar_my_courses">My Courses</string>
     <string name="nav_bar_site_news">Site News</string>
     <string name="nav_bar_settings">Settings</string>
@@ -78,6 +76,5 @@
     <string name="lorem">Lorem ipsum dolor sit amet, tale omnis ei mei, falli utinam graeco ne has. Rationibus constituto
         comprehensam ius te, mel in nusquam delicatissimi. Ne ius quidam oportere, dicat soleat option mel ei, usu
         cu minim consetetur. Mei id electram dissentias, et augue patrioque interpretaris vel.</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="navigate">Navigate</string>
 </resources>

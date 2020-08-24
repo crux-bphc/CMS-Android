@@ -35,11 +35,11 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                android:contentDescription="@string/nav_bar_website"
                 app:srcCompat="@drawable/ic_web"
                 app:tint="?iconTintColor" />
 
             <TextView
-                android:id="@+id/website_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -60,6 +60,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                android:contentDescription="@string/navigate"
                 app:srcCompat="@drawable/outline_navigate_next_24"
                 app:tint="?iconTintColor" />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -92,6 +93,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="12dp"
+                android:contentDescription="@string/nav_bar_share"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -99,7 +101,6 @@
                 app:tint="?iconTintColor" />
 
             <TextView
-                android:id="@+id/share_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -119,6 +120,7 @@
                 android:layout_marginEnd="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                android:contentDescription="@string/navigate"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/outline_navigate_next_24"
                 app:tint="?iconTintColor" />
@@ -154,12 +156,12 @@
                 android:layout_marginBottom="12dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                android:contentDescription="@string/nav_bar_feedback"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_bug"
                 app:tint="?iconTintColor" />
 
             <TextView
-                android:id="@+id/outstaion_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -168,18 +170,19 @@
                 android:textColor="?android:textColorPrimary"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/outstaion_open_image"
+                app:layout_constraintEnd_toStartOf="@+id/feedback_open_image"
                 app:layout_constraintStart_toEndOf="@+id/issue_image"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
-                android:id="@+id/outstaion_open_image"
+                android:id="@+id/feedback_open_image"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                android:contentDescription="@string/navigate"
                 app:srcCompat="@drawable/outline_navigate_next_24"
                 app:tint="?iconTintColor" />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -206,20 +209,20 @@
 
 
             <ImageView
-                android:id="@+id/connect_image"
+                android:id="@+id/about_image"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="12dp"
                 app:layout_constraintBottom_toBottomOf="parent"
+                android:contentDescription="@string/nav_bar_about"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_information"
                 app:tint="?iconTintColor" />
 
             <TextView
-                android:id="@+id/connect_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -228,18 +231,19 @@
                 android:textColor="?android:textColorPrimary"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/connect_open_image"
-                app:layout_constraintStart_toEndOf="@+id/connect_image"
+                app:layout_constraintEnd_toStartOf="@+id/about_open_image"
+                app:layout_constraintStart_toEndOf="@+id/about_image"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
-                android:id="@+id/connect_open_image"
+                android:id="@+id/about_open_image"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                android:contentDescription="@string/navigate"
                 app:srcCompat="@drawable/outline_navigate_next_24"
                 app:tint="?iconTintColor" />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -274,12 +278,12 @@
                 android:layout_marginBottom="12dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                android:contentDescription="@string/nav_bar_settings"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_settings"
                 app:tint="?iconTintColor" />
 
             <TextView
-                android:id="@+id/settings_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -300,6 +304,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                android:contentDescription="@string/navigate"
                 app:srcCompat="@drawable/outline_navigate_next_24"
                 app:tint="?iconTintColor" />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -334,12 +339,12 @@
                 android:layout_marginBottom="12dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                android:contentDescription="@string/nav_bar_logout"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_logout"
                 app:tint="?iconTintColor" />
 
             <TextView
-                android:id="@+id/logout_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -359,6 +364,7 @@
                 android:layout_marginEnd="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                android:contentDescription="@string/navigate"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/outline_navigate_next_24"
                 app:tint="?iconTintColor" />
@@ -370,10 +376,11 @@
         android:id="@+id/app_version_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="?android:textColorSecondary"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="4dp"
         android:gravity="end"
+        android:text="@string/example_app_version_name"
+        android:textColor="?android:textColorSecondary"
         app:layout_constraintBottom_toTopOf="@+id/commit_hash"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -383,8 +390,9 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:textColor="?android:textColorSecondary"
         android:gravity="end"
+        android:text="@string/example_commit_hash"
+        android:textColor="?android:textColorSecondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -395,12 +403,12 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
+        android:text="@string/example_student_name"
         android:textColor="?android:textColorPrimary"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Aryan Arora" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/username_text"
@@ -408,11 +416,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
+        android:text="@string/example_id_number"
         android:textColor="?android:textColorSecondary"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/name_text"
-        tools:text="f20191204" />
+        app:layout_constraintTop_toBottomOf="@+id/name_text" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
