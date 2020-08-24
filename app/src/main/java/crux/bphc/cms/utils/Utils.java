@@ -8,6 +8,8 @@ import android.net.Uri;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -121,5 +123,31 @@ public class Utils {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(url));
         activity.startActivity(intent);
+    }
+
+    /** Trim trailing and leading whitespace as defined by {@link
+     * Character#isWhitespace}.
+     * @return Empty string is source is null, otherwise string with all trailing
+     *         whitespace removed
+     */
+    @NotNull
+    public static CharSequence trimWhiteSpace(CharSequence source) {
+        if (source == null) return "";
+
+        // loop to the first non-white space from the back
+        int i = source.length();
+        do {
+            --i;
+        } while (Character.isWhitespace(source.charAt(i)));
+        int end = i + 1;
+
+        // loop to the first non-white space from the front
+        i = 0;
+        while(Character.isWhitespace(source.charAt(i))) {
+            ++i;
+        }
+        int begin = i;
+
+        return source.subSequence(begin, end);
     }
 }

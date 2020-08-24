@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import crux.bphc.cms.R;
+import crux.bphc.cms.utils.Utils;
 
 /**
  * A user interface element that can be collapsed on user input using a
@@ -84,16 +85,15 @@ public class CollapsibleTextView extends androidx.appcompat.widget.AppCompatText
             if (layout.getLineCount() > collapsedLineCount) {
                 textToShow = fullText.subSequence(0, layout.getLineEnd(collapsedLineCount - 1));
 
-                spanBuilder.append(textToShow);
-                if (spanBuilder.charAt(spanBuilder.length() - 1) != '\n') {
-                    spanBuilder.append("\n");
-                }
+                spanBuilder.append(Utils.trimWhiteSpace(textToShow));
+                spanBuilder.append("\n");
                 spanBuilder.append(expandText);
                 spanBuilder.setSpan(new ClickableSpan() {
                     @Override
                     public void onClick(@NonNull View widget) {
                         state = TextState.EXPANDED;
                         requestLayout();
+                        shouldRemeasure = true;
                     }
                 }, spanBuilder.length() - expandText.length() - 1, spanBuilder.length(), 0);
             } else {
@@ -114,6 +114,7 @@ public class CollapsibleTextView extends androidx.appcompat.widget.AppCompatText
                     public void onClick(@NonNull View widget) {
                         state = TextState.COLLAPSED;
                         requestLayout();
+                        shouldRemeasure = true;
                     }
                 }, spanBuilder.length() - collapseText.length() - 1, spanBuilder.length(), 0);
             } else {
@@ -125,7 +126,6 @@ public class CollapsibleTextView extends androidx.appcompat.widget.AppCompatText
         // Have the layout measure itself once more
         super.setText(spanBuilder);
         measure(widthMeasureSpec, heightMeasureSpec);
-        shouldRemeasure = true; // The next time this method is called, we remeasure
     }
 
     public void setFullText(CharSequence fullText) {

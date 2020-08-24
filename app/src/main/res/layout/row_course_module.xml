@@ -27,11 +27,11 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:contentDescription="@null"
-            app:layout_constraintBottom_toTopOf="@id/nameAndDescriptionDivider"
 
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/file_powerpoint" />
+            app:srcCompat="@drawable/file_powerpoint"
+            app:layout_constraintBottom_toTopOf="@id/name_description_barrier" />
 
         <ProgressBar
             android:id="@+id/progress_bar"
@@ -43,9 +43,9 @@
             android:layout_marginBottom="8dp"
             android:visibility="gone"
 
-            app:layout_constraintBottom_toTopOf="@id/nameAndDescriptionDivider"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/name_description_barrier" />
 
         <crux.bphc.cms.widgets.HtmlTextView
             android:id="@+id/name"
@@ -62,7 +62,8 @@
 
             app:layout_constraintEnd_toStartOf="@id/download"
             app:layout_constraintStart_toEndOf="@id/icon_barrier"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/name_description_barrier" />
 
         <ImageView
             android:id="@+id/download"
@@ -72,11 +73,11 @@
             android:layout_margin="14dp"
             android:contentDescription="@string/download_go"
             app:tint="?iconTintColor"
-            app:layout_constraintBottom_toTopOf="@id/nameAndDescriptionDivider"
+            app:srcCompat="@drawable/download"
 
             app:layout_constraintEnd_toStartOf="@id/more"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/download" />
+            app:layout_constraintBottom_toTopOf="@id/name_description_barrier" />
 
         <View
             android:id="@+id/click_wrapper"
@@ -101,12 +102,11 @@
             android:contentDescription="@string/more_options_btn"
             android:focusable="true"
             app:tint="?iconTintColor"
-            app:layout_constraintBottom_toTopOf="@id/nameAndDescriptionDivider"
+            app:srcCompat="@drawable/dots_horizontal"
 
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/dots_horizontal" />
-
+            app:layout_constraintBottom_toTopOf="@id/name_description_barrier" />
 
         <View
             android:id="@+id/nameAndDescriptionDivider"
@@ -130,6 +130,7 @@
             android:paddingEnd="8dp"
             android:text="@string/lorem"
             android:textColor="?android:textColorSecondary"
+            android:textIsSelectable="true"
 
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
