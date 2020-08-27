@@ -17,6 +17,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -121,19 +123,10 @@ public class CourseEnrolFragment extends Fragment {
     }
 
     private AlertDialog createEnrollmentConfirmationDialog() {
-        AlertDialog.Builder builder;
-
-        if (MyApplication.getInstance().isDarkModeEnabled()) {
-            builder = new AlertDialog.Builder(requireContext(),R.style.Theme_AppCompat_Dialog_Alert);
-        } else {
-            builder = new AlertDialog.Builder(requireContext(),R.style.Theme_AppCompat_Light_Dialog_Alert);
-        }
-
-        builder.setMessage(R.string.course_enrol_confirmation_msg);
-
-        builder.setPositiveButton("OK", (dialog, which) -> enrolInCourse());
-
-        builder.setNegativeButton("Cancel", (dialog, which) -> { });
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext())
+                .setMessage(R.string.course_enrol_confirmation_msg)
+                .setPositiveButton("OK", (dialog, which) -> enrolInCourse())
+                .setNegativeButton("Cancel", (dialog, which) -> { });
         return builder.create();
     }
 
