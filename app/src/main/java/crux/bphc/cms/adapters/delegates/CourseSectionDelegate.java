@@ -1,6 +1,7 @@
 package crux.bphc.cms.adapters.delegates;
 
 import android.app.Activity;
+import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,10 +56,11 @@ public class CourseSectionDelegate extends AdapterDelegate<List<CourseContent>> 
         CourseSection section = (CourseSection) items.get(position);
 
         vh.sectionName.setText(section.getName());
-        if (!section.getSummary().isEmpty()) {
+        CharSequence summary = Utils.trimWhiteSpace(HtmlCompat.fromHtml(section.getSummary().trim(),
+                HtmlCompat.FROM_HTML_MODE_COMPACT));
+        if (summary.length() != 0) {
             vh.sectionDescription.setVisibility(View.VISIBLE);
-            vh.sectionDescription.setFullText(Utils.trimWhiteSpace(HtmlCompat.fromHtml(section.getSummary().trim(),
-                    HtmlCompat.FROM_HTML_MODE_COMPACT)));
+            vh.sectionDescription.setFullText(summary);
             vh.sectionDescription.setMovementMethod(LinkMovementMethod.getInstance());
         } else {
             vh.sectionDescription.setVisibility(View.GONE);
