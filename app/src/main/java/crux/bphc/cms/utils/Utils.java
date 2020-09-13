@@ -138,16 +138,17 @@ public class Utils {
         int i = source.length();
         do {
             --i;
-        } while (Character.isWhitespace(source.charAt(i)));
+        } while (i >= 0 && Character.isWhitespace(source.charAt(i)));
         int end = i + 1;
 
         // loop to the first non-white space from the front
         i = 0;
-        while(Character.isWhitespace(source.charAt(i))) {
+        while(i < source.length() && Character.isWhitespace(source.charAt(i))) {
             ++i;
         }
         int begin = i;
 
+        if (begin >= 0 && end < source.length() && begin > end) return "";
         return source.subSequence(begin, end);
     }
 }
