@@ -2,15 +2,16 @@
 <lint>
     <!-- This contains a list of lint issues we'd like to either
          ignore or be warned about. Any issues not listed here
-         will be an error. Do not expand the list just so that 
-         a lint check can pass and a commit can be merged. 
+         will be an error. Do not expand the list just so that
+         a lint check can pass and a commit can be merged.
          Expansions should be conservatively done. -->
-    
+
     <!-- Warn when not targetting latest API -->
     <issue id="OldTargetApi" severity="warning" />
 
     <!-- Warn when new versions of dependencies release -->
     <issue id="GradleDependency" severity="warning" />
+    <issue id="NewerVersionAvailable" severity="warning" />
 
     <issue id="ConvertToWebp" severity="warning" />
 
