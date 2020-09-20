@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/myCoursesFragment"
-        android:icon="@drawable/ic_book_multiple_variant"
+        android:icon="@drawable/ic_book"
         android:title="@string/nav_bar_my_courses" />
 
     <item
@@ -18,7 +18,7 @@
 
     <item
         android:id="@+id/moreFragment"
-        android:icon="@drawable/outline_more_horiz_24"
+        android:icon="@drawable/dots_horizontal"
         android:title="@string/nav_bar_more" />
 
 </menu>
