@@ -27,7 +27,7 @@
             android:layout_marginTop="4dp">
 
             <EditText
-                android:id="@+id/searchET"
+                android:id="@+id/searchCourseET"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"

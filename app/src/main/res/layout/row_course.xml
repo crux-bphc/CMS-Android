@@ -113,7 +113,7 @@
     </androidx.cardview.widget.CardView>
 
     <TextView
-        android:id="@+id/unreadCount"
+        android:id="@+id/unread_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|top"
