@@ -7,6 +7,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.gms.tasks.RuntimeExecutionException;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
@@ -19,11 +20,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import crux.bphc.cms.exceptions.InvalidTokenException;
 import crux.bphc.cms.models.UserAccount;
 import crux.bphc.cms.network.MoodleServices;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.HttpException;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -33,6 +36,7 @@ import crux.bphc.cms.models.course.CourseSection;
 import crux.bphc.cms.models.course.Module;
 import crux.bphc.cms.models.forum.Discussion;
 import crux.bphc.cms.models.forum.ForumData;
+import retrofit2.http.HTTP;
 
 import static crux.bphc.cms.app.Constants.API_URL;
 
@@ -59,6 +63,35 @@ public class CourseRequestHandler {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         moodleServices = retrofit.create(MoodleServices.class);
+    }
+
+    public List<Course> fetchCourseListSync() throws IOException, RuntimeException, InvalidTokenException {
+        // TODO this function is like #getCourseList(Context context)
+        // This method is superior since we don't have to handle Contexts or display messages to the
+        // user. Let the caller handle that using a callback they provide.
+        Call<ResponseBody> courseCall = moodleServices.fetchCourses(userAccount.getToken(), userAccount.getUserID());
+        try {
+            Response<ResponseBody> response = courseCall.execute();
+            if (response.code() != 200) { // Moodle returns 200 for all API calls
+                HttpException e = new HttpException(response);
+                Log.e(TAG, "Response code not 200!", e);
+                throw e;
+            }
+
+            if (response.body() == null) {
+                throw new RuntimeException("Response body is null");
+            }
+
+            String responseString = response.body().string();
+            if (responseString.contains("Invalid token")) {
+                throw new InvalidTokenException();
+            }
+            Gson gson = new Gson();
+            return gson.fromJson(responseString, new TypeToken<List<Course>>() {}.getType());
+        } catch (IOException e) {
+            Log.e(TAG, "IOException when fetching Course List", e);
+            throw e;
+        }
     }
 
     /**
@@ -171,8 +204,17 @@ public class CourseRequestHandler {
         return null;
     }
 
-    public void getCourseData(int courseId, @Nullable final CallBack<List<CourseSection>> callBack) {
+    @NotNull
+    public List<CourseSection> getCourseDataSync(int courseId) throws IOException {
+        Call<List<CourseSection>> courseCall = moodleServices
+                .fetchCourseContent(userAccount.getToken(), courseId);
+        Response<List<CourseSection>> response = courseCall.execute();
+        List<CourseSection> responseCourseSections = response.body();
+        if (responseCourseSections == null) return new ArrayList<>(0);
+        return resolve(responseCourseSections);
+    }
 
+    public void getCourseData(int courseId, @Nullable final CallBack<List<CourseSection>> callBack) {
         Call<List<CourseSection>> courseCall = moodleServices.fetchCourseContent(userAccount.getToken(), courseId);
         courseCall.enqueue(new Callback<List<CourseSection>>() {
             @Override
@@ -211,6 +253,18 @@ public class CourseRequestHandler {
         return null;
     }
 
+
+    @NotNull
+    public List<Discussion> getForumDicussionsSync(int moduleId) {
+        Call<ForumData> call = moodleServices.getForumDiscussions(userAccount.getToken(), moduleId, 0, 0);
+        try {
+            Response<ForumData> response = call.execute();
+            if (response.body() == null) return new ArrayList<>(0);
+            return response.body().getDiscussions();
+        } catch (Exception e) {
+            return new ArrayList<>(0);
+        }
+    }
 
     public void getForumDiscussions(int moduleId, @Nullable final CallBack<List<Discussion>> callBack) {
         Call<ForumData> call = moodleServices.getForumDiscussions(userAccount.getToken(), moduleId, 0, 0);
