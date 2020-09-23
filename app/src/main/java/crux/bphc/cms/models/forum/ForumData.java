@@ -2,6 +2,9 @@ package crux.bphc.cms.models.forum;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import crux.bphc.cms.network.MoodleServices;
@@ -23,7 +26,9 @@ public class ForumData {
 
     }
 
+    @NotNull
     public List<Discussion> getDiscussions() {
+        if (discussions == null) discussions = new ArrayList<>(0);
         return discussions;
     }
 }

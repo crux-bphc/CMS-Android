@@ -147,6 +147,7 @@ public class CourseDataHandler {
      *         course sections or contain <code>CourseSection</code> with only
      *         new modules.
      */
+    @NotNull
     public List<CourseSection> isolateNewCourseData(int courseId, @NonNull List<CourseSection> sections) {
         final List<CourseSection> newData = new ArrayList<>();
 
