@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -50,6 +51,12 @@ class MyCoursesFragment : Fragment() {
     private lateinit var mAdapter: Adapter
     private lateinit var moreOptionsViewModel: OptionsViewModel
 
+    // Activity result launchers
+    private val courseDetailActivityLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                mAdapter.filterCoursesByName(courses, searchCourseET.text.toString())
+        }
+
     override fun onStart() {
         super.onStart()
         requireActivity().title = "My Courses"
@@ -59,14 +66,6 @@ class MyCoursesFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         realm = Realm.getDefaultInstance()
         return inflater.inflate(R.layout.fragment_my_courses, container, false)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == COURSE_SECTION_ACTIVITY) {
-            courses = courseDataHandler.courseList
-            mAdapter.filterCoursesByName(courses, searchCourseET.text.toString())
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -79,12 +78,12 @@ class MyCoursesFragment : Fragment() {
         // Set up the adapter
         mAdapter = Adapter(requireActivity(), courses)
         mAdapter.courses = courses
-        mAdapter.clickListener = ClickListener { `object`: Any, position: Int ->
+        mAdapter.clickListener = ClickListener { `object`: Any, _: Int ->
             val course = `object` as Course
             val intent = Intent(activity, CourseDetailActivity::class.java)
             intent.putExtra("courseId", course.courseId)
             intent.putExtra("course_name", course.shortName)
-            startActivityForResult(intent, COURSE_SECTION_ACTIVITY)
+            courseDetailActivityLauncher.launch(intent)
             return@ClickListener true
         }
 
@@ -411,7 +410,6 @@ class MyCoursesFragment : Fragment() {
     }
 
     companion object {
-        private const val COURSE_SECTION_ACTIVITY = 105
         @JvmStatic
         fun newInstance() = MyCoursesFragment()
         @JvmStatic
