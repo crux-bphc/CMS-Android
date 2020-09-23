@@ -256,24 +256,29 @@ public class CourseRequestHandler {
     private void changeName(Content content) {
         String fileName = content.getFileName();
         String newFileName = fileName;
-        //Makes sure that the string fileName contains an extension
-        if (!(fileName.lastIndexOf('.') == -1)) {
-            int lastIndex = fileName.lastIndexOf('(');
-            //if '(' is not there in the fileName adds '(1)' else increments the value in the brackets.
-            if (lastIndex == -1) {
-                newFileName = fileName.substring(0, fileName.lastIndexOf('.')) +
-                        "(1)" +
-                        fileName.substring(fileName.lastIndexOf('.'));
+
+        // new file name will be of the format <original>(count)[.ext]
+        int lastIndex = fileName.lastIndexOf('(');
+        boolean countUpdated = false;
+        if (lastIndex != -1) {
+            String fileNum = fileName.substring(lastIndex + 1, fileName.lastIndexOf(')'));
+            try {
+                int count = Integer.parseInt(fileNum);
+                newFileName = fileName.substring(0, lastIndex + 1)
+                        + ++count
+                        + fileName.substring(fileName.lastIndexOf(')'));
+                countUpdated = true;
+            } catch (NumberFormatException e) {
+            }
+        }
+
+        if (!countUpdated) {
+            int extension = fileName.lastIndexOf('.');
+            if (extension != -1) {
+                newFileName = fileName.substring(0, extension) + "(1)" +
+                        fileName.substring(extension);
             } else {
-                String fileNum = fileName.substring(lastIndex + 1, fileName.lastIndexOf(')'));
-                try {
-                    int count = Integer.parseInt(fileNum);
-                    newFileName = fileName.substring(0, lastIndex + 1) +
-                            ++count +
-                            fileName.substring(fileName.lastIndexOf(')'));
-                } catch (NumberFormatException e) {
-                    newFileName = fileName;
-                }
+                newFileName = fileName + "(1)";
             }
         }
         content.setFileName(newFileName);
