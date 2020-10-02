@@ -12,6 +12,7 @@ Dates are in `yyyy-mm-dd`.
 
 ### Fixed
 * Potential infinite loop when resolving files with the same name
+* Potential ANR when updating a large number of courses
 
 ## Version 1.7.0-beta.2 (verCode 1070002), 2020-08-20
 
