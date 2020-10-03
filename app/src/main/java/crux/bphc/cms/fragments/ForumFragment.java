@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -273,7 +273,7 @@ public class ForumFragment extends Fragment {
             }
 
             public void bind(Discussion discussion) {
-                Picasso.get().load(discussion.getUserPictureUrl()).into(mUserPic);
+                Glide.with(mUserPic.getContext()).load(discussion.getUserPictureUrl()).into(mUserPic);
                 mSubject.setText(discussion.getSubject());
                 mUserName.setText(discussion.getUserFullName());
                 mModifiedTime.setText(formatDate(discussion.getTimeModified()));

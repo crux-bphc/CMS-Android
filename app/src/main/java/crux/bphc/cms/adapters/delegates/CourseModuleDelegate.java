@@ -1,6 +1,7 @@
 package crux.bphc.cms.adapters.delegates;
 
 import android.app.Activity;
+import android.net.Uri;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
 import android.util.TypedValue;
@@ -9,24 +10,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.hannesdorfmann.adapterdelegates4.AdapterDelegate;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 import crux.bphc.cms.R;
 import crux.bphc.cms.interfaces.ClickListener;
-import crux.bphc.cms.io.FileManager;
-import crux.bphc.cms.widgets.HtmlTextView;
 import crux.bphc.cms.interfaces.CourseContent;
+import crux.bphc.cms.io.FileManager;
 import crux.bphc.cms.models.course.Module;
 import crux.bphc.cms.widgets.CollapsibleTextView;
+import crux.bphc.cms.widgets.HtmlTextView;
 
 /**
  * Adapter delegate for course modules.
@@ -117,18 +123,24 @@ public class CourseModuleDelegate extends AdapterDelegate<List<CourseContent>> {
             vh.modIcon.setVisibility(View.GONE);
             if (module.getModType() != Module.Type.LABEL) {
                 vh.progressBar.setVisibility(View.VISIBLE);
-                Picasso.get().load(module.getModIcon()).into(vh.modIcon, new Callback() {
+                Glide.with(vh.modIcon.getContext()).addDefaultRequestListener(new RequestListener<Object>() {
                     @Override
-                    public void onSuccess() {
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                                Target<Object> target, boolean isFirstResource) {
+                        Toast.makeText(vh.modIcon.getContext(), String.format("Load failed for %s",
+                                module.getModIcon()), Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Object resource, Object model,
+                                                   Target<Object> target, DataSource dataSource,
+                                                   boolean isFirstResource) {
                         vh.progressBar.setVisibility(View.GONE);
                         vh.modIcon.setVisibility(View.VISIBLE);
+                        return false;
                     }
-
-                    @Override
-                    public void onError(Exception e) {
-
-                    }
-                });
+                }).load(Uri.parse(module.getModIcon())).into(vh.modIcon);
             }
         }
 
