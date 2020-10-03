@@ -8,13 +8,13 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import crux.bphc.cms.R
 import crux.bphc.cms.app.Constants
@@ -32,6 +32,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var _realm: Realm
     private lateinit var _userAccount: UserAccount
+
+    private lateinit var _bottomNavSelectionListener: BottomNavigationView.OnNavigationItemSelectedListener
+
     override fun onCreate(savedInstanceState: Bundle?) {
         if (MyApplication.getInstance().isDarkModeEnabled) {
             setTheme(R.style.AppTheme_NoActionBar_Dark)
@@ -45,37 +48,32 @@ class MainActivity : AppCompatActivity() {
         Constants.TOKEN = _userAccount.token
         _realm = Realm.getDefaultInstance()
 
-        bottom_nav.setOnNavigationItemSelectedListener { menuItem ->
+        _bottomNavSelectionListener = BottomNavigationView.OnNavigationItemSelectedListener{
+            menuItem ->
             when (menuItem.itemId) {
                 R.id.myCoursesFragment -> {
                     pushView(MyCoursesFragment.newInstance(), "My Courses", true)
-                    return@setOnNavigationItemSelectedListener true
+                    return@OnNavigationItemSelectedListener true
                 }
                 R.id.searchCourseFragment -> {
                     pushView(SearchCourseFragment.newInstance(Constants.TOKEN), "Course Search", false)
-                    return@setOnNavigationItemSelectedListener true
+                    return@OnNavigationItemSelectedListener true
                 }
                 R.id.forumFragment -> {
                     pushView(ForumFragment.newInstance(), "Site News", false)
-                    return@setOnNavigationItemSelectedListener true
+                    return@OnNavigationItemSelectedListener true
                 }
                 R.id.moreFragment -> {
                     pushView(MoreFragment.newInstance(), "More", false)
-                    return@setOnNavigationItemSelectedListener true
+                    return@OnNavigationItemSelectedListener true
                 }
-                else -> return@setOnNavigationItemSelectedListener false
+                else -> return@OnNavigationItemSelectedListener false
             }
         }
+        bottom_nav.setOnNavigationItemSelectedListener(_bottomNavSelectionListener)
 
         if (savedInstanceState == null) {
             pushView(MyCoursesFragment.newInstance(), "My Courses", true)
-        }
-
-        supportFragmentManager.addOnBackStackChangedListener {
-            val frag = supportFragmentManager.findFragmentById(R.id.content_frame)
-            if (frag is MyCoursesFragment) {
-                bottom_nav.selectedItemId = R.id.myCoursesFragment
-            }
         }
 
         askPermission()
@@ -83,6 +81,20 @@ class MainActivity : AppCompatActivity() {
         NotificationService.startService(this, false)
         resolveIntent()
         resolveModuleLinkShare()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        bottom_nav.setOnNavigationItemSelectedListener(null) // Remove the listener to prevent an infinite loop
+        val frag = supportFragmentManager.findFragmentById(R.id.content_frame)
+        bottom_nav.selectedItemId = when (frag) {
+            is MyCoursesFragment -> R.id.myCoursesFragment
+            is SearchCourseFragment -> R.id.searchCourseFragment
+            is ForumFragment -> R.id.forumFragment
+            is MoreFragment -> R.id.moreFragment
+            else -> bottom_nav.selectedItemId
+        }
+        bottom_nav.setOnNavigationItemSelectedListener(_bottomNavSelectionListener)
     }
 
     private fun resolveModuleLinkShare() {
