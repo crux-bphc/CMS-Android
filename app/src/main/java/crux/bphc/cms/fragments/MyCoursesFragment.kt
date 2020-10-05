@@ -85,7 +85,7 @@ class MyCoursesFragment : Fragment() {
                     val courseDataHandler = CourseDataHandler(requireContext(), realm)
 
                     for (course in courses) {
-                        val sections = courseDataHandler.getCourseData(course.courseId)
+                        val sections = courseDataHandler.getCourseData(course.id)
                         courseDataHandler.markAllAsRead(sections)
                     }
 
@@ -115,7 +115,7 @@ class MyCoursesFragment : Fragment() {
         mAdapter.clickListener = ClickListener { `object`: Any, _: Int ->
             val course = `object` as Course
             val intent = Intent(activity, CourseDetailActivity::class.java)
-            intent.putExtra("courseId", course.courseId)
+            intent.putExtra("courseId", course.id)
             intent.putExtra("course_name", course.shortName)
             courseDetailActivityLauncher.launch(intent)
             return@ClickListener true
@@ -158,7 +158,7 @@ class MyCoursesFragment : Fragment() {
                     courseDownloader.unregisterReceiver()
                 }
             })
-            courseDownloader.downloadCourseData(course.courseId)
+            courseDownloader.downloadCourseData(course.id)
             return@ClickListener true
         }
 
@@ -245,9 +245,9 @@ class MyCoursesFragment : Fragment() {
                 async innerAsync@{
                     val sections: MutableList<CourseSection>
                     try {
-                        sections = courseRequestHandler.getCourseDataSync(it.courseId)
+                        sections = courseRequestHandler.getCourseDataSync(it.id)
                     } catch (e: IOException) {
-                        Log.e(TAG, "IOException when syncing course: ${it.courseId}}", e)
+                        Log.e(TAG, "IOException when syncing course: ${it.id}}", e)
                         return@innerAsync false
                     }
 
@@ -268,8 +268,8 @@ class MyCoursesFragment : Fragment() {
                     }
 
                     val newPartsInSections = courseDataHandler
-                            .isolateNewCourseData(it.courseId, sections)
-                    courseDataHandler.replaceCourseData(it.courseId, sections)
+                            .isolateNewCourseData(it.id, sections)
+                    courseDataHandler.replaceCourseData(it.id, sections)
 
                     realm.close() // let's not forget to do this
                     if (newPartsInSections.isNotEmpty()) {
@@ -354,7 +354,7 @@ class MyCoursesFragment : Fragment() {
 
         inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             fun bind(course: Course) {
-                val name = course.courseName[1].toString() + " " + course.courseName[2]
+                val name = course.courseName[1] + " " + course.courseName[2]
                 val count = courseDataHandler.getUnreadCount(course.id)
                 itemView.course_number.text = course.courseName[0]
                 itemView.course_name.text = name
@@ -381,7 +381,7 @@ class MyCoursesFragment : Fragment() {
             }
 
             fun markAllAsRead(position: Int) {
-                val courseId = this@MyCoursesFragment.courses[position].courseId
+                val courseId = this@MyCoursesFragment.courses[position].id
                 val courseSections: List<CourseSection>
 
                 courseSections = courseDataHandler.getCourseData(courseId)
@@ -395,7 +395,7 @@ class MyCoursesFragment : Fragment() {
 
             fun setFavoriteStatus(position: Int, isFavourite: Boolean) {
                 val course = courses[position]
-                courseDataHandler.setFavoriteStatus(course.courseId, isFavourite)
+                courseDataHandler.setFavoriteStatus(course.id, isFavourite)
                 course.isFavorite = isFavourite
                 sortCourses(courses)
                 notifyDataSetChanged()

@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity() {
             }
             var isEnrolled = false
             for (course in courses) {
-                if (course.courseId == courseId) {
+                if (course.id == courseId) {
                     isEnrolled = true
                     break
                 }

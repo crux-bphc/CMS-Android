@@ -173,9 +173,9 @@ public class NotificationService extends JobService {
 
             // update the sections of the course, and get new parts
             // Since new course notifications are skipped, default modules like "Announcements" will not get a notif
-            List<CourseSection> newPartsInSection = courseDataHandler.isolateNewCourseData(course.getCourseId(),
+            List<CourseSection> newPartsInSection = courseDataHandler.isolateNewCourseData(course.getId(),
                     courseSections);
-            courseDataHandler.replaceCourseData(course.getCourseId(), courseSections);
+            courseDataHandler.replaceCourseData(course.getId(), courseSections);
 
             // Generate notifications only if it is not a new course
             if (!newCourses.contains(course)) {
