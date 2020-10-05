@@ -106,7 +106,7 @@ public class CourseDetailActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         CourseContentFragment courseSectionFragment = CourseContentFragment.newInstance(
                 TOKEN,
-                course.getCourseId());
+                course.getId());
         fragmentTransaction.replace(
                 R.id.course_section_enrol_container,
                 courseSectionFragment,

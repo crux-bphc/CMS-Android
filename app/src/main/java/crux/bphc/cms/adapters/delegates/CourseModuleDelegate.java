@@ -100,7 +100,7 @@ public class CourseModuleDelegate extends AdapterDelegate<List<CourseContent>> {
 
     private void bindNameAndDescription(CourseModuleViewHolder vh, Module module) {
         vh.name.setText(module.getName());
-        if (module.getDescription() != null && !module.getDescription().isEmpty()) {
+        if (!module.getDescription().isEmpty()) {
             vh.description.setVisibility(View.VISIBLE);
             vh.nameAndDescriptionDivider.setVisibility(View.VISIBLE);
             vh.description.setFullText(new SpannableStringBuilder()

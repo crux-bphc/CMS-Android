@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -294,7 +293,7 @@ public class TokenActivity extends AppCompatActivity {
                         }
                     }
                 }
-                courseDataHandler.replaceCourseData(course.getCourseId(), courseSections);
+                courseDataHandler.replaceCourseData(course.getId(), courseSections);
             }
 
             /* Fetch Site News */

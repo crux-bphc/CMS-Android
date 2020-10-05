@@ -33,17 +33,17 @@ import crux.bphc.cms.R;
 import crux.bphc.cms.adapters.CourseContentAdapter;
 import crux.bphc.cms.app.Constants;
 import crux.bphc.cms.app.MyApplication;
-import crux.bphc.cms.interfaces.ClickListener;
 import crux.bphc.cms.helper.CourseDataHandler;
 import crux.bphc.cms.helper.CourseRequestHandler;
-import crux.bphc.cms.io.FileManager;
-import crux.bphc.cms.widgets.PropertiesAlertDialog;
-import crux.bphc.cms.utils.Utils;
+import crux.bphc.cms.interfaces.ClickListener;
 import crux.bphc.cms.interfaces.CourseContent;
+import crux.bphc.cms.io.FileManager;
 import crux.bphc.cms.models.course.Content;
 import crux.bphc.cms.models.course.CourseSection;
 import crux.bphc.cms.models.course.Module;
 import crux.bphc.cms.models.forum.Discussion;
+import crux.bphc.cms.utils.Utils;
+import crux.bphc.cms.widgets.PropertiesAlertDialog;
 import io.realm.Realm;
 
 import static crux.bphc.cms.io.FileManager.DATA_DOWNLOADED;
@@ -292,14 +292,13 @@ public class CourseContentFragment extends Fragment {
                 case URL:
                     if (activity != null && content != null) {
                         String url = content.getFileUrl();
-                        if (url != null && !url.isEmpty()) {
+                        if (!url.isEmpty()) {
                             Utils.openURLInBrowser(activity, url);
                         }
                     }
                     break;
                 case PAGE:
-                    String url = module.getUrl();
-                    if (activity != null && url != null) {
+                    if (activity != null) {
                         Utils.openURLInBrowser(activity, module.getUrl());
                     }
                     break;
@@ -318,7 +317,7 @@ public class CourseContentFragment extends Fragment {
                     break;
                 case LABEL:
                     String desc = module.getDescription();
-                    if (activity != null && desc != null && !desc.isEmpty()) {
+                    if (activity != null && !desc.isEmpty()) {
 
                         AlertDialog.Builder alertDialog;
                         if (MyApplication.getInstance().isDarkModeEnabled()) {
@@ -436,7 +435,7 @@ public class CourseContentFragment extends Fragment {
     private List<CourseContent> getCourseContents() {
         ArrayList<CourseContent> contents = new ArrayList<>();
         courseSections.stream().filter(courseSection -> !(courseSection.getModules().isEmpty()
-                && (courseSection.getSummary() == null || courseSection.getSummary().isEmpty())
+                && courseSection.getSummary().isEmpty()
                 && (courseSection.getName().matches("Topic \\d"))
         )).forEach(courseSection -> {
             contents.add(courseSection);

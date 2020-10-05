@@ -21,6 +21,7 @@ import crux.bphc.cms.models.course.Module;
 import crux.bphc.cms.models.forum.Discussion;
 import io.realm.Realm;
 
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -193,7 +194,7 @@ public class CourseDataHandler {
     private List<CourseSection> isolateNewAndModifiedModulesInSections(@NonNull List<CourseSection> sections) {
         List<CourseSection> retSections = new ArrayList<>();
         for (CourseSection section : sections) {
-            CourseSection retSection = new CourseSection(section);
+            CourseSection retSection = section.deepCopy();
             List<Module> modules = section.getModules();
             List<Module> retModules = new ArrayList<>();
 
@@ -206,7 +207,7 @@ public class CourseDataHandler {
             for (Module module : modules) {
                 if (!inDBIds.contains(module.getId())) {
                     // Add the modules that are brand new
-                    module.setIsUnread(true);
+                    module.setUnread(true);
                     retModules.add(module);
                 } else {
                     Module mod = isolateNewContentInModules(module);
@@ -216,7 +217,7 @@ public class CourseDataHandler {
                 }
             }
             if (!retModules.isEmpty()) {
-                retSection.setModules(retModules);
+                retSection.setModules(new RealmList<>(retModules.toArray(new Module[0])));
                 retSections.add(retSection);
             }
         }
@@ -239,14 +240,14 @@ public class CourseDataHandler {
         Module realmModule = realm.where(Module.class).equalTo("id", module.getId()).findFirst();
 
         if (realmModule == null) {
-            module.setIsUnread(true);
+            module.setUnread(true);
             return module; // Everything is new
         }
 
         // Always copy over flag in case user manually set unread and for it
         // to persist across multiple data requests, irrespective of whether
         // content is new or not
-        module.setIsUnread(realmModule.isUnread());
+        module.setUnread(realmModule.isUnread());
 
         RealmResults<Content> results = realm.where(Content.class)
                 .in("fileName", module.getContents().stream().map(Content::getFileName).toArray(String[]::new))
@@ -255,14 +256,14 @@ public class CourseDataHandler {
                 .findAll();
 
         List<Content> newContents = module.getContents().stream().filter(content -> !results.contains(content))
-                .map(Content::new).collect(Collectors.toList());
+                .map(Content::copy).collect(Collectors.toList());
         if (newContents.isEmpty()) {
             return null;
         }
 
-        module.setIsUnread(true);
-        Module retModule = new Module(module);
-        retModule.setContents(newContents);
+        module.setUnread(true);
+        Module retModule = module.deepCopy();
+        retModule.setContents(new RealmList<>(newContents.toArray(new Content[0])));
         return retModule;
     }
 
@@ -313,7 +314,7 @@ public class CourseDataHandler {
     }
 
     public void markModuleAsReadOrUnread(Module module, boolean isUnread) {
-        module.setIsUnread(isUnread);
+        module.setUnread(isUnread);
         boolean endTransaction = false;
 
         if (!realm.isInTransaction()) {
@@ -322,7 +323,7 @@ public class CourseDataHandler {
         }
 
         Module mod = realm.where(Module.class).equalTo("id", module.getId()).findFirst();
-        if (mod != null) mod.setIsUnread(isUnread);
+        if (mod != null) mod.setUnread(isUnread);
 
         if (endTransaction)
         {
@@ -333,7 +334,7 @@ public class CourseDataHandler {
     public String getCourseName(int courseId) {
         Course course = realm.where(Course.class).equalTo("id", courseId).findFirst();
         if (course == null) return "";
-        return course.getShortName() != null ? course.getShortName() : "";
+        return course.getShortName();
     }
 
     public String getCourseNameForActionBarTitle(int courseId){
