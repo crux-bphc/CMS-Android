@@ -261,7 +261,7 @@ class MyCoursesFragment : Fragment() {
                                 val discussions = courseRequestHandler
                                         .getForumDicussionsSync(module.instance)
                                 for (d in discussions) {
-                                    d.setForumId(module.instance)
+                                    d.forumId = module.instance
                                 }
                             }
                         }
