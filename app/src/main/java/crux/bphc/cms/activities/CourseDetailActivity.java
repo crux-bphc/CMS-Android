@@ -80,7 +80,7 @@ public class CourseDetailActivity extends AppCompatActivity {
                 // Show discussion, regardless of forumId
                 Discussion discussion = realm.where(Discussion.class).equalTo("id", discussionId).findFirst();
                 if (discussion != null) {
-                    setDiscussionFragment(discussion.getForumid(), discussionId);
+                    setDiscussionFragment(discussion.getForumId(), discussionId);
                 }
             }
         }
