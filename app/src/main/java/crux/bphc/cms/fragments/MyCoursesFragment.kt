@@ -202,9 +202,9 @@ class MyCoursesFragment : Fragment() {
 
     private fun checkEmpty() {
         if (courses.isEmpty()) {
-            empty.visibility = View.VISIBLE
+            empty?.visibility = View.VISIBLE
         } else {
-            empty.visibility = View.GONE
+            empty?.visibility = View.GONE
         }
     }
 
@@ -232,7 +232,7 @@ class MyCoursesFragment : Fragment() {
                 }
             } finally {
                 CoroutineScope(Dispatchers.Main).launch {
-                    swipeRefreshLayout.isRefreshing = false
+                    swipeRefreshLayout?.isRefreshing = false
                 }
             }
         }
