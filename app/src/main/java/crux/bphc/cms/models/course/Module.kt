@@ -44,7 +44,7 @@ open class Module(
         }
 
     val isDownloadable: Boolean
-        get() = contents.isEmpty() && modType !in arrayOf(Type.URL, Type.FORUM, Type.PAGE)
+        get() = contents.isNotEmpty() && modType !in arrayOf(Type.URL, Type.FORUM, Type.PAGE)
 
     val moduleIcon: Int
         get() {
