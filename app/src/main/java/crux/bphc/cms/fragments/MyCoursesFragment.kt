@@ -112,7 +112,7 @@ class MyCoursesFragment : Fragment() {
         // Set up the adapter
         mAdapter = Adapter(requireActivity(), courses)
         mAdapter.courses = courses
-        mAdapter.clickListener = ClickListener { `object`: Any, _: Int ->
+        mAdapter.clickListener = ClickListener { `object`: Any, position: Int ->
             val course = `object` as Course
             val intent = Intent(activity, CourseDetailActivity::class.java)
             intent.putExtra("courseId", course.id)
