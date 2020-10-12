@@ -5,14 +5,30 @@ All notable changes to the project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standards.
 Dates are in `yyyy-mm-dd`.
 
-## Unreleased
+## Version 1.7.0 (verCode 1070003), 2020-10-13
+
+*NOTE: The minimum supported version is now Android 7.0 (API Level 24)*
+
 ### Added
+* Ability to mark courses as favorite for easier access
+* App version and commit hash to 'More Options' in bottom navigation
+* Dialogbox on invalid token after Google login
 * Notification when logged out while updating course contents in the background
 
 ### Changed
-* Navigation drawer to Bottom NavigationA
+* User Interface
+* Launcher icon
+* Replaced custom Settings activity with Android's Preference Fragment
+* Navigation drawer to Bottom Navigation
+* Course Content text is now selectable 
+* Re-download option now rewrites files
+* Only Course with Section number shown as title inside course content view
 
 ### Fixed
+* HTML encoded entities in course names
+* Unparsed HTML in notification summary
+* Empty ghost site notifications
+* Google Login troubles from certain browsers and devices
 * Potential infinite loop when resolving files with the same name
 * Potential ANR when updating a large number of courses
 * Infinite loading animation for modules with SVG icons
@@ -27,7 +43,7 @@ Dates are in `yyyy-mm-dd`.
 
 ### Changed
 * Launcher icon
-* Course Content text is now selectable 
+* Course Content text is now selectable
 
 ### Fixed
 * Full Course Names not being displayed (regression in **v1.7.0-beta1**)
