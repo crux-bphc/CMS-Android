@@ -7,6 +7,7 @@ Dates are in `yyyy-mm-dd`.
 
 ## Unreleased
 ### Added
+* Notification when logged out while updating course contents in the background
 
 ### Changed
 
