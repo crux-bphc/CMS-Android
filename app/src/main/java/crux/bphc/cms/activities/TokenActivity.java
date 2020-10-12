@@ -230,8 +230,6 @@ public class TokenActivity extends AppCompatActivity {
     private void checkLoggedIn() {
         if (userAccount.isLoggedIn()) {
             Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("courseId", getIntent().getIntExtra("courseId", -1));
-            intent.putExtra("modId", getIntent().getIntExtra("modId", -1));
             dismissProgress();
             startActivity(intent);
             finish();

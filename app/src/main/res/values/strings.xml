@@ -77,4 +77,8 @@
         comprehensam ius te, mel in nusquam delicatissimi. Ne ius quidam oportere, dicat soleat option mel ei, usu
         cu minim consetetur. Mei id electram dissentias, et augue patrioque interpretaris vel.</string>
     <string name="navigate">Navigate</string>
+
+    <string name="logout_notif_content">You have been logged out while trying to update course
+        contents in the background. Open the app and login once again.</string>
+    <string name="logout_notif_title">Unexpected Logout</string>
 </resources>
