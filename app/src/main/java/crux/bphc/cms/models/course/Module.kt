@@ -49,7 +49,7 @@ open class Module(
     val moduleIcon: Int
         get() {
             return when (modType) {
-                Type.RESOURCE -> if (contents.isEmpty()) {
+                Type.RESOURCE -> if (contents.isNotEmpty()) {
                     val content = contents.first() ?: return -1
                     FileUtils.getDrawableIconFromFileName(content.fileName)
                 } else {
