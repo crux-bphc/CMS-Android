@@ -10,6 +10,7 @@ Dates are in `yyyy-mm-dd`.
 * Notification when logged out while updating course contents in the background
 
 ### Changed
+* Navigation drawer to Bottom NavigationA
 
 ### Fixed
 * Potential infinite loop when resolving files with the same name
