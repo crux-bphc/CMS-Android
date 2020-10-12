@@ -60,11 +60,6 @@
             android:name=".activities.CourseDetailActivity"
             android:screenOrientation="portrait" />
 
-        <service
-            android:name=".services.NotificationService"
-            android:exported="true"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

@@ -33,6 +33,11 @@ public class Constants {
 
     }
 
+    /**
+     * Site News isn't part of any course. However, internally we assume it to be part of course 0.
+     */
+    public static int SITE_NEWS_COURSE_ID = 0;
+
     public static String getCourseURL(int courseId) {
         return COURSE_URL + "?id=" + courseId;
     }

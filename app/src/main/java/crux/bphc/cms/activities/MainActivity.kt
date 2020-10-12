@@ -14,19 +14,24 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import crux.bphc.cms.R
 import crux.bphc.cms.app.Constants
 import crux.bphc.cms.app.MyApplication
+import crux.bphc.cms.background.NotificationWorker
 import crux.bphc.cms.fragments.*
+import crux.bphc.cms.helper.NOTIFICATION_CHANNEL_UPDATES
+import crux.bphc.cms.helper.NOTIFICATION_CHANNEL_UPDATES_BUNDLE
 import crux.bphc.cms.models.UserAccount
 import crux.bphc.cms.models.course.Course
 import crux.bphc.cms.models.course.CourseSection
-import crux.bphc.cms.models.course.Module
-import crux.bphc.cms.services.NotificationService
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
@@ -78,7 +83,11 @@ class MainActivity : AppCompatActivity() {
 
         askPermission()
         createNotificationChannels() // initialize channels before starting background service
-        NotificationService.startService(this, false)
+        // Enqueue background worker for course updates and notifications
+        val notifWorkRequest = PeriodicWorkRequestBuilder<NotificationWorker>(1, TimeUnit.HOURS)
+                .build()
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork("NotificationWorker",
+                ExistingPeriodicWorkPolicy.KEEP, notifWorkRequest)
         resolveIntent()
         resolveModuleLinkShare()
     }
@@ -136,13 +145,13 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Create the "Updates Bundle" channel, which is channel for summary notifications that bundles thr
             // individual notifications
-            val service = NotificationChannel(NotificationService.NOTIFICATION_CHANNEL_UPDATES_BUNDLE,
+            val service = NotificationChannel(NOTIFICATION_CHANNEL_UPDATES_BUNDLE,
                     "New Content Bundle",
                     NotificationManager.IMPORTANCE_DEFAULT)
             service.description = "A default priority channel that bundles all the notifications"
 
             // Create the "Updates" channel which has the low importance level
-            val updates = NotificationChannel(NotificationService.NOTIFICATION_CHANNEL_UPDATES,
+            val updates = NotificationChannel(NOTIFICATION_CHANNEL_UPDATES,
                     "New Content",
                     NotificationManager.IMPORTANCE_LOW)
             updates.description = "All low importance channel that relays all the updates."
@@ -156,43 +165,53 @@ class MainActivity : AppCompatActivity() {
     private fun resolveIntent() {
         val courseId = intent.getIntExtra("courseId", -1)
         val modId = intent.getIntExtra("modId", -1)
+        val forumId = intent.getIntExtra("forumId", -1)
+        val discussionId = intent.getIntExtra("discussionId", -1)
+
         if (courseId == -1) return
-        if (courseId == 1) {
+        if (courseId == Constants.SITE_NEWS_COURSE_ID) {
             // Site news, modId will not be -1
             // We will push the fragment here itself
-            val forumFragment: Fragment = ForumFragment.newInstance()
+            val forumFragment = ForumFragment.newInstance()
             pushView(forumFragment, "Site News", false)
 
             // Ensure that the fragment has been commited
             supportFragmentManager.executePendingTransactions()
-            val discussionFragment: Fragment = DiscussionFragment.newInstance(modId, "Site News")
+            val discussionFragment = DiscussionFragment.newInstance(discussionId, "Site News")
             pushView(discussionFragment, "Discussion", false)
         }
+
         if (modId == -1) {
             val intent = Intent(this, CourseDetailActivity::class.java)
             intent.putExtra("courseId", courseId)
             startActivity(intent)
             return
         }
+
+        if (discussionId != -1) {
+            // Open up the discussion first
+            val intent = Intent(this, CourseDetailActivity::class.java)
+            intent.putExtra("courseId", courseId)
+            intent.putExtra("modId", modId)
+            intent.putExtra("forumId", forumId)
+            intent.putExtra("discussionId", discussionId)
+            startActivity(intent)
+            return
+        }
+
         val realm = Realm.getDefaultInstance()
         val courseSections = realm.copyFromRealm(realm.where(CourseSection::class.java)
                 .equalTo("courseId", courseId).findAll())
         if (courseSections == null || courseSections.isEmpty()) return
-        for (courseSection in courseSections) {
-            for (module in courseSection.modules) {
-                if (module.id == modId) {
-                    val intent = Intent(this, CourseDetailActivity::class.java)
-                    intent.putExtra("courseId", courseId)
-                    if (!module.isDownloadable && module.modType == Module.Type.FORUM) {
-                        intent.putExtra("forumId", module.instance)
-                    }
-                    startActivity(intent)
-                    return
-                }
+        for (module in courseSections.flatMap { it.modules }) {
+            if (module.id == modId) {
+                val intent = Intent(this, CourseDetailActivity::class.java)
+                intent.putExtra("courseId", courseId)
+                intent.putExtra("modId", modId)
+                startActivity(intent)
+                return
             }
         }
-
-        // If we've gotten this far, we need to open a discussion
         val intent = Intent(this, CourseDetailActivity::class.java)
         intent.putExtra("courseId", courseId)
         intent.putExtra("discussionId", modId)
