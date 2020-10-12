@@ -61,7 +61,8 @@ class MainActivity : AppCompatActivity() {
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.searchCourseFragment -> {
-                    pushView(SearchCourseFragment.newInstance(Constants.TOKEN), "Course Search", false)
+                    pushView(SearchCourseForEnrolFragment.newInstance(Constants.TOKEN),
+                            "Search Course to Enrol", false)
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.forumFragment -> {
@@ -98,7 +99,7 @@ class MainActivity : AppCompatActivity() {
         val frag = supportFragmentManager.findFragmentById(R.id.content_frame)
         bottom_nav.selectedItemId = when (frag) {
             is MyCoursesFragment -> R.id.myCoursesFragment
-            is SearchCourseFragment -> R.id.searchCourseFragment
+            is SearchCourseForEnrolFragment -> R.id.searchCourseFragment
             is ForumFragment -> R.id.forumFragment
             is MoreFragment -> R.id.moreFragment
             else -> bottom_nav.selectedItemId

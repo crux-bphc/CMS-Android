@@ -8,8 +8,8 @@
 
     <item
         android:id="@+id/searchCourseFragment"
-        android:icon="@drawable/ic_search"
-        android:title="@string/nav_bar_search_course" />
+        android:icon="@drawable/ic_clipboard"
+        android:title="@string/nav_bar_enrol_course" />
 
     <item
         android:id="@+id/forumFragment"
