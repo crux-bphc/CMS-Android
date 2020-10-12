@@ -11,7 +11,7 @@
     <string name="nav_bar_share">Share</string>
     <string name="nav_bar_feedback">Feedback</string>
     <string name="nav_bar_about">About</string>
-    <string name="nav_bar_search_course">Search Courses</string>
+    <string name="nav_bar_enrol_course">Enrol to Courses</string>
     <string name="nav_bar_logout">Logout</string>
     <string name="nav_bar_more">More</string>
 

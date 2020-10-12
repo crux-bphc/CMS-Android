@@ -38,7 +38,7 @@ import static crux.bphc.cms.app.Constants.API_URL;
 import static crux.bphc.cms.app.Constants.COURSE_PARCEL_INTENT_KEY;
 import static crux.bphc.cms.app.Constants.PER_PAGE;
 
-public class SearchCourseFragment extends Fragment {
+public class SearchCourseForEnrolFragment extends Fragment {
 
     private static final String TOKEN_KEY = "token";
     boolean containsMore = true;
@@ -54,12 +54,12 @@ public class SearchCourseFragment extends Fragment {
     private Call<CourseSearch> call;
     private MoodleServices moodleServices;
 
-    public SearchCourseFragment() {
+    public SearchCourseForEnrolFragment() {
         // Required empty public constructor
     }
 
-    public static SearchCourseFragment newInstance(String token) {
-        SearchCourseFragment fragment = new SearchCourseFragment();
+    public static SearchCourseForEnrolFragment newInstance(String token) {
+        SearchCourseForEnrolFragment fragment = new SearchCourseForEnrolFragment();
         Bundle args = new Bundle();
         args.putString(TOKEN_KEY, token);
         fragment.setArguments(args);
@@ -77,7 +77,7 @@ public class SearchCourseFragment extends Fragment {
     @Override
     public void onStart() {
         if(getActivity() != null) {
-            getActivity().setTitle("Search Courses");
+            getActivity().setTitle("Search Courses to Enrol");
         }
         super.onStart();
     }
