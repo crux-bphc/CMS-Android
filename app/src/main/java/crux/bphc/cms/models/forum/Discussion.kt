@@ -45,10 +45,7 @@ open class Discussion(
 
         subject: String = "" ,
 
-        /**
-         * The content of this discussion.
-         */
-        @SerializedName("message") var message: String = "",
+        message: String = "",
 
         /**
          * List of attachments of this post
@@ -78,6 +75,16 @@ open class Discussion(
 ) : RealmObject() {
 
     var subject: String = subject
+        get() {
+            return HtmlCompat.fromHtml(field, HtmlCompat.FROM_HTML_MODE_COMPACT).toString()
+                    .trim { it < ' ' }
+        }
+        private set
+
+    /**
+     * The content of this discussion.
+     */
+    @SerializedName("message") var message: String = ""
         get() {
             return HtmlCompat.fromHtml(field, HtmlCompat.FROM_HTML_MODE_COMPACT).toString()
                     .trim { it < ' ' }

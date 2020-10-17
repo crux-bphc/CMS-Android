@@ -119,7 +119,7 @@ public class DiscussionFragment extends Fragment {
             mSubject.setText(discussion.getSubject());
             mUserName.setText(discussion.getUserFullName());
             mTimeModified.setText(ForumFragment.formatDate(discussion.getTimeModified()));
-            mMessage.setText(HtmlTextView.parseHtml(discussion.getMessage()));
+            mMessage.setText(discussion.getMessage());
 
             LayoutInflater inflater = LayoutInflater.from(requireContext());
             if (attachments != null && !attachments.isEmpty()) {

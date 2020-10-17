@@ -68,7 +68,7 @@ data class NotificationSet(
                     PendingIntent.FLAG_UPDATE_CURRENT
             )
             return NotificationSet(discussion.id, course.id, module.name, discussion.message,
-                   course.shortName, pendingIntent)
+                    course.shortName, pendingIntent)
         }
 
         fun createNotificationSetForSiteNews(context: Context, discussion: Discussion)

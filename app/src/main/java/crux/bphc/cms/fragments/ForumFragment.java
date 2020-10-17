@@ -277,7 +277,7 @@ public class ForumFragment extends Fragment {
                 mSubject.setText(discussion.getSubject());
                 mUserName.setText(discussion.getUserFullName());
                 mModifiedTime.setText(formatDate(discussion.getTimeModified()));
-                mMessage.setText(HtmlTextView.parseHtml((discussion.getMessage())));
+                mMessage.setText(discussion.getMessage());
                 if(!discussion.isPinned()){
                     mPinned.setVisibility(View.GONE);
                 }
