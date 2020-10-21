@@ -5,6 +5,13 @@ All notable changes to the project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standards.
 Dates are in `yyyy-mm-dd`.
 
+## Unreleased
+### Added
+
+### Changed
+
+### Fixed
+
 ## Version 1.7.0 (verCode 1070003), 2020-10-13
 
 *NOTE: The minimum supported version is now Android 7.0 (API Level 24)*
@@ -20,7 +27,7 @@ Dates are in `yyyy-mm-dd`.
 * Launcher icon
 * Replaced custom Settings activity with Android's Preference Fragment
 * Navigation drawer to Bottom Navigation
-* Course Content text is now selectable 
+* Course Content text is now selectable
 * Re-download option now rewrites files
 * Only Course with Section number shown as title inside course content view
 
