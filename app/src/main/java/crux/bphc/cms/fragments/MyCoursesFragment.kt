@@ -430,7 +430,7 @@ class MyCoursesFragment : Fragment() {
                         moreOptionsViewModel.selection.removeObservers((context as AppCompatActivity))
                         moreOptionsViewModel.clearSelection()
                     }
-                    val courseName = this@MyCoursesFragment.courses[layoutPosition].shortName
+                    val courseName = this@Adapter.courses[layoutPosition].shortName
                     val moreOptionsFragment = MoreOptionsFragment.newInstance(courseName, options)
                     moreOptionsFragment.show((context as AppCompatActivity).supportFragmentManager, moreOptionsFragment.tag)
                     moreOptionsViewModel.selection.observe(context, observer)
