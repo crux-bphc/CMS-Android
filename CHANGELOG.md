@@ -14,6 +14,7 @@ Dates are in `yyyy-mm-dd`.
 * Unparsed HTML entities in Discussion notifications
 * Wrong course name in bottomsheet title
 * Unimplemented module types launch module URL in browser
+* UI not updating on marking course as read
 
 ## Version 1.7.0 (verCode 1070003), 2020-10-13
 

@@ -380,16 +380,14 @@ class MyCoursesFragment : Fragment() {
                         .show()
             }
 
-            fun markAllAsRead(position: Int) {
-                val courseId = this@MyCoursesFragment.courses[position].id
+            fun markAllAsRead() {
+                val courseId = courses[layoutPosition].id
                 val courseSections: List<CourseSection>
 
                 courseSections = courseDataHandler.getCourseData(courseId)
                 courseDataHandler.markAllAsRead(courseSections)
+                notifyItemChanged(layoutPosition)
 
-                val count = courseDataHandler.getUnreadCount(this@MyCoursesFragment.courses[position].id)
-                unread_count.text = DecimalFormat.getIntegerInstance().format(count.toLong())
-                unread_count.visibility = if (count == 0) View.INVISIBLE else View.VISIBLE
                 Toast.makeText(activity, "Marked all as read", Toast.LENGTH_SHORT).show()
             }
 
@@ -424,7 +422,7 @@ class MyCoursesFragment : Fragment() {
                     observer = Observer { option: MoreOptionsFragment.Option? ->
                         when (option?.getId()) {
                             0 -> confirmDownloadCourse()
-                            1 -> markAllAsRead(layoutPosition)
+                            1 -> markAllAsRead()
                             2 -> setFavoriteStatus(layoutPosition, !isFavorite)
                         }
                         moreOptionsViewModel.selection.removeObservers((context as AppCompatActivity))

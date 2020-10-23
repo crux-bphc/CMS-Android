@@ -256,6 +256,7 @@ public class CourseContentFragment extends Fragment {
                             break;
                         case 2:
                             courseDataHandler.markModuleAsReadOrUnread(module, true);
+                            adapter.notifyItemChanged(position);
                             break;
                         case 3:
                             if (content != null && activity != null) {
