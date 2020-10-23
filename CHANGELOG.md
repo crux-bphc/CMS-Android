@@ -12,6 +12,7 @@ Dates are in `yyyy-mm-dd`.
 
 ### Fixed
 * Unparsed HTML entities in Discussion notifications
+* Wrong course name in bottomsheet title
 
 ## Version 1.7.0 (verCode 1070003), 2020-10-13
 
