@@ -11,6 +11,7 @@ Dates are in `yyyy-mm-dd`.
 ### Changed
 
 ### Fixed
+* Unparsed HTML entities in Discussion notifications
 
 ## Version 1.7.0 (verCode 1070003), 2020-10-13
 
