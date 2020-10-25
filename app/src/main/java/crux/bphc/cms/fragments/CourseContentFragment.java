@@ -297,11 +297,6 @@ public class CourseContentFragment extends Fragment {
                         }
                     }
                     break;
-                case PAGE:
-                    if (activity != null) {
-                        Utils.openURLInBrowser(activity, module.getUrl());
-                    }
-                    break;
                 case FORUM:
                 case FOLDER:
                     if (activity != null) {
@@ -344,7 +339,12 @@ public class CourseContentFragment extends Fragment {
                             fileManager.downloadModuleContent(content, module);
                         }
                     }
-                        break;
+                    break;
+                default:
+                    if (activity != null) {
+                        Utils.openURLInBrowser(activity, module.getUrl());
+                    }
+                    break;
             }
             courseDataHandler.markModuleAsReadOrUnread(module, false);
             return true;
