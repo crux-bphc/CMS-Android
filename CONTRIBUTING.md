@@ -3,12 +3,12 @@
 Thank you for taking time to contribute (or at least considering to). CMS-Android is a community project as much as
 it is Crux's.
 
-Contributions does not necessarily mean you have to modify source code and fix a bug or add a new functionality.
+Contribution does not necessarily mean you have to modify source code and fix a bug or add a new functionality.
 Reporting a bug using the [Issues][issues] tab is also highly appreciated  and a good way to start contributing to
 the project.
 
 It is essential that you know how to use Git as well as GitHub. While the maintainers will be more than happy helping
-you make your first PR, prerequisite knowhow makes it easier for everyone involved. Check this
+you make your first PR, prerequisite know-how makes it easier for everyone involved. Check this
 [guide][first-contributions-guide]  if you've never contributed to a project on GitHub before.
 
 Please note we have a [Code of Conduct][code-of-conduct]. Please follow it in all your interactions with the project.
@@ -41,11 +41,11 @@ using the link.
 
 4. Head over to the [pull requests][pull-requests] page and create a new pull request.
    Make sure that the PR is from your feature branch into this repo's `development` branch. If you are making changes
-   that affect the UI in anyway, attach an image in your PR description.
+   that affect the UI in any way, attach an image in your PR description.
 
 5. Wait for a maintainer to review your commit. If they find any issue (including redundant code, unnecessary changes,
    potential bugs), they will point it out to you. Make any necessary changes and push them to your fork. Ideally, try
-   not to force push as it becomes harder for the maintiners to keep track of changes. Mark the review as resolved.
+   not to force push as it becomes harder for the maintainers to keep track of changes. Mark the review as resolved.
 
 6. If you are a maintainer yourself, try to get a secondary opinion from other maintainers or contributors.
 
@@ -70,7 +70,7 @@ will be a joy to read in `git log`.
 
 The subject of a commit message should be:
 
-- captialized
+- capitalized
 - written in the imperative (e.g., "Fix ...", "Add ...")
 - kept short, while concisely explaining what the commit does.
 - clear about what part of the code is affected
@@ -83,13 +83,13 @@ Consider the following commit subjects:
    affected
 
 The body of a commit must explain the _what_ and _why_ of the commit instead of the _how_. For example, in a commit
-that fixes a certain bug, you must explain _what_ was causing the bug and (possibly) _why_ it was fixed in the particular
-way. The _how_ aspect of your commit/changes should be self-explnatory i.e you shouldn't need to explain how your changes
-fixes the bug. If you feel that your commit needs to include a _how_ as well, that indicates a refactoring of your
+that fixes a certain bug, you must explain _what_ was causing the bug and (possibly) _why_ it was fixed in a particular
+way. The _how_ aspect of your commit/changes should be self-explanatory i.e you shouldn't need to explain how your changes
+fix the bug. If you feel that your commit needs to include a _how_ as well, that indicates a refactoring of your
 commit is in order.
 
 Make use of [closing keywords][closing-keywords] in your commit if your PR closes a particular issue. Alternatively, link
-the PR with the relavant issue.  This allows an issue to be automatically closed once the relavant PR is merged.
+the PR with the relevant issue.  This allows an issue to be automatically closed once the relevant PR is merged.
 
 Also checkout [this blogpost][commit-message-guidelines] for further reading regarding commit messages.
 
@@ -105,11 +105,11 @@ ask for help from those more experienced.
 Sometimes a PR will require or endup with more than one commit. There are two possibilities of this happening:
 
 * Additional granularity that each commit provides to a feature branch. An example of this is when you make big
-  changes  to the UI to follow a new set of guidelines or standard. In such a case, it may be beneficial to have seperate
+  changes  to the UI to follow a new set of guidelines or standard. In such a case, it may be beneficial to have separate
   commits for each fragment/activity that is changed.
 
 * New commits pushed after a review from the maintainer(s). New commits are recommended over amending existing commit(s)
-  and force pushing since the latter would make your changes a lot more harder to review.
+  and force pushing since the latter would make your changes a lot harder to review.
 
 Note that in both cases, only a single PR is required. It is the PR that will have multiple commits. In both cases, our
 concern is the additional commits that are added to a PR to fix problems found during code review.
@@ -132,7 +132,7 @@ Git allows us to automatically squash or fixup such commits. Git does this by ed
 perform an interactive rebase. Assume we want to automatically squash `C` into `A`, and `D` into `B`. This can be
 accomplished as follows:
 
-1. Stage the changes to be commited. These changes will form commit `C`.
+1. Stage the changes to be committed. These changes will form commit `C`.
 2. Perform `git commit --fixup ...`. Here `...` is either the commit hash, or commit subject of `A`. This will create
    commit `C` with the subject as `!fixup ...`. This annotation tells Git which commit `C` will _fixup_.
 3. Repeat the above steps to create `D`.
@@ -167,15 +167,15 @@ Version numbers are important in helping to differentiate releases of a product.
 Android uses a unique integer for each release called the Version Code. To ensure proper version code sequences and
 correlation with Semantic  Versioning, the following steps are used to arrive at the version code:
 
-1. The Major version shall be multipled by 1,000,000.
+1. The Major version shall be multiplied by 1,000,000.
 
 2. The Minor version shall be multiplied by 10,000.
 
-3. The Patch version shall be multipled by 100.
+3. The Patch version shall be multiplied by 100.
 
 4. The above values shall be added together to get the version code a release.
 
-5. Pre-releases, alpha releases etc shoud be signified by appropriate values in the least two significant digits.
+5. Pre-releases, alpha releases etc should be signified by appropriate values in the least two significant digits.
 
 6. The [changelog](changelog) should state the semantic version number as well as version code (if a Playstore
    rollout has been done) with each release
@@ -186,13 +186,13 @@ correlation with Semantic  Versioning, the following steps are used to arrive at
 
 ## Maintainers' Release Checklist
 
-There is no release timeline for this project. Once the maintainer(s) decide that sufficent changes have been made and
+There is no release timeline for this project. Once the maintainer(s) decide that sufficient changes have been made and
 any and all release blocking bugs have been quashed, a maintainer (identified as the release manager henceforth) will
 take  charge of creating a release. The following checklist is to  be followed, and all work is to be done on
 `development` unless otherwise mentioned:
 
 
-1. Ensure that all relavant changes have been noted in the [changelog](changelog).
+1. Ensure that all relevant changes have been noted in the [changelog](changelog).
 
 2. Group the **Unreleased** changelogs under a new version number.
 
