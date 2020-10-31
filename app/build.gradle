@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'realm-android'
+apply plugin: 'com.google.gms.google-services'
 
 android.ndkVersion '21.0.6113669'
 
@@ -87,5 +88,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:19.0.0'
     // composition over inheritance :)
     implementation 'com.hannesdorfmann:adapterdelegates4:4.3.0'
+    // firebase
+    implementation platform('com.google.firebase:firebase-bom:26.0.0')
+    implementation 'com.google.firebase:firebase-messaging-ktx'
 }
 

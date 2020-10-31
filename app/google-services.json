@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "925190066530",
+    "firebase_url": "https://cms-android-3cdde.firebaseio.com",
+    "project_id": "cms-android-3cdde",
+    "storage_bucket": "cms-android-3cdde.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:925190066530:android:ed5e38d3d2b53475941c3b",
+        "android_client_info": {
+          "package_name": "com.example.mycms"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "925190066530-ilg3kscdm3sv9j4sutu0i7mebgoq96pd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOiyhRiJtDu8cRe0fYz5MbLJTzBuH36LU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "925190066530-ilg3kscdm3sv9j4sutu0i7mebgoq96pd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:925190066530:android:14ff957512a83d61941c3b",
+        "android_client_info": {
+          "package_name": "crux.bphc.cms"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "925190066530-ilg3kscdm3sv9j4sutu0i7mebgoq96pd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOiyhRiJtDu8cRe0fYz5MbLJTzBuH36LU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "925190066530-ilg3kscdm3sv9j4sutu0i7mebgoq96pd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
