@@ -1,5 +1,7 @@
 package crux.bphc.cms.network;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 import crux.bphc.cms.models.core.UserDetail;
@@ -90,4 +92,14 @@ public interface MoodleServices {
                                         @Query("forumid") int forumid,
                                         @Query("page") int page,
                                         @Query("perpage") int perpage);
+
+    @GET("webservice/rest/server.php?wsfunction=core_user_add_user_device&moodlewsrestformat=json")
+    Call<ResponseBody> registerUserDevice(@Query("wstoken") @NotNull String token,
+                                    @Query("appid") @NotNull String appid,
+                                    @Query("name") @NotNull String name,
+                                    @Query("model") @NotNull String model,
+                                    @Query("platform") @NotNull String platform,
+                                    @Query("version") @NotNull String version,
+                                    @Query("pushid") @NotNull String pushid,
+                                    @Query("uuid") @NotNull String uuid);
 }
