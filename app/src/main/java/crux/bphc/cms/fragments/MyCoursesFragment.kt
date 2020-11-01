@@ -32,7 +32,6 @@ import crux.bphc.cms.models.course.Module
 import crux.bphc.cms.utils.UserUtils
 import io.realm.Realm
 import kotlinx.android.synthetic.main.fragment_my_courses.*
-import kotlinx.android.synthetic.main.row_course.*
 import kotlinx.android.synthetic.main.row_course.view.*
 import kotlinx.coroutines.*
 import java.io.IOException
@@ -413,25 +412,29 @@ class MyCoursesFragment : Fragment() {
                     val observer: Observer<MoreOptionsFragment.Option> // to handle the selection
                     //Set up our options and their handlers
                     val isFavorite = courses[layoutPosition].isFavorite
-                    val favoriteOption = if (isFavorite) "Remove from favorites" else "Add to favorites"
+                    val favoriteOption = if (isFavorite) {
+                        getString(R.string.remove_from_favorites)
+                    }else {
+                        getString(R.string.addtoFavorites)
+                    }
                     val options = ArrayList(listOf(
                             MoreOptionsFragment.Option(0, "Download course", R.drawable.download),
                             MoreOptionsFragment.Option(1, "Mark all as read", R.drawable.eye),
                             MoreOptionsFragment.Option(2, favoriteOption, R.drawable.star)
                     ))
-                    observer = Observer { option: MoreOptionsFragment.Option? ->
-                        when (option?.getId()) {
+                    moreOptionsViewModel.selection.observe(viewLifecycleOwner) {
+                        when (it?.id) {
                             0 -> confirmDownloadCourse()
                             1 -> markAllAsRead()
                             2 -> setFavoriteStatus(layoutPosition, !isFavorite)
                         }
-                        moreOptionsViewModel.selection.removeObservers((context as AppCompatActivity))
+                        moreOptionsViewModel.selection.removeObservers(viewLifecycleOwner)
                         moreOptionsViewModel.clearSelection()
                     }
-                    val courseName = this@Adapter.courses[layoutPosition].shortName
+                    val courseName = courses[layoutPosition].shortName
                     val moreOptionsFragment = MoreOptionsFragment.newInstance(courseName, options)
-                    moreOptionsFragment.show((context as AppCompatActivity).supportFragmentManager, moreOptionsFragment.tag)
-                    moreOptionsViewModel.selection.observe(context, observer)
+                    moreOptionsFragment.show((context as AppCompatActivity).supportFragmentManager,
+                            moreOptionsFragment.tag)
                 }
             }
         }
