@@ -1,6 +1,7 @@
 package crux.bphc.cms.fragments
 
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
@@ -93,6 +94,14 @@ class MoreOptionsFragment : BottomSheetDialogFragment() {
             viewModel.setSelection(options[position])
             dismiss()
         }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        // Remove all observers when being dismissed so that they
+        // aren't invoked the next time the Fragment is created
+        viewModel.selection.removeObservers(requireActivity())
+        viewModel.clearSelection()
     }
 
     /**
