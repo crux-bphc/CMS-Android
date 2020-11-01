@@ -81,4 +81,6 @@
     <string name="logout_notif_content">You have been logged out while trying to update course
         contents in the background. Open the app and login once again.</string>
     <string name="logout_notif_title">Unexpected Logout</string>
+    <string name="remove_from_favorites">Remove from favorites</string>
+    <string name="addtoFavorites">Add to favorites</string>
 </resources>
