@@ -280,7 +280,7 @@ class MyCoursesFragment : Fragment() {
             coursesUpdated = promises.awaitAll().fold(0) {i, x -> if (x) i + 1 else i }
 
             CoroutineScope(Dispatchers.Main).launch {
-                swipeRefreshLayout.isRefreshing = false
+                swipeRefreshLayout?.isRefreshing = false
                 mAdapter.filterCoursesByName(courses, searchCourseET.text.toString())
                 val message: String = if (coursesUpdated == 0) {
                     getString(R.string.upToDate)
@@ -409,7 +409,6 @@ class MyCoursesFragment : Fragment() {
                 }
 
                 itemView.more.setOnClickListener {
-                    val observer: Observer<MoreOptionsFragment.Option> // to handle the selection
                     //Set up our options and their handlers
                     val isFavorite = courses[layoutPosition].isFavorite
                     val favoriteOption = if (isFavorite) {
@@ -422,13 +421,15 @@ class MyCoursesFragment : Fragment() {
                             MoreOptionsFragment.Option(1, "Mark all as read", R.drawable.eye),
                             MoreOptionsFragment.Option(2, favoriteOption, R.drawable.star)
                     ))
-                    moreOptionsViewModel.selection.observe(viewLifecycleOwner) {
-                        when (it?.id) {
+                    moreOptionsViewModel.selection.observe(requireActivity()) {
+                        // negate effects of a clearSelection() call
+                        if (it == null) return@observe;
+                        when (it.id) {
                             0 -> confirmDownloadCourse()
                             1 -> markAllAsRead()
                             2 -> setFavoriteStatus(layoutPosition, !isFavorite)
                         }
-                        moreOptionsViewModel.selection.removeObservers(viewLifecycleOwner)
+                        moreOptionsViewModel.selection.removeObservers(requireActivity())
                         moreOptionsViewModel.clearSelection()
                     }
                     val courseName = courses[layoutPosition].shortName
