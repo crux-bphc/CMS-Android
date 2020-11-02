@@ -394,7 +394,7 @@ class MyCoursesFragment : Fragment() {
                 val course = courses[position]
                 courseDataHandler.setFavoriteStatus(course.id, isFavourite)
                 course.isFavorite = isFavourite
-                sortCourses(courses)
+                courses = sortCourses(courses)
                 notifyDataSetChanged()
                 val toast = if (isFavourite) getString(R.string.added_to_favorites) else getString(R.string.removed_from_favorites)
                 Toast.makeText(activity, toast, Toast.LENGTH_SHORT).show()

@@ -16,6 +16,7 @@ Dates are in `yyyy-mm-dd`.
 * Unimplemented module types launch module URL in browser
 * UI not updating on marking course as read
 * Bottomsheet selections not working as intended
+* Mark as favorite doesn't update UI
 
 ## Version 1.7.0 (verCode 1070003), 2020-10-13
 
