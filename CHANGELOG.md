@@ -15,6 +15,7 @@ Dates are in `yyyy-mm-dd`.
 * Wrong course name in bottomsheet title
 * Unimplemented module types launch module URL in browser
 * UI not updating on marking course as read
+* Bottomsheet selections not working as intended
 
 ## Version 1.7.0 (verCode 1070003), 2020-10-13
 
