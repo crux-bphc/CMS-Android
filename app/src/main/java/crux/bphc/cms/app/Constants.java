@@ -12,7 +12,7 @@ public class Constants {
     public static final String COURSE_PARCEL_INTENT_KEY = "course_parcel";
     public static final String WEBSITE_URL = "https://crux-bphc.github.io/";
 
-    public static final String API_URL = "https://td.bits-hyderabad.ac.in/moodle/";
+    public static final String API_URL = "https://cms.bits-hyderabad.ac.in";
     public static final String SSO_LOGIN_URL = API_URL +
             "/admin/tool/mobile/launch.php?service=moodle_mobile_app&passport=%s&urlscheme=%s&oauthsso=1";
     public static final String COURSE_URL = API_URL + "/course/view.php";

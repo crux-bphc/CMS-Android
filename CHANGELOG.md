@@ -9,6 +9,7 @@ Dates are in `yyyy-mm-dd`.
 ### Added
 
 ### Changed
+* Moodle instance URL
 
 ### Fixed
 * Unparsed HTML entities in Discussion notifications
