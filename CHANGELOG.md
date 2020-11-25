@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 Dates are in `yyyy-mm-dd`.
 
 ## Version 1.7.1 (verCode 1070100), 2020-11-02
-## Changed
+### Changed
 * Moodle instance URL
 
 ### Fixed
