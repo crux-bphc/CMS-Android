@@ -83,7 +83,7 @@ dependencies {
     // Resources dependency injection
     implementation 'com.jakewharton:butterknife:10.2.3'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.3'
-    implementation 'com.google.android.gms:play-services-auth:18.1.0'
+    implementation 'com.google.android.gms:play-services-auth:19.0.0'
     // composition over inheritance :)
     implementation 'com.hannesdorfmann:adapterdelegates4:4.3.0'
 }
