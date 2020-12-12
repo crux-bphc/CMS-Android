@@ -19,22 +19,14 @@
 
         <activity
             android:name=".activities.TokenActivity"
-            android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme"
             android:launchMode="singleTask">
 
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data android:scheme="cmsbphc" />
             </intent-filter>
         </activity>
@@ -47,13 +39,17 @@
             android:theme="@style/AppTheme.NoActionBar">
 
             <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT"/>
-                <data android:scheme="https" android:host="td.bits-hyderabad.ac.in"
+                <data android:scheme="https" android:host="cms.bits-hyderabad.ac.in"
                     android:pathPrefix="/fileShare" />
             </intent-filter>
-
         </activity>
 
         <activity

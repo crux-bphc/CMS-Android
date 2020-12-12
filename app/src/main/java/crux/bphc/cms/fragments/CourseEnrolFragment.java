@@ -156,7 +156,7 @@ public class CourseEnrolFragment extends Fragment {
                     FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
 
                     CourseContentFragment courseSectionFragment = CourseContentFragment
-                            .newInstance(TOKEN, course.getId());
+                            .newInstance(TOKEN, course.getId(), "");
                     Course courseSet = new Course(course);
 
                     realm.executeTransaction(r -> r.copyToRealmOrUpdate(courseSet));

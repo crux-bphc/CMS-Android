@@ -280,7 +280,30 @@ public class CourseDataHandler {
         realm.copyToRealm(discussions);
         realm.commitTransaction();
         return newDiscussions;
+    }
 
+    @Nullable
+    public Module getModuleByModId(int modId) {
+        RealmResults<Module> modules = realm.where(Module.class).equalTo("id", modId).findAll();
+
+        if (modules.isEmpty()) {
+            return null;
+        } else {
+            return modules.first();
+        }
+    }
+
+    @Nullable
+    public CourseSection getSectionBySectionNum(int courseId, int sectionNum) {
+        RealmResults<CourseSection> sections = realm.where(CourseSection.class)
+                .equalTo("courseId", courseId)
+                .equalTo("sectionNum", sectionNum).findAll();
+
+        if (sections.isEmpty()) {
+            return null;
+        } else {
+            return sections.first();
+        }
     }
 
     public List<Discussion> getForumDiscussions(int forumId) {

@@ -113,8 +113,7 @@ class MyCoursesFragment : Fragment() {
         mAdapter.clickListener = ClickListener { `object`: Any, position: Int ->
             val course = `object` as Course
             val intent = Intent(activity, CourseDetailActivity::class.java)
-            intent.putExtra("courseId", course.id)
-            intent.putExtra("course_name", course.shortName)
+            intent.putExtra(CourseDetailActivity.INTENT_COURSE_ID_KEY, course.id)
             courseDetailActivityLauncher.launch(intent)
             return@ClickListener true
         }

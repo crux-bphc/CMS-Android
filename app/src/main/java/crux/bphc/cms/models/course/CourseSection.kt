@@ -14,6 +14,7 @@ import io.realm.annotations.PrimaryKey
 open class CourseSection(
         @PrimaryKey  @SerializedName("id") var id: Int = 0,
         name: String = "",
+        @SerializedName("section") var sectionNum: Int = 0,
         @SerializedName("summary") var summary: String = "",
         @SerializedName("modules") var modules: RealmList<Module> = RealmList<Module>(),
         var courseId: Int = 0,
@@ -28,6 +29,7 @@ open class CourseSection(
     fun deepCopy(): CourseSection  = CourseSection(
             id,
             name,
+            sectionNum,
             summary,
             RealmList<Module>(*modules.map { it.deepCopy() }.toTypedArray()),
             courseId,
