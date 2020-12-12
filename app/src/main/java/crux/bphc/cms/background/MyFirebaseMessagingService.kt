@@ -22,9 +22,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         Log.d(TAG, token)
 
-        val userAccount = UserAccount(this)
         val ret = moodleServices.registerUserDevice(
-               userAccount.token,
+               UserAccount.token,
                 "crux.bphc.cms",
                 Build.PRODUCT,
                 Build.MODEL,

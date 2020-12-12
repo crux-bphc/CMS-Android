@@ -1,11 +1,13 @@
 package crux.bphc.cms.fragments
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.MainThread
 import androidx.appcompat.app.AlertDialog
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
@@ -57,6 +59,20 @@ class CourseContentFragment : Fragment() {
     private val moduleClickWrapperClickListener = createModuleClickWrapperClickListener()
     private val moduleMoreOptionsClickListener = createModuleMoreOptionsClickListener()
 
+    private val courseContents: List<CourseContent>
+        get() {
+            val contents = ArrayList<CourseContent>()
+            courseSections.stream().filter { courseSection: CourseSection ->
+                !(courseSection.modules.isEmpty()
+                        && courseSection.summary.isEmpty()
+                        && courseSection.name.matches(Regex("Topic \\d")))
+            }.forEach { courseSection: CourseSection ->
+                contents.add(courseSection)
+                contents.addAll(courseSection.modules)
+            }
+            return contents
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -68,7 +84,7 @@ class CourseContentFragment : Fragment() {
 
         courseDataHandler = CourseDataHandler(requireActivity(), realm)
         courseName = courseDataHandler.getCourseName(courseId)
-        courseSections = ArrayList()
+        courseSections = courseDataHandler.getCourseData(courseId)
 
         fileManager = FileManager(requireActivity(), courseName)
         fileManager.registerDownloadReceiver()
@@ -77,9 +93,8 @@ class CourseContentFragment : Fragment() {
     }
 
     override fun onStart() {
-        val title = courseDataHandler.getCourseNameForActionBarTitle(courseId)
-        requireActivity().title = title
         super.onStart()
+        requireActivity().title = courseDataHandler.getCourseNameForActionBarTitle(courseId)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -89,40 +104,40 @@ class CourseContentFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         moreOptionsViewModel = ViewModelProvider(requireActivity()).get(OptionsViewModel::class.java)
+
         empty = view.findViewById(R.id.empty) as TextView
         mSwipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
         recyclerView = view.findViewById(R.id.recycler_view)
+
         courseSections = courseDataHandler.getCourseData(courseId)
         if (courseSections.isEmpty()) {
             mSwipeRefreshLayout.isRefreshing = true
-            refreshContent(courseId)
+            refreshContent()
         }
+
         adapter = CourseContentAdapter(requireActivity(), courseContents, fileManager,
                 moduleClickWrapperClickListener, moduleMoreOptionsClickListener)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(activity)
-        recyclerView.setItemViewCacheSize(5)
+        recyclerView.setItemViewCacheSize(10)
+
+        val contextUrl = requireArguments().getString(CONTEXT_URL_KEY) ?: ""
+        if (contextUrl.isNotEmpty()) {
+            refreshContent(contextUrl) // If there is a url, there may be updates
+        }
+
         fileManager.setCallback { setCourseContentsOnAdapter() }
         mSwipeRefreshLayout.setOnRefreshListener {
             mSwipeRefreshLayout.isRefreshing = true
-            refreshContent(courseId)
+            refreshContent()
         }
         empty.setOnClickListener {
             mSwipeRefreshLayout.isRefreshing = true
-            refreshContent(courseId)
+            refreshContent()
         }
         showSectionsOrEmpty()
-    }
-
-    private fun showSectionsOrEmpty() {
-        if (courseSections.stream().anyMatch { section: CourseSection -> !section.modules.isEmpty() }) {
-            empty.visibility = View.GONE
-            recyclerView.visibility = View.VISIBLE
-            return
-        }
-        empty.visibility = View.VISIBLE
-        recyclerView.visibility = View.GONE
     }
 
     private fun createModuleMoreOptionsClickListener(): ClickListener {
@@ -282,7 +297,36 @@ class CourseContentFragment : Fragment() {
         if (context != null) requireContext().startActivity(Intent.createChooser(sharingIntent, null))
     }
 
-    private fun refreshContent(courseId: Int) {
+
+    private fun findAndScrollToPosition(urlStr: String) {
+        val url = Uri.parse(urlStr)
+        var position = 0
+
+        if (Urls.isCourseModuleUrl(url)) {
+            val modId = Urls.getModIdFromUrl(url)
+            courseDataHandler.getModuleByModId(modId) ?: return
+            position = adapter.getPositionFromModId(modId)
+        } else if (Urls.isCourseSectionUrl(url)) {
+            val sectionNum = Urls.getSectionNumFromUrl(url)
+            courseDataHandler.getSectionBySectionNum(courseId, sectionNum) ?: return
+            position = adapter.getPositionFromSectionNum(sectionNum)
+        }
+
+        recyclerView.smoothScrollToPosition(position)
+    }
+
+
+    private fun showSectionsOrEmpty() {
+        if (courseSections.stream().anyMatch { section: CourseSection -> !section.modules.isEmpty() }) {
+            empty.visibility = View.GONE
+            recyclerView.visibility = View.VISIBLE
+            return
+        }
+        empty.visibility = View.VISIBLE
+        recyclerView.visibility = View.GONE
+    }
+
+    private fun refreshContent(contextUrl: String = "") {
         CoroutineScope(Dispatchers.IO).launch {
             val courseRequestHandler = CourseRequestHandler(activity)
             var sections = mutableListOf<CourseSection>()
@@ -305,6 +349,8 @@ class CourseContentFragment : Fragment() {
             val realm = Realm.getDefaultInstance() // tie a realm instance to this thread
             val courseDataHandler = CourseDataHandler(requireContext(), realm)
 
+            courseDataHandler.isolateNewCourseData(courseId, sections) // This marks as unread
+
             for (courseSection in sections) {
                 val modules = courseSection.modules
                 for (module in modules) {
@@ -324,31 +370,22 @@ class CourseContentFragment : Fragment() {
                 }
             }
             courseDataHandler.replaceCourseData(courseId, sections)
+            courseSections = sections
             CoroutineScope(Dispatchers.Main).launch {
                 setCourseContentsOnAdapter()
+                findAndScrollToPosition(contextUrl)
                 mSwipeRefreshLayout.isRefreshing = false
+                empty.visibility = View.GONE
+                recyclerView.visibility = View.VISIBLE
             }
         }
     }
 
+    @MainThread
     private fun setCourseContentsOnAdapter() {
         fileManager.reloadFileList()
         adapter.setCourseContents(courseContents)
     }
-
-    private val courseContents: List<CourseContent>
-        get() {
-            val contents = ArrayList<CourseContent>()
-            courseSections.stream().filter { courseSection: CourseSection ->
-                !(courseSection.modules.isEmpty()
-                        && courseSection.summary.isEmpty()
-                        && courseSection.name.matches(Regex("Topic \\d")))
-            }.forEach { courseSection: CourseSection ->
-                contents.add(courseSection)
-                contents.addAll(courseSection.modules)
-            }
-            return contents
-        }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.mark_all_as_read) {
@@ -377,15 +414,19 @@ class CourseContentFragment : Fragment() {
 
     companion object {
         private const val TAG = "CourseContentFragment"
+
         private const val TOKEN_KEY = "token"
         private const val COURSE_ID_KEY = "id"
+        private const val CONTEXT_URL_KEY = "contextUrl"
 
         @JvmStatic
-        fun newInstance(token: String?, courseId: Int): CourseContentFragment {
-            val courseSectionFragment = CourseContentFragment()
+        fun newInstance(token: String, courseId: Int, contextUrl: String): CourseContentFragment {
             val args = Bundle()
             args.putString(TOKEN_KEY, token)
             args.putInt(COURSE_ID_KEY, courseId)
+            args.putString(CONTEXT_URL_KEY, contextUrl)
+
+            val courseSectionFragment = CourseContentFragment()
             courseSectionFragment.arguments = args
             return courseSectionFragment
         }

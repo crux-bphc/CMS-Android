@@ -1,12 +1,13 @@
 package crux.bphc.cms.activities
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import crux.bphc.cms.R
-import crux.bphc.cms.app.Constants
 import crux.bphc.cms.app.MyApplication
+import crux.bphc.cms.app.Urls
 import crux.bphc.cms.fragments.CourseContentFragment
 import crux.bphc.cms.fragments.CourseEnrolFragment
 import crux.bphc.cms.fragments.DiscussionFragment
@@ -14,14 +15,13 @@ import crux.bphc.cms.fragments.ForumFragment
 import crux.bphc.cms.models.UserAccount
 import crux.bphc.cms.models.course.Course
 import crux.bphc.cms.models.enrol.SearchedCourseDetail
-import crux.bphc.cms.models.forum.Discussion
 import io.realm.Realm
 
 class CourseDetailActivity : AppCompatActivity() {
-    lateinit var course: Course
-    lateinit var realm: Realm
+    private lateinit var realm: Realm
 
-    private var mEnrolCourse: SearchedCourseDetail? = null
+    private var course: Course? = null
+    private var enrolCourse: SearchedCourseDetail? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,54 +33,48 @@ class CourseDetailActivity : AppCompatActivity() {
 
         realm = Realm.getDefaultInstance()
 
-        mEnrolCourse = intent.getParcelableExtra(Constants.COURSE_PARCEL_INTENT_KEY) as SearchedCourseDetail?
-        var courseId = intent.getIntExtra(INTENT_COURSE_ID_KEY, -1)
-        val forumId = intent.getIntExtra(INTENT_FORUM_ID_KEY, -1)
-        val discussionId = intent.getIntExtra(INTENT_DISCUSSION_ID_KEY, -1)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeButtonEnabled(true)
+    }
 
-        if (courseId == -1) {
-            if (mEnrolCourse == null) {
-                finish()
-                return
-            } else {
-                courseId = mEnrolCourse!!.id  // mEnrolCourse should never be null, fail if it is
-                // TODO: Probably show a box to the user and finish activity here instead of NPE
-            }
+    override fun onResume() {
+        super.onResume()
+
+        val intent = intent
+        val contextUrl = intent.getStringExtra(INTENT_CONTEXT_URL_KEY) ?: ""
+        var courseId = intent.getIntExtra(INTENT_COURSE_ID_KEY, -1)
+
+        if (courseId == -1 && enrolCourse == null) {
+            finish()
+            return
+        } else if (courseId == -1) {
+            courseId = enrolCourse!!.id
         }
 
-        val queryCourse = realm
+        course = realm
                 .where(Course::class.java)
                 .equalTo("id", courseId)
                 .findFirst()
 
         // check if enrolled
-        if (queryCourse == null) {
+        if (course == null) {
             setCourseEnrol()
-            title = mEnrolCourse!!.shortName
+            title = enrolCourse!!.shortName
         } else {
-            course = queryCourse
-            title = course.shortName
-            if (discussionId == -1) {
-                if (forumId == -1) {
-                    setCourseSection()
-                } else {
-                    setForumFragment(forumId)
-                }
+            title = course!!.shortName
+
+            val url = Uri.parse(contextUrl) ?: Uri.EMPTY
+            if (Urls.isCourseSectionUrl(url) || Urls.isCourseModuleUrl(url)) {
+                setCourseContentFragment(contextUrl)
             } else {
-                // Show discussion, regardless of forumId
-                val discussion = realm.where(Discussion::class.java).equalTo("id", discussionId).findFirst()
-                if (discussion != null) {
-                    setDiscussionFragment(discussion.forumId, discussionId)
-                }
+                setCourseContentFragment("")
             }
         }
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setHomeButtonEnabled(true)
     }
 
     private fun setCourseEnrol() {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
-        val mCourseEnrolFragment = CourseEnrolFragment.newInstance(UserAccount.token, mEnrolCourse)
+        val mCourseEnrolFragment = CourseEnrolFragment.newInstance(UserAccount.token, enrolCourse)
         fragmentTransaction.replace(
                 R.id.course_section_enrol_container,
                 mCourseEnrolFragment,
@@ -88,11 +82,14 @@ class CourseDetailActivity : AppCompatActivity() {
         fragmentTransaction.commit()
     }
 
-    private fun setCourseSection() {
+
+    private fun setCourseContentFragment(contextUrl: String) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         val courseSectionFragment = CourseContentFragment.newInstance(
                 UserAccount.token,
-                course.id)
+                course!!.id,
+                contextUrl,
+        )
         fragmentTransaction.replace(
                 R.id.course_section_enrol_container,
                 courseSectionFragment,
@@ -102,10 +99,10 @@ class CourseDetailActivity : AppCompatActivity() {
 
     private fun setForumFragment(forumId: Int) {
         // We first add and commit courseSection
-        setCourseSection()
+        setCourseContentFragment("")
         supportFragmentManager.executePendingTransactions()
         val fragmentTransaction = supportFragmentManager.beginTransaction()
-        val forumFragment: Fragment = ForumFragment.newInstance(course.id, forumId, course.shortName)
+        val forumFragment: Fragment = ForumFragment.newInstance(course!!.id, forumId, course!!.shortName)
         fragmentTransaction.addToBackStack(null)
                 .replace(R.id.course_section_enrol_container, forumFragment, "Announcements")
         fragmentTransaction.commit()
@@ -115,8 +112,8 @@ class CourseDetailActivity : AppCompatActivity() {
         setForumFragment(forumId)
         supportFragmentManager.executePendingTransactions()
         val fragmentTransaction = supportFragmentManager.beginTransaction()
-        val discussionFragment: Fragment = DiscussionFragment.newInstance(course.id, discussionId,
-                course.shortName)
+        val discussionFragment: Fragment = DiscussionFragment.newInstance(course!!.id, discussionId,
+                course!!.shortName)
         fragmentTransaction.addToBackStack(null)
                 .replace(R.id.course_section_enrol_container, discussionFragment, "Discussion")
         fragmentTransaction.commit()
@@ -132,6 +129,7 @@ class CourseDetailActivity : AppCompatActivity() {
 
     companion object {
         const val COURSE_ENROL_FRAG_TRANSACTION_KEY = "course_enrol_frag"
+        const val INTENT_CONTEXT_URL_KEY = "contextUrl"
         const val INTENT_COURSE_ID_KEY = "courseId"
         const val INTENT_MOD_ID_KEY = "modId"
         const val INTENT_FORUM_ID_KEY = "forumId"
