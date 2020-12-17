@@ -192,10 +192,10 @@ class MainActivity : AppCompatActivity() {
         if (discussionId != -1) {
             // Open up the discussion first
             val intent = Intent(this, CourseDetailActivity::class.java)
-            intent.putExtra("courseId", courseId)
-            intent.putExtra("modId", modId)
-            intent.putExtra("forumId", forumId)
-            intent.putExtra("discussionId", discussionId)
+            intent.putExtra(CourseDetailActivity.INTENT_COURSE_ID_KEY, courseId)
+            intent.putExtra(CourseDetailActivity.INTENT_MOD_ID_KEY, modId)
+            intent.putExtra(CourseDetailActivity.INTENT_FORUM_ID_KEY, forumId)
+            intent.putExtra(CourseDetailActivity.INTENT_DISCUSSION_ID_KEY, discussionId)
             startActivity(intent)
             return
         }
