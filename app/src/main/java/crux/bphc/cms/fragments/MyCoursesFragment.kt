@@ -13,7 +13,6 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -261,6 +260,12 @@ class MyCoursesFragment : Fragment() {
                                         .getForumDicussionsSync(module.instance)
                                 for (d in discussions) {
                                     d.forumId = module.instance
+                                }
+
+                                val newDiscussions = courseDataHandler
+                                        .setForumDiscussions(module.instance, discussions)
+                                if (newDiscussions.size > 0) {
+                                    courseDataHandler.markModuleAsReadOrUnread(module, true)
                                 }
                             }
                         }
