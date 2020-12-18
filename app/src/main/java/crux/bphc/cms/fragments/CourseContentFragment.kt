@@ -2,6 +2,7 @@ package crux.bphc.cms.fragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.TextView
 import android.widget.Toast
@@ -20,16 +21,18 @@ import crux.bphc.cms.app.MyApplication
 import crux.bphc.cms.fragments.MoreOptionsFragment.OptionsViewModel
 import crux.bphc.cms.helper.CourseDataHandler
 import crux.bphc.cms.helper.CourseRequestHandler
-import crux.bphc.cms.helper.CourseRequestHandler.CallBack
 import crux.bphc.cms.interfaces.ClickListener
 import crux.bphc.cms.interfaces.CourseContent
 import crux.bphc.cms.io.FileManager
 import crux.bphc.cms.models.course.CourseSection
 import crux.bphc.cms.models.course.Module
-import crux.bphc.cms.models.forum.Discussion
 import crux.bphc.cms.utils.Utils
 import crux.bphc.cms.widgets.PropertiesAlertDialog
 import io.realm.Realm
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -53,13 +56,6 @@ class CourseContentFragment : Fragment() {
 
     private val moduleClickWrapperClickListener = createModuleClickWrapperClickListener()
     private val moduleMoreOptionsClickListener = createModuleMoreOptionsClickListener()
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == MODULE_ACTIVITY && resultCode == FileManager.DATA_DOWNLOADED) {
-            setCourseContentsOnAdapter()
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,7 +96,7 @@ class CourseContentFragment : Fragment() {
         courseSections = courseDataHandler.getCourseData(courseId)
         if (courseSections.isEmpty()) {
             mSwipeRefreshLayout.isRefreshing = true
-            sendRequest(courseId)
+            refreshContent(courseId)
         }
         adapter = CourseContentAdapter(requireActivity(), courseContents, fileManager,
                 moduleClickWrapperClickListener, moduleMoreOptionsClickListener)
@@ -110,11 +106,11 @@ class CourseContentFragment : Fragment() {
         fileManager.setCallback { setCourseContentsOnAdapter() }
         mSwipeRefreshLayout.setOnRefreshListener {
             mSwipeRefreshLayout.isRefreshing = true
-            sendRequest(courseId)
+            refreshContent(courseId)
         }
         empty.setOnClickListener {
             mSwipeRefreshLayout.isRefreshing = true
-            sendRequest(courseId)
+            refreshContent(courseId)
         }
         showSectionsOrEmpty()
     }
@@ -285,66 +281,53 @@ class CourseContentFragment : Fragment() {
         if (context != null) requireContext().startActivity(Intent.createChooser(sharingIntent, null))
     }
 
-    private fun sendRequest(courseId: Int) {
-        val courseRequestHandler = CourseRequestHandler(activity)
-        courseRequestHandler.getCourseData(courseId, object : CallBack<List<CourseSection?>?> {
-            override fun onResponse(sectionList: List<CourseSection?>?) {
-                empty.visibility = View.GONE
-                recyclerView.visibility = View.VISIBLE
-                if (sectionList == null) {
-                    // TODO: not registered, ask to register, change UI, show enroll button
-                    return
-                }
-                for (courseSection in sectionList.filterNotNull()) {
-                    for (module in courseSection.modules) {
-                        if (module.modType == Module.Type.FORUM) {
-                            // TODO: Convert to coroutines
-                            courseRequestHandler.getForumDiscussions(module.instance,
-                                    object : CallBack<List<Discussion?>?> {
-                                override fun onResponse(responseObject: List<Discussion?>?) {
-                                    if (responseObject == null) return
-                                    for (d in responseObject) {
-                                        d?.forumId = module.instance
-                                    }
-                                    val newDiscussions = courseDataHandler
-                                            .setForumDiscussions(module.instance, responseObject)
-                                    if (newDiscussions.size > 0) {
-                                        courseDataHandler.markModuleAsReadOrUnread(module, true)
-                                    }
-                                }
+    private fun refreshContent(courseId: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val courseRequestHandler = CourseRequestHandler(activity)
+            var sections = mutableListOf<CourseSection>()
+            try {
+                sections = courseRequestHandler.getCourseDataSync(courseId)
+            } catch (e: IOException) {
+                Log.e(TAG, "IOException when syncing course: ${courseId}}", e)
+                if (courseSections.isEmpty()) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        empty.text = resources.getText(R.string.failed_course_content_refresh)
+                        empty.visibility = View.VISIBLE
+                        recyclerView.visibility = View.GONE
 
-                                override fun onFailure(message: String, t: Throwable) {
-                                    mSwipeRefreshLayout.isRefreshing = false
-                                }
-                            })
+                        Toast.makeText(activity, "Unable to connect to server!", Toast.LENGTH_SHORT).show()
+                        mSwipeRefreshLayout.isRefreshing = false
+                    }
+                }
+            }
+
+            val realm = Realm.getDefaultInstance() // tie a realm instance to this thread
+            val courseDataHandler = CourseDataHandler(requireContext(), realm)
+
+            for (courseSection in sections) {
+                val modules = courseSection.modules
+                for (module in modules) {
+                    if (module.modType == Module.Type.FORUM) {
+                        val discussions = courseRequestHandler
+                                .getForumDicussionsSync(module.instance)
+                        for (d in discussions) {
+                            d.forumId = module.instance
+                        }
+
+                        val newDiscussions = courseDataHandler
+                                .setForumDiscussions(module.instance, discussions)
+                        if (newDiscussions.size > 0) {
+                            courseDataHandler.markModuleAsReadOrUnread(module, true)
                         }
                     }
                 }
-                courseSections = sectionList.filterNotNull()
-                courseDataHandler.replaceCourseData(courseId, sectionList)
+            }
+            courseDataHandler.replaceCourseData(courseId, sections)
+            CoroutineScope(Dispatchers.Main).launch {
                 setCourseContentsOnAdapter()
                 mSwipeRefreshLayout.isRefreshing = false
             }
-
-            override fun onFailure(message: String, t: Throwable) {
-                if (t is IllegalStateException) {
-                    //course unenrolled. delete course details, open enroll screen
-                    courseDataHandler.deleteCourse(courseId)
-                    Toast.makeText(activity, "you have un-enrolled from the course",
-                            Toast.LENGTH_SHORT).show()
-                    requireActivity().setResult(COURSE_DELETED)
-                    requireActivity().finish()
-                    return
-                }
-                if (courseSections.isEmpty()) {
-                    empty.text = resources.getText(R.string.failed_course_content_refresh)
-                    empty.visibility = View.VISIBLE
-                    recyclerView.visibility = View.GONE
-                }
-                Toast.makeText(activity, "Unable to connect to server!", Toast.LENGTH_SHORT).show()
-                mSwipeRefreshLayout.isRefreshing = false
-            }
-        })
+        }
     }
 
     private fun setCourseContentsOnAdapter() {
@@ -392,8 +375,7 @@ class CourseContentFragment : Fragment() {
     }
 
     companion object {
-        const val COURSE_DELETED = 102
-        private const val MODULE_ACTIVITY = 101
+        private const val TAG = "CourseContentFragment"
         private const val TOKEN_KEY = "token"
         private const val COURSE_ID_KEY = "id"
 
