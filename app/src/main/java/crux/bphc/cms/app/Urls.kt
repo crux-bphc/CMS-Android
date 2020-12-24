@@ -16,8 +16,8 @@ object Urls {
 
     @JvmField
     val MOODLE_URL: Uri = with(Uri.Builder()) {
-        scheme("http")
-        authority("192.168.18.6")
+        scheme("https")
+        authority("cms.bits-hyderabad.ac.in")
         path("")
         build()
     }
