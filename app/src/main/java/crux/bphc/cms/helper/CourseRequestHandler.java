@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import crux.bphc.cms.app.Urls;
 import crux.bphc.cms.exceptions.InvalidTokenException;
 import crux.bphc.cms.models.UserAccount;
 import crux.bphc.cms.network.MoodleServices;
@@ -37,8 +38,6 @@ import crux.bphc.cms.models.course.Module;
 import crux.bphc.cms.models.forum.Discussion;
 import crux.bphc.cms.models.forum.ForumData;
 import retrofit2.http.HTTP;
-
-import static crux.bphc.cms.app.Constants.API_URL;
 
 /**
  * Class responsible for making API requests
@@ -59,7 +58,7 @@ public class CourseRequestHandler {
     public CourseRequestHandler(Context context) {
         userAccount = new UserAccount(context);
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(API_URL)
+                .baseUrl(Urls.MOODLE_URL.toString())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         moodleServices = retrofit.create(MoodleServices.class);

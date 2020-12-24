@@ -23,8 +23,9 @@ import java.util.Locale;
 import java.util.Random;
 
 import crux.bphc.cms.R;
-import crux.bphc.cms.app.Constants;
 import crux.bphc.cms.app.MyApplication;
+import crux.bphc.cms.app.Urls;
+import crux.bphc.cms.app.UrlsKt;
 import crux.bphc.cms.helper.CourseDataHandler;
 import crux.bphc.cms.helper.CourseRequestHandler;
 import crux.bphc.cms.models.UserAccount;
@@ -81,7 +82,7 @@ public class TokenActivity extends AppCompatActivity {
             Uri data = intent.getData();
             if (data != null) {
                 String scheme = data.getScheme();
-                if (scheme != null && !scheme.equals(Constants.SSO_URL_SCHEME)) {
+                if (scheme != null && !scheme.equals(Urls.SSO_URL_SCHEME)) {
                     Toast.makeText(this, "Invalid token URI Schema.",
                             Toast.LENGTH_SHORT).show();
                     Utils.showBadTokenDialog(this);
@@ -195,12 +196,16 @@ public class TokenActivity extends AppCompatActivity {
 
         // A random number that identifies the request
         String passport = ((Integer) new Random().nextInt(1000)).toString();
-        String loginUrl = String.format(Constants.SSO_LOGIN_URL, passport, Constants.SSO_URL_SCHEME);
+
+        Uri.Builder builder = Urls.SSO_LOGIN_URL.buildUpon();
+        builder = UrlsKt.appendOrSetQueryParameter(builder, "passport", passport);
+        builder = UrlsKt.appendOrSetQueryParameter(builder, "urlscheme", Urls.SSO_URL_SCHEME);
+        String loginUrl = builder.toString();
 
         // Set the launch data, we need this to verify the token obtained after SSO
         HashMap<String, String> data = new HashMap<>();
         // SITE_URL must not end with trailing /
-        data.put("SITE_URL", Constants.API_URL.replaceAll("/$", ""));
+        data.put("SITE_URL", Urls.MOODLE_URL.toString().replaceAll("/$", ""));
         data.put("PASSPORT", passport);
         MyApplication.getInstance().setLoginLaunchData(data);
 

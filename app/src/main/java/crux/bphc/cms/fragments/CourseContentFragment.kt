@@ -16,8 +16,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import crux.bphc.cms.R
 import crux.bphc.cms.adapters.CourseContentAdapter
-import crux.bphc.cms.app.Constants
 import crux.bphc.cms.app.MyApplication
+import crux.bphc.cms.app.Urls
 import crux.bphc.cms.fragments.MoreOptionsFragment.OptionsViewModel
 import crux.bphc.cms.helper.CourseDataHandler
 import crux.bphc.cms.helper.CourseRequestHandler
@@ -358,7 +358,7 @@ class CourseContentFragment : Fragment() {
             return true
         }
         if (item.itemId == R.id.action_open_in_browser) {
-            Utils.openURLInBrowser(requireActivity(), Constants.getCourseURL(courseId))
+            Utils.openURLInBrowser(requireActivity(), Urls.getCourseUrl(courseId).toString())
         }
         return super.onOptionsItemSelected(item)
     }

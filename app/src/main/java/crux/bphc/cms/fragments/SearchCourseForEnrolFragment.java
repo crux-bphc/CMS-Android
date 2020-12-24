@@ -22,19 +22,19 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import crux.bphc.cms.activities.CourseDetailActivity;
 import crux.bphc.cms.R;
+import crux.bphc.cms.activities.CourseDetailActivity;
+import crux.bphc.cms.app.Urls;
 import crux.bphc.cms.interfaces.ClickListener;
+import crux.bphc.cms.models.enrol.CourseSearch;
+import crux.bphc.cms.models.enrol.SearchedCourseDetail;
 import crux.bphc.cms.network.MoodleServices;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import crux.bphc.cms.models.enrol.SearchedCourseDetail;
-import crux.bphc.cms.models.enrol.CourseSearch;
 
-import static crux.bphc.cms.app.Constants.API_URL;
 import static crux.bphc.cms.app.Constants.COURSE_PARCEL_INTENT_KEY;
 import static crux.bphc.cms.app.Constants.PER_PAGE;
 
@@ -94,7 +94,7 @@ public class SearchCourseForEnrolFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(API_URL)
+                .baseUrl(Urls.MOODLE_URL.toString())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 

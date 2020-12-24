@@ -1,7 +1,6 @@
 package crux.bphc.cms.activities;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -10,8 +9,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import crux.bphc.cms.R;
-import crux.bphc.cms.app.Constants;
 import crux.bphc.cms.app.MyApplication;
+import crux.bphc.cms.app.Urls;
 import crux.bphc.cms.widgets.HtmlTextView;
 
 public class InfoActivity extends AppCompatActivity {
@@ -26,12 +25,12 @@ public class InfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_info);
         ImageView imageView = findViewById(R.id.image);
         imageView.setOnClickListener(view -> {
-            Intent viewIntent = new Intent("android.intent.action.VIEW", Uri.parse(Constants.WEBSITE_URL));
+            Intent viewIntent = new Intent("android.intent.action.VIEW", Urls.WEBSITE_URL);
             startActivity(viewIntent);
         });
 
         findViewById(R.id.crux).setOnClickListener(view -> {
-            Intent viewIntent = new Intent("android.intent.action.VIEW", Uri.parse(Constants.WEBSITE_URL));
+            Intent viewIntent = new Intent("android.intent.action.VIEW", Urls.WEBSITE_URL);
             startActivity(viewIntent);
         });
         setTitle("About us");
