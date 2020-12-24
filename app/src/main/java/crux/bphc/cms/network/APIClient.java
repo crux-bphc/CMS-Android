@@ -1,7 +1,7 @@
 package crux.bphc.cms.network;
 
-import crux.bphc.cms.app.Constants;
 import crux.bphc.cms.BuildConfig;
+import crux.bphc.cms.app.Urls;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -30,7 +30,7 @@ public class APIClient {
 
             retrofit = new Retrofit.Builder()
                     .addConverterFactory(GsonConverterFactory.create())
-                    .baseUrl(Constants.API_URL)
+                    .baseUrl(Urls.MOODLE_URL.toString())
                     .client(builder.build())
                     .build();
         }

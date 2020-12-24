@@ -2,11 +2,11 @@ package crux.bphc.cms.fragments
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import crux.bphc.cms.BuildConfig
 import crux.bphc.cms.R
@@ -14,11 +14,11 @@ import crux.bphc.cms.activities.InfoActivity
 import crux.bphc.cms.activities.MainActivity
 import crux.bphc.cms.activities.TokenActivity
 import crux.bphc.cms.app.Constants
+import crux.bphc.cms.app.Urls
 import crux.bphc.cms.models.UserAccount
 import crux.bphc.cms.utils.UserUtils
-import kotlinx.android.synthetic.main.fragment_more.*
 import crux.bphc.cms.utils.Utils
-import java.lang.Exception
+import kotlinx.android.synthetic.main.fragment_more.*
 
 
 class MoreFragment : Fragment() {
@@ -40,7 +40,7 @@ class MoreFragment : Fragment() {
         Constants.TOKEN = _userAccount.token
 
         website_card.setOnClickListener {
-            Utils.openURLInBrowser(requireActivity(), Constants.API_URL + "my/")
+            Utils.openURLInBrowser(requireActivity(), Urls.MOODLE_URL.toString())
         }
 
         share_card.setOnClickListener {
@@ -54,7 +54,7 @@ class MoreFragment : Fragment() {
         }
 
         issue_card.setOnClickListener {
-            Utils.openURLInBrowser(requireActivity(), Constants.getFeedbackURL(_userAccount.firstName, _userAccount.username))
+            Utils.openURLInBrowser(requireActivity(), Urls.getFeedbackURL(_userAccount.firstName, _userAccount.username))
         }
 
         about_card.setOnClickListener {

@@ -9,6 +9,7 @@ import android.widget.Toast;
 import java.io.IOException;
 
 import crux.bphc.cms.activities.TokenActivity;
+import crux.bphc.cms.app.Urls;
 import crux.bphc.cms.models.UserAccount;
 import crux.bphc.cms.models.core.UserDetail;
 import crux.bphc.cms.network.MoodleServices;
@@ -17,8 +18,6 @@ import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
-import static crux.bphc.cms.app.Constants.API_URL;
 
 /**
  * A utility class to deal with User state.
@@ -51,7 +50,7 @@ public class UserUtils {
         if (token == null || token.isEmpty()) return false;
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(API_URL)
+                .baseUrl(Urls.MOODLE_URL.toString())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         MoodleServices moodleServices = retrofit.create(MoodleServices.class);

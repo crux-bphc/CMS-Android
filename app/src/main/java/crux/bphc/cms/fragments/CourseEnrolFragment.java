@@ -24,20 +24,18 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 import crux.bphc.cms.R;
-import crux.bphc.cms.app.MyApplication;
-import crux.bphc.cms.network.MoodleServices;
+import crux.bphc.cms.app.Urls;
 import crux.bphc.cms.models.course.Course;
 import crux.bphc.cms.models.enrol.Contact;
 import crux.bphc.cms.models.enrol.SearchedCourseDetail;
 import crux.bphc.cms.models.enrol.SelfEnrol;
+import crux.bphc.cms.network.MoodleServices;
 import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
-import static crux.bphc.cms.app.Constants.API_URL;
 
 public class CourseEnrolFragment extends Fragment {
 
@@ -137,7 +135,7 @@ public class CourseEnrolFragment extends Fragment {
         progressDialog.show();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(API_URL)
+                .baseUrl(Urls.MOODLE_URL.toString())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         MoodleServices moodleServices = retrofit.create(MoodleServices.class);
