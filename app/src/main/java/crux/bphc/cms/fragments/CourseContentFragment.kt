@@ -207,7 +207,6 @@ class CourseContentFragment : Fragment() {
                 val moreOptionsFragment = MoreOptionsFragment.newInstance(module.name, options)
                 moreOptionsFragment.show(requireActivity().supportFragmentManager,
                         moreOptionsFragment.tag)
-                moreOptionsFragment.show(activity.supportFragmentManager, moreOptionsFragment.tag)
                 moreOptionsViewModel.selection.observe(activity, observer)
                 courseDataHandler.markModuleAsReadOrUnread(module, false)
                 adapter.notifyItemChanged(position)
