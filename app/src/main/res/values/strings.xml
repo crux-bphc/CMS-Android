@@ -83,4 +83,5 @@
     <string name="logout_notif_title">Unexpected Logout</string>
     <string name="remove_from_favorites">Remove from favorites</string>
     <string name="addtoFavorites">Add to favorites</string>
+    <string name="downloading_file">\"Downloading file - \"</string>
 </resources>

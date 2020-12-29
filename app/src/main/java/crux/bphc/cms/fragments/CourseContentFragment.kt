@@ -228,7 +228,9 @@ class CourseContentFragment : Fragment() {
                     }
                 }
                 Module.Type.FORUM, Module.Type.FOLDER -> if (activity != null) {
-                    val fragment = if (module.modType === Module.Type.FORUM) ForumFragment.newInstance(module.instance, courseName) else FolderModuleFragment.newInstance(module.instance, courseName)
+                    val fragment = if (module.modType === Module.Type.FORUM)
+                        ForumFragment.newInstance(courseId, module.instance, courseName)
+                    else FolderModuleFragment.newInstance(module.instance, courseName)
                     activity.supportFragmentManager
                             .beginTransaction()
                             .addToBackStack(null)
