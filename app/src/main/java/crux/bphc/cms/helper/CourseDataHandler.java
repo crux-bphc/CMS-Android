@@ -286,6 +286,10 @@ public class CourseDataHandler {
 
     }
 
+    public List<Discussion> getForumDiscussions(int forumId) {
+        return realm.where(Discussion.class).equalTo("forumId", forumId).findAll();
+    }
+
     public void deleteCourse(int courseId) {
         realm.executeTransactionAsync(r -> {
             r.where(Course.class).equalTo("id", courseId).findAll().deleteAllFromRealm();
