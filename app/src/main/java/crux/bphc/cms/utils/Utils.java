@@ -11,7 +11,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 /**
@@ -150,5 +153,17 @@ public class Utils {
 
         if (begin >= 0 && end < source.length() && begin > end) return "";
         return source.subSequence(begin, end);
+    }
+
+    public static String formatDate(int seconds) {
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTimeInMillis((long) seconds * 1000);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        String month = cal.getDisplayName(
+                Calendar.MONTH,
+                Calendar.SHORT,
+                Locale.getDefault());
+        int year = cal.get(Calendar.YEAR);
+        return String.format(Locale.getDefault(), "%s %s, %s", day, month, year);
     }
 }

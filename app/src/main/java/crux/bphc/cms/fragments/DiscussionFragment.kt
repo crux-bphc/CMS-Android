@@ -19,6 +19,7 @@ import crux.bphc.cms.fragments.MoreOptionsFragment.OptionsViewModel
 import crux.bphc.cms.io.FileManager
 import crux.bphc.cms.models.forum.Attachment
 import crux.bphc.cms.models.forum.Discussion
+import crux.bphc.cms.utils.Utils
 import crux.bphc.cms.widgets.HtmlTextView
 import crux.bphc.cms.widgets.PropertiesAlertDialog
 import io.realm.Realm
@@ -101,7 +102,7 @@ class DiscussionFragment : Fragment() {
     private fun setDiscussion(discussion: Discussion) {
         subject.text = discussion.subject
         userName.text = discussion.userFullName
-        timeModified.text = ForumFragment.formatDate(discussion.timeModified)
+        timeModified.text = Utils.formatDate(discussion.timeModified)
         message.text = discussion.message
         Glide.with(requireContext()).load(discussion.userPictureUrl).into(userPic)
 
