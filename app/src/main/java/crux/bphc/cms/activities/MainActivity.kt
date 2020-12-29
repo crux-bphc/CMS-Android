@@ -178,7 +178,7 @@ class MainActivity : AppCompatActivity() {
 
             // Ensure that the fragment has been commited
             supportFragmentManager.executePendingTransactions()
-            val discussionFragment = DiscussionFragment.newInstance(discussionId, "Site News")
+            val discussionFragment = DiscussionFragment.newInstance(-1, 1, "Site News")
             pushView(discussionFragment, "Discussion", false)
         }
 

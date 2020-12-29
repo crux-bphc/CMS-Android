@@ -7,7 +7,9 @@ import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
 /**
- * Model class to represent a Discussion. A Discussion may be the initial post
+ * Model class to represent a Discussion. In Moodle speak, a Discussion is a
+ * collection of posts. This class represents the initial post (and possibly,
+ * replies to the intial and other posts). A Discussion may be the initial post
  * or a reply to a post. The lack of parent signifies it as the initial post.
  * Discussions can also be infinitely nested. However, this class only represents
  * the root discussion i.e the thread
@@ -17,7 +19,7 @@ import io.realm.annotations.PrimaryKey
  */
 open class Discussion(
         /**
-         * The ID of this object. Serves as a PK and nothing more.
+         * The ID of the initial post in this discussion
          */
         @PrimaryKey @SerializedName("id") var id: Int = 0,
 

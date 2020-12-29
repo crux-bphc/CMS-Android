@@ -43,9 +43,11 @@ import io.realm.RealmResults;
  */
 public class ForumFragment extends Fragment {
 
+    public static final String COURSE_ID_KEY = "courseId";
     public static final String FORUM_ID_KEY = "forum_id";
     public static final String COURSE_NAME_KEY = "courseName";
 
+    private int courseId = -1;
     private int FORUM_ID = 1;
     private String COURSE_NAME;
 
@@ -63,23 +65,25 @@ public class ForumFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static ForumFragment newInstance(int forumId, String courseName) {
+    public static ForumFragment newInstance(int courseId, int forumId, String courseName) {
         ForumFragment fragment = new ForumFragment();
         Bundle args = new Bundle();
         args.putInt(FORUM_ID_KEY, forumId);
+        args.putInt(COURSE_ID_KEY, courseId);
         args.putString(COURSE_NAME_KEY, courseName);
         fragment.setArguments(args);
         return fragment;
     }
 
     public static ForumFragment newInstance() {
-        return newInstance(1, "Site News");
+        return newInstance(-1, 1, "Site News");
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
+            courseId = requireArguments().getInt(COURSE_ID_KEY);
             FORUM_ID = getArguments().getInt(FORUM_ID_KEY);
             COURSE_NAME = getArguments().getString(COURSE_NAME_KEY);
         }
@@ -114,7 +118,8 @@ public class ForumFragment extends Fragment {
 
         ClickListener mClickListener = (object, position) -> {
             Discussion discussion = (Discussion) object;
-            DiscussionFragment fragment = DiscussionFragment.newInstance(discussion.getId(), COURSE_NAME);
+            DiscussionFragment fragment = DiscussionFragment.newInstance(courseId,
+                    discussion.getId(), COURSE_NAME);
             FragmentTransaction transaction = requireActivity()
                     .getSupportFragmentManager()
                     .beginTransaction();

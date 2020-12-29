@@ -104,7 +104,7 @@ class CourseDetailActivity : AppCompatActivity() {
         setCourseSection()
         supportFragmentManager.executePendingTransactions()
         val fragmentTransaction = supportFragmentManager.beginTransaction()
-        val forumFragment: Fragment = ForumFragment.newInstance(forumId, course.shortName)
+        val forumFragment: Fragment = ForumFragment.newInstance(course.id, forumId, course.shortName)
         fragmentTransaction.addToBackStack(null)
                 .replace(R.id.course_section_enrol_container, forumFragment, "Announcements")
         fragmentTransaction.commit()
@@ -114,7 +114,7 @@ class CourseDetailActivity : AppCompatActivity() {
         setForumFragment(forumId)
         supportFragmentManager.executePendingTransactions()
         val fragmentTransaction = supportFragmentManager.beginTransaction()
-        val discussionFragment: Fragment = DiscussionFragment.newInstance(discussionId,
+        val discussionFragment: Fragment = DiscussionFragment.newInstance(course.id, discussionId,
                 course.shortName)
         fragmentTransaction.addToBackStack(null)
                 .replace(R.id.course_section_enrol_container, discussionFragment, "Discussion")
