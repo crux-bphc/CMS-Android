@@ -254,15 +254,11 @@ public class CourseRequestHandler {
 
 
     @NotNull
-    public List<Discussion> getForumDicussionsSync(int moduleId) {
+    public List<Discussion> getForumDicussionsSync(int moduleId) throws IOException {
         Call<ForumData> call = moodleServices.getForumDiscussions(userAccount.getToken(), moduleId, 0, 0);
-        try {
-            Response<ForumData> response = call.execute();
-            if (response.body() == null) return new ArrayList<>(0);
-            return response.body().getDiscussions();
-        } catch (Exception e) {
-            return new ArrayList<>(0);
-        }
+        Response<ForumData> response = call.execute();
+        if (response.body() == null) return new ArrayList<>(0);
+        return response.body().getDiscussions();
     }
 
     public void getForumDiscussions(int moduleId, @Nullable final CallBack<List<Discussion>> callBack) {

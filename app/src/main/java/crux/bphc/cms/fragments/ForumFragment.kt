@@ -14,13 +14,17 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import crux.bphc.cms.R
+import crux.bphc.cms.helper.CourseDataHandler
 import crux.bphc.cms.helper.CourseRequestHandler
-import crux.bphc.cms.helper.CourseRequestHandler.CallBack
 import crux.bphc.cms.interfaces.ClickListener
 import crux.bphc.cms.models.forum.Discussion
 import crux.bphc.cms.utils.Utils
 import crux.bphc.cms.widgets.HtmlTextView
 import io.realm.Realm
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.io.IOException
 import java.util.*
 
 /**
@@ -34,7 +38,6 @@ class ForumFragment : Fragment() {
     private var forumId = 1
     private var courseName: String = ""
 
-    private lateinit var realm: Realm
     private lateinit var courseRequestHandler: CourseRequestHandler
 
     private lateinit var mAdapter: Adapter
@@ -48,8 +51,7 @@ class ForumFragment : Fragment() {
         forumId = requireArguments().getInt(FORUM_ID_KEY, -1)
         courseName = requireArguments().getString(COURSE_NAME_KEY, "")
 
-        realm = Realm.getDefaultInstance()
-        courseRequestHandler = CourseRequestHandler(this.activity)
+        courseRequestHandler = CourseRequestHandler(requireActivity())
     }
 
     override fun onStart() {
@@ -61,7 +63,6 @@ class ForumFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        realm = Realm.getDefaultInstance()
         return inflater.inflate(R.layout.fragment_forum, container, false)
     }
 
@@ -93,56 +94,45 @@ class ForumFragment : Fragment() {
 
     private fun refreshContent() {
         swipeRefresh.isRefreshing = true
-        courseRequestHandler.getForumDiscussions(forumId, object : CallBack<List<Discussion?>?> {
-            override fun onResponse(discussions: List<Discussion?>?) {
-                discussions ?: return
+        CoroutineScope(Dispatchers.IO).launch {
+            val realm = Realm.getDefaultInstance()
+            val courseDataHandler = CourseDataHandler(requireContext(), realm)
 
-                if (discussions.isEmpty()) {
-                    swipeRefresh.isRefreshing = false
-                    emptyView.visibility = View.VISIBLE
-                } else {
-                    for (discussion in discussions.filterNotNull()) discussion.forumId = forumId
+            try {
+                val discussions = courseRequestHandler.getForumDicussionsSync(forumId)
+                for (discussion in discussions) {
+                    discussion.forumId = forumId
+                }
 
-                    emptyView.visibility = View.GONE
+                courseDataHandler.setForumDiscussions(forumId, discussions)
+                realm.close()
+
+                CoroutineScope(Dispatchers.Main).launch {
                     mAdapter.clearDiscussions()
-                    mAdapter.addDiscussions(discussions.filterNotNull())
-
-                    // reset cached data
-                    val results = realm.where(Discussion::class.java).equalTo("forumId", forumId)
-                            .findAll()
-                    realm.executeTransaction { realm: Realm ->
-                        results.deleteAllFromRealm()
-                        realm.copyToRealm(mAdapter.mDiscussions)
+                    mAdapter.addDiscussions(discussions)
+                    swipeRefresh.isRefreshing = false
+                }
+            } catch (e: IOException) {
+                val realmDiscussions = courseDataHandler.getForumDiscussions(forumId)
+                val discussions = realm.copyFromRealm(realmDiscussions)
+                CoroutineScope(Dispatchers.Main).launch {
+                    if (discussions.size == 0) {
+                        emptyView.visibility = View.VISIBLE
+                        Toast
+                            .makeText(context, getString(R.string.no_cached_data), Toast.LENGTH_SHORT)
+                            .show()
+                    } else {
+                        Toast.makeText(
+                            context, getString(R.string.loading_cached_data),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                        mAdapter.clearDiscussions()
+                        mAdapter.addDiscussions(discussions)
                     }
                     swipeRefresh.isRefreshing = false
                 }
             }
-
-            override fun onFailure(message: String, t: Throwable) {
-                swipeRefresh.isRefreshing = false
-
-                // Load and display cached discussion data from database, if present
-                val results = realm.where(Discussion::class.java).equalTo("forumId", forumId).findAll()
-                val dbDiscussions = realm.copyFromRealm(results)
-                if (dbDiscussions.size == 0) {
-                    emptyView.visibility = View.VISIBLE
-                    Toast
-                        .makeText(context, getString(R.string.no_cached_data), Toast.LENGTH_SHORT)
-                        .show()
-                } else {
-                    Toast.makeText(context, getString(R.string.loading_cached_data),
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                    mAdapter.clearDiscussions()
-                    mAdapter.addDiscussions(dbDiscussions)
-                }
-            }
-        })
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        realm.close()
+        }
     }
 
     private inner class Adapter(
