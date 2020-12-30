@@ -162,9 +162,10 @@ class DiscussionFragment : Fragment() {
                         }
                     }
                 }
-                }
-            attachmentContainer.visibility = View.GONE
             }
+        } else {
+            attachmentContainer.visibility = View.GONE
+        }
     }
 
     private fun downloadAttachment(attachment: Attachment) {
