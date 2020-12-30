@@ -38,13 +38,15 @@ class DiscussionFragment : Fragment() {
     private lateinit var attachmentContainer: LinearLayout
     private lateinit var discussion: Discussion
 
+    private var courseId: Int = 0
     private var mCourseName: String = ""
     private var discussionId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        discussionId = requireArguments().getInt("id", -1)
-        mCourseName = requireArguments().getString("courseName", "")
+        courseId = requireArguments().getInt(COURSE_ID_KEY, -1)
+        discussionId = requireArguments().getInt(DISCUSSION_ID_KEY, -1)
+        mCourseName = requireArguments().getString(COURSE_NAME_KEY, "")
 
         fileManager = FileManager(requireActivity(), mCourseName)
         realm = Realm.getDefaultInstance()
