@@ -180,15 +180,15 @@ class MainActivity : AppCompatActivity() {
 
         val contextUrl = intent.getStringExtra("contexturl") ?: ""
         val courseId = (intent.getStringExtra("courseid") ?: "-1").toInt()
+        val customData = intent.getStringExtra("customdata") ?: ""
 
         if (contextUrl == "" && courseId == -1) return
 
         val intent = Intent(this, CourseDetailActivity::class.java)
         intent.putExtra(CourseDetailActivity.INTENT_CONTEXT_URL_KEY, contextUrl)
         intent.putExtra(CourseDetailActivity.INTENT_COURSE_ID_KEY, courseId)
-        intent.putExtra(CourseDetailActivity.INTENT_MOD_ID_KEY, -1)
-        intent.putExtra(CourseDetailActivity.INTENT_FORUM_ID_KEY, -1)
-        intent.putExtra(CourseDetailActivity.INTENT_DISCUSSION_ID_KEY, -1)
+        intent.putExtra(CourseDetailActivity.INTENT_CUSTOM_DATA_KEY, customData)
+
         startActivity(intent)
         finish()
 

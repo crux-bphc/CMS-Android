@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.google.gson.Gson
 import crux.bphc.cms.R
 import crux.bphc.cms.app.MyApplication
 import crux.bphc.cms.app.Urls
@@ -15,6 +16,7 @@ import crux.bphc.cms.fragments.ForumFragment
 import crux.bphc.cms.models.UserAccount
 import crux.bphc.cms.models.course.Course
 import crux.bphc.cms.models.enrol.SearchedCourseDetail
+import crux.bphc.cms.models.forum.NewPostCustomData
 import io.realm.Realm
 
 class CourseDetailActivity : AppCompatActivity() {
@@ -43,6 +45,7 @@ class CourseDetailActivity : AppCompatActivity() {
         val intent = intent
         val contextUrl = intent.getStringExtra(INTENT_CONTEXT_URL_KEY) ?: ""
         var courseId = intent.getIntExtra(INTENT_COURSE_ID_KEY, -1)
+        val customDataStr = intent.getStringExtra(INTENT_CUSTOM_DATA_KEY) ?: ""
 
         if (courseId == -1 && enrolCourse == null) {
             finish()
@@ -66,6 +69,14 @@ class CourseDetailActivity : AppCompatActivity() {
             val url = Uri.parse(contextUrl) ?: Uri.EMPTY
             if (Urls.isCourseSectionUrl(url) || Urls.isCourseModuleUrl(url)) {
                 setCourseContentFragment(contextUrl)
+            } else if (Urls.isForumDiscussionUrl(url)){
+                // We parse the json here
+                val customData = Gson().fromJson(customDataStr, NewPostCustomData::class.java)
+                customData.apply {
+                    if (forumId != -1 && discussionId != -1) {
+                        setDiscussionFragment(forumId, discussionId)
+                    }
+                }
             } else {
                 setCourseContentFragment("")
             }
@@ -108,12 +119,19 @@ class CourseDetailActivity : AppCompatActivity() {
         fragmentTransaction.commit()
     }
 
-    private fun setDiscussionFragment(forumId: Int, discussionId: Int) {
+    private fun setDiscussionFragment(
+        forumId: Int = -1,
+        discussionId: Int = -1,
+    ) {
         setForumFragment(forumId)
         supportFragmentManager.executePendingTransactions()
         val fragmentTransaction = supportFragmentManager.beginTransaction()
-        val discussionFragment: Fragment = DiscussionFragment.newInstance(course!!.id, discussionId,
-                course!!.shortName)
+        val discussionFragment: Fragment = DiscussionFragment.newInstance(
+            course!!.id,
+            forumId,
+            discussionId,
+            course!!.shortName
+        )
         fragmentTransaction.addToBackStack(null)
                 .replace(R.id.course_section_enrol_container, discussionFragment, "Discussion")
         fragmentTransaction.commit()
@@ -131,8 +149,6 @@ class CourseDetailActivity : AppCompatActivity() {
         const val COURSE_ENROL_FRAG_TRANSACTION_KEY = "course_enrol_frag"
         const val INTENT_CONTEXT_URL_KEY = "contextUrl"
         const val INTENT_COURSE_ID_KEY = "courseId"
-        const val INTENT_MOD_ID_KEY = "modId"
-        const val INTENT_FORUM_ID_KEY = "forumId"
-        const val INTENT_DISCUSSION_ID_KEY = "discussionId"
+        const val INTENT_CUSTOM_DATA_KEY = "customData"
     }
 }

@@ -9,13 +9,17 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.MainThread
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import crux.bphc.cms.R
 import crux.bphc.cms.fragments.MoreOptionsFragment.Companion.newInstance
 import crux.bphc.cms.fragments.MoreOptionsFragment.OptionsViewModel
+import crux.bphc.cms.helper.CourseDataHandler
+import crux.bphc.cms.helper.CourseRequestHandler
 import crux.bphc.cms.io.FileManager
 import crux.bphc.cms.models.forum.Attachment
 import crux.bphc.cms.models.forum.Discussion
@@ -23,6 +27,10 @@ import crux.bphc.cms.utils.Utils
 import crux.bphc.cms.widgets.HtmlTextView
 import crux.bphc.cms.widgets.PropertiesAlertDialog
 import io.realm.Realm
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.io.IOException
 import java.util.*
 
 class DiscussionFragment : Fragment() {
@@ -31,6 +39,9 @@ class DiscussionFragment : Fragment() {
     private lateinit var fileManager: FileManager
     private lateinit var moreOptionsViewModel: OptionsViewModel
 
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private lateinit var empty: TextView
+    private lateinit var content: LinearLayout
     private lateinit var userPic: ImageView
     private lateinit var subject: TextView
     private lateinit var userName: TextView
@@ -40,12 +51,14 @@ class DiscussionFragment : Fragment() {
     private lateinit var discussion: Discussion
 
     private var courseId: Int = 0
-    private var mCourseName: String = ""
+    private var forumId: Int = 0
     private var discussionId: Int = 0
+    private var mCourseName: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         courseId = requireArguments().getInt(COURSE_ID_KEY, -1)
+        forumId = requireArguments().getInt(FORUM_ID_KEY, -1)
         discussionId = requireArguments().getInt(DISCUSSION_ID_KEY, -1)
         mCourseName = requireArguments().getString(COURSE_NAME_KEY, "")
 
@@ -63,6 +76,9 @@ class DiscussionFragment : Fragment() {
 
         moreOptionsViewModel = ViewModelProvider(requireActivity()).get(OptionsViewModel::class.java)
 
+        swipeRefreshLayout = view.findViewById(R.id.refresh)
+        empty = view.findViewById(R.id.empty)
+        content = view.findViewById(R.id.content)
         userPic = view.findViewById(R.id.user_pic)
         subject = view.findViewById(R.id.subject)
         userName = view.findViewById(R.id.user_name)
@@ -70,6 +86,7 @@ class DiscussionFragment : Fragment() {
         message = view.findViewById(R.id.message)
         attachmentContainer = view.findViewById(R.id.attachments)
 
+        swipeRefreshLayout.isEnabled = false // Disable swiping, for now
         message.movementMethod = LinkMovementMethod.getInstance()
 
         fileManager.registerDownloadReceiver()
@@ -96,10 +113,17 @@ class DiscussionFragment : Fragment() {
         if (discussion != null) {
             this.discussion = discussion
             setDiscussion(discussion)
+        } else {
+            refreshContent(forumId, discussionId)
         }
     }
 
+    @MainThread
     private fun setDiscussion(discussion: Discussion) {
+        content.visibility = View.VISIBLE
+        empty.visibility = View.GONE
+        swipeRefreshLayout.isRefreshing = false
+
         subject.text = discussion.subject
         userName.text = discussion.userFullName
         timeModified.text = Utils.formatDate(discussion.timeModified)
@@ -168,6 +192,46 @@ class DiscussionFragment : Fragment() {
         }
     }
 
+    private fun refreshContent(forumId: Int, discussionId: Int) {
+        swipeRefreshLayout.isRefreshing = true
+        CoroutineScope(Dispatchers.IO).launch {
+           val realm = Realm.getDefaultInstance()
+           val courseDataHandler = CourseDataHandler(requireContext(), realm)
+           val courseRequestHandler = CourseRequestHandler(requireContext())
+
+            try {
+                val discussions = courseRequestHandler.getForumDicussionsSync(forumId)
+                discussions.forEach { it.forumId = forumId }
+                courseDataHandler.setForumDiscussions(forumId, discussions)
+
+                val discussion = discussions.firstOrNull { it.discussionId == discussionId }
+                CoroutineScope(Dispatchers.Main).launch {
+                    if (discussion != null) {
+                        empty.visibility = View.GONE
+                        swipeRefreshLayout.isRefreshing = false
+                        setDiscussion(discussion)
+                    } else {
+                        empty.visibility = View.VISIBLE
+                        swipeRefreshLayout.isRefreshing = false
+                        Toast.makeText(requireContext(), getString(R.string.net_req_failed),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            } catch (e: IOException) {
+                CoroutineScope(Dispatchers.Main).launch {
+                    empty.visibility = View.VISIBLE
+                    swipeRefreshLayout.isRefreshing = false
+                    Toast.makeText(requireContext(), getString(R.string.net_req_failed),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+            }
+            realm.close()
+        }
+    }
+
     private fun downloadAttachment(attachment: Attachment) {
         Toast.makeText(activity, getString(R.string.downloading_file) + attachment.fileName,
                 Toast.LENGTH_SHORT).show()
@@ -187,14 +251,21 @@ class DiscussionFragment : Fragment() {
     companion object {
 
         private const val COURSE_ID_KEY = "courseId"
-        private const val DISCUSSION_ID_KEY = "discussionId"
         private const val COURSE_NAME_KEY = "contextUrl"
+        private const val FORUM_ID_KEY = "forumId"
+        private const val DISCUSSION_ID_KEY = "discussionId"
 
         @JvmStatic
-        fun newInstance(courseId: Int, discussionId: Int, mCourseName: String): DiscussionFragment {
+        fun newInstance(
+            courseId: Int,
+            forumId: Int,
+            discussionId: Int,
+            mCourseName: String,
+        ): DiscussionFragment {
             val fragment = DiscussionFragment()
             val args = Bundle()
             args.putInt(COURSE_ID_KEY, courseId)
+            args.putInt(FORUM_ID_KEY, forumId)
             args.putInt(DISCUSSION_ID_KEY, discussionId)
             args.putString(COURSE_NAME_KEY, mCourseName)
             fragment.arguments = args

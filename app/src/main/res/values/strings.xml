@@ -3,6 +3,9 @@
     <string name="app_name">CMS BPHC</string>
     <string name="powered_by_crux">Powered by Crux</string>
     <string name="please_login_to_continue">Please login to continue.</string>
+    <string name="no_cached_data">No cached data. Check connection and refresh</string>
+    <string name="loading_cached_data">Loading cached data. Refresh for latest</string>
+    <string name="net_req_failed">Network request failed. Try again later</string>
 
     <!-- Main Activity Navigation Menu -->
     <string name="nav_bar_my_courses">My Courses</string>
@@ -85,6 +88,4 @@
     <string name="remove_from_favorites">Remove from favorites</string>
     <string name="addtoFavorites">Add to favorites</string>
     <string name="downloading_file">\"Downloading file - \"</string>
-    <string name="no_cached_data">No cached data. Check connection and refresh</string>
-    <string name="loading_cached_data">Loading cached data. Refresh for latest</string>
 </resources>
