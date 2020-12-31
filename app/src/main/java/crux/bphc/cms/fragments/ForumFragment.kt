@@ -76,8 +76,12 @@ class ForumFragment : Fragment() {
 
         val mClickListener = ClickListener { `object`: Any, _: Int ->
             val discussion = `object` as Discussion
-            val fragment = DiscussionFragment.newInstance(courseId, discussion.discussionId,
-                courseName)
+            val fragment = DiscussionFragment.newInstance(
+                courseId,
+                forumId,
+                discussion.discussionId,
+                courseName
+            )
             requireActivity().supportFragmentManager.commit {
                 addToBackStack(null)
                 replace((requireView().parent as ViewGroup).id, fragment, "ForumDetail")

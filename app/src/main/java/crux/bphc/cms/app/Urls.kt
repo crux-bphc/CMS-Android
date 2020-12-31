@@ -70,6 +70,11 @@ object Urls {
         return (url.path ?: "").matches(Regex("/mod/.*/view.php"))
     }
 
+    fun isForumDiscussionUrl(url: Uri): Boolean {
+        if (!isMoodleUrl(url)) return false;
+        return url.path ?: "" == "/mod/forum/discuss.php";
+    }
+
     fun getModIdFromUrl(url: Uri): Int {
         if (!isCourseModuleUrl(url)) return -1
         return url.getQueryParameter("id")?.toIntOrNull() ?: -1
