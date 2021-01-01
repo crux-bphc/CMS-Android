@@ -17,6 +17,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_crux_logo" />
+
+        <meta-data android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/crux_blue" />
+
         <activity
             android:name=".activities.TokenActivity"
             android:screenOrientation="portrait"

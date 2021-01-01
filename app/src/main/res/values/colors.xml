@@ -3,6 +3,7 @@
     <color name="orange">#FF5722</color>
     <color name="orangeDark">#E64A19</color>
     <color name="blueAccent">#00bcd4</color>
+    <color name="crux_blue">#164a9e</color>
 
     <color name="white">#ffffffff</color>
     <color name="white_alpha50">#80ffffff</color> <!-- default disabled text primary Dark -->
