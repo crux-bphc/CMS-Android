@@ -205,7 +205,7 @@ class TokenActivity : AppCompatActivity() {
             val courseList = courseRequestHandler.getCourseList(activityRef.get())
             if (courseList == null) {
                 if (!UserUtils.isValidToken(UserAccount.token)) {
-                    UserUtils.logout(activityRef.get() as Activity)
+                    UserUtils.logout()
                     UserUtils.clearBackStackAndLaunchTokenActivity(activityRef.get() as Activity)
                 }
                 return false

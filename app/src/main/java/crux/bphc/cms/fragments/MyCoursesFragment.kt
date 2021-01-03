@@ -223,7 +223,7 @@ class MyCoursesFragment : Fragment() {
                 CoroutineScope(Dispatchers.Main).launch {
                     Toast.makeText(requireActivity(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                     if (e is InvalidTokenException) {
-                        UserUtils.logout(requireActivity())
+                        UserUtils.logout()
                         UserUtils.clearBackStackAndLaunchTokenActivity(requireActivity())
                     }
                 }

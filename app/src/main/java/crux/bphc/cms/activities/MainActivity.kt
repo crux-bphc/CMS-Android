@@ -15,14 +15,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import crux.bphc.cms.R
-import crux.bphc.cms.app.Constants
 import crux.bphc.cms.app.MyApplication
 import crux.bphc.cms.background.NotificationWorker
+import crux.bphc.cms.core.PushNotifRegManager
 import crux.bphc.cms.fragments.*
 import crux.bphc.cms.helper.CourseDataHandler
 import crux.bphc.cms.helper.NOTIFICATION_CHANNEL_UPDATES
@@ -31,6 +32,7 @@ import crux.bphc.cms.models.UserAccount
 import crux.bphc.cms.models.course.Course
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
@@ -88,6 +90,32 @@ class MainActivity : AppCompatActivity() {
                 .build()
         WorkManager.getInstance(this).enqueueUniquePeriodicWork("NotificationWorker",
                 ExistingPeriodicWorkPolicy.KEEP, notifWorkRequest)
+
+        // Register for push notifs if required
+        lifecycleScope.launch {
+            var toastResource = 0
+            if (UserAccount.isNotificationsEnabled && !PushNotifRegManager.isRegistered()) {
+                if (!PushNotifRegManager.registerDevice()) {
+                    if (UserAccount.isLoggedIn) { // We failed inspite being logged in
+                        toastResource = R.string.push_notif_reg_failure
+                    }
+                }
+            } else if (!UserAccount.isNotificationsEnabled && PushNotifRegManager.isRegistered()) {
+                if (!PushNotifRegManager.deregisterDevice()) {
+                    toastResource = R.string.push_notif_dereg_failure
+                }
+            }
+
+            if (toastResource != 0) {
+                val context = this@MainActivity
+                Toast.makeText(
+                    context,
+                    context.getString(toastResource),
+                    Toast.LENGTH_SHORT,
+                ).show()
+            }
+
+        }
     }
 
     override fun onStart() {

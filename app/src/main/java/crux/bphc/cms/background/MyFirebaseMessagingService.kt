@@ -1,38 +1,22 @@
 package crux.bphc.cms.background
 
-import android.os.Build
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import crux.bphc.cms.BuildConfig
-import crux.bphc.cms.app.Urls
-import crux.bphc.cms.models.UserAccount
-import crux.bphc.cms.network.MoodleServices
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import crux.bphc.cms.core.PushNotifRegManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        val retrofit = Retrofit.Builder()
-                .baseUrl(Urls.MOODLE_URL.toString())
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-        val moodleServices: MoodleServices = retrofit.create(MoodleServices::class.java)
 
-        Log.d(TAG, token)
-
-        val ret = moodleServices.registerUserDevice(
-               UserAccount.token,
-                "crux.bphc.cms",
-                Build.PRODUCT,
-                Build.MODEL,
-                "android-fcm",
-                BuildConfig.VERSION_NAME,
-                token,
-                "1111-1111-1111-1111",
-        ).execute()
-        Log.d(TAG, ret.body()?.string() ?: "Empty Body")
+        CoroutineScope(Dispatchers.Default).launch {
+            // registerDevice() will automatically register based
+            // on user preferences etc.
+            PushNotifRegManager.registerDevice()
+        }
     }
 
     override fun onMessageReceived(message: RemoteMessage) {

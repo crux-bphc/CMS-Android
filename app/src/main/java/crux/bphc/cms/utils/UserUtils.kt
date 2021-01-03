@@ -8,9 +8,13 @@ import android.widget.Toast
 import crux.bphc.cms.R
 import crux.bphc.cms.activities.TokenActivity
 import crux.bphc.cms.app.Urls
+import crux.bphc.cms.core.PushNotifRegManager
 import crux.bphc.cms.models.UserAccount
 import crux.bphc.cms.network.MoodleServices
 import io.realm.Realm
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
@@ -28,9 +32,14 @@ object UserUtils {
      * Logs the user out by deleting the associated UserAccount and deletes
      * all data in Realm.
      */
-    fun logout(context: Context) {
+    fun logout() {
         val realm = Realm.getDefaultInstance()
         realm.executeTransactionAsync { r: Realm -> r.deleteAll() }
+
+        // Deregister from push notifications before we logout
+        CoroutineScope(Dispatchers.Default).launch {
+            PushNotifRegManager.deregisterDevice() // If this fail, user will continue to get push notifs :')
+        }
         UserAccount.clearUser()
     }
 
