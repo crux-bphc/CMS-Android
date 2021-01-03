@@ -1,12 +1,16 @@
 package crux.bphc.cms.fragments
 
 import android.os.Bundle
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import crux.bphc.cms.R
 import crux.bphc.cms.app.MyApplication
+import crux.bphc.cms.core.PushNotifRegManager
 import crux.bphc.cms.models.UserAccount
+import kotlinx.coroutines.launch
 
 class PreferencesFragment : PreferenceFragmentCompat() {
 
@@ -40,10 +44,39 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 
         val notifications: SwitchPreference? = findPreference("notifications")
         notifications?.apply {
-            isChecked = UserAccount.isNotificationsEnabled
+            isChecked = PushNotifRegManager.isRegistered()
             onPreferenceChangeListener =
                 Preference.OnPreferenceChangeListener { _: Preference?, o: Any? ->
-                    UserAccount.isNotificationsEnabled = (o as Boolean?)!!
+                    val newlyChecked = o as Boolean
+                    isChecked = newlyChecked
+                    // This ensures MainActivity will reattempt
+                    // (de)registration in case coroutine gets
+                    // cancelled or network call fails
+                    UserAccount.isNotificationsEnabled = newlyChecked
+
+                    lifecycleScope.launch {
+                        val context = requireContext()
+                        var toastResource = 0
+                        if (newlyChecked) {
+                            if (!PushNotifRegManager.registerDevice()) {
+                                toastResource = R.string.push_notif_reg_failure
+                                isChecked = false
+                            }
+                        } else {
+                            if (!PushNotifRegManager.deregisterDevice()) {
+                                toastResource = R.string.push_notif_dereg_failure
+                                isChecked = true
+                            }
+                        }
+
+                        if (toastResource != 0) {
+                            Toast.makeText(
+                                context,
+                                context.getString(toastResource),
+                                Toast.LENGTH_SHORT,
+                            ).show()
+                        }
+                    }
                     true
                 }
         }

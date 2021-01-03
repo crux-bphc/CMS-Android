@@ -44,6 +44,11 @@ object UserAccount {
                 .apply()
     }
 
+    /**
+     * Denotes the user's notification preference.
+     * or not. A mismatch between this and [crux.bphc.cms.core.PushNotifRegManager.isRegistered]
+     * means a (de)registration is in order.
+     */
     var isNotificationsEnabled: Boolean
         get() = prefs.getBoolean("notificationEnable", true)
         set(b) {

@@ -18,6 +18,8 @@ object Constants {
 
     const val LOGIN_LAUNCH_DATA = "LOGIN_LAUNCH_DATA"
 
+    const val AIRNOTIFIER_PLATFORM_NAME = "android-fcm"
+
     /*
      * Site News isn't part of any course. However, internally we assume it to be part of course 0.
      */

@@ -59,6 +59,10 @@
         <a href="https://github.com/crux-bphc/CMS-Android">GitHub</a> to submit ideas for new features or report any
         bugs. <br />Click the logo below to visit our website.]]></string>
 
+    <!-- Push Notification Messages -->
+    <string name="push_notif_reg_failure">Failed to register with server for push notifications!</string>
+    <string name="push_notif_dereg_failure">Failed to deregister from server for push notifications!</string>
+
     <!-- Content descriptions for generic views -->
     <string name="download_go">Download</string>
     <string name="more_options_btn">More Options</string>

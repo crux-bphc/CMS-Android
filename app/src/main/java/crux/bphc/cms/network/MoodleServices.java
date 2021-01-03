@@ -102,4 +102,9 @@ public interface MoodleServices {
                                     @Query("version") @NotNull String version,
                                     @Query("pushid") @NotNull String pushid,
                                     @Query("uuid") @NotNull String uuid);
+
+    @GET("webservice/rest/server.php?wsfunction=core_user_remove_user_device&moodlewsrestformat=json")
+    Call<ResponseBody> deregisterUserDevice(@Query("wstoken") @NotNull String token,
+                                            @Query("uuid") @NotNull String uuid,
+                                            @Query("appid") @NotNull String appId);
 }

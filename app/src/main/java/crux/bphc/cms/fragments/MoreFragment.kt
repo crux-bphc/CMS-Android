@@ -13,7 +13,6 @@ import crux.bphc.cms.R
 import crux.bphc.cms.activities.InfoActivity
 import crux.bphc.cms.activities.MainActivity
 import crux.bphc.cms.activities.TokenActivity
-import crux.bphc.cms.app.Constants
 import crux.bphc.cms.app.Urls
 import crux.bphc.cms.models.UserAccount
 import crux.bphc.cms.utils.UserUtils
@@ -94,7 +93,7 @@ class MoreFragment : Fragment() {
     }
 
     private fun logout() {
-        UserUtils.logout(requireContext())
+        UserUtils.logout()
         startActivity(Intent(requireActivity(), TokenActivity::class.java))
         requireActivity().finish()
     }
