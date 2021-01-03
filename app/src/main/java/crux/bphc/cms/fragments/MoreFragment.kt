@@ -64,7 +64,7 @@ class MoreFragment : Fragment() {
         settings_card.setOnClickListener {
             try {
                 val activity = requireActivity() as MainActivity
-                activity.pushView(SettingsFragment(), "Settings", false)
+                activity.pushView(PreferencesFragment(), "Settings", false)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
