@@ -14,9 +14,6 @@ object Constants {
     // used for intent from CourseSearch to CorseDetailActivity for CourseEnrolFrag
     const val COURSE_PARCEL_INTENT_KEY = "course_parcel"
 
-    @JvmField
-    var TOKEN: String? = null
-
     const val DARK_MODE_KEY = "DARK_MODE"
 
     const val LOGIN_LAUNCH_DATA = "LOGIN_LAUNCH_DATA"

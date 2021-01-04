@@ -36,7 +36,6 @@ import java.util.concurrent.TimeUnit
 class MainActivity : AppCompatActivity() {
 
     private lateinit var _realm: Realm
-    private lateinit var _userAccount: UserAccount
 
     private lateinit var _bottomNavSelectionListener: BottomNavigationView.OnNavigationItemSelectedListener
 
@@ -49,8 +48,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         setSupportActionBar(toolbar)
-        _userAccount = UserAccount(this)
-        Constants.TOKEN = _userAccount.token
         _realm = Realm.getDefaultInstance()
 
         _bottomNavSelectionListener = BottomNavigationView.OnNavigationItemSelectedListener{
@@ -61,7 +58,7 @@ class MainActivity : AppCompatActivity() {
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.searchCourseFragment -> {
-                    pushView(SearchCourseForEnrolFragment.newInstance(Constants.TOKEN),
+                    pushView(SearchCourseForEnrolFragment.newInstance(UserAccount.token),
                             "Search Course to Enrol", false)
                     return@OnNavigationItemSelectedListener true
                 }
@@ -131,7 +128,7 @@ class MainActivity : AppCompatActivity() {
                 val host = uri.host
                 if (scheme != null && host != null && path != null) {
                     val fileUrl = String.format("%s://%s%s+?forcedownload=1&token=%s", scheme, host, path,
-                            _userAccount.token)
+                            UserAccount.token)
                     val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(fileUrl))
                     startActivity(browserIntent)
                 }

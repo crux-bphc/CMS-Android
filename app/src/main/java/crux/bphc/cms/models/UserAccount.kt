@@ -1,15 +1,18 @@
 package crux.bphc.cms.models
 
 import android.content.Context
+import crux.bphc.cms.app.MyApplication
 import crux.bphc.cms.models.core.UserDetail
 
 /**
  * @author Harshit Agarwal (16-Dec-2016)
  * @author Abhijeet Viswa
  */
-class UserAccount(context: Context) {
+object UserAccount {
+    private const val MY_PREFS_NAME = "crux.bphc.cms.USER_ACCOUNT"
 
-    private val prefs = context.getSharedPreferences(MY_PREFS_NAME, Context.MODE_PRIVATE)
+    private val prefs = MyApplication.getInstance()
+        .getSharedPreferences(MY_PREFS_NAME, Context.MODE_PRIVATE)
 
     val userID: Int
         get() = prefs.getInt("userid", 0)
@@ -26,7 +29,7 @@ class UserAccount(context: Context) {
     val isLoggedIn: Boolean
         get() = prefs.getString("token", "")?.isNotEmpty() ?: false
 
-    fun logout() {
+    fun clearUser() {
         prefs.edit().clear().apply()
     }
 
@@ -48,9 +51,4 @@ class UserAccount(context: Context) {
                     .putBoolean("notificationEnable", b)
                     .apply()
         }
-
-    companion object {
-        private const val MY_PREFS_NAME = "CMS.userAccount3"
-    }
-
 }

@@ -40,11 +40,10 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 
         val notifications: SwitchPreference? = findPreference("notifications")
         notifications?.apply {
-            val userAccount = UserAccount(requireActivity())
-            isChecked = userAccount.isNotificationsEnabled
+            isChecked = UserAccount.isNotificationsEnabled
             onPreferenceChangeListener =
                 Preference.OnPreferenceChangeListener { _: Preference?, o: Any? ->
-                    userAccount.isNotificationsEnabled = (o as Boolean?)!!
+                    UserAccount.isNotificationsEnabled = (o as Boolean?)!!
                     true
                 }
         }
