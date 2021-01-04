@@ -1,12 +1,9 @@
 package crux.bphc.cms.activities
 
 import android.Manifest
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
@@ -16,24 +13,17 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import crux.bphc.cms.R
 import crux.bphc.cms.app.MyApplication
-import crux.bphc.cms.background.NotificationWorker
 import crux.bphc.cms.core.PushNotifRegManager
 import crux.bphc.cms.fragments.*
 import crux.bphc.cms.helper.CourseDataHandler
-import crux.bphc.cms.helper.NOTIFICATION_CHANNEL_UPDATES
-import crux.bphc.cms.helper.NOTIFICATION_CHANNEL_UPDATES_BUNDLE
 import crux.bphc.cms.models.UserAccount
 import crux.bphc.cms.models.course.Course
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.launch
-import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
@@ -84,12 +74,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         askPermission()
-        createNotificationChannels() // initialize channels before starting background service
-        // Enqueue background worker for course updates and notifications
-        val notifWorkRequest = PeriodicWorkRequestBuilder<NotificationWorker>(1, TimeUnit.HOURS)
-                .build()
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork("NotificationWorker",
-                ExistingPeriodicWorkPolicy.KEEP, notifWorkRequest)
 
         // Register for push notifs if required
         lifecycleScope.launch {
@@ -174,28 +158,6 @@ class MainActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "You need to be enrolled in " + uri.getQueryParameter("courseName") + " in order to view", Toast.LENGTH_LONG).show()
             }
-        }
-    }
-
-    // Create channels for devices running Oreo and above; Can be safely called even if channel exists
-    private fun createNotificationChannels() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Create the "Updates Bundle" channel, which is channel for summary notifications that bundles thr
-            // individual notifications
-            val service = NotificationChannel(NOTIFICATION_CHANNEL_UPDATES_BUNDLE,
-                    "New Content Bundle",
-                    NotificationManager.IMPORTANCE_DEFAULT)
-            service.description = "A default priority channel that bundles all the notifications"
-
-            // Create the "Updates" channel which has the low importance level
-            val updates = NotificationChannel(NOTIFICATION_CHANNEL_UPDATES,
-                    "New Content",
-                    NotificationManager.IMPORTANCE_LOW)
-            updates.description = "All low importance channel that relays all the updates."
-            val nm = getSystemService(NotificationManager::class.java)
-            // create both channels
-            nm.createNotificationChannel(service)
-            nm.createNotificationChannel(updates)
         }
     }
 
