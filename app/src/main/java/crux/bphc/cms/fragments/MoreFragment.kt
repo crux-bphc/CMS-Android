@@ -23,8 +23,6 @@ import kotlinx.android.synthetic.main.fragment_more.*
 
 class MoreFragment : Fragment() {
 
-    private lateinit var _userAccount: UserAccount
-
     override fun onStart() {
         super.onStart()
         requireActivity().title = "More"
@@ -35,9 +33,6 @@ class MoreFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        _userAccount = UserAccount(requireContext())
-        Constants.TOKEN = _userAccount.token
 
         website_card.setOnClickListener {
             Utils.openURLInBrowser(requireActivity(), Urls.MOODLE_URL.toString())
@@ -54,7 +49,10 @@ class MoreFragment : Fragment() {
         }
 
         issue_card.setOnClickListener {
-            Utils.openURLInBrowser(requireActivity(), Urls.getFeedbackURL(_userAccount.firstName, _userAccount.username))
+            Utils.openURLInBrowser(requireActivity(), Urls.getFeedbackURL(
+                UserAccount.firstName,
+                UserAccount.username
+            ))
         }
 
         about_card.setOnClickListener {
@@ -74,7 +72,7 @@ class MoreFragment : Fragment() {
             askToLogout().show()
         }
 
-        val details = Utils.userDetails(_userAccount.firstName, _userAccount.username)
+        val details = Utils.userDetails(UserAccount.firstName, UserAccount.username)
         name_text.text = details[0]
         username_text.text = details[1]
 

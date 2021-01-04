@@ -20,10 +20,9 @@ class NotificationWorker(context: Context, workerParam: WorkerParameters):
     override fun doWork(): Result {
         println("test")
         Log.d(TAG, "Started syncing course data")
-        val userAccount = UserAccount(applicationContext)
 
         // course data can't be accessed without user login, so cancel jobs if they're not logged in
-        if (!userAccount.isLoggedIn) {
+        if (!UserAccount.isLoggedIn) {
             return Result.failure()
         }
 
@@ -42,7 +41,7 @@ class NotificationWorker(context: Context, workerParam: WorkerParameters):
          } catch (e: InvalidTokenException) {
             Log.e(TAG, "Invalid User Token");
             createLoggedOutNotif(applicationContext, notifManager)
-            userAccount.logout()
+            UserAccount.clearUser()
             return Result.failure()
         } catch (e: Exception) {
             Log.e(TAG, "Exception", e)

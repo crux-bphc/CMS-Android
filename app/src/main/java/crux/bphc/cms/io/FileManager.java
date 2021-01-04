@@ -27,6 +27,7 @@ import java.util.List;
 import crux.bphc.cms.BuildConfig;
 import crux.bphc.cms.app.Constants;
 import crux.bphc.cms.app.MyApplication;
+import crux.bphc.cms.models.UserAccount;
 import crux.bphc.cms.utils.FileUtils;
 import crux.bphc.cms.models.course.Content;
 import crux.bphc.cms.models.course.Module;
@@ -110,9 +111,9 @@ public class FileManager {
                               @NotNull String courseName, boolean isForum) {
         String url;
         if (isForum) {
-            url = fileUrl + "?token=" + Constants.TOKEN;
+            url = fileUrl + "?token=" + UserAccount.INSTANCE.getToken();
         } else {
-            url = fileUrl + "&token=" + Constants.TOKEN;
+            url = fileUrl + "&token=" + UserAccount.INSTANCE.getToken();
         }
 
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));

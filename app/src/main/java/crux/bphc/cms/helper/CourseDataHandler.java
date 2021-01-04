@@ -20,7 +20,6 @@ import crux.bphc.cms.models.course.CourseSection;
 import crux.bphc.cms.models.course.Module;
 import crux.bphc.cms.models.forum.Discussion;
 import io.realm.Realm;
-
 import io.realm.RealmList;
 import io.realm.RealmResults;
 import io.realm.Sort;
@@ -40,7 +39,6 @@ public class CourseDataHandler {
     @SuppressWarnings("unused")
     private final static String TAG = CourseDataHandler.class.getName();
 
-    private final UserAccount userAccount;
     private Realm realm;
 
     /**
@@ -51,7 +49,6 @@ public class CourseDataHandler {
                     {@link #setRealmInstance} before calling a data functions.
      */
     public CourseDataHandler(@NotNull Context context, @Nullable Realm realm) {
-        userAccount = new UserAccount(context);
         this.realm = realm;
     }
 
@@ -268,7 +265,7 @@ public class CourseDataHandler {
     }
 
     public List<Discussion> setForumDiscussions(int forumId, List<Discussion> discussions) {
-        if (!userAccount.isLoggedIn()) {
+        if (!UserAccount.INSTANCE.isLoggedIn()) {
             return null;
         }
         List<Discussion> newDiscussions = new ArrayList<>();

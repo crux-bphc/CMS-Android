@@ -31,8 +31,7 @@ object UserUtils {
     fun logout(context: Context) {
         val realm = Realm.getDefaultInstance()
         realm.executeTransactionAsync { r: Realm -> r.deleteAll() }
-        val userAccount = UserAccount(context)
-        userAccount.logout()
+        UserAccount.clearUser()
     }
 
     /**

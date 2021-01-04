@@ -11,6 +11,7 @@ import crux.bphc.cms.fragments.CourseContentFragment
 import crux.bphc.cms.fragments.CourseEnrolFragment
 import crux.bphc.cms.fragments.DiscussionFragment
 import crux.bphc.cms.fragments.ForumFragment
+import crux.bphc.cms.models.UserAccount
 import crux.bphc.cms.models.course.Course
 import crux.bphc.cms.models.enrol.SearchedCourseDetail
 import crux.bphc.cms.models.forum.Discussion
@@ -79,7 +80,7 @@ class CourseDetailActivity : AppCompatActivity() {
 
     private fun setCourseEnrol() {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
-        val mCourseEnrolFragment = CourseEnrolFragment.newInstance(Constants.TOKEN, mEnrolCourse)
+        val mCourseEnrolFragment = CourseEnrolFragment.newInstance(UserAccount.token, mEnrolCourse)
         fragmentTransaction.replace(
                 R.id.course_section_enrol_container,
                 mCourseEnrolFragment,
@@ -90,7 +91,7 @@ class CourseDetailActivity : AppCompatActivity() {
     private fun setCourseSection() {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         val courseSectionFragment = CourseContentFragment.newInstance(
-                Constants.TOKEN,
+                UserAccount.token,
                 course.id)
         fragmentTransaction.replace(
                 R.id.course_section_enrol_container,

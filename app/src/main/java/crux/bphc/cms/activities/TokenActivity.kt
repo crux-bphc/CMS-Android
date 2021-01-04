@@ -37,7 +37,6 @@ import java.util.*
 class TokenActivity : AppCompatActivity() {
     private lateinit var progressDialog: ProgressDialog
     private lateinit var moodleServices: MoodleServices
-    private lateinit var userAccount: UserAccount
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,8 +51,6 @@ class TokenActivity : AppCompatActivity() {
 
         val retrofit = APIClient.getRetrofitInstance()
         moodleServices = retrofit.create(MoodleServices::class.java)
-
-        userAccount = UserAccount(this)
 
         findViewById<View>(R.id.google_login).setOnClickListener { onLogin() }
     }
@@ -133,7 +130,7 @@ class TokenActivity : AppCompatActivity() {
                     var userDetail: UserDetail
                     if (response.body().also { userDetail = it!! } != null) {
                         userDetail.token = token
-                        userAccount.setUser(userDetail)
+                        UserAccount.setUser(userDetail)
                         fetchUserData()
                     }
                 }
@@ -187,7 +184,7 @@ class TokenActivity : AppCompatActivity() {
     }
 
     private fun checkLoggedIn() {
-        if (userAccount.isLoggedIn) {
+        if (UserAccount.isLoggedIn) {
             val intent = Intent(this, MainActivity::class.java)
             dismissProgress()
             startActivity(intent)
@@ -207,7 +204,7 @@ class TokenActivity : AppCompatActivity() {
             /* Fetch User's Course List */publishProgress(PROGRESS_COURSE_LIST)
             val courseList = courseRequestHandler.getCourseList(activityRef.get())
             if (courseList == null) {
-                if (!UserUtils.isValidToken(UserAccount(activityRef.get()!!).token)) {
+                if (!UserUtils.isValidToken(UserAccount.token)) {
                     UserUtils.logout(activityRef.get() as Activity)
                     UserUtils.clearBackStackAndLaunchTokenActivity(activityRef.get() as Activity)
                 }
