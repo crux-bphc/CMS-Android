@@ -2,6 +2,7 @@
     <!-- General Strings, used in more than one place -->
     <string name="app_name">CMS BPHC</string>
     <string name="powered_by_crux">Powered by Crux</string>
+    <string name="please_login_to_continue">Please login to continue.</string>
 
     <!-- Main Activity Navigation Menu -->
     <string name="nav_bar_my_courses">My Courses</string>
