@@ -1,5 +1,6 @@
 package crux.bphc.cms.activities
 
+import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
@@ -207,8 +208,8 @@ class TokenActivity : AppCompatActivity() {
             val courseList = courseRequestHandler.getCourseList(activityRef.get())
             if (courseList == null) {
                 if (!UserUtils.isValidToken(UserAccount(activityRef.get()!!).token)) {
-                    UserUtils.logout(activityRef.get())
-                    UserUtils.clearBackStackAndLaunchTokenActivity(activityRef.get())
+                    UserUtils.logout(activityRef.get() as Activity)
+                    UserUtils.clearBackStackAndLaunchTokenActivity(activityRef.get() as Activity)
                 }
                 return false
             }
