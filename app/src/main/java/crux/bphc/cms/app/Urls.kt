@@ -64,7 +64,7 @@ fun Uri.Builder.appendOrSetQueryParameter(key: String, value: String): Uri.Build
         when (it) {
             null -> return@forEach
             key -> appendQueryParameter(key, value)
-            else -> appendQueryParameter(key, uri.getQueryParameter(it))
+            else -> appendQueryParameter(it, uri.getQueryParameter(it))
         }
     }
 
