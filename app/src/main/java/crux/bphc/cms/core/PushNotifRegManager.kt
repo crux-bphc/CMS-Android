@@ -177,16 +177,20 @@ object PushNotifRegManager {
     }
 
     @SuppressLint("HardwareIds")
-    private fun getFreshRegData(): PushNotificationRegData =
-        PushNotificationRegData(
-            appId = BuildConfig.APPLICATION_ID,
-            name = Build.PRODUCT ?: "",
-            model = Build.MODEL ?: "",
-            platform = Constants.AIRNOTIFIER_PLATFORM_NAME,
-            version = BuildConfig.VERSION_NAME + "-" + BuildConfig.COMMIT_HASH,
-            pushId = firebaseToken,
-            UUID = Settings.Secure.getString(context.contentResolver, ANDROID_ID),
-        )
+    private suspend fun getFreshRegData(): PushNotificationRegData =
+        // We switch to IO thread because `firebaseToken` may require
+        // a network call for the first time
+        withContext(Dispatchers.IO) {
+            PushNotificationRegData(
+                appId = BuildConfig.APPLICATION_ID,
+                name = Build.PRODUCT ?: "",
+                model = Build.MODEL ?: "",
+                platform = Constants.AIRNOTIFIER_PLATFORM_NAME,
+                version = BuildConfig.VERSION_NAME + "-" + BuildConfig.COMMIT_HASH,
+                pushId = firebaseToken,
+                UUID = Settings.Secure.getString(context.contentResolver, ANDROID_ID),
+            )
+        }
 
     init {
         val retrofit = APIClient.getRetrofitInstance()
