@@ -25,7 +25,7 @@ import crux.bphc.cms.helper.CourseDataHandler
 import crux.bphc.cms.helper.CourseRequestHandler
 import crux.bphc.cms.interfaces.ClickListener
 import crux.bphc.cms.interfaces.CourseContent
-import crux.bphc.cms.io.FileManager
+import crux.bphc.cms.core.FileManager
 import crux.bphc.cms.models.course.CourseSection
 import crux.bphc.cms.models.course.Module
 import crux.bphc.cms.utils.Utils
@@ -86,7 +86,7 @@ class CourseContentFragment : Fragment() {
         courseName = courseDataHandler.getCourseName(courseId)
         courseSections = courseDataHandler.getCourseData(courseId)
 
-        fileManager = FileManager(requireActivity(), courseName)
+        fileManager = FileManager(requireActivity(), courseName) { setCourseContentsOnAdapter() }
         fileManager.registerDownloadReceiver()
 
         setHasOptionsMenu(true)
@@ -128,7 +128,6 @@ class CourseContentFragment : Fragment() {
             refreshContent(contextUrl) // If there is a url, there may be updates
         }
 
-        fileManager.setCallback { setCourseContentsOnAdapter() }
         mSwipeRefreshLayout.setOnRefreshListener {
             mSwipeRefreshLayout.isRefreshing = true
             refreshContent()
@@ -171,7 +170,7 @@ class CourseContentFragment : Fragment() {
                                     Toast.LENGTH_SHORT).show()
                             fileManager.downloadModuleContent(content, module)
                         }
-                        2 -> fileManager.shareModuleContent(content)
+                        2 -> fileManager.shareModuleContent(content!!)
                         3 -> {
                             courseDataHandler.markModuleAsReadOrUnread(module, true)
                             adapter.notifyItemChanged(position)

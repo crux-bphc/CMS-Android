@@ -8,7 +8,7 @@ import crux.bphc.cms.adapters.delegates.CourseModuleDelegate
 import crux.bphc.cms.adapters.delegates.CourseSectionDelegate
 import crux.bphc.cms.interfaces.ClickListener
 import crux.bphc.cms.interfaces.CourseContent
-import crux.bphc.cms.io.FileManager
+import crux.bphc.cms.core.FileManager
 import crux.bphc.cms.models.course.CourseSection
 import crux.bphc.cms.models.course.Module
 

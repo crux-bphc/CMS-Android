@@ -20,7 +20,7 @@ import crux.bphc.cms.fragments.MoreOptionsFragment.Companion.newInstance
 import crux.bphc.cms.fragments.MoreOptionsFragment.OptionsViewModel
 import crux.bphc.cms.helper.CourseDataHandler
 import crux.bphc.cms.helper.CourseRequestHandler
-import crux.bphc.cms.io.FileManager
+import crux.bphc.cms.core.FileManager
 import crux.bphc.cms.models.forum.Attachment
 import crux.bphc.cms.models.forum.Discussion
 import crux.bphc.cms.utils.Utils
@@ -62,7 +62,7 @@ class DiscussionFragment : Fragment() {
         discussionId = requireArguments().getInt(DISCUSSION_ID_KEY, -1)
         mCourseName = requireArguments().getString(COURSE_NAME_KEY, "")
 
-        fileManager = FileManager(requireActivity(), mCourseName)
+        fileManager = FileManager(requireActivity(), mCourseName) { oneFileDownloaded(it) }
         realm = Realm.getDefaultInstance()
     }
 
@@ -90,23 +90,6 @@ class DiscussionFragment : Fragment() {
         message.movementMethod = LinkMovementMethod.getInstance()
 
         fileManager.registerDownloadReceiver()
-        fileManager.setCallback { filename: String? ->
-            val child = attachmentContainer.childCount
-            for (i in 0 until child) {
-                val childView = attachmentContainer.getChildAt(i) ?: break
-                val fileNameTextView = childView.findViewById<TextView>(R.id.name)
-                val downloadIcon = childView.findViewById<ImageView>(R.id.download)
-                val ellipsis = childView.findViewById<ImageView>(R.id.more)
-
-                if (fileNameTextView?.text.toString().equals(filename, true)) {
-                    downloadIcon?.setImageResource(R.drawable.eye)
-                    ellipsis?.visibility = View.VISIBLE
-                }
-            }
-            val attachments = discussion.attachments
-            val attachment = attachments.where().equalTo("fileName", filename).findFirst()
-            attachment?.let { fileManager.openDiscussionAttachment(it) }
-        }
 
         val discussion = realm.where(Discussion::class.java).equalTo("discussionId", discussionId)
                 .findFirst()
@@ -152,7 +135,7 @@ class DiscussionFragment : Fragment() {
                         ellipsis.visibility = View.GONE
                     }
                     clickWrapper.setOnClickListener {
-                        if (fileManager.isDiscussionAttachmentDownloaded(attachment)) {
+                        if (!fileManager.isDiscussionAttachmentDownloaded(attachment)) {
                             downloadAttachment(attachment)
                         } else {
                             fileManager.openDiscussionAttachment(attachment)
@@ -235,7 +218,27 @@ class DiscussionFragment : Fragment() {
     private fun downloadAttachment(attachment: Attachment) {
         Toast.makeText(activity, getString(R.string.downloading_file) + attachment.fileName,
                 Toast.LENGTH_SHORT).show()
-        fileManager.downloadDiscussionAttachment(attachment, discussion.subject, mCourseName)
+        fileManager.downloadDiscussionAttachment(attachment, discussion.subject)
+    }
+
+    private fun oneFileDownloaded(filename: String) {
+        val child = attachmentContainer.childCount
+        for (i in 0 until child) {
+            val childView = attachmentContainer.getChildAt(i) ?: break
+            val fileNameTextView = childView.findViewById<TextView>(R.id.name)
+            val downloadIcon = childView.findViewById<ImageView>(R.id.download)
+            val ellipsis = childView.findViewById<ImageView>(R.id.more)
+
+            if (fileNameTextView?.text.toString().equals(filename, true)) {
+                downloadIcon?.setImageResource(R.drawable.eye)
+                ellipsis?.visibility = View.VISIBLE
+            }
+        }
+
+        val attachments = discussion.attachments
+        val attachment = attachments.where().equalTo("fileName", filename).findFirst()
+        attachment?.let { fileManager.openDiscussionAttachment(it) }
+
     }
 
     override fun onDestroyView() {

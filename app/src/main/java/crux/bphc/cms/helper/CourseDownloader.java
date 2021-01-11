@@ -5,18 +5,19 @@ import android.content.Context;
 
 import java.util.List;
 
-import crux.bphc.cms.io.FileManager;
+import crux.bphc.cms.core.FileManager;
 import crux.bphc.cms.models.course.Content;
 import crux.bphc.cms.models.course.CourseSection;
 import crux.bphc.cms.models.course.Module;
 import io.realm.Realm;
 import io.realm.RealmResults;
+import kotlin.Unit;
 
 /**
  * @author Harshit Agarwal
  */
 
-public class CourseDownloader implements FileManager.Callback {
+public class CourseDownloader {
     private DownloadCallback downloadCallback;
     private final FileManager fileManager;
     private final Realm realm;
@@ -25,9 +26,12 @@ public class CourseDownloader implements FileManager.Callback {
     public CourseDownloader(Activity activity, String courseName) {
         this.context = activity;
         realm = Realm.getDefaultInstance();
-        fileManager = new FileManager(activity, courseName);
+
+        fileManager = new FileManager(activity, courseName, filename -> {
+            onDownloadCompleted();
+            return Unit.INSTANCE;
+        });
         fileManager.registerDownloadReceiver();
-        fileManager.setCallback(this);
     }
 
     public void setDownloadCallback(DownloadCallback downloadCallback) {
@@ -114,8 +118,7 @@ public class CourseDownloader implements FileManager.Callback {
 
     }
 
-    @Override
-    public void onDownloadCompleted(String fileName) {
+    public void onDownloadCompleted() {
         if (downloadCallback != null) {
             downloadCallback.onCourseContentDownloaded();
         }

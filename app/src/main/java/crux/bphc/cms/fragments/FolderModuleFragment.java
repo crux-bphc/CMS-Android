@@ -24,13 +24,14 @@ import java.util.List;
 
 import crux.bphc.cms.R;
 import crux.bphc.cms.interfaces.ClickListener;
-import crux.bphc.cms.io.FileManager;
+import crux.bphc.cms.core.FileManager;
 import crux.bphc.cms.models.course.Content;
 import crux.bphc.cms.models.course.Module;
 import crux.bphc.cms.utils.FileUtils;
 import crux.bphc.cms.widgets.PropertiesAlertDialog;
 import io.realm.Realm;
 import io.realm.RealmList;
+import kotlin.Unit;
 
 public class FolderModuleFragment extends Fragment {
 
@@ -70,14 +71,9 @@ public class FolderModuleFragment extends Fragment {
             COURSE_NAME = getArguments().getString(COURSE_NAME_KEY);
         }
 
-        mFileManager = new FileManager(requireActivity(), COURSE_NAME);
-        mFileManager.registerDownloadReceiver();
-        mFileManager.setCallback(fileName -> {
-            mAdapter.notifyDataSetChanged();
-            Content content;
-            if (contents != null && (content = contents.where().equalTo("fileName", fileName).findFirst()) != null) {
-                mFileManager.openModuleContent(content);
-            }
+        mFileManager = new FileManager(requireActivity(), COURSE_NAME, fileName -> {
+            onDownloadComplete(fileName);
+            return Unit.INSTANCE;
         });
     }
 
@@ -124,6 +120,16 @@ public class FolderModuleFragment extends Fragment {
         } else {
             mFileManager.openModuleContent(content);
         }
+    }
+
+    private void onDownloadComplete(String fileName) {
+        mAdapter.notifyDataSetChanged();
+        Content content;
+        if (contents != null
+                && (content = contents.where().equalTo("fileName", fileName).findFirst()) != null) {
+            mFileManager.openModuleContent(content);
+        }
+
     }
 
     @Override

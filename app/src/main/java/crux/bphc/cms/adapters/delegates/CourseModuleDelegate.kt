@@ -22,7 +22,7 @@ import com.hannesdorfmann.adapterdelegates4.AdapterDelegate
 import crux.bphc.cms.R
 import crux.bphc.cms.interfaces.ClickListener
 import crux.bphc.cms.interfaces.CourseContent
-import crux.bphc.cms.io.FileManager
+import crux.bphc.cms.core.FileManager
 import crux.bphc.cms.models.course.Content
 import crux.bphc.cms.models.course.Module
 import crux.bphc.cms.widgets.CollapsibleTextView
@@ -124,7 +124,9 @@ class CourseModuleDelegate(
         if (!module.isDownloadable || module.modType === Module.Type.FOLDER) {
             vh.downloadIcon.setImageResource(R.drawable.eye)
         } else {
-            val downloaded = module.contents.stream().allMatch { content: Content? -> fileManager.isModuleContentDownloaded(content) }
+            val downloaded = module.contents.stream().allMatch {
+                it.let { fileManager.isModuleContentDownloaded(it) }
+            }
             if (downloaded) {
                 vh.downloadIcon.setImageResource(R.drawable.eye)
             } else {
