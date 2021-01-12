@@ -11,6 +11,7 @@ Dates are in `yyyy-mm-dd`.
 ### Added
 
 ### Fixed
+* SSO login for non-admin users
 
 ## Version 1.8.0 (verCode 1080000), 2021-01-12
 ### Changed

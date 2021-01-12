@@ -82,20 +82,22 @@ class TokenActivity : AppCompatActivity() {
                     host = host.replace("/?#?$".toRegex(), "")
                     host = String(Base64.decode(host, Base64.DEFAULT))
                     val parts = host.split(":::").toTypedArray()
-                    if (parts.size != 2) {
-                        Toast.makeText(this, "Invalid token signature",
+                    if (parts.size < 2) {
+                        Toast.makeText(this, "Invalid token response length",
                                 Toast.LENGTH_SHORT).show()
                         Utils.showBadTokenDialog(this)
                         return
                     }
                     val digest = parts[0].toUpperCase(Locale.ROOT)
                     val token = parts[1]
+                    val privateToken = if(parts.size >= 3) parts[2] else ""
+
                     val launchData = MyApplication.getInstance().loginLaunchData
                     val signature = launchData["SITE_URL"] + launchData["PASSPORT"]
                     try {
                         if (Utils.bytesToHex(MessageDigest.getInstance("md5")
                                         .digest(signature.toByteArray(StandardCharsets.US_ASCII))) != digest) {
-                            Toast.makeText(this, "Invalid token signature",
+                            Toast.makeText(this, "Invalid token digest",
                                     Toast.LENGTH_SHORT).show()
                             Utils.showBadTokenDialog(this)
                             return
@@ -104,7 +106,7 @@ class TokenActivity : AppCompatActivity() {
                         Toast.makeText(this, "MD5 not a valid MessageDigest algorithm! :o",
                                 Toast.LENGTH_SHORT).show()
                     }
-                    loginUsingToken(token)
+                    loginUsingToken(token, privateToken)
                 }
             }
         }
@@ -121,7 +123,7 @@ class TokenActivity : AppCompatActivity() {
         setIntent(intent)
     }
 
-    private fun loginUsingToken(token: String) {
+    private fun loginUsingToken(token: String, privateToken: String) {
         showProgress(true, "Fetching your details")
         val call = moodleServices.fetchUserDetail(token)
         call.enqueue(object : Callback<UserDetail> {
@@ -130,6 +132,8 @@ class TokenActivity : AppCompatActivity() {
                     var userDetail: UserDetail
                     if (response.body().also { userDetail = it!! } != null) {
                         userDetail.token = token
+                        userDetail.privateToken = privateToken
+
                         UserAccount.setUser(userDetail)
                         fetchUserData()
                     }
