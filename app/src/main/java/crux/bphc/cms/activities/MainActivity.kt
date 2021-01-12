@@ -21,6 +21,7 @@ import crux.bphc.cms.fragments.*
 import crux.bphc.cms.helper.CourseDataHandler
 import crux.bphc.cms.models.UserAccount
 import crux.bphc.cms.models.course.Course
+import crux.bphc.cms.utils.UserUtils
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.launch
@@ -56,11 +57,16 @@ class MainActivity : AppCompatActivity() {
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        if (!UserAccount.isLoggedIn) {
+           UserUtils.clearBackStackAndLaunchTokenActivity(this)
+            return
+        }
+
         if (MyApplication.getInstance().isDarkModeEnabled) {
             setTheme(R.style.AppTheme_NoActionBar_Dark)
         }
-
-        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
@@ -281,6 +287,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        _realm.close()
+        if (this::_realm.isInitialized) {
+            _realm.close()
+        }
     }
 }
