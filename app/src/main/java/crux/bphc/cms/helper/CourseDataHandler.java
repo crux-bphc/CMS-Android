@@ -1,6 +1,5 @@
 package crux.bphc.cms.helper;
 
-import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -44,11 +43,10 @@ public class CourseDataHandler {
     /**
      * Construct a CourseDataHandler object for handling data.
      *
-     * @param context Application or Activity context.
      * @param realm Realm instance. Can be null. However, set realm instance using
                     {@link #setRealmInstance} before calling a data functions.
      */
-    public CourseDataHandler(@NotNull Context context, @Nullable Realm realm) {
+    public CourseDataHandler(@Nullable Realm realm) {
         this.realm = realm;
     }
 
@@ -275,10 +273,10 @@ public class CourseDataHandler {
                 newDiscussions.add(discussion);
             }
         }
-        realm.beginTransaction();
-        realm.where(Discussion.class).equalTo("forumId", forumId).findAll().deleteAllFromRealm();
-        realm.copyToRealm(discussions);
-        realm.commitTransaction();
+        realm.executeTransactionAsync(r -> {
+            r.where(Discussion.class).equalTo("forumId", forumId).findAll().deleteAllFromRealm();
+            r.copyToRealm(discussions);
+        });
         return newDiscussions;
     }
 

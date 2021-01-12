@@ -194,8 +194,8 @@ class TokenActivity : AppCompatActivity() {
 
     internal class CourseDataRetriever(activity: TokenActivity) : AsyncTask<Void?, Int?, Boolean>() {
         private val activityRef: WeakReference<TokenActivity> = WeakReference(activity)
-        private val courseDataHandler: CourseDataHandler
-        private val courseRequestHandler: CourseRequestHandler
+        private val courseDataHandler: CourseDataHandler = CourseDataHandler(null)
+        private val courseRequestHandler: CourseRequestHandler = CourseRequestHandler()
 
         override fun doInBackground(vararg voids: Void?): Boolean {
             // We set the realm instance for this worker thread
@@ -257,11 +257,6 @@ class TokenActivity : AppCompatActivity() {
         override fun onPostExecute(bool: Boolean) {
             super.onPostExecute(bool)
             activityRef.get()!!.checkLoggedIn()
-        }
-
-        init {
-            courseDataHandler = CourseDataHandler(activityRef.get()!!, null)
-            courseRequestHandler = CourseRequestHandler(activityRef.get())
         }
 
         companion object {

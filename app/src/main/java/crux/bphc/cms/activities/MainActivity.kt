@@ -15,7 +15,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import crux.bphc.cms.R
-import crux.bphc.cms.app.MyApplication
 import crux.bphc.cms.core.PushNotifRegManager
 import crux.bphc.cms.fragments.*
 import crux.bphc.cms.helper.CourseDataHandler
@@ -78,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         bottom_nav.setOnNavigationItemSelectedListener(_bottomNavSelectionListener)
 
         _realm = Realm.getDefaultInstance()
-        courseDataHandler = CourseDataHandler(this, _realm)
+        courseDataHandler = CourseDataHandler(_realm)
 
         if (savedInstanceState == null) {
             pushView(MyCoursesFragment.newInstance(), "My Courses", true)

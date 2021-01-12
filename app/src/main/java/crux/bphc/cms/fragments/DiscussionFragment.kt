@@ -16,11 +16,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import crux.bphc.cms.R
+import crux.bphc.cms.core.FileManager
 import crux.bphc.cms.fragments.MoreOptionsFragment.Companion.newInstance
 import crux.bphc.cms.fragments.MoreOptionsFragment.OptionsViewModel
 import crux.bphc.cms.helper.CourseDataHandler
 import crux.bphc.cms.helper.CourseRequestHandler
-import crux.bphc.cms.core.FileManager
 import crux.bphc.cms.models.forum.Attachment
 import crux.bphc.cms.models.forum.Discussion
 import crux.bphc.cms.utils.Utils
@@ -179,8 +179,8 @@ class DiscussionFragment : Fragment() {
         swipeRefreshLayout.isRefreshing = true
         CoroutineScope(Dispatchers.IO).launch {
            val realm = Realm.getDefaultInstance()
-           val courseDataHandler = CourseDataHandler(requireContext(), realm)
-           val courseRequestHandler = CourseRequestHandler(requireContext())
+           val courseDataHandler = CourseDataHandler(realm)
+           val courseRequestHandler = CourseRequestHandler()
 
             try {
                 val discussions = courseRequestHandler.getForumDicussionsSync(forumId)

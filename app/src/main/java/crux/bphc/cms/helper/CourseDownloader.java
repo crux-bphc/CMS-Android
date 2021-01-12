@@ -39,8 +39,8 @@ public class CourseDownloader {
     }
 
     public void downloadCourseData(final int courseId) {
-        CourseRequestHandler courseRequestHandler = new CourseRequestHandler(context);
-        final CourseDataHandler courseDataHandler = new CourseDataHandler(context, realm);
+        CourseRequestHandler courseRequestHandler = new CourseRequestHandler();
+        final CourseDataHandler courseDataHandler = new CourseDataHandler(realm);
         courseRequestHandler.getCourseData(courseId, new CourseRequestHandler.CallBack<List<CourseSection>>() {
             @Override
             public void onResponse(List<CourseSection> sectionList) {
