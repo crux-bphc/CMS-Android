@@ -5,6 +5,13 @@ All notable changes to the project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standards.
 Dates are in `yyyy-mm-dd`.
 
+## Unreleased
+### Changed
+
+### Added
+
+### Fixed
+
 ## Version 1.8.0 (verCode 1080000), 2021-01-12
 ### Changed
 * Dark mode is now the default theme 
