@@ -64,8 +64,8 @@ class CourseContentFragment : Fragment() {
             val contents = ArrayList<CourseContent>()
             courseSections.stream().filter { courseSection: CourseSection ->
                 !(courseSection.modules.isEmpty()
-                        && courseSection.summary.isEmpty()
-                        && courseSection.name.matches(Regex("Topic \\d")))
+                    && courseSection.summary.isEmpty()
+                    && courseSection.name.matches(Regex("^Topic \\d*$")))
             }.forEach { courseSection: CourseSection ->
                 contents.add(courseSection)
                 contents.addAll(courseSection.modules)
