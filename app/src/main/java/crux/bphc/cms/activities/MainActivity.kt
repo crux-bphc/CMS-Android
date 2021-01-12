@@ -98,12 +98,8 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT,
                 ).show()
             }
-
         }
-    }
 
-    override fun onStart() {
-        super.onStart()
         resolveIntent()
         resolveModuleLinkShare()
     }
