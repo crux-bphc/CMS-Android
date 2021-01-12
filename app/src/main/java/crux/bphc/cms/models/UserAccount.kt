@@ -35,13 +35,18 @@ object UserAccount {
 
     fun setUser(userDetail: UserDetail) {
         prefs.edit()
-                .putString("username", userDetail.username)
-                .putString("token", userDetail.token)
-                .putString("firstname", userDetail.firstName)
-                .putString("lastname", userDetail.lastName)
-                .putString("userpictureurl", userDetail.userPictureUrl)
-                .putInt("userid", userDetail.userId)
-                .apply()
+            .putString("username", userDetail.username)
+            .putString("token", userDetail.token)
+            // the private token can be used to create an http sesion
+            // check /admin/tool/mobile/autologin.php
+            .putString("privateToken", userDetail.privateToken) // the private token can be used to
+                                                                // create an http session from
+                                                                // che
+            .putString("firstname", userDetail.firstName)
+            .putString("lastname", userDetail.lastName)
+            .putString("userpictureurl", userDetail.userPictureUrl)
+            .putInt("userid", userDetail.userId)
+            .apply()
     }
 
     /**

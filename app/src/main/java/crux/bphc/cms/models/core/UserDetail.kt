@@ -13,4 +13,5 @@ data class UserDetail (
     @SerializedName("userpictureurl") val userPictureUrl: String = "",
     @SerializedName("userid") val userId: Int = 0,
     var token: String = "",
+    var privateToken: String = "",
 )
