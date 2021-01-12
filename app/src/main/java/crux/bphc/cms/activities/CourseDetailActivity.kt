@@ -37,12 +37,11 @@ class CourseDetailActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeButtonEnabled(true)
+
+        resolveIntent()
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        val intent = intent
+    private fun resolveIntent() {
         val contextUrl = intent.getStringExtra(INTENT_CONTEXT_URL_KEY) ?: ""
         var courseId = intent.getIntExtra(INTENT_COURSE_ID_KEY, -1)
         val customDataStr = intent.getStringExtra(INTENT_CUSTOM_DATA_KEY) ?: ""
