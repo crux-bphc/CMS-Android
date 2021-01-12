@@ -42,9 +42,9 @@
         <activity
             android:name=".activities.MainActivity"
             android:label="@string/app_name"
+            android:theme="@style/SplashTheme.NoActionBar"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustNothing"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:windowSoftInputMode="adjustNothing">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
