@@ -45,6 +45,11 @@ class FileManager(
 ) {
 
     private val sanitizedCourseName: String = courseName.replace("/".toRegex(), "_")
+    private val baseContentDir: String
+        get() = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path +
+                    File.separator +
+                    ROOT_FOLDER
+
 
     private val fileList: MutableList<String> = emptyList<String>().toMutableList()
     private val requestedDownloads: MutableList<String> = emptyList<String>().toMutableList()
@@ -60,7 +65,6 @@ class FileManager(
                 }
             }
         }
-
     }
 
     fun downloadModuleContent(content: Content, module: Module) {
@@ -81,49 +85,19 @@ class FileManager(
 
     private fun downloadFile(fileUrl: String, fileName: String, description: String) {
         val url = Uri.parse(fileUrl).buildUpon().appendOrSetQueryParameter("token", token).build()
+        val destinationUri = Uri.fromFile(File(baseContentDir, getRelativePath(fileName)))
 
         val request = DownloadManager.Request(url)
         request.setDescription(description)
         request.setTitle(fileName)
-        request.setDestinationInExternalPublicDir(
-            Environment.DIRECTORY_DOWNLOADS,
-            getRelativeFilePath(fileName)
-        )
+        request.setDestinationUri(destinationUri)
         (activity.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager).enqueue(request)
         requestedDownloads.add(fileName)
     }
 
     private fun openFile(fileName: String) {
-        val fileUri = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
-            val file = File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path,
-                getRelativeFilePath(fileName)
-            )
-            FileProvider.getUriForFile(activity, "${BuildConfig.APPLICATION_ID}.provider", file)
-        } else {
-            val baseContentUri = MediaStore.Downloads.EXTERNAL_CONTENT_URI
-            val projection = arrayOf(MediaStore.Downloads._ID)
-            val where = ("(${MediaStore.Downloads.RELATIVE_PATH} LIKE ?) AND " +
-                "${MediaStore.Downloads.DISPLAY_NAME} = ?")
-            val args = arrayOf("%${sanitizedCourseName}%", fileName)
-            val orderBy = MediaStore.Downloads.RELATIVE_PATH + " ASC"
-            MyApplication.getInstance().contentResolver.query(
-                baseContentUri,
-                projection,
-                where,
-                args,
-                orderBy
-            ).use { cursor ->
-                var ret: Uri? = null
-                if (cursor != null) {
-                    val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Downloads._ID)
-                    if (cursor.moveToNext()) {
-                        ret = Uri.withAppendedPath(baseContentUri, "" + cursor.getInt(idColumn))
-                    }
-                }
-                ret
-            }
-        }
+        val file = File(baseContentDir, getRelativePath(fileName))
+        val fileUri = FileProvider.getUriForFile(activity, "${BuildConfig.APPLICATION_ID}.provider", file)
 
         val intent = Intent(Intent.ACTION_VIEW)
         intent.setDataAndType(fileUri, FileUtils.getFileMimeType(fileName))
@@ -150,40 +124,12 @@ class FileManager(
         shareFile(attachment.fileName)
 
     private fun shareFile(fileName: String) {
-        val fileUri = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
-            val file = File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path
-                    + getRelativeFilePath(fileName)
-            )
-            FileProvider.getUriForFile(
-                activity,
-                "${BuildConfig.APPLICATION_ID}.provider",
-                file
-            )
-        } else {
-            val baseContentUri = MediaStore.Downloads.EXTERNAL_CONTENT_URI
-            val projection = arrayOf(MediaStore.Downloads._ID)
-            val where = ("(${MediaStore.Downloads.RELATIVE_PATH} LIKE ?) AND " +
-                "${MediaStore.Downloads.DISPLAY_NAME} = ?")
-            val args = arrayOf("%${sanitizedCourseName}%", fileName)
-            val orderBy = MediaStore.Downloads.RELATIVE_PATH + " ASC"
-            MyApplication.getInstance().contentResolver.query(
-                baseContentUri,
-                projection,
-                where,
-                args,
-                orderBy
-            ).use { cursor ->
-                var ret: Uri? = null
-                if (cursor != null) {
-                    val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Downloads._ID)
-                    if (cursor.moveToNext()) {
-                        ret =  Uri.withAppendedPath(baseContentUri, "" + cursor.getInt(idColumn))
-                    }
-                }
-                ret
-            }
-        }
+        val file = File(baseContentDir, getRelativePath(fileName))
+        val fileUri = FileProvider.getUriForFile(
+            activity,
+            "${BuildConfig.APPLICATION_ID}.provider",
+            file
+        )
 
         val sendIntent = Intent()
         sendIntent.action = Intent.ACTION_SEND
@@ -207,64 +153,25 @@ class FileManager(
         deleteExistingFile(attachment.fileName)
 
     private fun deleteExistingFile(fileName: String) {
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
-            val file = File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path
-                    + getRelativeFilePath(fileName))
-            if (file.exists()) {
-                file.delete()
-            }
-        } else {
-            val where = ("(${MediaStore.Downloads.RELATIVE_PATH} LIKE ?) AND " +
-                "${MediaStore.Downloads.DISPLAY_NAME} = ?")
-            val args = arrayOf("%${sanitizedCourseName}%", fileName)
-            MyApplication.getInstance().contentResolver.delete(
-                MediaStore.Downloads.EXTERNAL_CONTENT_URI,
-                where,
-                args
-            )
+        val file = File(baseContentDir, getRelativePath(fileName))
+        if (file.exists()) {
+            file.delete()
         }
     }
 
     fun reloadFileList() {
         fileList.clear()
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
-            val path = (Environment
-                .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path
-                + sanitizedCourseName)
-            val courseDir = File(path)
-            if (courseDir.isDirectory) {
-                val files = courseDir.list()
-                if (files != null) {
-                    fileList.addAll(listOf(*files))
-                }
-            }
-        } else {
-            // MediaStore is backed by an SQLite database. We simply construct
-            // an SQL query clauses which the API will run on the database.
-            val projection = arrayOf(MediaStore.Downloads.DISPLAY_NAME)
-            val where = "${MediaStore.Downloads.RELATIVE_PATH} LIKE ?"
-            val args = arrayOf("%${sanitizedCourseName}%")
-            val orderBy = "${MediaStore.Downloads.RELATIVE_PATH} ASC"
-            MyApplication.getInstance().contentResolver.query(
-                MediaStore.Downloads.EXTERNAL_CONTENT_URI,
-                projection,
-                where,
-                args,
-                orderBy
-            ).use { cursor ->
-                if (cursor != null) {
-                    val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Downloads.DISPLAY_NAME)
-                    while (cursor.moveToNext()) {
-                        fileList.add(cursor.getString(nameColumn))
-                    }
-                }
+        val courseDir = File(baseContentDir, getRelativePath(""))
+        if (courseDir.isDirectory) {
+            val files = courseDir.list()
+            if (files != null) {
+                fileList.addAll(listOf(*files))
             }
         }
     }
 
-    private fun getRelativeFilePath(filename: String) =
-        ROOT_FOLDER + File.separator + sanitizedCourseName + File.separator + filename
+    private fun getRelativePath(filename: String) =
+       File.separator + sanitizedCourseName + File.separator + filename
 
     fun isModuleContentDownloaded(content: Content) = isFileDownloaded(content.fileName)
 
