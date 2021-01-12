@@ -51,7 +51,7 @@ class ForumFragment : Fragment() {
         forumId = requireArguments().getInt(FORUM_ID_KEY, -1)
         courseName = requireArguments().getString(COURSE_NAME_KEY, "")
 
-        courseRequestHandler = CourseRequestHandler(requireActivity())
+        courseRequestHandler = CourseRequestHandler()
     }
 
     override fun onStart() {
@@ -100,7 +100,7 @@ class ForumFragment : Fragment() {
         swipeRefresh.isRefreshing = true
         CoroutineScope(Dispatchers.IO).launch {
             val realm = Realm.getDefaultInstance()
-            val courseDataHandler = CourseDataHandler(requireContext(), realm)
+            val courseDataHandler = CourseDataHandler(realm)
 
             try {
                 val discussions = courseRequestHandler.getForumDicussionsSync(forumId)

@@ -18,14 +18,13 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import crux.bphc.cms.R
 import crux.bphc.cms.adapters.CourseContentAdapter
-import crux.bphc.cms.app.MyApplication
 import crux.bphc.cms.app.Urls
+import crux.bphc.cms.core.FileManager
 import crux.bphc.cms.fragments.MoreOptionsFragment.OptionsViewModel
 import crux.bphc.cms.helper.CourseDataHandler
 import crux.bphc.cms.helper.CourseRequestHandler
 import crux.bphc.cms.interfaces.ClickListener
 import crux.bphc.cms.interfaces.CourseContent
-import crux.bphc.cms.core.FileManager
 import crux.bphc.cms.models.UserAccount
 import crux.bphc.cms.models.course.CourseSection
 import crux.bphc.cms.models.course.Module
@@ -83,7 +82,7 @@ class CourseContentFragment : Fragment() {
         // Initialize realm here instead of onCreateView so that other classes can be initialized
         realm = Realm.getDefaultInstance()
 
-        courseDataHandler = CourseDataHandler(requireActivity(), realm)
+        courseDataHandler = CourseDataHandler(realm)
         courseName = courseDataHandler.getCourseName(courseId)
         courseSections = courseDataHandler.getCourseData(courseId)
 
@@ -327,7 +326,7 @@ class CourseContentFragment : Fragment() {
 
     private fun refreshContent(contextUrl: String = "") {
         CoroutineScope(Dispatchers.IO).launch {
-            val courseRequestHandler = CourseRequestHandler(activity)
+            val courseRequestHandler = CourseRequestHandler()
             var sections = mutableListOf<CourseSection>()
             try {
                 sections = courseRequestHandler.getCourseDataSync(courseId)
@@ -346,7 +345,7 @@ class CourseContentFragment : Fragment() {
             }
 
             val realm = Realm.getDefaultInstance() // tie a realm instance to this thread
-            val courseDataHandler = CourseDataHandler(requireContext(), realm)
+            val courseDataHandler = CourseDataHandler(realm)
 
             courseDataHandler.isolateNewCourseData(courseId, sections) // This marks as unread
 
