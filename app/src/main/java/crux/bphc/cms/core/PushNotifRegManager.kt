@@ -35,9 +35,9 @@ object PushNotifRegManager {
      * from preferences.
      */
     suspend fun registerDevice(): Boolean {
-        return coroutineScope {
-            if (!UserAccount.isLoggedIn && !UserAccount.isNotificationsEnabled) {
-                 return@coroutineScope false
+        return withContext(Dispatchers.Default) {
+            if (!UserAccount.isLoggedIn || !UserAccount.isNotificationsEnabled) {
+                 return@withContext false
             }
 
             val prevRegData = getPrevRegData()
@@ -51,12 +51,12 @@ object PushNotifRegManager {
             if (register) {
                 if (registerDeviceOnMoodle(freshRegData)) {
                     commitRegDataToPref(freshRegData)
-                    return@coroutineScope true
+                    return@withContext true
                 } else {
-                    return@coroutineScope false
+                    return@withContext false
                 }
             } else {
-                return@coroutineScope true  // We don't need to register
+                return@withContext true  // We don't need to register
             }
         }
     }
@@ -66,16 +66,16 @@ object PushNotifRegManager {
      * This requires a valid user token
      */
     suspend fun deregisterDevice(): Boolean {
-        return coroutineScope {
+        return withContext(Dispatchers.Default) {
             val regData = getPrevRegData()
             if(deregisterDeviceOnMoodle(regData)) {
                 context.getSharedPreferences(PUSH_NOTIF_REG_DATA_KEY, Context.MODE_PRIVATE)
                     .edit()
                     .clear()
                     .apply()
-                return@coroutineScope true
+                return@withContext true
             } else {
-                return@coroutineScope false
+                return@withContext false
             }
         }
     }
@@ -85,8 +85,8 @@ object PushNotifRegManager {
      * or not. A mismatch between this and [crux.bphc.cms.models.UserAccount.isNotificationsEnabled]
      * means a (de)registration is in order.
      */
-    fun isRegistered(): Boolean =
-        getPrevRegData().pushId != ""
+    suspend fun isRegistered(): Boolean =
+        !shouldRegister(getPrevRegData(), getFreshRegData()).first
 
     private suspend fun registerDeviceOnMoodle(regData: PushNotificationRegData): Boolean {
         return withContext(Dispatchers.IO) {
