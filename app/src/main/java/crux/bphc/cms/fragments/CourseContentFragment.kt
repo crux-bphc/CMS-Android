@@ -26,6 +26,7 @@ import crux.bphc.cms.helper.CourseRequestHandler
 import crux.bphc.cms.interfaces.ClickListener
 import crux.bphc.cms.interfaces.CourseContent
 import crux.bphc.cms.core.FileManager
+import crux.bphc.cms.models.UserAccount
 import crux.bphc.cms.models.course.CourseSection
 import crux.bphc.cms.models.course.Module
 import crux.bphc.cms.utils.Utils
@@ -254,8 +255,7 @@ class CourseContentFragment : Fragment() {
                 Module.Type.LABEL -> {
                     val desc = module.description
                     if (activity != null && desc.isNotEmpty()) {
-                        val alertDialog: AlertDialog.Builder = if (MyApplication.getInstance()
-                                        .isDarkModeEnabled) {
+                        val alertDialog: AlertDialog.Builder = if (UserAccount.isDarkModeEnabled) {
                             AlertDialog.Builder(activity, R.style.Theme_AppCompat_Dialog_Alert)
                         } else {
                             AlertDialog.Builder(activity, R.style.Theme_AppCompat_Light_Dialog_Alert)

@@ -11,13 +11,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import crux.bphc.cms.R;
 import crux.bphc.cms.app.MyApplication;
 import crux.bphc.cms.app.Urls;
+import crux.bphc.cms.models.UserAccount;
 import crux.bphc.cms.widgets.HtmlTextView;
 
 public class InfoActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (MyApplication.getInstance().isDarkModeEnabled()) {
+        if (UserAccount.INSTANCE.isDarkModeEnabled()) {
             setTheme(R.style.AppTheme_Dark);
         }
 
