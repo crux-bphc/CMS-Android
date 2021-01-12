@@ -64,9 +64,14 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
+        // Override the splash theme since it sets its own
+        // image background
         if (MyApplication.getInstance().isDarkModeEnabled) {
             setTheme(R.style.AppTheme_NoActionBar_Dark)
+        } else {
+            setTheme(R.style.AppTheme_NoActionBar)
         }
+
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 

@@ -54,6 +54,12 @@
         <item name="android:statusBarColor">@color/activityBackgroundDark</item>
     </style>
 
+    <style name="SplashTheme.NoActionBar" parent="SplashTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    </style>
+
     <style name="AppTheme.NoActionBar" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
