@@ -7,6 +7,7 @@ Dates are in `yyyy-mm-dd`.
 
 ## Unreleased
 ### Changed
+* Dark mode is now the default theme 
 
 ### Added
 * Push notifications
