@@ -11,11 +11,6 @@ import android.net.Uri
 object Constants {
     const val PER_PAGE = 20 // Number of course search results in a page
 
-    // used for intent from CourseSearch to CorseDetailActivity for CourseEnrolFrag
-    const val COURSE_PARCEL_INTENT_KEY = "course_parcel"
-
-    const val DARK_MODE_KEY = "DARK_MODE"
-
     const val LOGIN_LAUNCH_DATA = "LOGIN_LAUNCH_DATA"
 
     const val AIRNOTIFIER_PLATFORM_NAME = "android-fcm"

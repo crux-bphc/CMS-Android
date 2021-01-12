@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.gson.Gson
 import crux.bphc.cms.R
-import crux.bphc.cms.app.MyApplication
 import crux.bphc.cms.app.Urls
 import crux.bphc.cms.fragments.CourseContentFragment
 import crux.bphc.cms.fragments.CourseEnrolFragment
@@ -23,7 +22,6 @@ class CourseDetailActivity : AppCompatActivity() {
     private lateinit var realm: Realm
 
     private var course: Course? = null
-    private var enrolCourse: SearchedCourseDetail? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +43,7 @@ class CourseDetailActivity : AppCompatActivity() {
         val contextUrl = intent.getStringExtra(INTENT_CONTEXT_URL_KEY) ?: ""
         var courseId = intent.getIntExtra(INTENT_COURSE_ID_KEY, -1)
         val customDataStr = intent.getStringExtra(INTENT_CUSTOM_DATA_KEY) ?: ""
+        val enrolCourse = intent.getParcelableExtra(INTENT_ENROL_COURSE_KEY) as SearchedCourseDetail?
 
         if (courseId == -1 && enrolCourse == null) {
             finish()
@@ -60,7 +59,7 @@ class CourseDetailActivity : AppCompatActivity() {
 
         // check if enrolled
         if (course == null) {
-            setCourseEnrol()
+            setCourseEnrol(enrolCourse!!)
             title = enrolCourse!!.shortName
         } else {
             title = course!!.shortName
@@ -82,7 +81,7 @@ class CourseDetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun setCourseEnrol() {
+    private fun setCourseEnrol(enrolCourse: SearchedCourseDetail) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         val mCourseEnrolFragment = CourseEnrolFragment.newInstance(UserAccount.token, enrolCourse)
         fragmentTransaction.replace(
@@ -149,5 +148,6 @@ class CourseDetailActivity : AppCompatActivity() {
         const val INTENT_CONTEXT_URL_KEY = "contextUrl"
         const val INTENT_COURSE_ID_KEY = "courseId"
         const val INTENT_CUSTOM_DATA_KEY = "customData"
+        const val INTENT_ENROL_COURSE_KEY = "courseParcel"
     }
 }

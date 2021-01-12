@@ -12,6 +12,7 @@ Dates are in `yyyy-mm-dd`.
 
 ### Fixed
 * SSO login for non-admin users
+* Course enrolment page does not open
 
 ## Version 1.8.0 (verCode 1080000), 2021-01-12
 ### Changed
