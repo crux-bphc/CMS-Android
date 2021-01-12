@@ -28,7 +28,7 @@ class CourseDetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (MyApplication.getInstance().isDarkModeEnabled) {
+        if (UserAccount.isDarkModeEnabled) {
             setTheme(R.style.AppTheme_Dark)
         }
         setContentView(R.layout.activity_course_detail)

@@ -18,7 +18,7 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (MyApplication.getInstance().isDarkModeEnabled) {
+        if (UserAccount.isDarkModeEnabled) {
             requireActivity().setTheme(R.style.AppTheme_NoActionBar_Dark)
         }
     }
@@ -33,10 +33,11 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 
         val darkMode: SwitchPreference? = findPreference("DARK_MODE")
         darkMode?.apply {
+            isChecked = UserAccount.isDarkModeEnabled
             onPreferenceChangeListener =
                 Preference.OnPreferenceChangeListener{ _: Preference?, o: Any? ->
                     themeChanged = true
-                    MyApplication.getInstance().isDarkModeEnabled = o as Boolean
+                    UserAccount.isDarkModeEnabled = o as Boolean
                     requireActivity().recreate()
                     true
                 }

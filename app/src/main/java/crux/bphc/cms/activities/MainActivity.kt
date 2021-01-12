@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
 
         // Override the splash theme since it sets its own
         // image background
-        if (MyApplication.getInstance().isDarkModeEnabled) {
+        if (UserAccount.isDarkModeEnabled) {
             setTheme(R.style.AppTheme_NoActionBar_Dark)
         } else {
             setTheme(R.style.AppTheme_NoActionBar)

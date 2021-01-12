@@ -56,4 +56,15 @@ object UserAccount {
                     .putBoolean("notificationEnable", b)
                     .apply()
         }
+
+    /**
+     * Denotes user's Dark mode preferences
+     */
+    var isDarkModeEnabled: Boolean
+        get() = prefs.getBoolean("darkMode", true)
+        set(b) {
+            prefs.edit()
+                .putBoolean("darkMode", b)
+                .apply()
+        }
 }

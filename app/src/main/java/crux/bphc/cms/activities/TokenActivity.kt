@@ -42,7 +42,7 @@ class TokenActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         // reverse condition because SplashTheme is default dark
-        if (!MyApplication.getInstance().isDarkModeEnabled) {
+        if (!UserAccount.isDarkModeEnabled) {
             setTheme(R.style.AppTheme)
         }
         setContentView(R.layout.activity_token)
