@@ -7,7 +7,6 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import crux.bphc.cms.R
-import crux.bphc.cms.app.MyApplication
 import crux.bphc.cms.core.PushNotifRegManager
 import crux.bphc.cms.models.UserAccount
 import kotlinx.coroutines.launch
@@ -45,7 +44,9 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 
         val notifications: SwitchPreference? = findPreference("notifications")
         notifications?.apply {
-            isChecked = PushNotifRegManager.isRegistered()
+            lifecycleScope.launch {
+                isChecked = PushNotifRegManager.isRegistered()
+            }
             onPreferenceChangeListener =
                 Preference.OnPreferenceChangeListener { _: Preference?, o: Any? ->
                     val newlyChecked = o as Boolean
