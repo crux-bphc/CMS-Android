@@ -5,11 +5,7 @@ All notable changes to the project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standards.
 Dates are in `yyyy-mm-dd`.
 
-## Unreleased
-### Changed
-
-### Added
-
+## Version 1.8.2 (verCode 1080200), 2020-01-17
 ### Fixed
 * Downloaded files were corrupt
 * Could not search for courses in main page
