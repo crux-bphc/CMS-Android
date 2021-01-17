@@ -97,10 +97,11 @@ object Urls {
 fun Uri.Builder.appendOrSetQueryParameter(key: String, value: String): Uri.Builder {
     val uri = build()
     clearQuery()
+    appendQueryParameter(key, value)
     uri.queryParameterNames.forEach {
         when (it) {
             null -> return@forEach
-            key -> appendQueryParameter(key, value)
+            key ->  {}
             else -> appendQueryParameter(it, uri.getQueryParameter(it))
         }
     }

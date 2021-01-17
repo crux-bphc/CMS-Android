@@ -11,6 +11,7 @@ Dates are in `yyyy-mm-dd`.
 ### Added
 
 ### Fixed
+* Downloaded files were corrupt
 
 ## Version 1.8.1 (verCode 1080100), 2020-01-13
 ### Fixed
