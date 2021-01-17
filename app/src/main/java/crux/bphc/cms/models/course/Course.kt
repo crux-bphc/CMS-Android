@@ -15,12 +15,16 @@ import java.util.regex.Pattern
 open class Course(
         @PrimaryKey @SerializedName("id") var id: Int = 0,
         shortName: String = "",
-        var fullName: String = "",
+        fullName: String = "",
         var isFavorite: Boolean = false,
 ) : RealmObject() {
 
     @SerializedName("shortname")
     var shortName = shortName
+        get() = HtmlCompat.fromHtml(field, HtmlCompat.FROM_HTML_MODE_COMPACT).toString().trim()
+
+    @SerializedName("fullname")
+    var fullName = fullName
         get() = HtmlCompat.fromHtml(field, HtmlCompat.FROM_HTML_MODE_COMPACT).toString().trim()
 
     @Ignore private var _courseName: Array<String>? = null

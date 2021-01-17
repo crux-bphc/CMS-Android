@@ -12,6 +12,7 @@ Dates are in `yyyy-mm-dd`.
 
 ### Fixed
 * Downloaded files were corrupt
+* Could not search for courses in main page
 
 ## Version 1.8.1 (verCode 1080100), 2020-01-13
 ### Fixed

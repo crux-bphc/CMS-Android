@@ -331,7 +331,7 @@ class MyCoursesFragment : Fragment() {
             var filteredCourses: MutableList<Course> = ArrayList()
             if (courseName.isNotEmpty()) {
                 for (course in courseList) {
-                    if (course.fullName.toLowerCase(Locale.ROOT).contains(courseName)) {
+                    if (course.shortName.toLowerCase(Locale.ROOT).contains(courseName)) {
                         filteredCourses.add(course)
                     }
                 }
