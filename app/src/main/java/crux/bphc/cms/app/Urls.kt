@@ -57,8 +57,7 @@ object Urls {
         build()
     }.toString()
 
-    //    fun isMoodleUrl(url: Uri) = url.authority == MOODLE_URL.authority
-    fun isMoodleUrl(url: Uri) = true
+    fun isMoodleUrl(url: Uri) = url.authority == MOODLE_URL.authority
 
     fun isCourseSectionUrl(url: Uri): Boolean {
         if (!isMoodleUrl(url)) return false;
