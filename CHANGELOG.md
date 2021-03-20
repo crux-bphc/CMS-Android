@@ -5,11 +5,7 @@ All notable changes to the project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standards.
 Dates are in `yyyy-mm-dd`.
 
-## Unreleased
-### Added
-
-### Changed
-
+## Version 1.8.3 (verCode 1080300), 2020-03-20
 ### Fixed
 * Overlapping text when viewing big discussions
 * App crash when opening certain notifications
