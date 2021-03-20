@@ -11,6 +11,8 @@ Dates are in `yyyy-mm-dd`.
 ### Changed
 
 ### Fixed
+* Overlapping text when viewing big discussions
+* App crash when opening certain notifications
 
 ## Version 1.8.2 (verCode 1080200), 2020-01-17
 ### Fixed
