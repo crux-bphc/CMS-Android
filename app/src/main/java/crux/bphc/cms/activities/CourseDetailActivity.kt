@@ -21,7 +21,7 @@ import io.realm.Realm
 class CourseDetailActivity : AppCompatActivity() {
     private lateinit var realm: Realm
 
-    private var course: Course? = null
+    private lateinit var course: Course
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,17 +52,17 @@ class CourseDetailActivity : AppCompatActivity() {
             courseId = enrolCourse!!.id
         }
 
-        course = realm
-                .where(Course::class.java)
-                .equalTo("id", courseId)
-                .findFirst()
+        this.course = realm
+            .where(Course::class.java)
+            .equalTo("id", courseId)
+            .findFirst() ?: Course(courseId)
 
         // check if enrolled
-        if (course == null) {
-            setCourseEnrol(enrolCourse!!)
-            title = enrolCourse!!.shortName
+        if (courseId == -1 && enrolCourse != null) {
+            setCourseEnrol(enrolCourse)
+            title = enrolCourse.shortName
         } else {
-            title = course!!.shortName
+            title = course.shortName
 
             val url = Uri.parse(contextUrl) ?: Uri.EMPTY
             if (Urls.isCourseSectionUrl(url) || Urls.isCourseModuleUrl(url)) {
@@ -96,7 +96,7 @@ class CourseDetailActivity : AppCompatActivity() {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         val courseSectionFragment = CourseContentFragment.newInstance(
                 UserAccount.token,
-                course!!.id,
+                course.id,
                 contextUrl,
         )
         fragmentTransaction.replace(
@@ -111,7 +111,7 @@ class CourseDetailActivity : AppCompatActivity() {
         setCourseContentFragment("")
         supportFragmentManager.executePendingTransactions()
         val fragmentTransaction = supportFragmentManager.beginTransaction()
-        val forumFragment: Fragment = ForumFragment.newInstance(course!!.id, forumId, course!!.shortName)
+        val forumFragment: Fragment = ForumFragment.newInstance(course.id, forumId, course.shortName)
         fragmentTransaction.addToBackStack(null)
                 .replace(R.id.course_section_enrol_container, forumFragment, "Announcements")
         fragmentTransaction.commit()
@@ -125,10 +125,10 @@ class CourseDetailActivity : AppCompatActivity() {
         supportFragmentManager.executePendingTransactions()
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         val discussionFragment: Fragment = DiscussionFragment.newInstance(
-            course!!.id,
+            course.id,
             forumId,
             discussionId,
-            course!!.shortName
+            course.shortName
         )
         fragmentTransaction.addToBackStack(null)
                 .replace(R.id.course_section_enrol_container, discussionFragment, "Discussion")
