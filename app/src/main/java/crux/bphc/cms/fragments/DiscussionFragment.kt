@@ -94,7 +94,6 @@ class DiscussionFragment : Fragment() {
         val discussion = realm.where(Discussion::class.java).equalTo("discussionId", discussionId)
                 .findFirst()
         if (discussion != null) {
-            this.discussion = discussion
             setDiscussion(discussion)
         } else {
             refreshContent(forumId, discussionId)
@@ -103,6 +102,7 @@ class DiscussionFragment : Fragment() {
 
     @MainThread
     private fun setDiscussion(discussion: Discussion) {
+        this.discussion = discussion
         content.visibility = View.VISIBLE
         empty.visibility = View.GONE
         swipeRefreshLayout.isRefreshing = false
@@ -236,7 +236,7 @@ class DiscussionFragment : Fragment() {
         }
 
         val attachments = discussion.attachments
-        val attachment = attachments.where().equalTo("fileName", filename).findFirst()
+        val attachment = attachments.firstOrNull { it.fileName == filename }
         attachment?.let { fileManager.openDiscussionAttachment(it) }
 
     }
