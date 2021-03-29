@@ -14,17 +14,17 @@ Dates are in `yyyy-mm-dd`.
 * Crash when downloading discussions
 * Crash when enroling to a course
 
-## Version 1.8.3 (verCode 1080300), 2020-03-20
+## Version 1.8.3 (verCode 1080300), 2021-03-20
 ### Fixed
 * Overlapping text when viewing big discussions
 * App crash when opening certain notifications
 
-## Version 1.8.2 (verCode 1080200), 2020-01-17
+## Version 1.8.2 (verCode 1080200), 2021-01-17
 ### Fixed
 * Downloaded files were corrupt
 * Could not search for courses in main page
 
-## Version 1.8.1 (verCode 1080100), 2020-01-13
+## Version 1.8.1 (verCode 1080100), 2021-01-13
 ### Fixed
 * SSO login for non-admin users
 * Course enrolment page does not open
