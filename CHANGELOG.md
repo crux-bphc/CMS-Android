@@ -12,6 +12,7 @@ Dates are in `yyyy-mm-dd`.
 
 ### Fixed
 * Crash when downloading discussions
+* Crash when enroling to a course
 
 ## Version 1.8.3 (verCode 1080300), 2020-03-20
 ### Fixed
