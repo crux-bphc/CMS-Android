@@ -5,11 +5,7 @@ All notable changes to the project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standards.
 Dates are in `yyyy-mm-dd`.
 
-## Unreleased
-### Added
-
-### Changed
-
+## Version 1.8.4 (verCode 1080400), 2021-03-30
 ### Fixed
 * Crash when downloading discussions
 * Crash when enroling to a course
