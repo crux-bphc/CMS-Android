@@ -3,6 +3,7 @@ package crux.bphc.cms.activities
 import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.gson.Gson
@@ -46,38 +47,43 @@ class CourseDetailActivity : AppCompatActivity() {
         val enrolCourse = intent.getParcelableExtra(INTENT_ENROL_COURSE_KEY) as SearchedCourseDetail?
 
         if (courseId == -1 && enrolCourse == null) {
+            Toast.makeText(this, getString(R.string.invalid_course_id), Toast.LENGTH_SHORT).show();
             finish()
             return
-        } else if (courseId == -1) {
+        }
+
+        if (courseId == -1) {
             courseId = enrolCourse!!.id
         }
 
-        this.course = realm
+        var localCourse = realm
             .where(Course::class.java)
             .equalTo("id", courseId)
-            .findFirst() ?: Course(courseId)
+            .findFirst()
 
-        // check if enrolled
-        if (courseId == -1 && enrolCourse != null) {
+        if (enrolCourse != null && localCourse == null) {
+            // Not available locally, meaning most likely not enroled
             setCourseEnrol(enrolCourse)
             title = enrolCourse.shortName
-        } else {
-            title = course.shortName
+            return
+        }
 
-            val url = Uri.parse(contextUrl) ?: Uri.EMPTY
-            if (Urls.isCourseSectionUrl(url) || Urls.isCourseModuleUrl(url)) {
-                setCourseContentFragment(contextUrl)
-            } else if (Urls.isForumDiscussionUrl(url)){
-                // We parse the json here
-                val customData = Gson().fromJson(customDataStr, NewPostCustomData::class.java)
-                customData.apply {
-                    if (forumId != -1 && discussionId != -1) {
-                        setDiscussionFragment(forumId, discussionId)
-                    }
+        this.course = localCourse ?: Course(courseId)
+        title = course.shortName
+
+        val url = Uri.parse(contextUrl) ?: Uri.EMPTY
+        if (Urls.isCourseSectionUrl(url) || Urls.isCourseModuleUrl(url)) {
+            setCourseContentFragment(contextUrl)
+        } else if (Urls.isForumDiscussionUrl(url)){
+            // We parse the json here
+            val customData = Gson().fromJson(customDataStr, NewPostCustomData::class.java)
+            customData.apply {
+                if (forumId != -1 && discussionId != -1) {
+                    setDiscussionFragment(forumId, discussionId)
                 }
-            } else {
-                setCourseContentFragment("")
             }
+        } else {
+            setCourseContentFragment("")
         }
     }
 
