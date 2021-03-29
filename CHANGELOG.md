@@ -11,6 +11,7 @@ Dates are in `yyyy-mm-dd`.
 ### Changed
 
 ### Fixed
+* Crash when downloading discussions
 
 ## Version 1.8.3 (verCode 1080300), 2020-03-20
 ### Fixed
