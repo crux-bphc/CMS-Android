@@ -5,6 +5,7 @@
         <item name="colorPrimary">@color/orange</item>
         <item name="colorPrimaryDark">@color/orangeDark</item>
         <item name="colorAccent">@color/blueAccent</item>
+        <item name="android:isLightTheme">true</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:textColorPrimary">@color/text_primary_light</item>
         <item name="android:textColorSecondary">@color/text_secondary_light</item>
@@ -25,12 +26,16 @@
 
         <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
         <item name="materialAlertDialogTheme">@style/AlertDialogMaterialTheme</item>
+
+        <!-- The system navigation bar background -->
+        <item name="android:navigationBarColor">?themeBackground</item>
     </style>
 
     <style name="AppTheme.Dark" parent="AppTheme">
         <item name="colorPrimary">@color/gray13</item>
         <item name="colorPrimaryDark">@color/black</item>
         <item name="android:windowLightStatusBar">false</item>
+        <item name="android:isLightTheme">false</item>
         <item name="android:textColorPrimary">@color/text_primary_dark</item>
         <item name="android:textColorSecondary">@color/text_secondary_dark</item>
         <item name="textButtonColor">@color/orange</item>
@@ -47,6 +52,9 @@
         <item name="dividerColor">@color/gray26</item>
 
         <item name="materialAlertDialogTheme">@style/AlertDialogMaterialTheme</item>
+
+        <!-- The system navigation bar background -->
+        <item name="android:navigationBarColor">?themeBackground</item>
     </style>
 
     <style name="SplashTheme" parent="AppTheme.Dark">
