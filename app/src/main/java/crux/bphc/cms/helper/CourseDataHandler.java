@@ -325,34 +325,46 @@ public class CourseDataHandler {
         return courseSections;
     }
 
-    public void markAllAsRead(List<CourseSection> courseSections) {
+    /**
+     * Mark all modules of a course as read.
+     * @param courseId Course whose modules are to be marked as read
+     */
+    public void markCourseAsRead(int courseId) {
         realm.executeTransaction(r -> {
-            for (CourseSection courseSection : courseSections) {
-                for (Module module : courseSection.getModules()) {
-                    markModuleAsReadOrUnread(module, false);
-                }
-            }
+            // Get the section ids
+            Integer[] sections = r.where(CourseSection.class)
+                    .equalTo("courseId", courseId)
+                    .findAll().stream().map(CourseSection::getId).mapToInt(x -> x)
+                    .boxed().toArray(Integer[]::new);
+            r.where(Module.class).in("courseSectionId", sections).findAll()
+                    .setBoolean("isUnread", false);
+
         });
     }
 
-    public void markModuleAsReadOrUnread(Module module, boolean isUnread) {
-        module.setUnread(isUnread);
-        boolean endTransaction = false;
-
-        if (!realm.isInTransaction()) {
-            realm.beginTransaction();
-            endTransaction = true;
-        }
-
-        Module mod = realm.where(Module.class).equalTo("id", module.getId()).findFirst();
-        if (mod != null) mod.setUnread(isUnread);
-
-        if (endTransaction)
-        {
-            realm.commitTransaction();
-        }
+    /**
+     * Mark all modules across all courses as read.
+     */
+    public void markAllAsRead() {
+        realm.executeTransaction(r -> r.where(Module.class).findAll().setBoolean("isUnread", false));
     }
-    
+
+    public void markModuleAsRead(Module module) {
+        module.setUnread(false);
+        realm.executeTransaction(r -> {
+            realm.where(Module.class).equalTo("id", module.getId()).findAll()
+                    .setBoolean("isUnread", false);
+        });
+    }
+
+    public void markModuleAsUnread(Module module) {
+        module.setUnread(true);
+        realm.executeTransaction(r -> {
+            realm.where(Module.class).equalTo("id", module.getId()).findAll()
+                    .setBoolean("isUnread", true);
+        });
+    }
+
     public String getCourseName(int courseId) {
         Course course = realm.where(Course.class).equalTo("id", courseId).findFirst();
         if (course == null) return "";

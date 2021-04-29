@@ -81,13 +81,9 @@ class MyCoursesFragment : Fragment() {
                 CoroutineScope(Dispatchers.Default).launch {
                     val realm = Realm.getDefaultInstance()
                     val courseDataHandler = CourseDataHandler(realm)
-
-                    for (course in courses) {
-                        val sections = courseDataHandler.getCourseData(course.id)
-                        courseDataHandler.markAllAsRead(sections)
-                    }
-
+                    courseDataHandler.markAllAsRead();
                     realm.close()
+
                     CoroutineScope(Dispatchers.Main).launch {
                         Toast.makeText(requireActivity(), "Marked all as read", Toast.LENGTH_SHORT).show()
                         mAdapter.courses = this@MyCoursesFragment.courseDataHandler.courseList
@@ -369,12 +365,9 @@ class MyCoursesFragment : Fragment() {
                         .show()
             }
 
-            fun markAllAsRead() {
+            fun markCourseAsRead() {
                 val courseId = courses[layoutPosition].id
-                val courseSections: List<CourseSection>
-
-                courseSections = courseDataHandler.getCourseData(courseId)
-                courseDataHandler.markAllAsRead(courseSections)
+                courseDataHandler.markCourseAsRead(courseId)
                 notifyItemChanged(layoutPosition)
 
                 Toast.makeText(activity, "Marked all as read", Toast.LENGTH_SHORT).show()
@@ -416,7 +409,7 @@ class MyCoursesFragment : Fragment() {
                         if (it == null) return@observe;
                         when (it.id) {
                             0 -> confirmDownloadCourse()
-                            1 -> markAllAsRead()
+                            1 -> markCourseAsRead()
                             2 -> setFavoriteStatus(layoutPosition, !isFavorite)
                         }
                         moreOptionsViewModel.selection.removeObservers(requireActivity())

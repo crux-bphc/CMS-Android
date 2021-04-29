@@ -172,7 +172,7 @@ class CourseContentFragment : Fragment() {
                         }
                         2 -> fileManager.shareModuleContent(content!!)
                         3 -> {
-                            courseDataHandler.markModuleAsReadOrUnread(module, true)
+                            courseDataHandler.markModuleAsUnread(module);
                             adapter.notifyItemChanged(position)
                         }
                         4 -> PropertiesAlertDialog(activity, content).show()
@@ -201,7 +201,7 @@ class CourseContentFragment : Fragment() {
                         }
                         1 -> shareModuleLinks(module)
                         2 -> {
-                            courseDataHandler.markModuleAsReadOrUnread(module, true)
+                            courseDataHandler.markModuleAsUnread(module);
                             adapter.notifyItemChanged(position)
                         }
                         3 -> if (content != null && activity != null) {
@@ -222,7 +222,7 @@ class CourseContentFragment : Fragment() {
                 moreOptionsFragment.show(requireActivity().supportFragmentManager,
                         moreOptionsFragment.tag)
                 moreOptionsViewModel.selection.observe(activity, observer)
-                courseDataHandler.markModuleAsReadOrUnread(module, false)
+                courseDataHandler.markModuleAsRead(module);
                 adapter.notifyItemChanged(position)
             }
             true
@@ -280,7 +280,7 @@ class CourseContentFragment : Fragment() {
                     Utils.openURLInBrowser(activity, module.url)
                 }
             }
-            courseDataHandler.markModuleAsReadOrUnread(module, false)
+            courseDataHandler.markModuleAsRead(module);
             true
         }
     }
@@ -362,7 +362,7 @@ class CourseContentFragment : Fragment() {
                         val newDiscussions = courseDataHandler
                                 .setForumDiscussions(module.instance, discussions)
                         if (newDiscussions.size > 0) {
-                            courseDataHandler.markModuleAsReadOrUnread(module, true)
+                            courseDataHandler.markModuleAsUnread(module);
                         }
                     }
                 }
@@ -387,7 +387,7 @@ class CourseContentFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.mark_all_as_read) {
-            courseDataHandler.markAllAsRead(courseSections)
+            courseDataHandler.markCourseAsRead(courseId)
             courseSections = courseDataHandler.getCourseData(courseId)
             setCourseContentsOnAdapter()
             Toast.makeText(activity, "Marked all as read", Toast.LENGTH_SHORT).show()
