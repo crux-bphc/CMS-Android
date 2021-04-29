@@ -64,11 +64,6 @@
             android:name=".activities.CourseDetailActivity"
             android:screenOrientation="portrait" />
 
-        <activity
-            android:name=".activities.InfoActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-
         <service
             android:name=".background.MyFirebaseMessagingService"
             android:exported="false">

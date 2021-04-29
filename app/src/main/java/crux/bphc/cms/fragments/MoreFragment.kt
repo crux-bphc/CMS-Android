@@ -5,12 +5,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import crux.bphc.cms.BuildConfig
 import crux.bphc.cms.R
-import crux.bphc.cms.activities.InfoActivity
 import crux.bphc.cms.activities.MainActivity
 import crux.bphc.cms.activities.TokenActivity
 import crux.bphc.cms.app.Urls
@@ -55,16 +55,11 @@ class MoreFragment : Fragment() {
         }
 
         about_card.setOnClickListener {
-            startActivity(Intent(requireActivity(), InfoActivity::class.java))
+            pushView(InfoFragment(), "info")
         }
 
         settings_card.setOnClickListener {
-            try {
-                val activity = requireActivity() as MainActivity
-                activity.pushView(PreferencesFragment(), "Settings", false)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            pushView(PreferencesFragment(), "settings")
         }
 
         logout_card.setOnClickListener {
@@ -78,6 +73,17 @@ class MoreFragment : Fragment() {
         // Set version code and commit hash
         app_version_name.text = BuildConfig.VERSION_NAME
         commit_hash.text = BuildConfig.COMMIT_HASH
+    }
+
+    private fun pushView(fragment: Fragment, tag: String) {
+        try {
+            val activity = requireActivity() as MainActivity
+            activity.pushView(fragment, tag, false)
+        } catch (e: Exception) {
+            Toast.makeText(requireContext(), "Failed to launch fragment $tag", Toast.LENGTH_SHORT)
+                .show()
+            e.printStackTrace()
+        }
     }
 
     private fun askToLogout(): AlertDialog {
