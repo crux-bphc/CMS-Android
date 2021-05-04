@@ -125,6 +125,7 @@ class CourseContentFragment : Fragment() {
 
         val contextUrl = requireArguments().getString(CONTEXT_URL_KEY) ?: ""
         if (contextUrl.isNotEmpty()) {
+            mSwipeRefreshLayout.isRefreshing = true
             refreshContent(contextUrl) // If there is a url, there may be updates
         }
 
