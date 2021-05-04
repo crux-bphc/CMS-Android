@@ -12,6 +12,7 @@ Dates are in `yyyy-mm-dd`.
 
 ### Fixed
 * Incorrect theme of system navigation bar
+* No refresh indicator when opening notifications
 
 ## Version 1.8.4 (verCode 1080400), 2021-03-30
 ### Fixed
