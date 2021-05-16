@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import crux.bphc.cms.R
+import crux.bphc.cms.app.Urls
 import crux.bphc.cms.core.FileManager
 import crux.bphc.cms.fragments.MoreOptionsFragment.Companion.newInstance
 import crux.bphc.cms.fragments.MoreOptionsFragment.OptionsViewModel
@@ -111,7 +112,9 @@ class DiscussionFragment : Fragment() {
         userName.text = discussion.userFullName
         timeModified.text = Utils.formatDate(discussion.timeModified)
         message.text = discussion.message
-        Glide.with(requireContext()).load(discussion.userPictureUrl).into(userPic)
+        Glide.with(requireContext())
+            .load(Urls.getProfilePicUrl(discussion.userPictureUrl))
+            .into(userPic)
 
         val attachments = discussion.attachments
         if (attachments.isNotEmpty()) {
