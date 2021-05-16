@@ -193,7 +193,7 @@ public class FolderModuleFragment extends Fragment {
             public void bind(Content content) {
                 fileName.setText(content.getFileName());
 
-                int icon = FileUtils.getDrawableIconFromFileName(content.getFileName());
+                int icon = FileUtils.INSTANCE.getDrawableIconFromFileName(content.getFileName());
                 if (icon != -1) {
                     fileIcon.setImageResource(icon);
                 } else {

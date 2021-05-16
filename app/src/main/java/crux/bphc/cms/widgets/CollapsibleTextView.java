@@ -85,7 +85,7 @@ public class CollapsibleTextView extends androidx.appcompat.widget.AppCompatText
             if (layout.getLineCount() > collapsedLineCount) {
                 textToShow = fullText.subSequence(0, layout.getLineEnd(collapsedLineCount - 1));
 
-                spanBuilder.append(Utils.trimWhiteSpace(textToShow));
+                spanBuilder.append(Utils.INSTANCE.trimWhiteSpace(textToShow));
                 spanBuilder.append("\n");
                 spanBuilder.append(expandText);
                 spanBuilder.setSpan(new ClickableSpan() {

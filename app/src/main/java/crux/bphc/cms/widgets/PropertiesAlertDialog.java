@@ -23,8 +23,9 @@ public class PropertiesAlertDialog {
         }
 
         alertDialog.setTitle(filename);
-        String properties = String.format("File Size: %s\n", Utils.humanReadableByteCount(fileSize, false));
-        properties += String.format("Created: %s", Utils.epochToDateTime(epoch));
+        String properties = String.format("File Size: %s\n",
+                Utils.INSTANCE.humanReadableByteCount(fileSize, false));
+        properties += String.format("Created: %s", Utils.INSTANCE.epochToDateTime(epoch));
         alertDialog.setMessage(properties);
     }
 
