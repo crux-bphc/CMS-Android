@@ -22,7 +22,7 @@ import kotlin.coroutines.*
 object PushNotifRegManager {
     private const val PUSH_NOTIF_REG_DATA_KEY = "crux.bphc.cms.PUSH_NOTIF_REG_DATA_KEY"
 
-    private val context: ContextWrapper = MyApplication.getInstance().applicationContext as ContextWrapper
+    private val context: ContextWrapper = MyApplication.instance.applicationContext as ContextWrapper
     private val moodleServices: MoodleServices
 
     private val firebaseToken: String by lazy {

@@ -92,7 +92,7 @@ class TokenActivity : AppCompatActivity() {
                     val token = parts[1]
                     val privateToken = if(parts.size >= 3) parts[2] else ""
 
-                    val launchData = MyApplication.getInstance().loginLaunchData
+                    val launchData = MyApplication.instance.loginLaunchData
                     val signature = launchData["SITE_URL"] + launchData["PASSPORT"]
                     try {
                         if (Utils.bytesToHex(MessageDigest.getInstance("md5")
@@ -166,7 +166,7 @@ class TokenActivity : AppCompatActivity() {
         // SITE_URL must not end with trailing /
         data["SITE_URL"] = Urls.MOODLE_URL.toString().replace("/$".toRegex(), "")
         data["PASSPORT"] = passport
-        MyApplication.getInstance().loginLaunchData = data
+        MyApplication.instance.setLoginLaunchData(data)
         val intent = Intent(Intent.ACTION_VIEW)
         intent.data = Uri.parse(loginUrl)
         startActivity(intent)
