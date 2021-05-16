@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import crux.bphc.cms.R
+import crux.bphc.cms.app.Urls
 import crux.bphc.cms.helper.CourseDataHandler
 import crux.bphc.cms.helper.CourseRequestHandler
 import crux.bphc.cms.interfaces.ClickListener
@@ -178,7 +179,9 @@ class ForumFragment : Fragment() {
             private val mMessage: HtmlTextView
 
             fun bind(discussion: Discussion) {
-                Glide.with(mUserPic.context).load(discussion.userPictureUrl).into(mUserPic)
+                Glide.with(mUserPic.context)
+                    .load(Urls.getProfilePicUrl(discussion.userPictureUrl))
+                    .into(mUserPic)
 
                 mSubject.text = discussion.subject
                 mUserName.text = discussion.userFullName

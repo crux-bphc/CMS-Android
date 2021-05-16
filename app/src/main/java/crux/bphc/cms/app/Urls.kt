@@ -1,6 +1,8 @@
 package crux.bphc.cms.app
 
 import android.net.Uri
+import crux.bphc.cms.models.UserAccount
+import java.util.*
 
 /**
  * @author Abhijeet Viswa
@@ -57,6 +59,20 @@ object Urls {
         build()
     }.toString()
 
+    fun getProfilePicUrl(urlString: String): Uri {
+        val url = Uri.parse(urlString)
+        if (url.pathSegments[0]?.toLowerCase(Locale.ROOT) ?: "" == "pluginfile.php") {
+            // only fix url if need be
+            return url.buildUpon()
+                .prependPath("webservice")
+                .appendOrSetQueryParameter("token", UserAccount.token)
+                .build()
+        }
+
+        return url
+    }
+
+
     fun isMoodleUrl(url: Uri) = url.authority == MOODLE_URL.authority
 
     fun isCourseSectionUrl(url: Uri): Boolean {
@@ -103,6 +119,19 @@ fun Uri.Builder.appendOrSetQueryParameter(key: String, value: String): Uri.Build
             key ->  {}
             else -> appendQueryParameter(it, uri.getQueryParameter(it))
         }
+    }
+
+    return this
+}
+
+fun Uri.Builder.prependPath(pathSegment: String): Uri.Builder {
+    val uri = build()
+    val segments = uri.pathSegments
+    path("")
+    appendPath(pathSegment)
+    segments.forEach {
+        it ?: return@forEach
+        appendPath(it)
     }
 
     return this
