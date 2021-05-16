@@ -11,7 +11,7 @@ import crux.bphc.cms.models.core.UserDetail
 object UserAccount {
     private const val MY_PREFS_NAME = "crux.bphc.cms.USER_ACCOUNT"
 
-    private val prefs = MyApplication.getInstance()
+    private val prefs = MyApplication.instance
         .getSharedPreferences(MY_PREFS_NAME, Context.MODE_PRIVATE)
 
     val userID: Int
