@@ -168,7 +168,7 @@ class FolderModuleFragment : Fragment() {
                                 0 -> downloadOrOpenFile(content, false)
                                 1 -> downloadOrOpenFile(content, true)
                                 2 -> mFileManager.shareModuleContent(content)
-                                3 -> PropertiesAlertDialog(context, content).show()
+                                3 -> PropertiesAlertDialog(requireActivity(), content).show()
                             }
                             moreOptionsViewModel.selection.removeObservers(requireActivity())
                             moreOptionsViewModel.clearSelection()
@@ -184,7 +184,7 @@ class FolderModuleFragment : Fragment() {
                             if (option == null) return@Observer
                             when (option.id) {
                                 0 -> downloadOrOpenFile(content, false)
-                                1 -> PropertiesAlertDialog(context, content).show()
+                                1 -> PropertiesAlertDialog(requireContext(), content).show()
                             }
                         }
                         moreOptionsViewModel.selection.removeObservers(requireActivity())

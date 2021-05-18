@@ -176,11 +176,9 @@ class CourseContentFragment : Fragment() {
                             courseDataHandler.markModuleAsUnread(module);
                             adapter.notifyItemChanged(position)
                         }
-                        4 -> PropertiesAlertDialog(activity, content).show()
+                        4 -> PropertiesAlertDialog(requireActivity(), content!!)
                     }
-                    if (activity != null) {
-                        moreOptionsViewModel.selection.removeObservers(requireActivity())
-                    }
+                    moreOptionsViewModel.selection.removeObservers(requireActivity())
                     moreOptionsViewModel.clearSelection()
                 }
             } else {
