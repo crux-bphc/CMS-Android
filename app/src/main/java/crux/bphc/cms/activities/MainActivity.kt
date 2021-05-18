@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
                     return@listener true
                 }
                 R.id.searchCourseFragment -> {
-                    pushView(SearchCourseForEnrolFragment.newInstance(UserAccount.token),
+                    pushView(SearchCourseForEnrolFragment.newInstance(),
                             "Search Course to Enrol", false)
                     return@listener true
                 }
