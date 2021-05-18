@@ -89,7 +89,7 @@ class CourseDetailActivity : AppCompatActivity() {
 
     private fun setCourseEnrol(enrolCourse: SearchedCourseDetail) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
-        val mCourseEnrolFragment = CourseEnrolFragment.newInstance(UserAccount.token, enrolCourse)
+        val mCourseEnrolFragment = CourseEnrolFragment.newInstance(enrolCourse)
         fragmentTransaction.replace(
                 R.id.course_section_enrol_container,
                 mCourseEnrolFragment,
