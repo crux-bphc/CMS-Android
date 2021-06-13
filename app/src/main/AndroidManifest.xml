@@ -28,7 +28,7 @@
         <activity
             android:name=".activities.TokenActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/SplashTheme"
+            android:theme="@style/SplashTheme.NoActionBar"
             android:launchMode="singleTask">
 
             <intent-filter>
