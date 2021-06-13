@@ -22,14 +22,14 @@
         android:layout_marginBottom="64dp"
         android:contentDescription="@null"
         android:scaleType="fitXY"
-        app:srcCompat="@drawable/ic_bits_logo"
-
         app:layout_constraintBottom_toTopOf="@+id/google_login"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed" />
+        app:layout_constraintVertical_chainStyle="packed"
+        app:srcCompat="@drawable/ic_bits_logo" />
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/google_login"
