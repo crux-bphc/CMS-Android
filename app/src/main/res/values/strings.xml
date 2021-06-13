@@ -93,4 +93,7 @@
     <string name="addtoFavorites">Add to favorites</string>
     <string name="downloading_file">\"Downloading file - \"</string>
     <string name="invalid_course_id">Invalid course id!</string>
+    <string name="cms">CMS</string>
+    <string name="title_bphc">BITS Pilani, Hyderabad Campus</string>
+    <string name="sign_in_prompt">Sign in with your BITS email</string>
 </resources>

@@ -9,6 +9,7 @@ Dates are in `yyyy-mm-dd`.
 ### Added
 
 ### Changed
+* Login Screen design
 
 ### Fixed
 

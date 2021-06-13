@@ -1,4 +1,4 @@
-package crux.bphc.cms.activities
+package crux.bphc.cms.viewmodels
 
 import android.app.Application
 import android.content.Context
@@ -40,14 +40,14 @@ class TokenViewModel(application: Application) : AndroidViewModel(application) {
 
     private val moodleServices: MoodleServices = APIClient.getRetrofitInstance().create(MoodleServices::class.java)
 
-    private val _onErrorMessage: MutableLiveData<String> = MutableLiveData()
-    val onErrorMessage: LiveData<String> = _onErrorMessage
+    private val _onErrorMessage: MutableLiveData<SingleLiveEvent<String>> = MutableLiveData()
+    val onErrorMessage: LiveData<SingleLiveEvent<String>> = _onErrorMessage
 
     private val _showBadTokenDialog: MutableLiveData<SingleLiveEvent<Boolean>> = MutableLiveData()
     val showBadTokenDialog: LiveData<SingleLiveEvent<Boolean>> = _showBadTokenDialog
 
-    private val _dataRetrievalStatus: MutableLiveData<SingleLiveEvent<Int>> = MutableLiveData()
-    val dataRetrievalStatus: LiveData<SingleLiveEvent<Int>> = _dataRetrievalStatus
+    private val _status: MutableLiveData<Int> = MutableLiveData(NO_STATUS)
+    val status: LiveData<Int> = _status
 
     private val _startMainActivity: MutableLiveData<SingleLiveEvent<Boolean>> = MutableLiveData()
     val startMainActivity: LiveData<SingleLiveEvent<Boolean>> = _startMainActivity
@@ -61,7 +61,7 @@ class TokenViewModel(application: Application) : AndroidViewModel(application) {
             if (data != null) {
                 val scheme = data.scheme
                 if (scheme != null && scheme != Urls.SSO_URL_SCHEME) {
-                    _onErrorMessage.postValue("Invalid token URI Schema.")
+                    _onErrorMessage.postValue(SingleLiveEvent("Invalid token URI Schema."))
                     _showBadTokenDialog.postValue(SingleLiveEvent(true))
                     return
                 }
@@ -69,7 +69,7 @@ class TokenViewModel(application: Application) : AndroidViewModel(application) {
                 var host = data.host
                 if (host != null) {
                     if (!host.contains(hostScheme)) {
-                        _onErrorMessage.postValue("Invalid token URI Schema.")
+                        _onErrorMessage.postValue(SingleLiveEvent("Invalid token URI Schema."))
                         _showBadTokenDialog.postValue(SingleLiveEvent(true))
                         return
                     }
@@ -80,7 +80,7 @@ class TokenViewModel(application: Application) : AndroidViewModel(application) {
                     host = String(Base64.decode(host, Base64.DEFAULT))
                     val parts = host.split(":::").toTypedArray()
                     if (parts.size < 2) {
-                        _onErrorMessage.postValue("Invalid token response length")
+                        _onErrorMessage.postValue(SingleLiveEvent("Invalid token response length"))
                         _showBadTokenDialog.postValue(SingleLiveEvent(true))
                         return
                     }
@@ -93,12 +93,12 @@ class TokenViewModel(application: Application) : AndroidViewModel(application) {
                     try {
                         if (Utils.bytesToHex(MessageDigest.getInstance("md5")
                                         .digest(signature.toByteArray(StandardCharsets.US_ASCII))) != digest) {
-                            _onErrorMessage.postValue("Invalid token digest")
+                            _onErrorMessage.postValue(SingleLiveEvent("Invalid token digest"))
                             _showBadTokenDialog.postValue(SingleLiveEvent(true))
                             return
                         }
                     } catch (e: NoSuchAlgorithmException) {
-                        _onErrorMessage.postValue("MD5 not a valid MessageDigest algorithm! :o")
+                        _onErrorMessage.postValue(SingleLiveEvent("MD5 not a valid MessageDigest algorithm! :o"))
                     }
                     loginUsingToken(token, privateToken)
                 }
@@ -107,7 +107,7 @@ class TokenViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun loginUsingToken(token: String, privateToken: String) {
-        // TODO: showProgress(true, "Fetching your details")
+        _status.postValue(FETCHING_DETAILS)
         val call = moodleServices.fetchUserDetail(token)
         call.enqueue(object : Callback<UserDetail> {
             override fun onResponse(call: Call<UserDetail>, response: Response<UserDetail>) {
@@ -127,7 +127,7 @@ class TokenViewModel(application: Application) : AndroidViewModel(application) {
 
             override fun onFailure(call: Call<UserDetail>, t: Throwable) {
                 Log.wtf(TAG, t)
-                //TODO: showProgress(false, "")
+                _status.postValue(NO_STATUS)
             }
         })
     }
@@ -137,7 +137,7 @@ class TokenViewModel(application: Application) : AndroidViewModel(application) {
         val courseRequestHandler = CourseRequestHandler()
 
         /* Fetch User's Course List */
-        _dataRetrievalStatus.postValue(SingleLiveEvent(PROGRESS_COURSE_LIST))
+        _status.postValue(PROGRESS_COURSE_LIST)
         val courseList = courseRequestHandler.getCourseList(getApplication() as Context)
         if (courseList == null) {
             if (!UserUtils.isValidToken(UserAccount.token)) {
@@ -149,7 +149,7 @@ class TokenViewModel(application: Application) : AndroidViewModel(application) {
         courseDataHandler.replaceCourses(courseList)
 
         /* Fetch Course Content */
-        _dataRetrievalStatus.postValue(SingleLiveEvent(PROGRESS_COURSE_CONTENT))
+        _status.postValue(PROGRESS_COURSE_CONTENT)
         val courses = courseDataHandler.courseList
         for (course in courses) {
             val courseSections = courseRequestHandler.getCourseData(course) ?: continue
@@ -170,7 +170,7 @@ class TokenViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         /* Fetch Site News */
-        _dataRetrievalStatus.postValue(SingleLiveEvent(PROGRESS_SITE_NEWS))
+        _status.postValue(PROGRESS_SITE_NEWS)
         val discussions = courseRequestHandler.getForumDiscussions(1) // 1 is always site news
         if (discussions != null) {
             for (d in discussions) {
@@ -214,8 +214,10 @@ class TokenViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     companion object {
-        private const val PROGRESS_COURSE_LIST = 1
-        private const val PROGRESS_COURSE_CONTENT = 2
-        private const val PROGRESS_SITE_NEWS = 3
+        const val FETCHING_DETAILS = 0
+        const val PROGRESS_COURSE_LIST = 1
+        const val PROGRESS_COURSE_CONTENT = 2
+        const val PROGRESS_SITE_NEWS = 3
+        const val NO_STATUS = 5
     }
 }
