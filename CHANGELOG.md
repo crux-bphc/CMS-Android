@@ -7,6 +7,7 @@ Dates are in `yyyy-mm-dd`.
 
 ## Unreleased
 ### Added
+* A new screen to view and delete downloaded files
 
 ### Changed
 * Login Screen design

@@ -3,9 +3,9 @@
     package="crux.bphc.cms">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <!-- Disable backups. We don't store anything in internal storage.
          SharedPreference data isn't particular useful for a backup either.-->
@@ -14,27 +14,30 @@
         android:allowBackup="false"
         android:icon="@mipmap/ic_blue_launcher_app_icon"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:requestLegacyExternalStorage="true">
+        android:theme="@style/AppTheme">
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_crux_logo" />
 
-        <meta-data android:name="com.google.firebase.messaging.default_notification_color"
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/crux_blue" />
 
         <activity
             android:name=".activities.TokenActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/SplashTheme.NoActionBar"
-            android:launchMode="singleTask">
+            android:theme="@style/SplashTheme.NoActionBar">
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data android:scheme="cmsbphc" />
             </intent-filter>
         </activity>
@@ -42,8 +45,8 @@
         <activity
             android:name=".activities.MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/SplashTheme.NoActionBar"
             android:screenOrientation="portrait"
+            android:theme="@style/SplashTheme.NoActionBar"
             android:windowSoftInputMode="adjustNothing">
 
             <intent-filter>
@@ -52,11 +55,15 @@
             </intent-filter>
 
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.BROWSABLE" />
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:scheme="https" android:host="cms.bits-hyderabad.ac.in"
-                    android:pathPrefix="/fileShare" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="cms.bits-hyderabad.ac.in"
+                    android:pathPrefix="/fileShare"
+                    android:scheme="https" />
             </intent-filter>
         </activity>
 

@@ -6,6 +6,7 @@
         android:icon="@drawable/ic_book"
         android:title="@string/nav_bar_my_courses" />
 
+
     <item
         android:id="@+id/searchCourseFragment"
         android:icon="@drawable/ic_clipboard"
@@ -15,6 +16,11 @@
         android:id="@+id/forumFragment"
         android:icon="@drawable/ic_newspaper"
         android:title="@string/nav_bar_site_news" />
+
+    <item
+        android:id="@+id/downloadsFragment"
+        android:icon="@drawable/outline_folder_24"
+        android:title="@string/nav_bar_files" />
 
     <item
         android:id="@+id/moreFragment"

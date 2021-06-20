@@ -6,11 +6,9 @@ import android.content.*
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
-import android.provider.MediaStore
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import crux.bphc.cms.BuildConfig
-import crux.bphc.cms.app.MyApplication
 import crux.bphc.cms.app.appendOrSetQueryParameter
 import crux.bphc.cms.models.UserAccount.token
 import crux.bphc.cms.models.course.Content
@@ -24,12 +22,9 @@ import java.io.File
  * discussion Attachments. An instance of this class is associated with a
  * particular course.
  *
- * On [Android P][Build.VERSION_CODES.P] and below, files are downloaded to
- * the location specified by [Environment.DIRECTORY_DOWNLOADS].
- *
- * Starting from [Android Q][android.os.Build.VERSION_CODES.Q], files are
- * downloaded to the "primary" external storage volume's Download directory using
- * the Mediastore API.
+ * Following the release of scoped storage on [Android Q][Build.VERSION_CODES.Q] and above,
+ * files are no longer downloaded to the location specified by [Environment.DIRECTORY_DOWNLOADS].
+ * All files are now downloaded to the app specific external media directory.
  *
  * @param activity An activity context, to launch new activities etc
  * @param courseName Course name the FileManager instance should be attached
@@ -39,22 +34,18 @@ import java.io.File
  * @author Harshit Agarwal, Abhijeet Viswa
  */
 class FileManager(
-    private val activity: Activity,
-    private val courseName: String,
-    private val callback: (String) -> Unit,
+        private val activity: Activity,
+        private val courseName: String,
+        private val callback: (String) -> Unit,
 ) {
 
     private val sanitizedCourseName: String = courseName.replace("/".toRegex(), "_")
-    private val baseContentDir: String
-        get() = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path +
-                    File.separator +
-                    ROOT_FOLDER
-
+    private val baseContentDir = activity.externalMediaDirs[0]
 
     private val fileList: MutableList<String> = emptyList<String>().toMutableList()
     private val requestedDownloads: MutableList<String> = emptyList<String>().toMutableList()
 
-    private val onComplete: BroadcastReceiver = object: BroadcastReceiver() {
+    private val onComplete: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             reloadFileList()
             for (filename in requestedDownloads) {
@@ -78,10 +69,10 @@ class FileManager(
     }
 
     fun openModuleContent(content: Content) =
-        openFile(content.fileName)
+            openFile(content.fileName)
 
     fun openDiscussionAttachment(attachment: Attachment) =
-        openFile(attachment.fileName)
+            openFile(attachment.fileName)
 
     private fun downloadFile(fileUrl: String, fileName: String, description: String) {
         val url = Uri.parse(fileUrl).buildUpon().appendOrSetQueryParameter("token", token).build()
@@ -109,26 +100,26 @@ class FileManager(
         } catch (e: ActivityNotFoundException) {
             intent.setDataAndType(fileUri, "application/*")
             activity.startActivity(
-                Intent.createChooser(
-                    intent,
-                    "No Application found to open File - $fileName"
-                )
+                    Intent.createChooser(
+                            intent,
+                            "No Application found to open File - $fileName"
+                    )
             )
         }
     }
 
     fun shareModuleContent(content: Content) =
-        shareFile(content.fileName)
+            shareFile(content.fileName)
 
     fun shareDiscussionAttachment(attachment: Attachment) =
-        shareFile(attachment.fileName)
+            shareFile(attachment.fileName)
 
     private fun shareFile(fileName: String) {
         val file = File(baseContentDir, getRelativePath(fileName))
         val fileUri = FileProvider.getUriForFile(
-            activity,
-            "${BuildConfig.APPLICATION_ID}.provider",
-            file
+                activity,
+                "${BuildConfig.APPLICATION_ID}.provider",
+                file
         )
 
         val sendIntent = Intent()
@@ -140,9 +131,9 @@ class FileManager(
             activity.startActivity(Intent.createChooser(sendIntent, "Share File"))
         } catch (e: ActivityNotFoundException) {
             Toast.makeText(
-                activity,
-                "No app found to share the file - $fileName",
-                Toast.LENGTH_SHORT
+                    activity,
+                    "No app found to share the file - $fileName",
+                    Toast.LENGTH_SHORT
             ).show()
         }
     }
@@ -150,7 +141,7 @@ class FileManager(
     private fun deleteExistingModuleContent(content: Content) = deleteExistingFile(content.fileName)
 
     private fun deleteExistingDiscussionAttachment(attachment: Attachment) =
-        deleteExistingFile(attachment.fileName)
+            deleteExistingFile(attachment.fileName)
 
     private fun deleteExistingFile(fileName: String) {
         val file = File(baseContentDir, getRelativePath(fileName))
@@ -171,7 +162,7 @@ class FileManager(
     }
 
     private fun getRelativePath(filename: String) =
-       File.separator + sanitizedCourseName + File.separator + filename
+            File.separator + sanitizedCourseName + File.separator + filename
 
     fun isModuleContentDownloaded(content: Content) = isFileDownloaded(content.fileName)
 
@@ -185,17 +176,9 @@ class FileManager(
     }
 
     fun registerDownloadReceiver() =
-        activity.registerReceiver(onComplete, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
+            activity.registerReceiver(onComplete, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
 
     fun unregisterDownloadReceiver() =
-        activity.unregisterReceiver(onComplete)
+            activity.unregisterReceiver(onComplete)
 
-    companion object {
-        /**
-         * The folder into which files will be downloaded. This root folder will
-         * itself be inside [MediaStore.Downloads] or
-         * [Environment.DIRECTORY_DOWNLOADS]
-         */
-        private const val ROOT_FOLDER = "CMS"
-    }
 }

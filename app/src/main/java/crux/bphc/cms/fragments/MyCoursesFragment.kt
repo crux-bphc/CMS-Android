@@ -245,7 +245,6 @@ class MyCoursesFragment : Fragment() {
 
                     val realm = Realm.getDefaultInstance() // tie a realm instance to this thread
                     val courseDataHandler = CourseDataHandler(realm)
-
                     val newPartsInSections = courseDataHandler.isolateNewCourseData(it.id, sections)
                     courseDataHandler.replaceCourseData(it.id, sections)
 

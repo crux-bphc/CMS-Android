@@ -136,9 +136,7 @@ class FolderModuleFragment : Fragment() {
             fun bind(content: Content) {
                 fileName.text = content.fileName
 
-                var icon = FileUtils.getDrawableIconFromFileName(content.fileName)
-                // TODO: Replace quiz drawable with a unknown icon drawable
-                icon = if (icon == -1) R.drawable.quiz else icon
+                val icon = FileUtils.getDrawableIconFromFileName(content.fileName)
                 fileIcon.setImageResource(icon)
 
                 val downloaded = mFileManager.isModuleContentDownloaded(content)

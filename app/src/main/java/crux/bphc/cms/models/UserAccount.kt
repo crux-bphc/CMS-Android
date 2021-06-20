@@ -12,22 +12,31 @@ object UserAccount {
     private const val MY_PREFS_NAME = "crux.bphc.cms.USER_ACCOUNT"
 
     private val prefs = MyApplication.instance
-        .getSharedPreferences(MY_PREFS_NAME, Context.MODE_PRIVATE)
+            .getSharedPreferences(MY_PREFS_NAME, Context.MODE_PRIVATE)
 
     val userID: Int
         get() = prefs.getInt("userid", 0)
 
     val token: String
-        get() = prefs.getString("token", "")?: ""
+        get() = prefs.getString("token", "") ?: ""
 
     val username: String
-        get() = prefs.getString("username", "")?: ""
+        get() = prefs.getString("username", "") ?: ""
 
     val firstName: String
-        get() = prefs.getString("firstname", "")?: ""
+        get() = prefs.getString("firstname", "") ?: ""
 
     val isLoggedIn: Boolean
         get() = prefs.getString("token", "")?.isNotEmpty() ?: false
+
+    var hasMigratedData: Boolean = false
+        get() = prefs.getBoolean("hasMigratedData", false)
+        set(value) {
+            prefs.edit()
+                    .putBoolean("hasMigratedData", value)
+                    .apply()
+            field = value
+        }
 
     fun clearUser() {
         prefs.edit().clear().apply()
@@ -35,18 +44,18 @@ object UserAccount {
 
     fun setUser(userDetail: UserDetail) {
         prefs.edit()
-            .putString("username", userDetail.username)
-            .putString("token", userDetail.token)
-            // the private token can be used to create an http sesion
-            // check /admin/tool/mobile/autologin.php
-            .putString("privateToken", userDetail.privateToken) // the private token can be used to
-                                                                // create an http session from
-                                                                // che
-            .putString("firstname", userDetail.firstName)
-            .putString("lastname", userDetail.lastName)
-            .putString("userpictureurl", userDetail.userPictureUrl)
-            .putInt("userid", userDetail.userId)
-            .apply()
+                .putString("username", userDetail.username)
+                .putString("token", userDetail.token)
+                // the private token can be used to create an http sesion
+                // check /admin/tool/mobile/autologin.php
+                .putString("privateToken", userDetail.privateToken) // the private token can be used to
+                // create an http session from
+                // che
+                .putString("firstname", userDetail.firstName)
+                .putString("lastname", userDetail.lastName)
+                .putString("userpictureurl", userDetail.userPictureUrl)
+                .putInt("userid", userDetail.userId)
+                .apply()
     }
 
     /**
@@ -69,7 +78,7 @@ object UserAccount {
         get() = prefs.getBoolean("darkMode", true)
         set(b) {
             prefs.edit()
-                .putBoolean("darkMode", b)
-                .apply()
+                    .putBoolean("darkMode", b)
+                    .apply()
         }
 }
