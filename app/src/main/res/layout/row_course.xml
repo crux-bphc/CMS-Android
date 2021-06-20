@@ -1,129 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="?attr/actionButtonStyle"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/course_card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:clipToPadding="false">
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginBottom="4dp"
+    app:cardBackgroundColor="?cardBgColor"
+    app:cardCornerRadius="16dp">
 
-    <androidx.cardview.widget.CardView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="4dp"
-        android:clickable="true"
-        android:elevation="0dp"
-        android:focusable="true"
-        android:foreground="?attr/selectableItemBackground"
-        app:cardBackgroundColor="?cardBgColor"
-        app:cardCornerRadius="10dp">
+        android:layout_height="wrap_content">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/course_number"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+            app:layout_constraintEnd_toStartOf="@+id/unread_count"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/example_course_number" />
+
+        <TextView
+            android:id="@+id/course_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="16dp"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/course_number"
+            tools:text="@string/example_course_name" />
+
+        <TextView
+            android:id="@+id/unread_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|top"
+            android:layout_marginEnd="26dp"
+            android:background="@drawable/notif_counter_bg"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:translationX="10dp"
+            app:layout_constraintBottom_toBottomOf="@+id/course_number"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/course_number"
+            tools:text="2" />
+
+        <ImageView
+            android:id="@+id/favorite_button"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             android:clickable="true"
-            android:clipToPadding="false"
-            android:focusable="true">
+            android:contentDescription="@string/favorite"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:padding="1dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/download_image"
+            app:layout_constraintTop_toBottomOf="@+id/course_name"
+            app:srcCompat="@drawable/ic_fav_filled"
+            app:tint="#FF808080" />
 
-            <crux.bphc.cms.widgets.HtmlTextView
-                android:id="@+id/course_number"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:paddingHorizontal="16dp"
-                android:paddingTop="16dp"
-                android:paddingBottom="3dp"
-                android:text="@string/example_course_number"
-                android:textColor="?android:textColorPrimary"
-                android:textSize="18sp"
-                android:textStyle="bold"
+        <ImageView
+            android:id="@+id/download_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:clickable="true"
+            android:contentDescription="@string/download_course_contents"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/course_name"
+            app:layout_constraintTop_toBottomOf="@+id/course_name"
+            app:srcCompat="@drawable/download"
+            app:tint="#FF808080" />
 
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/more" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/mark_as_read_button"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/mark_as_read"
+            android:textColor="?textButtonColor"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/course_name" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-            <crux.bphc.cms.widgets.HtmlTextView
-                android:id="@+id/course_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:paddingHorizontal="16dp"
-                android:paddingTop="3dp"
-                android:paddingBottom="16dp"
-                android:text="@string/example_course_name"
-                android:textColor="?android:textColorPrimary"
-                android:textSize="16sp"
-
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/course_number"
-                app:layout_constraintEnd_toStartOf="@id/more" />
-
-            <View
-                android:id="@+id/click_wrapper"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:orientation="vertical"
-                android:focusable="true"
-                android:clickable="true"
-
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="@id/course_name"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/more" />
-
-            <ImageView
-                android:id="@+id/more"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_marginEnd="6dp"
-                android:background="?android:selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:contentDescription="@string/more_options_btn"
-                android:focusable="true"
-                android:rotation="90"
-                app:tint="?iconTintColor"
-                app:srcCompat="@drawable/dots_horizontal"
-
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/click_wrapper"
-                app:layout_constraintVertical_chainStyle="packed" />
-
-            <ImageView
-                android:id="@+id/favorite"
-                android:visibility="visible"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_marginTop="6dp"
-                android:scaleType="fitCenter"
-                android:scaleX="0.75"
-                android:scaleY="0.75"
-                android:padding="2dp"
-                android:clickable="true"
-                android:focusable="true"
-                app:tint="#FF808080"
-                app:srcCompat="@drawable/star"
-                android:contentDescription="@string/favorite"
-
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="@id/more"
-                app:layout_constraintEnd_toEndOf="@id/more"
-                app:layout_constraintTop_toBottomOf="@id/more" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
-
-    <TextView
-        android:id="@+id/unread_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|top"
-        android:translationX="10dp"
-        android:background="@drawable/circular_drawable"
-        android:elevation="5dp"
-        android:gravity="center"
-        android:padding="4dp"
-        android:text=""
-        android:textColor="@color/white"
-        android:textSize="12sp"
-        android:textStyle="bold" />
-</FrameLayout>
+</com.google.android.material.card.MaterialCardView>

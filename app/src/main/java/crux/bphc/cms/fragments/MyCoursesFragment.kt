@@ -11,9 +11,8 @@ import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,7 +20,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import crux.bphc.cms.R
 import crux.bphc.cms.activities.CourseDetailActivity
 import crux.bphc.cms.exceptions.InvalidTokenException
-import crux.bphc.cms.fragments.MoreOptionsFragment.OptionsViewModel
 import crux.bphc.cms.helper.CourseDataHandler
 import crux.bphc.cms.helper.CourseDownloader
 import crux.bphc.cms.helper.CourseRequestHandler
@@ -45,13 +43,12 @@ class MyCoursesFragment : Fragment() {
     private var coursesUpdated = 0
     private var courses: MutableList<Course> = ArrayList()
     private lateinit var mAdapter: Adapter
-    private lateinit var moreOptionsViewModel: OptionsViewModel
 
     // Activity result launchers
     private val courseDetailActivityLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 mAdapter.filterCoursesByName(courses, searchCourseET.text.toString())
-        }
+            }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,8 +98,6 @@ class MyCoursesFragment : Fragment() {
         courseDataHandler = CourseDataHandler(realm)
         courses = courseDataHandler.courseList
 
-        moreOptionsViewModel = ViewModelProvider(requireActivity()).get(OptionsViewModel::class.java)
-
         // Set up the adapter
         mAdapter = Adapter(requireActivity(), courses)
         mAdapter.courses = courses
@@ -120,7 +115,7 @@ class MyCoursesFragment : Fragment() {
             course.downloadStatus = 0
             mAdapter.notifyItemChanged(position)
             val courseDownloader = CourseDownloader(activity, courseDataHandler.getCourseName(course.id))
-            courseDownloader.setDownloadCallback(object: CourseDownloader.DownloadCallback {
+            courseDownloader.setDownloadCallback(object : CourseDownloader.DownloadCallback {
                 override fun onCourseDataDownloaded() {
                     course.downloadedFiles = courseDownloader.getDownloadedContentCount(course.id)
                     course.totalFiles = courseDownloader.getTotalContentCount(course.id)
@@ -185,7 +180,7 @@ class MyCoursesFragment : Fragment() {
             }
         })
 
-      swipeRefreshLayout.setOnRefreshListener {
+        swipeRefreshLayout.setOnRefreshListener {
             swipeRefreshLayout.isRefreshing = true
             refreshCourses()
         }
@@ -238,8 +233,8 @@ class MyCoursesFragment : Fragment() {
         withContext(Dispatchers.IO) {
             Log.i(TAG, "Fetching course contents")
             val courseRequestHandler = CourseRequestHandler()
-            val promises = courses.map map@ {
-                async innerAsync@ {
+            val promises = courses.map map@{
+                async innerAsync@{
                     val sections: MutableList<CourseSection>
                     try {
                         sections = courseRequestHandler.getCourseDataSync(it.id)
@@ -251,8 +246,7 @@ class MyCoursesFragment : Fragment() {
                     val realm = Realm.getDefaultInstance() // tie a realm instance to this thread
                     val courseDataHandler = CourseDataHandler(realm)
 
-                    val newPartsInSections = courseDataHandler
-                        .isolateNewCourseData(it.id, sections)
+                    val newPartsInSections = courseDataHandler.isolateNewCourseData(it.id, sections)
                     courseDataHandler.replaceCourseData(it.id, sections)
 
                     realm.close() // let's not forget to do this
@@ -263,7 +257,7 @@ class MyCoursesFragment : Fragment() {
                 }
             }
 
-            coursesUpdated = promises.awaitAll().fold(0) {i, x -> if (x) i + 1 else i }
+            coursesUpdated = promises.awaitAll().fold(0) { i, x -> if (x) i + 1 else i }
 
             withContext(Dispatchers.Main) {
                 swipeRefreshLayout?.isRefreshing = false
@@ -313,7 +307,7 @@ class MyCoursesFragment : Fragment() {
             return courses.size
         }
 
-        private fun sortCourses(courseList: List<Course>) : List<Course> {
+        private fun sortCourses(courseList: List<Course>): List<Course> {
             return courseList.sortedWith { o1, o2 ->
                 if (o1.isFavorite == o2.isFavorite) {
                     o1.shortName.compareTo(o2.shortName)
@@ -344,8 +338,9 @@ class MyCoursesFragment : Fragment() {
                 itemView.course_number.text = course.courseName[0]
                 itemView.course_name.text = name
                 itemView.unread_count.text = DecimalFormat.getIntegerInstance().format(count.toLong())
-                itemView.unread_count.visibility = if (count == 0) View.INVISIBLE else View.VISIBLE
-                itemView.favorite.visibility = if (course.isFavorite) View.VISIBLE else View.INVISIBLE
+                itemView.unread_count.isVisible = count != 0
+                itemView.mark_as_read_button.isVisible = count != 0
+                itemView.favorite_button.setImageResource(if (course.isFavorite) R.drawable.ic_fav_filled else R.drawable.ic_fav_outlined)
             }
 
             fun confirmDownloadCourse() {
@@ -384,42 +379,16 @@ class MyCoursesFragment : Fragment() {
             }
 
             init {
-                itemView.click_wrapper.setOnClickListener {
+                itemView.course_card.setOnClickListener {
                     if (clickListener != null) {
                         val pos = layoutPosition
                         clickListener!!.onClick(courses[pos], pos)
                     }
                 }
 
-                itemView.more.setOnClickListener {
-                    //Set up our options and their handlers
-                    val isFavorite = courses[layoutPosition].isFavorite
-                    val favoriteOption = if (isFavorite) {
-                        getString(R.string.remove_from_favorites)
-                    }else {
-                        getString(R.string.addtoFavorites)
-                    }
-                    val options = ArrayList(listOf(
-                            MoreOptionsFragment.Option(0, "Download course", R.drawable.download),
-                            MoreOptionsFragment.Option(1, "Mark all as read", R.drawable.eye),
-                            MoreOptionsFragment.Option(2, favoriteOption, R.drawable.star)
-                    ))
-                    moreOptionsViewModel.selection.observe(requireActivity()) {
-                        // negate effects of a clearSelection() call
-                        if (it == null) return@observe;
-                        when (it.id) {
-                            0 -> confirmDownloadCourse()
-                            1 -> markCourseAsRead()
-                            2 -> setFavoriteStatus(layoutPosition, !isFavorite)
-                        }
-                        moreOptionsViewModel.selection.removeObservers(requireActivity())
-                        moreOptionsViewModel.clearSelection()
-                    }
-                    val courseName = courses[layoutPosition].shortName
-                    val moreOptionsFragment = MoreOptionsFragment.newInstance(courseName, options)
-                    moreOptionsFragment.show((context as AppCompatActivity).supportFragmentManager,
-                            moreOptionsFragment.tag)
-                }
+                itemView.mark_as_read_button.setOnClickListener { markCourseAsRead() }
+                itemView.favorite_button.setOnClickListener { setFavoriteStatus(layoutPosition, !courses[layoutPosition].isFavorite) }
+                itemView.download_image.setOnClickListener { confirmDownloadCourse() }
             }
         }
 
@@ -431,6 +400,7 @@ class MyCoursesFragment : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance() = MyCoursesFragment()
+
         @JvmStatic
         val TAG = "MyCoursesFragment"
     }
