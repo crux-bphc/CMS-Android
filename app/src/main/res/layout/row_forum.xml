@@ -134,7 +134,7 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_gravity="end|top"
-        android:background="@drawable/circular_drawable"
+        android:background="@drawable/notif_counter_bg"
         android:contentDescription="@string/pinned_discussion"
         android:elevation="10dp"
         android:gravity="center"

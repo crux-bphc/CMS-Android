@@ -96,4 +96,6 @@
     <string name="cms">CMS</string>
     <string name="title_bphc">BITS Pilani, Hyderabad Campus</string>
     <string name="sign_in_prompt">Sign in with your BITS email</string>
+    <string name="mark_as_read">Mark as read</string>
+    <string name="download_course_contents">Download course contents</string>
 </resources>
