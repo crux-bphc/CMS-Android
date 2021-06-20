@@ -98,4 +98,20 @@
     <string name="sign_in_prompt">Sign in with your BITS email</string>
     <string name="mark_as_read">Mark as read</string>
     <string name="download_course_contents">Download course contents</string>
+    <string name="file_description">%1$s, %2$s, %3$s</string>
+    <string name="nav_bar_files">Files</string>
+    <string name="delete_file_folder">Delete file/folder</string>
+    <string name="delete_file_dialog_title">Delete %1$s?</string>
+    <string name="delete_file_dialog_message">Deleting this %1$s will permanently delete it from your device and free about %2$s of space.</string>
+    <string name="delete_file_dialog_neutral">Cancel</string>
+    <string name="delete_file_dialog_positive">Delete</string>
+    <string name="file">file</string>
+    <string name="folder">folder</string>
+    <string name="delete_file_success">Successfully deleted</string>
+    <string name="delete_file_failed">Deletion failed</string>
+    <string name="root_no_files">No course content has been downloaded yet.\nDownloaded course content will appear here.</string>
+    <string name="no_files">No files present here.</string>
+    <string name="folder_no_items_zero">No items</string>
+    <string name="folder_no_items_one">1 item, %1$s</string>
+    <string name="folder_no_items_many">%1$d items, %2$s</string>
 </resources>

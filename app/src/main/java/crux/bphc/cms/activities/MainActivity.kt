@@ -13,8 +13,12 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.WorkRequest
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import crux.bphc.cms.R
+import crux.bphc.cms.background.MigrateDataWorker
 import crux.bphc.cms.core.PushNotifRegManager
 import crux.bphc.cms.fragments.*
 import crux.bphc.cms.helper.CourseDataHandler
@@ -31,8 +35,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var courseDataHandler: CourseDataHandler
 
     private val _bottomNavSelectionListener
-        get() = listener@ {
-            menuItem: MenuItem ->
+        get() = listener@{ menuItem: MenuItem ->
             when (menuItem.itemId) {
                 R.id.myCoursesFragment -> {
                     pushView(MyCoursesFragment.newInstance(), "My Courses", true)
@@ -41,6 +44,11 @@ class MainActivity : AppCompatActivity() {
                 R.id.searchCourseFragment -> {
                     pushView(SearchCourseForEnrolFragment.newInstance(),
                             "Search Course to Enrol", false)
+                    return@listener true
+                }
+                R.id.downloadsFragment -> {
+                    pushView(FilesFragment.newInstance(),
+                            getString(R.string.nav_bar_files), false)
                     return@listener true
                 }
                 R.id.forumFragment -> {
@@ -59,7 +67,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         if (!UserAccount.isLoggedIn) {
-           UserUtils.clearBackStackAndLaunchTokenActivity(this)
+            UserUtils.clearBackStackAndLaunchTokenActivity(this)
             return
         }
 
@@ -103,9 +111,9 @@ class MainActivity : AppCompatActivity() {
             if (toastResource != 0) {
                 val context = this@MainActivity
                 Toast.makeText(
-                    context,
-                    context.getString(toastResource),
-                    Toast.LENGTH_SHORT,
+                        context,
+                        context.getString(toastResource),
+                        Toast.LENGTH_SHORT,
                 ).show()
             }
         }
@@ -245,30 +253,43 @@ class MainActivity : AppCompatActivity() {
 
     private fun askPermission() {
         if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
 
             // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
                 MaterialAlertDialogBuilder(this)
                         .setTitle("Permission required")
-                        .setMessage("We need permission to download course content onto your phone")
+                        .setMessage("We need permission to move course content")
                         .setPositiveButton("OK") { _, _ ->
-                            requestWriteStoragePermission()
+                            requestReadStoragePermission()
                         }
                         .show()
             } else {
-                requestWriteStoragePermission()
+                requestReadStoragePermission()
             }
+        } else {
+            startDataMigrationIfRequired()
         }
     }
 
-    private fun requestWriteStoragePermission() {
+    private fun requestReadStoragePermission() {
         val askPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
             if (!granted)
                 askPermission()
+            else
+                startDataMigrationIfRequired()
         }
-        askPermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        askPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+    }
+
+    private fun startDataMigrationIfRequired() {
+        if (!UserAccount.hasMigratedData) {
+            val migrateDataWorkRequest: WorkRequest =
+                    OneTimeWorkRequestBuilder<MigrateDataWorker>()
+                            .build()
+            WorkManager.getInstance(this).enqueue(migrateDataWorkRequest)
+        }
     }
 
     fun pushView(fragment: Fragment, tag: String, rootFrag: Boolean) {
