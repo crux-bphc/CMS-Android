@@ -12,6 +12,7 @@ Dates are in `yyyy-mm-dd`.
 * Login Screen design
 
 ### Fixed
+* Profile pictures not fetching properly
 
 ## Version 1.8.5 (verCode 1080500), 2021-05-04
 ### Fixed
