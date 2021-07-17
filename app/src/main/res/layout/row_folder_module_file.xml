@@ -2,33 +2,33 @@
 
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardBackgroundColor="?cardBgColor"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
+    app:cardBackgroundColor="?cardBgColor"
     app:cardCornerRadius="12dp"
     app:cardElevation="3dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
         android:layout_marginStart="4dp"
-        android:layout_marginEnd="4dp">
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="8dp">
 
         <LinearLayout
             android:id="@+id/click_wrapper"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_toStartOf="@id/more"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?android:selectableItemBackgroundBorderless"
             android:layout_gravity="center_vertical"
-            android:orientation="horizontal"
-            android:clipChildren="false">
+            android:layout_toStartOf="@id/more"
+            android:background="?android:selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:clipChildren="false"
+            android:focusable="true"
+            android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/icon"
@@ -42,8 +42,6 @@
                 android:id="@+id/name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
@@ -59,8 +57,8 @@
                 android:layout_gravity="center_vertical"
                 android:contentDescription="@string/download_go"
                 android:padding="14dp"
-                app:tint="?iconTintColor"
-                app:srcCompat="@drawable/download" />
+                app:srcCompat="@drawable/outline_file_download_24"
+                app:tint="?iconTintColor" />
         </LinearLayout>
 
         <ImageView
@@ -74,7 +72,7 @@
             android:contentDescription="@string/more_options_btn"
             android:focusable="true"
             android:padding="8dp"
-            app:tint="?iconTintColor"
-            app:srcCompat="@drawable/dots_horizontal" />
+            app:srcCompat="@drawable/dots_horizontal"
+            app:tint="?iconTintColor" />
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

@@ -91,7 +91,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/course_name"
             app:layout_constraintTop_toBottomOf="@+id/course_name"
-            app:srcCompat="@drawable/download"
+            app:srcCompat="@drawable/outline_file_download_24"
             app:tint="#FF808080" />
 
         <com.google.android.material.button.MaterialButton

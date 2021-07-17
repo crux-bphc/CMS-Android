@@ -96,7 +96,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_share_variant"
+                app:srcCompat="@drawable/ic_share"
                 app:tint="?iconTintColor" />
 
             <TextView
@@ -218,7 +218,7 @@
                 android:contentDescription="@string/nav_bar_about"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_information"
+                app:srcCompat="@drawable/ic_info"
                 app:tint="?iconTintColor" />
 
             <TextView
