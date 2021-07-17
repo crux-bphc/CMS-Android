@@ -130,7 +130,7 @@ class CourseModuleDelegate(
             if (downloaded) {
                 vh.downloadIcon.setImageResource(R.drawable.eye)
             } else {
-                vh.downloadIcon.setImageResource(R.drawable.download)
+                vh.downloadIcon.setImageResource(R.drawable.outline_file_download_24)
             }
         }
     }

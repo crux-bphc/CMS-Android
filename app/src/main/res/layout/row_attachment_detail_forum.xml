@@ -30,7 +30,7 @@
         android:layout_marginEnd="15dp"
         android:contentDescription="@string/download_go"
         app:tint="?iconTintColor"
-        app:srcCompat="@drawable/download"
+        app:srcCompat="@drawable/outline_file_download_24"
 
         app:layout_constraintStart_toEndOf="@id/name"
         app:layout_constraintEnd_toStartOf="@+id/more"

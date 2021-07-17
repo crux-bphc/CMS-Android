@@ -56,8 +56,8 @@ open class Module(
                     -1
                 }
                 Type.ASSIGNMENT -> R.drawable.assignment
-                Type.FOLDER -> R.drawable.folder
-                Type.URL -> R.drawable.web
+                Type.FOLDER -> R.drawable.outline_folder_24
+                Type.URL -> R.drawable.ic_link
                 Type.PAGE -> R.drawable.page
                 Type.QUIZ -> R.drawable.quiz
                 Type.FORUM -> R.drawable.forum

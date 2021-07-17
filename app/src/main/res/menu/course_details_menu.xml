@@ -4,7 +4,7 @@
     <item
         android:id="@+id/action_open_in_browser"
         android:title="@string/open_course_website_on_browser"
-        android:icon="@drawable/web"
+        android:icon="@drawable/ic_web"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/mark_all_as_read"

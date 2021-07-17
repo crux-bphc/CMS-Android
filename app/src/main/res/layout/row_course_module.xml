@@ -2,10 +2,10 @@
 
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardBackgroundColor="?cardBgColor"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
+    app:cardBackgroundColor="?cardBgColor"
     app:cardCornerRadius="12dp"
     app:cardElevation="3dp">
 
@@ -20,18 +20,16 @@
 
         <ImageView
             android:id="@+id/icon"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
             android:contentDescription="@null"
+            android:padding="10dp"
 
+            app:layout_constraintBottom_toTopOf="@id/name_description_barrier"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/file_powerpoint"
-            app:layout_constraintBottom_toTopOf="@id/name_description_barrier" />
+            app:srcCompat="@drawable/file_powerpoint" />
 
         <ProgressBar
             android:id="@+id/progress_bar"
@@ -43,27 +41,25 @@
             android:layout_marginBottom="8dp"
             android:visibility="gone"
 
+            app:layout_constraintBottom_toTopOf="@id/name_description_barrier"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/name_description_barrier" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <crux.bphc.cms.widgets.HtmlTextView
             android:id="@+id/name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             android:text="@string/example_module_name"
             android:textColor="?android:textColorPrimary"
             android:textSize="16sp"
-
+            app:layout_constraintBottom_toTopOf="@id/name_description_barrier"
             app:layout_constraintEnd_toStartOf="@id/download"
             app:layout_constraintStart_toEndOf="@id/icon_barrier"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/name_description_barrier" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/download"
@@ -72,25 +68,26 @@
             android:layout_gravity="center_vertical"
             android:layout_margin="14dp"
             android:contentDescription="@string/download_go"
-            app:tint="?iconTintColor"
-            app:srcCompat="@drawable/download"
-
+            app:layout_constraintBottom_toTopOf="@id/name_description_barrier"
             app:layout_constraintEnd_toStartOf="@id/more"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/name_description_barrier" />
+            app:srcCompat="@drawable/outline_file_download_24"
+            app:tint="?iconTintColor" />
 
         <View
             android:id="@+id/click_wrapper"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:focusable="true"
-            android:clickable="true"
             android:background="?selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
 
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/name_description_barrier"
             app:layout_constraintEnd_toEndOf="@id/download"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="@id/name_description_barrier" />
+            app:layout_constraintVertical_bias="1.0" />
 
         <ImageView
             android:id="@+id/more"
@@ -101,12 +98,12 @@
             android:clickable="true"
             android:contentDescription="@string/more_options_btn"
             android:focusable="true"
-            app:tint="?iconTintColor"
-            app:srcCompat="@drawable/dots_horizontal"
-
+            app:layout_constraintBottom_toTopOf="@id/name_description_barrier"
             app:layout_constraintEnd_toEndOf="parent"
+
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/name_description_barrier" />
+            app:srcCompat="@drawable/dots_horizontal"
+            app:tint="?iconTintColor" />
 
         <View
             android:id="@+id/nameAndDescriptionDivider"
@@ -131,16 +128,14 @@
             android:text="@string/lorem"
             android:textColor="?android:textColorSecondary"
             android:textIsSelectable="true"
-
+            app:collapse_text="show less"
+            app:collapsed_line_count="3"
+            app:expand_text="show more"
+            app:full_text="@string/lorem"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/nameAndDescriptionDivider"
-
-            app:full_text="@string/lorem"
-            app:expand_text="show more"
-            app:collapse_text="show less"
-            app:collapsed_line_count="3" />
+            app:layout_constraintTop_toBottomOf="@id/nameAndDescriptionDivider" />
 
         <androidx.constraintlayout.widget.Barrier
             android:id="@+id/name_description_barrier"

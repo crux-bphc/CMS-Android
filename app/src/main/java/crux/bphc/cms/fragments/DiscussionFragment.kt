@@ -134,7 +134,7 @@ class DiscussionFragment : Fragment() {
                         download.setImageResource(R.drawable.eye)
                         ellipsis.visibility = View.VISIBLE
                     } else {
-                        download.setImageResource(R.drawable.download)
+                        download.setImageResource(R.drawable.outline_file_download_24)
                         ellipsis.visibility = View.GONE
                     }
                     clickWrapper.setOnClickListener {
@@ -149,7 +149,7 @@ class DiscussionFragment : Fragment() {
                             val observer: Observer<MoreOptionsFragment.Option?>
                             val options = ArrayList(listOf(
                                     MoreOptionsFragment.Option(0, "View", R.drawable.eye),
-                                    MoreOptionsFragment.Option(1, "Re-Download", R.drawable.download),
+                                    MoreOptionsFragment.Option(1, "Re-Download", R.drawable.outline_file_download_24),
                                     MoreOptionsFragment.Option(2, "Share", R.drawable.ic_share),
                                     MoreOptionsFragment.Option(3, "Properties", R.drawable.ic_info)
                             ))

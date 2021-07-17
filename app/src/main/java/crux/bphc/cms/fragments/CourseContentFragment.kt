@@ -152,7 +152,7 @@ class CourseContentFragment : Fragment() {
             val observer: Observer<MoreOptionsFragment.Option?> = if (downloaded) {
                 options.addAll(listOf(
                         MoreOptionsFragment.Option(0, "View", R.drawable.eye),
-                        MoreOptionsFragment.Option(1, "Re-Download", R.drawable.download),
+                        MoreOptionsFragment.Option(1, "Re-Download", R.drawable.outline_file_download_24),
                         MoreOptionsFragment.Option(2, "Share", R.drawable.ic_share),
                         MoreOptionsFragment.Option(3, "Mark as Unread", R.drawable.eye_off)
                 ))
@@ -183,7 +183,7 @@ class CourseContentFragment : Fragment() {
                 }
             } else {
                 options.addAll(listOf(
-                        MoreOptionsFragment.Option(0, "Download", R.drawable.download),
+                        MoreOptionsFragment.Option(0, "Download", R.drawable.outline_file_download_24),
                         MoreOptionsFragment.Option(1, "Share", R.drawable.ic_share),
                         MoreOptionsFragment.Option(2, "Mark as Unread", R.drawable.eye_off)
                 ))
