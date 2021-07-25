@@ -12,6 +12,7 @@ Dates are in `yyyy-mm-dd`.
 ### Changed
 * Login Screen design
 * Courses list for a new, modern looking design
+* Icons' design
 
 ### Fixed
 * Profile pictures not fetching properly
