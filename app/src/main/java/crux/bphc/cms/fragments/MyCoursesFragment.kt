@@ -349,7 +349,7 @@ class MyCoursesFragment : Fragment() {
                         .setPositiveButton("Yes") { _: DialogInterface?, _: Int ->
                             if (downloadClickListener != null) {
                                 val pos = layoutPosition
-                                if (!downloadClickListener!!.onClick(this@MyCoursesFragment.courses[pos], pos)) {
+                                if (!downloadClickListener!!.onClick(courses[pos], pos)) {
                                     Toast.makeText(activity, "Download already in progress",
                                             Toast.LENGTH_SHORT).show()
                                 }
