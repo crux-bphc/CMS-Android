@@ -13,27 +13,27 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class APIClient {
 
-    private static Retrofit retrofit = null;
-
     private static final HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
     private static final OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
     private APIClient() {
     }
 
-    public static Retrofit getRetrofitInstance() {
-        if (retrofit == null) {
-            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-            if (BuildConfig.DEBUG) {
-                builder.addInterceptor(interceptor);
-            }
-
-            retrofit = new Retrofit.Builder()
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .baseUrl(Urls.MOODLE_URL.toString())
-                    .client(builder.build())
-                    .build();
+    public static Retrofit getRetrofitInstance(boolean followRedirects) {
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        if (BuildConfig.DEBUG) {
+            builder.addInterceptor(interceptor);
         }
-        return retrofit;
+        builder.followRedirects(followRedirects);
+
+        return new Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl(Urls.MOODLE_URL.toString())
+                .client(builder.build())
+                .build();
+    }
+
+    public static Retrofit getRetrofitInstance() {
+        return APIClient.getRetrofitInstance(false);
     }
 }

@@ -1,18 +1,29 @@
 package crux.bphc.cms.network;
 
+import android.annotation.TargetApi;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+import crux.bphc.cms.models.core.AutoLoginDetail;
 import crux.bphc.cms.models.core.UserDetail;
+import okhttp3.Response;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.Headers;
+import retrofit2.http.POST;
 import retrofit2.http.Query;
 import crux.bphc.cms.models.course.CourseSection;
 import crux.bphc.cms.models.enrol.SelfEnrol;
 import crux.bphc.cms.models.forum.ForumData;
 import crux.bphc.cms.models.enrol.CourseSearch;
+import retrofit2.http.Url;
 
 /**
  * Interface of  Retrofit compatible API calls.
@@ -107,4 +118,42 @@ public interface MoodleServices {
     Call<ResponseBody> deregisterUserDevice(@Query("wstoken") @NotNull String token,
                                             @Query("uuid") @NotNull String uuid,
                                             @Query("appid") @NotNull String appId);
+
+    /**
+     * Endpoint to obtain an autologin key using private token. This endpoint
+     * requires the private token to not be a GET parameter with the user agent
+     * set to 'MoodleMobile'.
+     */
+    @FormUrlEncoded
+    @Headers("User-Agent: MoodleMobile")
+    @POST("webservice/rest/server.php?wsfunction=tool_mobile_get_autologin_key&moodlewsrestformat=json")
+    Call<AutoLoginDetail> autoLoginGetKey(@Query("wstoken") @NotNull String token,
+                                          @Field("privatetoken") @NotNull String privateToken);
+
+    /**
+     * Use an auto-login key to create a user session. The auto-login endpoint
+     * is dynamic and will be returned with the auto-login key. The endpoint
+     * will redirect to the wwwroot. The 'Set-Cookie' header of this redirect
+     * response will contain the session token for further session auth based
+     * requests.
+     */
+    @GET
+    Call<ResponseBody> autoLoginWithKey(@Url @NotNull  String autoLoginUrl,
+                                        @Query("userid") int userId,
+                                        @Query("key") @NotNull String key);
+
+    @GET("course/view.php")
+    Call<ResponseBody> viewCoursePage(@Header("Cookie") String moodleSession,
+                                      @Query("id") int courseId);
+
+    /**
+     * Webpage used to unenrol a user from a course they self-enroled in.
+     * enrolId and sessKey should be obtained before hand using the
+     * {@see MoodleServices#viewCoursePage} endpoint. sessKey is a CSRF
+     * token embedded into links and forms by Moodle with each request.
+     */
+    @GET("enrol/self/unenrolself.php?confirm=1")
+    Call<ResponseBody> selfUnenrolCourse(@Header("Cookie") String moodleSession,
+                                     @Query("enrolid") String enrolId,
+                                     @Query("sesskey") String sessKey);
 }

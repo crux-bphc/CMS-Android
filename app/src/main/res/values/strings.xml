@@ -33,7 +33,7 @@
 
     <!-- Course Sections -->
     <string name="open_course_website_on_browser">open page in browser</string>
-    <string name="mark_all_as_read">mark all as read</string>
+    <string name="mark_all_as_read">Mark all as read</string>
     <string name="failed_course_content_refresh">Failed to load course content.\nTap to retry.</string>
 
     <!-- Forum posts and Discussions -->
@@ -114,4 +114,5 @@
     <string name="folder_no_items_zero">No items</string>
     <string name="folder_no_items_one">1 item, %1$s</string>
     <string name="folder_no_items_many">%1$d items, %2$s</string>
+    <string name="unenrol_course">Unenrol</string>
 </resources>

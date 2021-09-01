@@ -7,8 +7,11 @@
         android:icon="@drawable/ic_web"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/unenrol_course"
+        android:title="@string/unenrol_course"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/mark_all_as_read"
         android:title="@string/mark_all_as_read"
         app:showAsAction="ifRoom"/>
-
 </menu>
