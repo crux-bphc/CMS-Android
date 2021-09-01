@@ -5,6 +5,13 @@ All notable changes to the project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standards.
 Dates are in `yyyy-mm-dd`.
 
+## Unreleased
+### Added
+
+### Chaanged
+
+### Fixed
+
 ## Version 1.9 (verCode 1090000), 2021-08-20
 ### Added
 * A new screen to view and delete downloaded files
