@@ -113,6 +113,17 @@ class ForumFragment : Fragment() {
                 realm.close()
 
                 CoroutineScope(Dispatchers.Main).launch {
+
+                    if (discussions.size == 0) {
+                        if(forumId != 1) emptyView.text = getString(R.string.no_announcements)
+                        else emptyView.text = getString(R.string.no_posts_to_display)
+
+                        emptyView.visibility = View.VISIBLE
+                    } else {
+                        mAdapter.clearDiscussions()
+                        mAdapter.addDiscussions(discussions)
+                    }
+
                     mAdapter.clearDiscussions()
                     mAdapter.addDiscussions(discussions)
                     swipeRefresh.isRefreshing = false
@@ -121,7 +132,11 @@ class ForumFragment : Fragment() {
                 val realmDiscussions = courseDataHandler.getForumDiscussions(forumId)
                 val discussions = realm.copyFromRealm(realmDiscussions)
                 CoroutineScope(Dispatchers.Main).launch {
+
                     if (discussions.size == 0) {
+                        if(forumId != 1) emptyView.text = getString(R.string.no_announcements)
+                        else emptyView.text = getString(R.string.no_posts_to_display)
+
                         emptyView.visibility = View.VISIBLE
                         Toast
                             .makeText(context, getString(R.string.no_cached_data), Toast.LENGTH_SHORT)
