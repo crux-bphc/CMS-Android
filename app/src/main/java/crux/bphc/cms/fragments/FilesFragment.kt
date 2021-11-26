@@ -141,7 +141,7 @@ class FilesFragment : Fragment() {
         MaterialAlertDialogBuilder(requireContext())
                 .setTitle(getString(R.string.delete_file_dialog_title, fileType))
                 .setMessage(getString(R.string.delete_file_dialog_message, fileType, file.getFormattedFileSize(requireContext())))
-                .setNeutralButton(R.string.delete_file_dialog_neutral) { _, _ -> /* Do nothing */ }
+                .setNegativeButton(R.string.delete_file_dialog_neutral) { _, _ -> /* Do nothing */ }
                 .setPositiveButton(R.string.delete_file_dialog_positive) { _, _ -> viewModel.deleteFile(file) }
                 .show()
 
