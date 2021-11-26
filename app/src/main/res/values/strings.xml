@@ -37,6 +37,7 @@
     <string name="failed_course_content_refresh">Failed to load course content.\nTap to retry.</string>
 
     <!-- Forum posts and Discussions -->
+    <string name="no_announcements">No Announcements</string>
     <string name="no_posts_to_display">No Forum posts to display</string>
     <string name="discussion_attachments">Attachment(s)</string>
     <string name="pinned_discussion">Pinned Discussion</string>
