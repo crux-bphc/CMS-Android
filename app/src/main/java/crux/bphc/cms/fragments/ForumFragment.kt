@@ -115,9 +115,7 @@ class ForumFragment : Fragment() {
                 CoroutineScope(Dispatchers.Main).launch {
 
                     if (discussions.size == 0) {
-                        if(forumId != 1) emptyView.text = getString(R.string.no_announcements)
-                        else emptyView.text = getString(R.string.no_posts_to_display)
-
+                        emptyView.text = if (forumId != -1) getString(R.string.no_announcements) else getString(R.string.no_posts_to_display)
                         emptyView.visibility = View.VISIBLE
                     } else {
                         mAdapter.clearDiscussions()
@@ -134,9 +132,7 @@ class ForumFragment : Fragment() {
                 CoroutineScope(Dispatchers.Main).launch {
 
                     if (discussions.size == 0) {
-                        if(forumId != 1) emptyView.text = getString(R.string.no_announcements)
-                        else emptyView.text = getString(R.string.no_posts_to_display)
-
+                        emptyView.text = if (forumId != -1) getString(R.string.no_announcements) else getString(R.string.no_posts_to_display)
                         emptyView.visibility = View.VISIBLE
                         Toast
                             .makeText(context, getString(R.string.no_cached_data), Toast.LENGTH_SHORT)
