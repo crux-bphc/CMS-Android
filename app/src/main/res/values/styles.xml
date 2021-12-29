@@ -127,13 +127,13 @@
     </style>
 
     <style name="AlertDialog.Button.Positive" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textColor">?textButtonColor</item>1
+        <item name="android:textColor">?textButtonColor</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:textSize">14sp</item>
     </style>
 
     <style name="AlertDialog.Button.Negative" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textColor">?textButtonColor</item>1
+        <item name="android:textColor">?textButtonColor</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:textSize">14sp</item>
     </style>
