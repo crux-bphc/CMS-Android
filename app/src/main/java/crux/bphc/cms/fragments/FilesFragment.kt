@@ -21,6 +21,7 @@ import crux.bphc.cms.core.getFormattedFileSize
 import crux.bphc.cms.databinding.DownloadsFragmentBinding
 import crux.bphc.cms.models.Download
 import crux.bphc.cms.models.SingleLiveEvent
+import crux.bphc.cms.models.UserAccount
 import crux.bphc.cms.utils.FileUtils
 import crux.bphc.cms.viewmodels.FilesViewModel
 import kotlinx.android.synthetic.main.fragment_my_courses.*
@@ -111,7 +112,17 @@ class FilesFragment : Fragment() {
 
     private val deletedMessageObserver = Observer<SingleLiveEvent<Boolean>> { deletedSuccessfully ->
         deletedSuccessfully.getContentIfNotHandled()?.let { deleted ->
-            Snackbar.make(binding.downloadsCoordinator, getString(if (deleted) R.string.delete_file_success else R.string.delete_file_failed), Snackbar.LENGTH_SHORT).show()
+            val snackbar = Snackbar.make(binding.downloadsCoordinator, getString(if (deleted) R.string.delete_file_success else R.string.delete_file_failed), Snackbar.LENGTH_SHORT)
+            if(UserAccount.isDarkModeEnabled){
+                snackbar.setTextColor(resources.getColor(R.color.text_primary_dark))
+                snackbar.setBackgroundTint(resources.getColor(R.color.activityBackgroundDark))
+            }
+            else {
+                snackbar.setTextColor(resources.getColor(R.color.text_primary_light))
+                snackbar.setBackgroundTint(resources.getColor(R.color.activityBackgroundLight))
+            }
+
+            snackbar.show()
         }
     }
 
