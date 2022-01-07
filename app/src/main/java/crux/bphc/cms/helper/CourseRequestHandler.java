@@ -2,6 +2,7 @@ package crux.bphc.cms.helper;
 
 import android.content.Context;
 import android.util.Log;
+import android.util.Pair;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -29,6 +30,7 @@ import crux.bphc.cms.models.forum.Discussion;
 import crux.bphc.cms.models.forum.ForumData;
 import crux.bphc.cms.network.APIClient;
 import crux.bphc.cms.network.MoodleServices;
+import kotlin.text.Regex;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -246,7 +248,6 @@ public class CourseRequestHandler {
         return null;
     }
 
-
     @NotNull
     public List<Discussion> getForumDicussionsSync(int moduleId) throws IOException {
         Call<ForumData> call = moodleServices.getForumDiscussions(userAccount.getToken(), moduleId, 0, 0);
@@ -274,6 +275,41 @@ public class CourseRequestHandler {
                 }
             }
         });
+    }
+
+    @Nullable
+    public Pair<String,String> getEnrolIdSessKey(int courseId) {
+        String sessionCookie = UserSessionManager.INSTANCE.getFormattedSessionCookie();
+        Call<ResponseBody> call = moodleServices.viewCoursePage(sessionCookie, courseId);
+        try {
+            Response<ResponseBody> response = call.execute();
+            String rawHtml = response.body().string();
+            if (rawHtml == null) {
+                return null;
+            }
+
+            String enrolId = new Regex("enrolid=([0-9]+)").find(rawHtml, 0)
+                    .getGroupValues().get(1);
+            String sessKey = new Regex("sesskey=(\\w+)").find(rawHtml, 0)
+                    .getGroupValues().get(1);
+            return new Pair(enrolId, sessKey);
+        } catch (IOException | IndexOutOfBoundsException | NullPointerException e) {
+            Log.e(TAG, "Failed in getEnrolIdSessKey", e);
+            return null;
+        }
+    }
+
+    public boolean unenrolSelf(String enrolId, String sessKey) {
+        String sessionCookie = UserSessionManager.INSTANCE.getFormattedSessionCookie();
+        Call<ResponseBody> call = moodleServices.selfUnenrolCourse(sessionCookie, enrolId, sessKey);
+        try{
+            Response<ResponseBody> response = call.execute();
+            /* We have no way of verifying unenrolment success */
+            return true;
+        } catch (IOException e) {
+            Log.e(TAG, "Failed in unenrolSelf", e);
+            return false;
+        }
     }
 
     //This method resolves the names of files with same names

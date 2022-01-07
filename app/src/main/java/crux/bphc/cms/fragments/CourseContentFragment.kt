@@ -13,6 +13,7 @@ import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -22,6 +23,7 @@ import crux.bphc.cms.app.Urls
 import crux.bphc.cms.core.FileManager
 import crux.bphc.cms.fragments.MoreOptionsFragment.OptionsViewModel
 import crux.bphc.cms.helper.CourseDataHandler
+import crux.bphc.cms.helper.CourseManager
 import crux.bphc.cms.helper.CourseRequestHandler
 import crux.bphc.cms.interfaces.ClickListener
 import crux.bphc.cms.interfaces.CourseContent
@@ -43,8 +45,10 @@ import kotlin.collections.ArrayList
  */
 class CourseContentFragment : Fragment() {
     private lateinit var fileManager: FileManager
-    private lateinit var courseDataHandler: CourseDataHandler
     private lateinit var realm: Realm
+    private lateinit var courseDataHandler: CourseDataHandler
+    private lateinit var courseRequestHandler: CourseRequestHandler
+    private lateinit var courseManager: CourseManager
 
     var courseId: Int = 0
     private lateinit var courseName: String
@@ -86,8 +90,12 @@ class CourseContentFragment : Fragment() {
         courseName = courseDataHandler.getCourseName(courseId)
         courseSections = courseDataHandler.getCourseData(courseId)
 
+        courseRequestHandler = CourseRequestHandler()
+
         fileManager = FileManager(requireActivity(), courseName) { setCourseContentsOnAdapter() }
         fileManager.registerDownloadReceiver()
+
+        courseManager = CourseManager(courseId, courseRequestHandler)
 
         setHasOptionsMenu(true)
     }
@@ -325,7 +333,6 @@ class CourseContentFragment : Fragment() {
 
     private fun refreshContent(contextUrl: String = "") {
         CoroutineScope(Dispatchers.IO).launch {
-            val courseRequestHandler = CourseRequestHandler()
             var sections = mutableListOf<CourseSection>()
             try {
                 sections = courseRequestHandler.getCourseDataSync(courseId)
@@ -391,16 +398,22 @@ class CourseContentFragment : Fragment() {
             setCourseContentsOnAdapter()
             Toast.makeText(activity, "Marked all as read", Toast.LENGTH_SHORT).show()
             return true
-        }
-        if (item.itemId == R.id.action_open_in_browser) {
+        } else if (item.itemId == R.id.action_open_in_browser) {
             Utils.openURLInBrowser(requireActivity(), Urls.getCourseUrl(courseId).toString())
+            return true;
+        } else {
+            viewLifecycleOwner.lifecycleScope.launch {
+                courseManager.unenrolCourse(requireContext())
+            }
         }
+
+
         return super.onOptionsItemSelected(item)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.course_details_menu, menu)
         super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.course_details_menu, menu)
     }
 
     override fun onDestroy() {
