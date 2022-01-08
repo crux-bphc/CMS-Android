@@ -52,6 +52,7 @@
     <string name="course_enrol_self_enrol_button">Enrol me</string>
     <string name="course_enrol_teachers_no_info">No information available about teachers</string>
     <string name="course_enrol_confirmation_msg">Are you sure you want to enrol yourself in this course?</string>
+    <string name="course_enrol_course_already_enrolled_msg">You are already enrolled in this course</string>
 
     <!-- App Info -->
     <string name="app_info"><![CDATA[This companion app for Moodle (CMS) is open source. It provides live notifications
