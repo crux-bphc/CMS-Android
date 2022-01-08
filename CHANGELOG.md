@@ -11,6 +11,7 @@ Dates are in `yyyy-mm-dd`.
 ### Chaanged
 
 ### Fixed
+* Enrolling in an already enrolled course does not give a meaningful error
 
 ## Version 1.9 (verCode 1090000), 2021-08-20
 ### Added
