@@ -2,6 +2,7 @@ package crux.bphc.cms.fragments
 
 import android.app.ProgressDialog
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -12,16 +13,21 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import crux.bphc.cms.R
 import crux.bphc.cms.app.Urls
 import crux.bphc.cms.fragments.CourseContentFragment.Companion.newInstance
+import crux.bphc.cms.helper.CourseDataHandler
+import crux.bphc.cms.helper.CourseRequestHandler
 import crux.bphc.cms.models.UserAccount
 import crux.bphc.cms.models.course.Course
 import crux.bphc.cms.models.enrol.SearchedCourseDetail
 import crux.bphc.cms.models.enrol.SelfEnrol
 import crux.bphc.cms.network.MoodleServices
 import io.realm.Realm
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -55,6 +61,25 @@ class CourseEnrolFragment : Fragment() {
         val teachers = course.contacts
         val noTeacherInfo = view.findViewById<TextView>(R.id.course_enrol_teacher_no_info)
         val mEnrolButton = view.findViewById<Button>(R.id.course_enrol_enrol_button)
+        val courses: MutableList<Course> = ArrayList()
+
+        lifecycleScope.launch {
+            launch(Dispatchers.IO) {
+                val courseRequestHandler = CourseRequestHandler()
+                try {
+                    val courseList = courseRequestHandler.fetchCourseListSync()
+                    courses.clear()
+                    courses.addAll(courseList)
+                    val realm = Realm.getDefaultInstance() // tie a realm instance to this thread
+                    val courseDataHandler = CourseDataHandler(realm)
+                    courseDataHandler.replaceCourses(courseList)
+                    realm.close()
+
+                } catch (e: Exception) {
+                    Log.e("CourseEnrolFragment", "", e)
+                }
+            }
+        }
 
         mCourseDisplayName.text = course.displayName
         mCourseCategory.text = course.categoryName
@@ -130,7 +155,7 @@ class CourseEnrolFragment : Fragment() {
                         .replace(R.id.course_section_enrol_container, courseSectionFragment)
                         .commit()
                 } else {
-                    Toast.makeText(activity, "Unknown error occurred", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity, R.string.course_enrol_course_already_enrolled_msg, Toast.LENGTH_SHORT).show()
                 }
             }
 
