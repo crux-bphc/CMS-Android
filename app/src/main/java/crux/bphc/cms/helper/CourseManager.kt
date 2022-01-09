@@ -40,7 +40,7 @@ class CourseManager(val courseId: Int, val courseRequestHandler: CourseRequestHa
         }
 
         if (ret) {
-            Toast.makeText(context, "Sucessfully unenroled from course!", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "Successfully unenroled from course!", Toast.LENGTH_LONG).show()
         } else {
             Toast.makeText(context, "Failed to unenrol from course!", Toast.LENGTH_LONG ).show()
         }

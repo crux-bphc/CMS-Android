@@ -116,4 +116,5 @@
     <string name="folder_no_items_one">1 item, %1$s</string>
     <string name="folder_no_items_many">%1$d items, %2$s</string>
     <string name="unenrol_course">Unenrol</string>
+    <string name="refreshRequired">refreshRequired</string>
 </resources>

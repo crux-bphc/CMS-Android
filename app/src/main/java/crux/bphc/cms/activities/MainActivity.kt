@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -120,6 +121,17 @@ class MainActivity : AppCompatActivity() {
 
         resolveIntent()
         resolveModuleLinkShare()
+
+        //checks if the attempt to unenrol was successful and instructs the MyCoursesFragment() to refresh
+        val fragment = MyCoursesFragment()
+        val unenrolResult = intent.getBooleanExtra(CourseContentFragment.INTENT_UNENROL_RESULT,false)
+        if(unenrolResult){
+            val bundle = Bundle()
+            bundle.putBoolean(getString(R.string.refreshRequired),true)
+            fragment.arguments = bundle
+            supportFragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit()
+        }
+
     }
 
     override fun onBackPressed() {
