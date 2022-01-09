@@ -1,8 +1,16 @@
 package crux.bphc.cms.models
 
 import android.content.Context
+import android.os.Build
+import android.util.Log
 import crux.bphc.cms.app.MyApplication
 import crux.bphc.cms.models.core.UserDetail
+import crux.bphc.cms.network.APIClient
+import crux.bphc.cms.network.MoodleServices
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.time.Instant
 
 /**
  * @author Harshit Agarwal (16-Dec-2016)
@@ -19,6 +27,34 @@ object UserAccount {
 
     val token: String
         get() = prefs.getString("token", "") ?: ""
+
+    val privateToken: String
+        get() = prefs.getString("privateToken", "") ?: ""
+
+    /**
+     * A session cookie that is associated with the current user.
+     * The session may have expired and the cookie may be invalid.
+     */
+    var sessionCookie: String
+        get() = prefs.getString("sessionCookie", "") ?: ""
+        set(value) {
+            prefs.edit()
+                .putString("sessionCookie", value)
+                .apply()
+        }
+
+    /**
+     * The approx. UNIX epoch  at which this session cookie was
+     * generated. Can be used to roughly estimate the validity
+     * of the session cookie.
+     */
+    var sessionCookieGenEpoch: Long
+        get() = prefs.getLong("sessionCookieGenEpoch", -1)
+        set(value) {
+            prefs.edit()
+                .putLong("sessionCookieGenEpoch", value)
+                .apply()
+        }
 
     val username: String
         get() = prefs.getString("username", "") ?: ""
@@ -48,9 +84,7 @@ object UserAccount {
                 .putString("token", userDetail.token)
                 // the private token can be used to create an http sesion
                 // check /admin/tool/mobile/autologin.php
-                .putString("privateToken", userDetail.privateToken) // the private token can be used to
-                // create an http session from
-                // che
+                .putString("privateToken", userDetail.privateToken)
                 .putString("firstname", userDetail.firstName)
                 .putString("lastname", userDetail.lastName)
                 .putString("userpictureurl", userDetail.userPictureUrl)

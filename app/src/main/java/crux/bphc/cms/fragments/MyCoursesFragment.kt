@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -46,9 +47,9 @@ class MyCoursesFragment : Fragment() {
 
     // Activity result launchers
     private val courseDetailActivityLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                mAdapter.filterCoursesByName(courses, searchCourseET.text.toString())
-            }
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            mAdapter.filterCoursesByName(courses, searchCourseET.text.toString())
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,8 +61,10 @@ class MyCoursesFragment : Fragment() {
         requireActivity().title = "My Courses"
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         realm = Realm.getDefaultInstance()
         return inflater.inflate(R.layout.fragment_my_courses, container, false)
     }
@@ -82,7 +85,8 @@ class MyCoursesFragment : Fragment() {
                     realm.close()
 
                     CoroutineScope(Dispatchers.Main).launch {
-                        Toast.makeText(requireActivity(), "Marked all as read", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireActivity(), "Marked all as read", Toast.LENGTH_SHORT)
+                            .show()
                         mAdapter.courses = this@MyCoursesFragment.courseDataHandler.courseList
                     }
                 }
@@ -109,18 +113,29 @@ class MyCoursesFragment : Fragment() {
             return@ClickListener true
         }
 
+        //ensures refreshing of courses after user unenrols from one
+        val refreshRequired = arguments?.getBoolean(getString(R.string.refreshRequired), false)
+        if (refreshRequired == true) {
+            swipeRefreshLayout.isRefreshing = true
+            refreshCourses()
+        }
+
+
         mAdapter.downloadClickListener = ClickListener { `object`: Any, position: Int ->
             val course = `object` as Course
             if (course.downloadStatus != -1) return@ClickListener false
             course.downloadStatus = 0
             mAdapter.notifyItemChanged(position)
-            val courseDownloader = CourseDownloader(activity, courseDataHandler.getCourseName(course.id))
+
+            val courseDownloader =
+                CourseDownloader(activity, courseDataHandler.getCourseName(course.id))
             courseDownloader.setDownloadCallback(object : CourseDownloader.DownloadCallback {
                 override fun onCourseDataDownloaded() {
                     course.downloadedFiles = courseDownloader.getDownloadedContentCount(course.id)
                     course.totalFiles = courseDownloader.getTotalContentCount(course.id)
                     if (course.totalFiles == course.downloadedFiles) {
-                        Toast.makeText(activity, "All files already downloaded", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(activity, "All files already downloaded", Toast.LENGTH_SHORT)
+                            .show()
                         course.downloadStatus = -1
                     } else {
                         course.downloadStatus = 1
@@ -140,7 +155,7 @@ class MyCoursesFragment : Fragment() {
 
                 override fun onFailure() {
                     Toast.makeText(activity, "Check your internet connection", Toast.LENGTH_SHORT)
-                            .show()
+                        .show()
                     course.downloadStatus = -1
                     mAdapter.notifyItemChanged(position)
                     courseDownloader.unregisterReceiver()
@@ -165,12 +180,15 @@ class MyCoursesFragment : Fragment() {
                         searchCourseET.setText("")
                         searchIcon.setImageResource(R.drawable.ic_search)
                         searchIcon.setOnClickListener(null)
-                        val inputManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE)
-                                as? InputMethodManager
+                        val inputManager =
+                            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE)
+                                    as? InputMethodManager
                         val currentFocus = requireActivity().currentFocus
                         if (currentFocus != null) {
-                            inputManager?.hideSoftInputFromWindow(currentFocus.windowToken,
-                                    InputMethodManager.HIDE_NOT_ALWAYS)
+                            inputManager?.hideSoftInputFromWindow(
+                                currentFocus.windowToken,
+                                InputMethodManager.HIDE_NOT_ALWAYS
+                            )
                         }
                     }
                 } else {
@@ -209,12 +227,15 @@ class MyCoursesFragment : Fragment() {
                     val courseDataHandler = CourseDataHandler(realm)
                     courseDataHandler.replaceCourses(courseList)
                     realm.close()
-                    checkEmpty()
+                    withContext(Dispatchers.Main){
+                        checkEmpty()
+                    }
                     updateCourseContent()
                 } catch (e: Exception) {
                     Log.e(TAG, "", e)
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(requireActivity(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireActivity(), "Error: ${e.message}", Toast.LENGTH_SHORT)
+                            .show()
                         if (e is InvalidTokenException) {
                             UserUtils.logout()
                             UserUtils.clearBackStackAndLaunchTokenActivity(requireActivity())
@@ -264,8 +285,10 @@ class MyCoursesFragment : Fragment() {
                 val message: String = if (coursesUpdated == 0) {
                     getString(R.string.upToDate)
                 } else {
-                    resources.getQuantityString(R.plurals.noOfCoursesUpdated, coursesUpdated,
-                            coursesUpdated)
+                    resources.getQuantityString(
+                        R.plurals.noOfCoursesUpdated, coursesUpdated,
+                        coursesUpdated
+                    )
                 }
                 Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
             }
@@ -278,8 +301,8 @@ class MyCoursesFragment : Fragment() {
     }
 
     private inner class Adapter constructor(
-            val context: Context,
-            courseList: List<Course>
+        val context: Context,
+        courseList: List<Course>
     ) : RecyclerView.Adapter<Adapter.MyViewHolder>() {
         private val inflater: LayoutInflater = LayoutInflater.from(context)
 
@@ -336,7 +359,8 @@ class MyCoursesFragment : Fragment() {
                 val count = courseDataHandler.getUnreadCount(course.id)
                 itemView.course_number.text = course.courseName[0]
                 itemView.course_name.text = name
-                itemView.unread_count.text = DecimalFormat.getIntegerInstance().format(count.toLong())
+                itemView.unread_count.text =
+                    DecimalFormat.getIntegerInstance().format(count.toLong())
                 itemView.unread_count.isVisible = count != 0
                 itemView.mark_as_read_button.isVisible = count != 0
                 itemView.favorite_button.setImageResource(if (course.isFavorite) R.drawable.ic_fav_filled else R.drawable.ic_fav_outlined)
@@ -344,19 +368,21 @@ class MyCoursesFragment : Fragment() {
 
             fun confirmDownloadCourse() {
                 MaterialAlertDialogBuilder(context)
-                        .setTitle("Confirm Download")
-                        .setMessage("Are you sure you want to all the contents of this course?")
-                        .setPositiveButton("Yes") { _: DialogInterface?, _: Int ->
-                            if (downloadClickListener != null) {
-                                val pos = layoutPosition
-                                if (!downloadClickListener!!.onClick(courses[pos], pos)) {
-                                    Toast.makeText(activity, "Download already in progress",
-                                            Toast.LENGTH_SHORT).show()
-                                }
+                    .setTitle("Confirm Download")
+                    .setMessage("Are you sure you want to all the contents of this course?")
+                    .setPositiveButton("Yes") { _: DialogInterface?, _: Int ->
+                        if (downloadClickListener != null) {
+                            val pos = layoutPosition
+                            if (!downloadClickListener!!.onClick(courses[pos], pos)) {
+                                Toast.makeText(
+                                    activity, "Download already in progress",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
-                        .setNegativeButton("Cancel", null)
-                        .show()
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
             }
 
             fun markCourseAsRead() {
@@ -373,7 +399,8 @@ class MyCoursesFragment : Fragment() {
                 course.isFavorite = isFavourite
                 courses = sortCourses(courses)
                 notifyDataSetChanged()
-                val toast = if (isFavourite) getString(R.string.added_to_favorites) else getString(R.string.removed_from_favorites)
+                val toast =
+                    if (isFavourite) getString(R.string.added_to_favorites) else getString(R.string.removed_from_favorites)
                 Toast.makeText(activity, toast, Toast.LENGTH_SHORT).show()
             }
 
@@ -386,7 +413,12 @@ class MyCoursesFragment : Fragment() {
                 }
 
                 itemView.mark_as_read_button.setOnClickListener { markCourseAsRead() }
-                itemView.favorite_button.setOnClickListener { setFavoriteStatus(layoutPosition, !courses[layoutPosition].isFavorite) }
+                itemView.favorite_button.setOnClickListener {
+                    setFavoriteStatus(
+                        layoutPosition,
+                        !courses[layoutPosition].isFavorite
+                    )
+                }
                 itemView.download_image.setOnClickListener { confirmDownloadCourse() }
             }
         }
