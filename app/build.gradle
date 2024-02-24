@@ -51,9 +51,10 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    lintOptions {
-        lintConfig file('lint.xml')
+    namespace 'crux.bphc.cms'
+    lint {
         abortOnError false
+        lintConfig file('lint.xml')
     }
 }
 
