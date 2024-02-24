@@ -6,7 +6,6 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -15,6 +14,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import crux.bphc.cms.R
 import crux.bphc.cms.app.Urls
+import crux.bphc.cms.databinding.FragmentCourseEnrolBinding
 import crux.bphc.cms.fragments.CourseContentFragment.Companion.newInstance
 import crux.bphc.cms.models.UserAccount
 import crux.bphc.cms.models.course.Course
@@ -31,9 +31,11 @@ import retrofit2.converter.gson.GsonConverterFactory
 class CourseEnrolFragment : Fragment() {
     private lateinit var realm: Realm
     private lateinit var course: SearchedCourseDetail
+    private lateinit var binding: FragmentCourseEnrolBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = FragmentCourseEnrolBinding.inflate(layoutInflater)
         course = requireArguments().getParcelable(COURSE_KEY) ?: SearchedCourseDetail()
         realm = Realm.getDefaultInstance()
     }
@@ -44,28 +46,23 @@ class CourseEnrolFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         realm = Realm.getDefaultInstance()
-        return inflater.inflate(R.layout.fragment_course_enrol, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val mCourseDisplayName = view.findViewById<TextView>(R.id.course_enrol_course_display_name)
-        val mCourseCategory = view.findViewById<TextView>(R.id.course_enrol_course_category)
-        val mTeachers = view.findViewById<LinearLayout>(R.id.course_enrol_teachers)
         val teachers = course.contacts
-        val noTeacherInfo = view.findViewById<TextView>(R.id.course_enrol_teacher_no_info)
-        val mEnrolButton = view.findViewById<Button>(R.id.course_enrol_enrol_button)
 
-        mCourseDisplayName.text = course.displayName
-        mCourseCategory.text = course.categoryName
-        mEnrolButton.setOnClickListener { createEnrollmentConfirmationDialog().show() }
+        binding.courseEnrolCourseDisplayName.text = course.displayName
+        binding.courseEnrolCourseCategory.text = course.categoryName
+        binding.courseEnrolEnrolButton.setOnClickListener { createEnrollmentConfirmationDialog().show() }
 
         if (teachers.isEmpty()) {
-            noTeacherInfo.visibility = View.VISIBLE
+            binding.courseEnrolTeacherNoInfo.visibility = View.VISIBLE
             return
         }
-        noTeacherInfo.visibility = View.GONE
-        val layoutParams = noTeacherInfo.layoutParams as LinearLayout.LayoutParams
+        binding.courseEnrolTeacherNoInfo.visibility = View.GONE
+        val layoutParams = binding.courseEnrolTeacherNoInfo.layoutParams as LinearLayout.LayoutParams
         layoutParams.setMargins(0, 8, 0, 0)
         val typedValue = TypedValue()
         requireActivity().theme.resolveAttribute(
@@ -87,7 +84,7 @@ class CourseEnrolFragment : Fragment() {
             teacherName.setTextColor(textColor)
             teacherName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
             teacherName.setPaddingRelative(8, 0, 8, 0)
-            mTeachers.addView(teacherName)
+            binding.courseEnrolTeachers.addView(teacherName)
         }
     }
 

@@ -5,7 +5,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AlertDialog
@@ -14,12 +13,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import crux.bphc.cms.R
 import crux.bphc.cms.adapters.CourseContentAdapter
 import crux.bphc.cms.app.Urls
 import crux.bphc.cms.core.FileManager
+import crux.bphc.cms.databinding.FragmentCourseSectionBinding
 import crux.bphc.cms.fragments.MoreOptionsFragment.OptionsViewModel
 import crux.bphc.cms.helper.CourseDataHandler
 import crux.bphc.cms.helper.CourseRequestHandler
@@ -35,7 +33,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.IOException
-import java.util.*
 import kotlin.collections.ArrayList
 
 /**
@@ -45,14 +42,12 @@ class CourseContentFragment : Fragment() {
     private lateinit var fileManager: FileManager
     private lateinit var courseDataHandler: CourseDataHandler
     private lateinit var realm: Realm
+    private lateinit var binding: FragmentCourseSectionBinding
 
     var courseId: Int = 0
     private lateinit var courseName: String
     private lateinit var courseSections: List<CourseSection>
 
-    private lateinit var empty: TextView
-    private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
-    private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: CourseContentAdapter
     private lateinit var moreOptionsViewModel: OptionsViewModel
 
@@ -64,8 +59,8 @@ class CourseContentFragment : Fragment() {
             val contents = ArrayList<CourseContent>()
             courseSections.stream().filter { courseSection: CourseSection ->
                 !(courseSection.modules.isEmpty()
-                    && courseSection.summary.isEmpty()
-                    && courseSection.name.matches(Regex("^Topic \\d*$")))
+                        && courseSection.summary.isEmpty()
+                        && courseSection.name.matches(Regex("^Topic \\d*$")))
             }.forEach { courseSection: CourseSection ->
                 contents.add(courseSection)
                 contents.addAll(courseSection.modules)
@@ -88,6 +83,7 @@ class CourseContentFragment : Fragment() {
 
         fileManager = FileManager(requireActivity(), courseName) { setCourseContentsOnAdapter() }
         fileManager.registerDownloadReceiver()
+        binding = FragmentCourseSectionBinding.inflate(layoutInflater)
 
         setHasOptionsMenu(true)
     }
@@ -99,42 +95,38 @@ class CourseContentFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_course_section, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        moreOptionsViewModel = ViewModelProvider(requireActivity()).get(OptionsViewModel::class.java)
-
-        empty = view.findViewById(R.id.empty) as TextView
-        mSwipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
-        recyclerView = view.findViewById(R.id.recycler_view)
+        moreOptionsViewModel = ViewModelProvider(requireActivity())[OptionsViewModel::class.java]
 
         courseSections = courseDataHandler.getCourseData(courseId)
         if (courseSections.isEmpty()) {
-            mSwipeRefreshLayout.isRefreshing = true
+            binding.swipeRefreshLayout.isRefreshing = true
             refreshContent()
         }
 
         adapter = CourseContentAdapter(requireActivity(), courseContents, fileManager,
-                moduleClickWrapperClickListener, moduleMoreOptionsClickListener)
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(activity)
-        recyclerView.setItemViewCacheSize(10)
+            moduleClickWrapperClickListener, moduleMoreOptionsClickListener)
+        binding.recyclerView.adapter = adapter
+        binding.recyclerView.layoutManager = LinearLayoutManager(activity)
+        binding.recyclerView.setItemViewCacheSize(10)
 
         val contextUrl = requireArguments().getString(CONTEXT_URL_KEY) ?: ""
         if (contextUrl.isNotEmpty()) {
-            mSwipeRefreshLayout.isRefreshing = true
+            binding.swipeRefreshLayout.isRefreshing = true
             refreshContent(contextUrl) // If there is a url, there may be updates
         }
 
-        mSwipeRefreshLayout.setOnRefreshListener {
-            mSwipeRefreshLayout.isRefreshing = true
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            binding.swipeRefreshLayout.isRefreshing = true
             refreshContent()
         }
-        empty.setOnClickListener {
-            mSwipeRefreshLayout.isRefreshing = true
+        binding.empty.setOnClickListener {
+            binding.swipeRefreshLayout.isRefreshing = true
             refreshContent()
         }
         showSectionsOrEmpty()
@@ -151,10 +143,10 @@ class CourseContentFragment : Fragment() {
             val options = ArrayList<MoreOptionsFragment.Option>()
             val observer: Observer<MoreOptionsFragment.Option?> = if (downloaded) {
                 options.addAll(listOf(
-                        MoreOptionsFragment.Option(0, "View", R.drawable.eye),
-                        MoreOptionsFragment.Option(1, "Re-Download", R.drawable.outline_file_download_24),
-                        MoreOptionsFragment.Option(2, "Share", R.drawable.ic_share),
-                        MoreOptionsFragment.Option(3, "Mark as Unread", R.drawable.eye_off)
+                    MoreOptionsFragment.Option(0, "View", R.drawable.eye),
+                    MoreOptionsFragment.Option(1, "Re-Download", R.drawable.outline_file_download_24),
+                    MoreOptionsFragment.Option(2, "Share", R.drawable.ic_share),
+                    MoreOptionsFragment.Option(3, "Mark as Unread", R.drawable.eye_off)
                 ))
                 if (module.modType === Module.Type.RESOURCE) {
                     options.add(MoreOptionsFragment.Option(4, "Properties", R.drawable.ic_info))
@@ -168,7 +160,7 @@ class CourseContentFragment : Fragment() {
                                 return@label
                             }
                             Toast.makeText(activity, "Downloading file - " + content!!.fileName,
-                                    Toast.LENGTH_SHORT).show()
+                                Toast.LENGTH_SHORT).show()
                             fileManager.downloadModuleContent(content, module)
                         }
                         2 -> fileManager.shareModuleContent(content!!)
@@ -183,13 +175,13 @@ class CourseContentFragment : Fragment() {
                 }
             } else {
                 options.addAll(listOf(
-                        MoreOptionsFragment.Option(0, "Download", R.drawable.outline_file_download_24),
-                        MoreOptionsFragment.Option(1, "Share", R.drawable.ic_share),
-                        MoreOptionsFragment.Option(2, "Mark as Unread", R.drawable.eye_off)
+                    MoreOptionsFragment.Option(0, "Download", R.drawable.outline_file_download_24),
+                    MoreOptionsFragment.Option(1, "Share", R.drawable.ic_share),
+                    MoreOptionsFragment.Option(2, "Mark as Unread", R.drawable.eye_off)
                 ))
                 if (module.modType === Module.Type.RESOURCE) {
                     options.add(MoreOptionsFragment.Option(
-                            3, "Properties", R.drawable.ic_info))
+                        3, "Properties", R.drawable.ic_info))
                 }
                 Observer label@ { option: MoreOptionsFragment.Option? ->
                     if (option == null) return@label
@@ -219,7 +211,7 @@ class CourseContentFragment : Fragment() {
             if (activity != null) {
                 val moreOptionsFragment = MoreOptionsFragment.newInstance(module.name, options)
                 moreOptionsFragment.show(requireActivity().supportFragmentManager,
-                        moreOptionsFragment.tag)
+                    moreOptionsFragment.tag)
                 moreOptionsViewModel.selection.observe(activity, observer)
                 courseDataHandler.markModuleAsRead(module);
                 adapter.notifyItemChanged(position)
@@ -245,10 +237,10 @@ class CourseContentFragment : Fragment() {
                         ForumFragment.newInstance(courseId, module.instance, courseName)
                     else FolderModuleFragment.newInstance(module.instance, courseName)
                     activity.supportFragmentManager
-                            .beginTransaction()
-                            .addToBackStack(null)
-                            .replace(R.id.course_section_enrol_container, fragment, "Announcements")
-                            .commit()
+                        .beginTransaction()
+                        .addToBackStack(null)
+                        .replace(R.id.course_section_enrol_container, fragment, "Announcements")
+                        .commit()
                 }
                 Module.Type.LABEL -> {
                     val desc = module.description
@@ -259,7 +251,7 @@ class CourseContentFragment : Fragment() {
                             AlertDialog.Builder(activity, R.style.Theme_AppCompat_Light_Dialog_Alert)
                         }
                         val htmlDescription = HtmlCompat.fromHtml(module.description,
-                                HtmlCompat.FROM_HTML_MODE_COMPACT)
+                            HtmlCompat.FROM_HTML_MODE_COMPACT)
                         val descriptionWithOutExtraSpace = htmlDescription.toString().trim { it <= ' ' }
                         alertDialog.setMessage(htmlDescription.subSequence(0, descriptionWithOutExtraSpace.length))
                         alertDialog.setNegativeButton("Close", null)
@@ -271,7 +263,7 @@ class CourseContentFragment : Fragment() {
                         fileManager.openModuleContent(content)
                     } else {
                         Toast.makeText(getActivity(), "Downloading file - " + content.fileName,
-                                Toast.LENGTH_SHORT).show()
+                            Toast.LENGTH_SHORT).show()
                         fileManager.downloadModuleContent(content, module)
                     }
                 }
@@ -309,18 +301,18 @@ class CourseContentFragment : Fragment() {
             position = adapter.getPositionFromSectionNum(sectionNum)
         }
 
-        recyclerView.smoothScrollToPosition(position)
+        binding.recyclerView.smoothScrollToPosition(position)
     }
 
 
     private fun showSectionsOrEmpty() {
         if (courseSections.stream().anyMatch { section: CourseSection -> !section.modules.isEmpty() }) {
-            empty.visibility = View.GONE
-            recyclerView.visibility = View.VISIBLE
+            binding.empty.visibility = View.GONE
+            binding.recyclerView.visibility = View.VISIBLE
             return
         }
-        empty.visibility = View.VISIBLE
-        recyclerView.visibility = View.GONE
+        binding.empty.visibility = View.VISIBLE
+        binding.recyclerView.visibility = View.GONE
     }
 
     private fun refreshContent(contextUrl: String = "") {
@@ -333,12 +325,12 @@ class CourseContentFragment : Fragment() {
                 Log.e(TAG, "IOException when syncing course: ${courseId}}", e)
                 if (courseSections.isEmpty()) {
                     CoroutineScope(Dispatchers.Main).launch {
-                        empty.text = resources.getText(R.string.failed_course_content_refresh)
-                        empty.visibility = View.VISIBLE
-                        recyclerView.visibility = View.GONE
+                        binding.empty.text = resources.getText(R.string.failed_course_content_refresh)
+                        binding.empty.visibility = View.VISIBLE
+                        binding.recyclerView.visibility = View.GONE
 
                         Toast.makeText(activity, "Unable to connect to server!", Toast.LENGTH_SHORT).show()
-                        mSwipeRefreshLayout.isRefreshing = false
+                        binding.swipeRefreshLayout.isRefreshing = false
                     }
                 }
             }
@@ -353,13 +345,13 @@ class CourseContentFragment : Fragment() {
                 for (module in modules) {
                     if (module.modType == Module.Type.FORUM) {
                         val discussions = courseRequestHandler
-                                .getForumDicussionsSync(module.instance)
+                            .getForumDicussionsSync(module.instance)
                         for (d in discussions) {
                             d.forumId = module.instance
                         }
 
                         val newDiscussions = courseDataHandler
-                                .setForumDiscussions(module.instance, discussions)
+                            .setForumDiscussions(module.instance, discussions)
                         if (newDiscussions.size > 0) {
                             courseDataHandler.markModuleAsUnread(module);
                         }
@@ -371,9 +363,9 @@ class CourseContentFragment : Fragment() {
             CoroutineScope(Dispatchers.Main).launch {
                 setCourseContentsOnAdapter()
                 findAndScrollToPosition(contextUrl)
-                mSwipeRefreshLayout.isRefreshing = false
-                empty.visibility = View.GONE
-                recyclerView.visibility = View.VISIBLE
+                binding.swipeRefreshLayout.isRefreshing = false
+                binding.empty.visibility = View.GONE
+                binding.recyclerView.visibility = View.VISIBLE
             }
         }
     }

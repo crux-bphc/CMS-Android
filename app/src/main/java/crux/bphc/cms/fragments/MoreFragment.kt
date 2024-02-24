@@ -10,69 +10,74 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import crux.bphc.cms.BuildConfig
-import crux.bphc.cms.R
 import crux.bphc.cms.activities.MainActivity
 import crux.bphc.cms.activities.TokenActivity
 import crux.bphc.cms.app.Urls
+import crux.bphc.cms.databinding.FragmentMoreBinding
 import crux.bphc.cms.models.UserAccount
 import crux.bphc.cms.utils.UserUtils
 import crux.bphc.cms.utils.Utils
-import kotlinx.android.synthetic.main.fragment_more.*
-
 
 class MoreFragment : Fragment() {
+    private lateinit var binding: FragmentMoreBinding
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = FragmentMoreBinding.inflate(layoutInflater)
+    }
 
     override fun onStart() {
         super.onStart()
         requireActivity().title = "More"
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
-            inflater.inflate(R.layout.fragment_more, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        website_card.setOnClickListener {
+        binding.websiteCard.setOnClickListener {
             Utils.openURLInBrowser(requireActivity(), Urls.MOODLE_URL.toString())
         }
 
-        share_card.setOnClickListener {
+        binding.shareCard.setOnClickListener {
             val appPackageName = BuildConfig.APPLICATION_ID
             val sendIntent = Intent()
             sendIntent.action = Intent.ACTION_SEND
             sendIntent.putExtra(Intent.EXTRA_TEXT,
-                    "Check out the CMS App: https://play.google.com/store/apps/details?id=$appPackageName")
+                "Check out the CMS App: https://play.google.com/store/apps/details?id=$appPackageName")
             sendIntent.type = "text/plain"
             startActivity(sendIntent)
         }
 
-        issue_card.setOnClickListener {
+        binding.issueCard.setOnClickListener {
             Utils.openURLInBrowser(requireActivity(), Urls.getFeedbackURL(
                 UserAccount.firstName,
                 UserAccount.username
             ))
         }
 
-        about_card.setOnClickListener {
+        binding.aboutCard.setOnClickListener {
             pushView(InfoFragment(), "info")
         }
 
-        settings_card.setOnClickListener {
+        binding.settingsCard.setOnClickListener {
             pushView(PreferencesFragment(), "settings")
         }
 
-        logout_card.setOnClickListener {
+        binding.logoutCard.setOnClickListener {
             askToLogout().show()
         }
 
         val details = Utils.userDetails(UserAccount.firstName, UserAccount.username)
-        name_text.text = details[0]
-        username_text.text = details[1]
+        binding.nameText.text = details[0]
+        binding.usernameText.text = details[1]
 
         // Set version code and commit hash
-        app_version_name.text = BuildConfig.VERSION_NAME
-        commit_hash.text = BuildConfig.COMMIT_HASH
+        binding.appVersionName.text = BuildConfig.VERSION_NAME
+        binding.commitHash.text = BuildConfig.COMMIT_HASH
     }
 
     private fun pushView(fragment: Fragment, tag: String) {
@@ -88,13 +93,13 @@ class MoreFragment : Fragment() {
 
     private fun askToLogout(): AlertDialog {
         val dialog = MaterialAlertDialogBuilder(requireContext())
-                .setMessage("Are you sure you want to logout?")
-                .setPositiveButton("Yes") { _, _ ->
-                    logout()
-                }
-                .setNegativeButton("Cancel") { _, _ ->
-                    // Do nothing
-                }
+            .setMessage("Are you sure you want to logout?")
+            .setPositiveButton("Yes") { _, _ ->
+                logout()
+            }
+            .setNegativeButton("Cancel") { _, _ ->
+                // Do nothing
+            }
         return dialog.create()
     }
 

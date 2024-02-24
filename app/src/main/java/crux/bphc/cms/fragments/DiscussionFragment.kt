@@ -2,22 +2,21 @@ package crux.bphc.cms.fragments
 
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.MainThread
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import crux.bphc.cms.R
 import crux.bphc.cms.app.Urls
 import crux.bphc.cms.core.FileManager
+import crux.bphc.cms.databinding.FragmentDiscussionBinding
+import crux.bphc.cms.databinding.RowAttachmentDetailForumBinding
 import crux.bphc.cms.fragments.MoreOptionsFragment.Companion.newInstance
 import crux.bphc.cms.fragments.MoreOptionsFragment.OptionsViewModel
 import crux.bphc.cms.helper.CourseDataHandler
@@ -25,9 +24,9 @@ import crux.bphc.cms.helper.CourseRequestHandler
 import crux.bphc.cms.models.forum.Attachment
 import crux.bphc.cms.models.forum.Discussion
 import crux.bphc.cms.utils.Utils
-import crux.bphc.cms.widgets.HtmlTextView
 import crux.bphc.cms.widgets.PropertiesAlertDialog
 import io.realm.Realm
+import io.realm.RealmList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,18 +36,9 @@ import java.util.*
 class DiscussionFragment : Fragment() {
 
     private lateinit var realm: Realm
+    private lateinit var binding: FragmentDiscussionBinding
     private lateinit var fileManager: FileManager
     private lateinit var moreOptionsViewModel: OptionsViewModel
-
-    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
-    private lateinit var empty: TextView
-    private lateinit var content: LinearLayout
-    private lateinit var userPic: ImageView
-    private lateinit var subject: TextView
-    private lateinit var userName: TextView
-    private lateinit var timeModified: TextView
-    private lateinit var message: HtmlTextView
-    private lateinit var attachmentContainer: LinearLayout
     private lateinit var discussion: Discussion
 
     private var courseId: Int = 0
@@ -65,35 +55,26 @@ class DiscussionFragment : Fragment() {
 
         fileManager = FileManager(requireActivity(), mCourseName) { oneFileDownloaded(it) }
         realm = Realm.getDefaultInstance()
+        binding = FragmentDiscussionBinding.inflate(layoutInflater)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_discussion, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        moreOptionsViewModel = ViewModelProvider(requireActivity()).get(OptionsViewModel::class.java)
+        moreOptionsViewModel = ViewModelProvider(requireActivity())[OptionsViewModel::class.java]
 
-        swipeRefreshLayout = view.findViewById(R.id.refresh)
-        empty = view.findViewById(R.id.empty)
-        content = view.findViewById(R.id.content)
-        userPic = view.findViewById(R.id.user_pic)
-        subject = view.findViewById(R.id.subject)
-        userName = view.findViewById(R.id.user_name)
-        timeModified = view.findViewById(R.id.modified_time)
-        message = view.findViewById(R.id.message)
-        attachmentContainer = view.findViewById(R.id.attachments)
-
-        swipeRefreshLayout.isEnabled = false // Disable swiping, for now
-        message.movementMethod = LinkMovementMethod.getInstance()
+        binding.refresh.isEnabled = false // Disable swiping, for now
+        binding.message.movementMethod = LinkMovementMethod.getInstance()
 
         fileManager.registerDownloadReceiver()
 
         val discussion = realm.where(Discussion::class.java).equalTo("discussionId", discussionId)
-                .findFirst()
+            .findFirst()
         if (discussion != null) {
             setDiscussion(discussion)
         } else {
@@ -104,56 +85,50 @@ class DiscussionFragment : Fragment() {
     @MainThread
     private fun setDiscussion(discussion: Discussion) {
         this.discussion = discussion
-        content.visibility = View.VISIBLE
-        empty.visibility = View.GONE
-        swipeRefreshLayout.isRefreshing = false
+        binding.content.visibility = View.VISIBLE
+        binding.empty.visibility = View.GONE
+        binding.refresh.isRefreshing = false
 
-        subject.text = discussion.subject
-        userName.text = discussion.userFullName
-        timeModified.text = Utils.formatDate(discussion.timeModified)
-        message.text = discussion.message
+        binding.subject.text = discussion.subject
+        binding.userName.text = discussion.userFullName
+        binding.modifiedTime.text = Utils.formatDate(discussion.timeModified)
+        binding.message.text = discussion.message
         Glide.with(requireContext())
             .load(Urls.getProfilePicUrl(discussion.userPictureUrl))
-            .into(userPic)
+            .into(binding.userPic)
 
         val attachments = discussion.attachments
         if (attachments.isNotEmpty()) {
             val inflater = LayoutInflater.from(requireContext())
-            attachmentContainer.visibility = View.VISIBLE
-            for (attachment in discussion.attachments) {
-                val attachmentView = inflater.inflate(R.layout.row_attachment_detail_forum,
-                        attachmentContainer) ?: continue
-                attachmentView.let {
-                    val fileName = attachmentView.findViewById<TextView>(R.id.name)
-                    val clickWrapper = attachmentView.findViewById<View>(R.id.click_wrapper)
-                    val download = attachmentView.findViewById<ImageView>(R.id.download)
-                    val ellipsis = attachmentView.findViewById<ImageView>(R.id.more)
+            binding.attachments.visibility = View.VISIBLE
 
-                    fileName.text = attachment.fileName
+            for (attachment in discussion.attachments) {
+                val attachmentBinding = RowAttachmentDetailForumBinding.inflate(inflater, binding.attachments, true)
+                attachmentBinding.let {
+                    it.name.text = attachment.fileName
                     if (fileManager.isDiscussionAttachmentDownloaded(attachment)) {
-                        download.setImageResource(R.drawable.eye)
-                        ellipsis.visibility = View.VISIBLE
+                        it.download.setImageResource(R.drawable.eye)
+                        it.more.visibility = View.VISIBLE
                     } else {
-                        download.setImageResource(R.drawable.outline_file_download_24)
-                        ellipsis.visibility = View.GONE
+                        it.download.setImageResource(R.drawable.outline_file_download_24)
+                        it.more.visibility = View.GONE
                     }
-                    clickWrapper.setOnClickListener {
+                    it.clickWrapper.setOnClickListener {
                         if (!fileManager.isDiscussionAttachmentDownloaded(attachment)) {
                             downloadAttachment(attachment)
                         } else {
                             fileManager.openDiscussionAttachment(attachment)
                         }
                     }
-                    ellipsis.setOnClickListener {
+                    it.more.setOnClickListener {
                         if (fileManager.isDiscussionAttachmentDownloaded(attachment)) {
-                            val observer: Observer<MoreOptionsFragment.Option?>
                             val options = ArrayList(listOf(
-                                    MoreOptionsFragment.Option(0, "View", R.drawable.eye),
-                                    MoreOptionsFragment.Option(1, "Re-Download", R.drawable.outline_file_download_24),
-                                    MoreOptionsFragment.Option(2, "Share", R.drawable.ic_share),
-                                    MoreOptionsFragment.Option(3, "Properties", R.drawable.ic_info)
+                                MoreOptionsFragment.Option(0, "View", R.drawable.eye),
+                                MoreOptionsFragment.Option(1, "Re-Download", R.drawable.outline_file_download_24),
+                                MoreOptionsFragment.Option(2, "Share", R.drawable.ic_share),
+                                MoreOptionsFragment.Option(3, "Properties", R.drawable.ic_info)
                             ))
-                            observer = Observer {  option: MoreOptionsFragment.Option? ->
+                            val observer: Observer<MoreOptionsFragment.Option?> = Observer { option: MoreOptionsFragment.Option? ->
                                 option ?: return@Observer
                                 when (option.id) {
                                     0 -> fileManager.openDiscussionAttachment(attachment)
@@ -171,19 +146,22 @@ class DiscussionFragment : Fragment() {
                             moreOptionsViewModel.selection.observe(requireActivity(), observer)
                         }
                     }
+                    if(attachment != discussion.attachments.last()) {
+                        it.barrier.setDpMargin(4)
+                    }
                 }
             }
         } else {
-            attachmentContainer.visibility = View.GONE
+            binding.attachments.visibility = View.GONE
         }
     }
 
     private fun refreshContent(forumId: Int, discussionId: Int) {
-        swipeRefreshLayout.isRefreshing = true
+        binding.refresh.isRefreshing = true
         CoroutineScope(Dispatchers.IO).launch {
-           val realm = Realm.getDefaultInstance()
-           val courseDataHandler = CourseDataHandler(realm)
-           val courseRequestHandler = CourseRequestHandler()
+            val realm = Realm.getDefaultInstance()
+            val courseDataHandler = CourseDataHandler(realm)
+            val courseRequestHandler = CourseRequestHandler()
 
             try {
                 val discussions = courseRequestHandler.getForumDicussionsSync(forumId)
@@ -193,12 +171,12 @@ class DiscussionFragment : Fragment() {
                 val discussion = discussions.firstOrNull { it.discussionId == discussionId }
                 CoroutineScope(Dispatchers.Main).launch {
                     if (discussion != null) {
-                        empty.visibility = View.GONE
-                        swipeRefreshLayout.isRefreshing = false
+                        binding.empty.visibility = View.GONE
+                        binding.refresh.isRefreshing = false
                         setDiscussion(discussion)
                     } else {
-                        empty.visibility = View.VISIBLE
-                        swipeRefreshLayout.isRefreshing = false
+                        binding.empty.visibility = View.VISIBLE
+                        binding.refresh.isRefreshing = false
                         Toast.makeText(requireContext(), getString(R.string.net_req_failed),
                             Toast.LENGTH_SHORT
                         ).show()
@@ -206,8 +184,8 @@ class DiscussionFragment : Fragment() {
                 }
             } catch (e: IOException) {
                 CoroutineScope(Dispatchers.Main).launch {
-                    empty.visibility = View.VISIBLE
-                    swipeRefreshLayout.isRefreshing = false
+                    binding.empty.visibility = View.VISIBLE
+                    binding.refresh.isRefreshing = false
                     Toast.makeText(requireContext(), getString(R.string.net_req_failed),
                         Toast.LENGTH_SHORT
                     ).show()
@@ -220,21 +198,20 @@ class DiscussionFragment : Fragment() {
 
     private fun downloadAttachment(attachment: Attachment) {
         Toast.makeText(activity, getString(R.string.downloading_file) + attachment.fileName,
-                Toast.LENGTH_SHORT).show()
+            Toast.LENGTH_SHORT).show()
         fileManager.downloadDiscussionAttachment(attachment, discussion.subject)
     }
 
     private fun oneFileDownloaded(filename: String) {
-        val child = attachmentContainer.childCount
-        for (i in 0 until child) {
-            val childView = attachmentContainer.getChildAt(i) ?: break
-            val fileNameTextView = childView.findViewById<TextView>(R.id.name)
-            val downloadIcon = childView.findViewById<ImageView>(R.id.download)
-            val ellipsis = childView.findViewById<ImageView>(R.id.more)
+        val child = binding.attachments.childCount
+        // Count starts from 2 as the layout contains two extra views before further rows are attached
+        for (i in 2 until child) {
+            val childView = binding.attachments.getChildAt(i) ?: break
+            val attachmentBinding = RowAttachmentDetailForumBinding.bind(childView)
 
-            if (fileNameTextView?.text.toString().equals(filename, true)) {
-                downloadIcon?.setImageResource(R.drawable.eye)
-                ellipsis?.visibility = View.VISIBLE
+            if (attachmentBinding.name.text.toString().equals(filename, true)) {
+                attachmentBinding.download.setImageResource(R.drawable.eye)
+                attachmentBinding.more.visibility = View.VISIBLE
             }
         }
 
