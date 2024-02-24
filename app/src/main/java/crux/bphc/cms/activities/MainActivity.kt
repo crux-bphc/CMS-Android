@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
@@ -255,19 +256,38 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun askPermission() {
-        if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
+        val requiredPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Manifest.permission.POST_NOTIFICATIONS
+        }
+        else {
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        }
+        if (ContextCompat.checkSelfPermission(
+                this,
+                requiredPermissions
+            )
+            != PackageManager.PERMISSION_GRANTED
+        ) {
 
             // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                    this,
+                    requiredPermissions
+                )
+            ) {
+                val messageText = if (requiredPermissions == Manifest.permission.READ_EXTERNAL_STORAGE) {
+                    "We need permission to move course content"
+                }
+                else {
+                    "We need permission to send course notifications"
+                }
                 MaterialAlertDialogBuilder(this)
-                        .setTitle("Permission required")
-                        .setMessage("We need permission to move course content")
-                        .setPositiveButton("OK") { _, _ ->
-                            requestReadStoragePermission()
-                        }
-                        .show()
+                    .setTitle("Permission required")
+                    .setMessage(messageText)
+                    .setPositiveButton("OK") { _, _ ->
+                        requestReadStoragePermission()
+                    }
+                    .show()
             } else {
                 requestReadStoragePermission()
             }
@@ -276,14 +296,28 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private val askPermission = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
+        if (granted.containsValue(false))
+            askPermission()
+        else
+            startDataMigrationIfRequired()
+    }
+
     private fun requestReadStoragePermission() {
-        val askPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            if (!granted)
-                askPermission()
-            else
-                startDataMigrationIfRequired()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            askPermission.launch(
+                arrayOf(
+                    Manifest.permission.POST_NOTIFICATIONS,
+                )
+            )
         }
-        askPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+        else {
+            askPermission.launch(
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                )
+            )
+        }
     }
 
     private fun startDataMigrationIfRequired() {
