@@ -1,9 +1,7 @@
 package crux.bphc.cms.network;
 
 import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
-
 import crux.bphc.cms.models.core.UserDetail;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -92,6 +90,16 @@ public interface MoodleServices {
                                         @Query("forumid") int forumid,
                                         @Query("page") int page,
                                         @Query("perpage") int perpage);
+
+    /**
+     * Mark all notifications as read for a user
+     *
+     * @param token A valid Moodle Web Service token
+     * @param userid Id of the user whose number of unread notifications are needed
+     */
+
+    @GET("webservice/rest/server.php?wsfunction=core_message_mark_all_notifications_as_read&moodlewsrestformat=json")
+    Call<Boolean> markAllNotificationsAsRead(@Query("wstoken") String token, @Query("useridto") int userid);
 
     @GET("webservice/rest/server.php?wsfunction=core_user_add_user_device&moodlewsrestformat=json")
     Call<ResponseBody> registerUserDevice(@Query("wstoken") @NotNull String token,
