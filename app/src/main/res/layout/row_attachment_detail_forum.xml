@@ -34,8 +34,7 @@
 
         app:layout_constraintStart_toEndOf="@id/name"
         app:layout_constraintEnd_toStartOf="@+id/more"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/barrier"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:id="@+id/click_wrapper"

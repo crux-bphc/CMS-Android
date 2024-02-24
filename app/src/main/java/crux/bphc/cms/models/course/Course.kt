@@ -31,7 +31,7 @@ open class Course(
     @Ignore var courseName: Array<String> = emptyArray() // The entire courseName
         get() {
             if (_courseName == null) {
-                val courseName = shortName
+                val courseName = fullName
                 // Specifies the string pattern which is to be searched
                 val pattern = Pattern.compile(NAME_REGEX, Pattern.MULTILINE)
                 val matcher = pattern.matcher(courseName)
