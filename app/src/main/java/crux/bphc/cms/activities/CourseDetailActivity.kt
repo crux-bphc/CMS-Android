@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import com.google.gson.Gson
 import crux.bphc.cms.R
 import crux.bphc.cms.app.Urls
+import crux.bphc.cms.databinding.ActivityCourseDetailBinding
 import crux.bphc.cms.fragments.CourseContentFragment
 import crux.bphc.cms.fragments.CourseEnrolFragment
 import crux.bphc.cms.fragments.DiscussionFragment
@@ -21,8 +22,8 @@ import io.realm.Realm
 
 class CourseDetailActivity : AppCompatActivity() {
     private lateinit var realm: Realm
-
     private lateinit var course: Course
+    private lateinit var binding: ActivityCourseDetailBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +31,7 @@ class CourseDetailActivity : AppCompatActivity() {
         if (UserAccount.isDarkModeEnabled) {
             setTheme(R.style.AppTheme_Dark)
         }
-        setContentView(R.layout.activity_course_detail)
+        binding = ActivityCourseDetailBinding.inflate(layoutInflater)
 
         realm = Realm.getDefaultInstance()
 
@@ -38,6 +39,8 @@ class CourseDetailActivity : AppCompatActivity() {
         supportActionBar?.setHomeButtonEnabled(true)
 
         resolveIntent()
+
+        setContentView(binding.root)
     }
 
     private fun resolveIntent() {
@@ -91,9 +94,9 @@ class CourseDetailActivity : AppCompatActivity() {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         val mCourseEnrolFragment = CourseEnrolFragment.newInstance(enrolCourse)
         fragmentTransaction.replace(
-                R.id.course_section_enrol_container,
-                mCourseEnrolFragment,
-                COURSE_ENROL_FRAG_TRANSACTION_KEY)
+            R.id.course_section_enrol_container,
+            mCourseEnrolFragment,
+            COURSE_ENROL_FRAG_TRANSACTION_KEY)
         fragmentTransaction.commit()
     }
 
@@ -101,14 +104,14 @@ class CourseDetailActivity : AppCompatActivity() {
     private fun setCourseContentFragment(contextUrl: String) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         val courseSectionFragment = CourseContentFragment.newInstance(
-                UserAccount.token,
-                course.id,
-                contextUrl,
+            UserAccount.token,
+            course.id,
+            contextUrl,
         )
         fragmentTransaction.replace(
-                R.id.course_section_enrol_container,
-                courseSectionFragment,
-                "course_section_frag"
+            R.id.course_section_enrol_container,
+            courseSectionFragment,
+            "course_section_frag"
         ).commit()
     }
 
@@ -119,7 +122,7 @@ class CourseDetailActivity : AppCompatActivity() {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         val forumFragment: Fragment = ForumFragment.newInstance(course.id, forumId, course.shortName)
         fragmentTransaction.addToBackStack(null)
-                .replace(R.id.course_section_enrol_container, forumFragment, "Announcements")
+            .replace(R.id.course_section_enrol_container, forumFragment, "Announcements")
         fragmentTransaction.commit()
     }
 
@@ -137,7 +140,7 @@ class CourseDetailActivity : AppCompatActivity() {
             course.shortName
         )
         fragmentTransaction.addToBackStack(null)
-                .replace(R.id.course_section_enrol_container, discussionFragment, "Discussion")
+            .replace(R.id.course_section_enrol_container, discussionFragment, "Discussion")
         fragmentTransaction.commit()
     }
 

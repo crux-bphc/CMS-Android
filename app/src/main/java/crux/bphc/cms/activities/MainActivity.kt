@@ -20,19 +20,20 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import crux.bphc.cms.R
 import crux.bphc.cms.background.MigrateDataWorker
 import crux.bphc.cms.core.PushNotifRegManager
+import crux.bphc.cms.databinding.ActivityMainBinding
 import crux.bphc.cms.fragments.*
 import crux.bphc.cms.helper.CourseDataHandler
 import crux.bphc.cms.models.UserAccount
 import crux.bphc.cms.models.course.Course
 import crux.bphc.cms.utils.UserUtils
 import io.realm.Realm
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var _realm: Realm
     private lateinit var courseDataHandler: CourseDataHandler
+    private lateinit var binding: ActivityMainBinding
 
     private val _bottomNavSelectionListener
         get() = listener@{ menuItem: MenuItem ->
@@ -43,12 +44,12 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.searchCourseFragment -> {
                     pushView(SearchCourseForEnrolFragment.newInstance(),
-                            "Search Course to Enrol", false)
+                        "Search Course to Enrol", false)
                     return@listener true
                 }
                 R.id.downloadsFragment -> {
                     pushView(FilesFragment.newInstance(),
-                            getString(R.string.nav_bar_files), false)
+                        getString(R.string.nav_bar_files), false)
                     return@listener true
                 }
                 R.id.forumFragment -> {
@@ -75,14 +76,14 @@ class MainActivity : AppCompatActivity() {
         // image background
         if (UserAccount.isDarkModeEnabled) {
             setTheme(R.style.AppTheme_NoActionBar_Dark)
-        } else {
+        }
+        else {
             setTheme(R.style.AppTheme_NoActionBar)
         }
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setSupportActionBar(binding.toolbar)
 
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
-
-        bottom_nav.setOnNavigationItemSelectedListener(_bottomNavSelectionListener)
+        binding.bottomNav.setOnItemSelectedListener(_bottomNavSelectionListener)
 
         _realm = Realm.getDefaultInstance()
         courseDataHandler = CourseDataHandler(_realm)
@@ -111,29 +112,31 @@ class MainActivity : AppCompatActivity() {
             if (toastResource != 0) {
                 val context = this@MainActivity
                 Toast.makeText(
-                        context,
-                        context.getString(toastResource),
-                        Toast.LENGTH_SHORT,
+                    context,
+                    context.getString(toastResource),
+                    Toast.LENGTH_SHORT,
                 ).show()
             }
         }
 
         resolveIntent()
         resolveModuleLinkShare()
+
+        setContentView(binding.root)
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
-        bottom_nav.setOnNavigationItemSelectedListener(null) // Remove the listener to prevent an infinite loop
+        binding.bottomNav.setOnItemSelectedListener(null) // Remove the listener to prevent an infinite loop
         val frag = supportFragmentManager.findFragmentById(R.id.content_frame)
-        bottom_nav.selectedItemId = when (frag) {
+        binding.bottomNav.selectedItemId = when (frag) {
             is MyCoursesFragment -> R.id.myCoursesFragment
             is SearchCourseForEnrolFragment -> R.id.searchCourseFragment
             is ForumFragment -> R.id.forumFragment
             is MoreFragment -> R.id.moreFragment
-            else -> bottom_nav.selectedItemId
+            else -> binding.bottomNav.selectedItemId
         }
-        bottom_nav.setOnNavigationItemSelectedListener(_bottomNavSelectionListener)
+        binding.bottomNav.setOnItemSelectedListener(_bottomNavSelectionListener)
     }
 
     override fun onNewIntent(intent: Intent?) {
