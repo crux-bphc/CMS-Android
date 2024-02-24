@@ -16,9 +16,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import crux.bphc.cms.R
 import crux.bphc.cms.activities.CourseDetailActivity
+import crux.bphc.cms.databinding.FragmentMyCoursesBinding
+import crux.bphc.cms.databinding.RowCourseBinding
 import crux.bphc.cms.exceptions.InvalidTokenException
 import crux.bphc.cms.helper.CourseDataHandler
 import crux.bphc.cms.helper.CourseDownloader
@@ -28,8 +31,6 @@ import crux.bphc.cms.models.course.Course
 import crux.bphc.cms.models.course.CourseSection
 import crux.bphc.cms.utils.UserUtils
 import io.realm.Realm
-import kotlinx.android.synthetic.main.fragment_my_courses.*
-import kotlinx.android.synthetic.main.row_course.view.*
 import kotlinx.coroutines.*
 import java.io.IOException
 import java.text.DecimalFormat
@@ -39,6 +40,7 @@ import kotlin.collections.ArrayList
 class MyCoursesFragment : Fragment() {
     private lateinit var realm: Realm
     private lateinit var courseDataHandler: CourseDataHandler
+    private lateinit var binding: FragmentMyCoursesBinding
 
     private var coursesUpdated = 0
     private var courses: MutableList<Course> = ArrayList()
@@ -46,14 +48,18 @@ class MyCoursesFragment : Fragment() {
 
     // Activity result launchers
     private val courseDetailActivityLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                mAdapter.filterCoursesByName(courses, searchCourseET.text.toString())
-            }
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            mAdapter.filterCoursesByName(courses, binding.searchCourseET.text.toString())
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = FragmentMyCoursesBinding.inflate(layoutInflater)
+
         setHasOptionsMenu(true)
     }
+
+    private var badge: BadgeDrawable? = null
 
     override fun onStart() {
         super.onStart()
@@ -63,7 +69,8 @@ class MyCoursesFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         realm = Realm.getDefaultInstance()
-        return inflater.inflate(R.layout.fragment_my_courses, container, false)
+
+        return binding.root
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -74,11 +81,10 @@ class MyCoursesFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.mark_all_as_read -> {
-                val courses = courseDataHandler.courseList
                 CoroutineScope(Dispatchers.Default).launch {
                     val realm = Realm.getDefaultInstance()
                     val courseDataHandler = CourseDataHandler(realm)
-                    courseDataHandler.markAllAsRead();
+                    courseDataHandler.markAllAsRead()
                     realm.close()
 
                     CoroutineScope(Dispatchers.Main).launch {
@@ -91,7 +97,6 @@ class MyCoursesFragment : Fragment() {
             else -> false
         }
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -140,7 +145,7 @@ class MyCoursesFragment : Fragment() {
 
                 override fun onFailure() {
                     Toast.makeText(activity, "Check your internet connection", Toast.LENGTH_SHORT)
-                            .show()
+                        .show()
                     course.downloadStatus = -1
                     mAdapter.notifyItemChanged(position)
                     courseDownloader.unregisterReceiver()
@@ -150,38 +155,38 @@ class MyCoursesFragment : Fragment() {
             return@ClickListener true
         }
 
-        recyclerView.adapter = mAdapter
-        recyclerView.layoutManager = LinearLayoutManager(activity)
+        binding.recyclerView.adapter = mAdapter
+        binding.recyclerView.layoutManager = LinearLayoutManager(activity)
 
-        searchCourseET.addTextChangedListener(object : TextWatcher {
+        binding.searchCourseET.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable) {
-                val searchText = s.toString().toLowerCase(Locale.ROOT).trim { it <= ' ' }
+                val searchText = s.toString().lowercase(Locale.ROOT).trim { it <= ' ' }
                 mAdapter.filterCoursesByName(courses, searchText)
                 if (searchText.isNotEmpty()) {
-                    searchIcon.setImageResource(R.drawable.ic_cancel_black_24dp)
-                    searchIcon.setOnClickListener {
-                        searchCourseET.setText("")
-                        searchIcon.setImageResource(R.drawable.ic_search)
-                        searchIcon.setOnClickListener(null)
+                    binding.searchIcon.setImageResource(R.drawable.ic_cancel_black_24dp)
+                    binding.searchIcon.setOnClickListener {
+                        binding.searchCourseET.setText("")
+                        binding.searchIcon.setImageResource(R.drawable.ic_search)
+                        binding.searchIcon.setOnClickListener(null)
                         val inputManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE)
                                 as? InputMethodManager
                         val currentFocus = requireActivity().currentFocus
                         if (currentFocus != null) {
                             inputManager?.hideSoftInputFromWindow(currentFocus.windowToken,
-                                    InputMethodManager.HIDE_NOT_ALWAYS)
+                                InputMethodManager.HIDE_NOT_ALWAYS)
                         }
                     }
                 } else {
-                    searchIcon.setImageResource(R.drawable.ic_search)
-                    searchIcon.setOnClickListener(null)
+                    binding.searchIcon.setImageResource(R.drawable.ic_search)
+                    binding.searchIcon.setOnClickListener(null)
                 }
             }
         })
 
-        swipeRefreshLayout.setOnRefreshListener {
-            swipeRefreshLayout.isRefreshing = true
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            binding.swipeRefreshLayout.isRefreshing = true
             refreshCourses()
         }
 
@@ -190,9 +195,9 @@ class MyCoursesFragment : Fragment() {
 
     private fun checkEmpty() {
         if (courses.isEmpty()) {
-            empty?.visibility = View.VISIBLE
+            binding.empty?.visibility = View.VISIBLE
         } else {
-            empty?.visibility = View.GONE
+            binding.empty?.visibility = View.GONE
         }
     }
 
@@ -209,7 +214,9 @@ class MyCoursesFragment : Fragment() {
                     val courseDataHandler = CourseDataHandler(realm)
                     courseDataHandler.replaceCourses(courseList)
                     realm.close()
-                    checkEmpty()
+                    withContext(Dispatchers.Main) {
+                        checkEmpty()
+                    }
                     updateCourseContent()
                 } catch (e: Exception) {
                     Log.e(TAG, "", e)
@@ -222,7 +229,7 @@ class MyCoursesFragment : Fragment() {
                     }
                 } finally {
                     withContext(Dispatchers.Main) {
-                        swipeRefreshLayout?.isRefreshing = false
+                        binding.swipeRefreshLayout?.isRefreshing = false
                     }
                 }
             }
@@ -259,13 +266,13 @@ class MyCoursesFragment : Fragment() {
             coursesUpdated = promises.awaitAll().fold(0) { i, x -> if (x) i + 1 else i }
 
             withContext(Dispatchers.Main) {
-                swipeRefreshLayout?.isRefreshing = false
-                mAdapter.filterCoursesByName(courses, searchCourseET.text.toString())
+                binding.swipeRefreshLayout?.isRefreshing = false
+                mAdapter.filterCoursesByName(courses, binding.searchCourseET.text.toString())
                 val message: String = if (coursesUpdated == 0) {
                     getString(R.string.upToDate)
                 } else {
                     resources.getQuantityString(R.plurals.noOfCoursesUpdated, coursesUpdated,
-                            coursesUpdated)
+                        coursesUpdated)
                 }
                 Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
             }
@@ -278,8 +285,8 @@ class MyCoursesFragment : Fragment() {
     }
 
     private inner class Adapter constructor(
-            val context: Context,
-            courseList: List<Course>
+        val context: Context,
+        courseList: List<Course>
     ) : RecyclerView.Adapter<Adapter.MyViewHolder>() {
         private val inflater: LayoutInflater = LayoutInflater.from(context)
 
@@ -295,7 +302,8 @@ class MyCoursesFragment : Fragment() {
             }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-            return MyViewHolder(inflater.inflate(R.layout.row_course, parent, false))
+            val itemBinding = RowCourseBinding.inflate(inflater, parent, false)
+            return MyViewHolder(itemBinding)
         }
 
         override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
@@ -320,7 +328,7 @@ class MyCoursesFragment : Fragment() {
             var filteredCourses: MutableList<Course> = ArrayList()
             if (courseName.isNotEmpty()) {
                 for (course in courseList) {
-                    if (course.shortName.toLowerCase(Locale.ROOT).contains(courseName)) {
+                    if (course.shortName.lowercase(Locale.ROOT).contains(courseName)) {
                         filteredCourses.add(course)
                     }
                 }
@@ -330,33 +338,33 @@ class MyCoursesFragment : Fragment() {
             courses = filteredCourses
         }
 
-        inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        inner class MyViewHolder(val itemBinding: RowCourseBinding) : RecyclerView.ViewHolder(itemBinding.root) {
             fun bind(course: Course) {
                 val name = course.courseName[1] + " " + course.courseName[2]
                 val count = courseDataHandler.getUnreadCount(course.id)
-                itemView.course_number.text = course.courseName[0]
-                itemView.course_name.text = name
-                itemView.unread_count.text = DecimalFormat.getIntegerInstance().format(count.toLong())
-                itemView.unread_count.isVisible = count != 0
-                itemView.mark_as_read_button.isVisible = count != 0
-                itemView.favorite_button.setImageResource(if (course.isFavorite) R.drawable.ic_fav_filled else R.drawable.ic_fav_outlined)
+                itemBinding.courseNumber.text = course.courseName[0]
+                itemBinding.courseName.text = name
+                itemBinding.unreadCount.text = DecimalFormat.getIntegerInstance().format(count.toLong())
+                itemBinding.unreadCount.isVisible = count != 0
+                itemBinding.markAsReadButton.isVisible = count != 0
+                itemBinding.favoriteButton.setImageResource(if (course.isFavorite) R.drawable.ic_fav_filled else R.drawable.ic_fav_outlined)
             }
 
             fun confirmDownloadCourse() {
                 MaterialAlertDialogBuilder(context)
-                        .setTitle("Confirm Download")
-                        .setMessage("Are you sure you want to all the contents of this course?")
-                        .setPositiveButton("Yes") { _: DialogInterface?, _: Int ->
-                            if (downloadClickListener != null) {
-                                val pos = layoutPosition
-                                if (!downloadClickListener!!.onClick(courses[pos], pos)) {
-                                    Toast.makeText(activity, "Download already in progress",
-                                            Toast.LENGTH_SHORT).show()
-                                }
+                    .setTitle("Confirm Download")
+                    .setMessage("Are you sure you want to all the contents of this course?")
+                    .setPositiveButton("Yes") { _: DialogInterface?, _: Int ->
+                        if (downloadClickListener != null) {
+                            val pos = layoutPosition
+                            if (!downloadClickListener!!.onClick(courses[pos], pos)) {
+                                Toast.makeText(activity, "Download already in progress",
+                                    Toast.LENGTH_SHORT).show()
                             }
                         }
-                        .setNegativeButton("Cancel", null)
-                        .show()
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
             }
 
             fun markCourseAsRead() {
@@ -378,16 +386,16 @@ class MyCoursesFragment : Fragment() {
             }
 
             init {
-                itemView.course_card.setOnClickListener {
+                itemBinding.courseCard.setOnClickListener {
                     if (clickListener != null) {
                         val pos = layoutPosition
                         clickListener!!.onClick(courses[pos], pos)
                     }
                 }
 
-                itemView.mark_as_read_button.setOnClickListener { markCourseAsRead() }
-                itemView.favorite_button.setOnClickListener { setFavoriteStatus(layoutPosition, !courses[layoutPosition].isFavorite) }
-                itemView.download_image.setOnClickListener { confirmDownloadCourse() }
+                itemBinding.markAsReadButton.setOnClickListener { markCourseAsRead() }
+                itemBinding.favoriteButton.setOnClickListener { setFavoriteStatus(layoutPosition, !courses[layoutPosition].isFavorite) }
+                itemBinding.downloadImage.setOnClickListener { confirmDownloadCourse() }
             }
         }
 

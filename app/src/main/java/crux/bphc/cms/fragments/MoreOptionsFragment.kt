@@ -15,8 +15,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import crux.bphc.cms.R
-import kotlinx.android.parcel.Parcelize
-import kotlinx.android.synthetic.main.row_more_options.view.*
+import crux.bphc.cms.databinding.FragmentMoreOptionsBinding
+import crux.bphc.cms.databinding.RowMoreOptionsBinding
+import kotlinx.parcelize.Parcelize
 import java.util.*
 
 /**
@@ -29,9 +30,12 @@ class MoreOptionsFragment : BottomSheetDialogFragment() {
     private lateinit var viewModel: OptionsViewModel
     private lateinit var header: String
     private lateinit var options: ArrayList<Option>
+    private lateinit var binding: FragmentMoreOptionsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = FragmentMoreOptionsBinding.inflate(layoutInflater)
+
         val args = arguments
         if (args != null) {
             header = args.getString("header") ?: ""
@@ -40,7 +44,7 @@ class MoreOptionsFragment : BottomSheetDialogFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_more_options, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -55,17 +59,18 @@ class MoreOptionsFragment : BottomSheetDialogFragment() {
         // create the list
         val listView = view.findViewById<ListView>(R.id.more_options_list)
         val arrayAdapter: ArrayAdapter<String> = object : ArrayAdapter<String>(requireActivity(),
-                R.layout.row_more_options
+            R.layout.row_more_options
         ){
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val vh: OptionViewHolder
                 val outView = if (convertView == null) {
                     val inflater = requireActivity()
-                            .getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-                    val v = inflater.inflate(R.layout.row_more_options, parent, false)
+                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+                    val rowBinding = RowMoreOptionsBinding.inflate(inflater)
+                    val v = rowBinding.root
                     vh = OptionViewHolder(
-                            v.more_options_text,
-                            v.more_options_icon
+                        rowBinding.moreOptionsText,
+                        rowBinding.moreOptionsIcon
                     )
                     v.tag = vh
                     v
@@ -140,8 +145,8 @@ class MoreOptionsFragment : BottomSheetDialogFragment() {
     }
 
     internal data class OptionViewHolder(
-           var text: TextView,
-           var icon: ImageView
+        var text: TextView,
+        var icon: ImageView
     )
 
     companion object {

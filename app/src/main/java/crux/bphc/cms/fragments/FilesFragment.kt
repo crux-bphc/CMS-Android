@@ -24,13 +24,9 @@ import crux.bphc.cms.models.SingleLiveEvent
 import crux.bphc.cms.models.UserAccount
 import crux.bphc.cms.utils.FileUtils
 import crux.bphc.cms.viewmodels.FilesViewModel
-import kotlinx.android.synthetic.main.fragment_my_courses.*
 import java.io.File
-import java.util.*
-
 
 class FilesFragment : Fragment() {
-
 
     private lateinit var binding: DownloadsFragmentBinding
     private val viewModel by viewModels<FilesViewModel>()
@@ -139,10 +135,10 @@ class FilesFragment : Fragment() {
         } catch (e: ActivityNotFoundException) {
             intent.setDataAndType(fileUri, "application/*")
             startActivity(
-                    Intent.createChooser(
-                            intent,
-                            "No Application found to open File - ${file.name}"
-                    )
+                Intent.createChooser(
+                    intent,
+                    "No Application found to open File - ${file.name}"
+                )
             )
         }
     }
@@ -150,11 +146,11 @@ class FilesFragment : Fragment() {
     private fun showDeleteConfirmationDialog(file: File) {
         val fileType = getString(if (file.isDirectory) R.string.folder else R.string.file)
         MaterialAlertDialogBuilder(requireContext())
-                .setTitle(getString(R.string.delete_file_dialog_title, fileType))
-                .setMessage(getString(R.string.delete_file_dialog_message, fileType, file.getFormattedFileSize(requireContext())))
-                .setNegativeButton(R.string.delete_file_dialog_neutral) { _, _ -> /* Do nothing */ }
-                .setPositiveButton(R.string.delete_file_dialog_positive) { _, _ -> viewModel.deleteFile(file) }
-                .show()
+            .setTitle(getString(R.string.delete_file_dialog_title, fileType))
+            .setMessage(getString(R.string.delete_file_dialog_message, fileType, file.getFormattedFileSize(requireContext())))
+            .setNegativeButton(R.string.delete_file_dialog_neutral) { _, _ -> /* Do nothing */ }
+            .setPositiveButton(R.string.delete_file_dialog_positive) { _, _ -> viewModel.deleteFile(file) }
+            .show()
 
     }
 

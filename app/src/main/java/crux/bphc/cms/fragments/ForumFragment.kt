@@ -4,23 +4,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import crux.bphc.cms.R
 import crux.bphc.cms.app.Urls
+import crux.bphc.cms.databinding.FragmentForumBinding
+import crux.bphc.cms.databinding.RowForumBinding
 import crux.bphc.cms.helper.CourseDataHandler
 import crux.bphc.cms.helper.CourseRequestHandler
 import crux.bphc.cms.interfaces.ClickListener
 import crux.bphc.cms.models.forum.Discussion
 import crux.bphc.cms.utils.Utils
-import crux.bphc.cms.widgets.HtmlTextView
 import io.realm.Realm
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,13 +38,13 @@ class ForumFragment : Fragment() {
     private var courseName: String = ""
 
     private lateinit var courseRequestHandler: CourseRequestHandler
+    private lateinit var binding: FragmentForumBinding
 
     private lateinit var mAdapter: Adapter
-    private lateinit var swipeRefresh: SwipeRefreshLayout
-    private lateinit var emptyView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = FragmentForumBinding.inflate(layoutInflater)
 
         courseId = requireArguments().getInt(COURSE_ID_KEY, -1)
         forumId = requireArguments().getInt(FORUM_ID_KEY, -1)
@@ -61,19 +59,16 @@ class ForumFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
+                              container: ViewGroup?,
+                              savedInstanceState: Bundle?,
     ): View? {
-        return inflater.inflate(R.layout.fragment_forum, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        emptyView = view.findViewById(R.id.tv_empty)
-        swipeRefresh = view.findViewById(R.id.swipeRefreshLayout)
-        swipeRefresh.setOnRefreshListener { refreshContent() }
-        val recyclerView = view.findViewById<RecyclerView>(R.id.discussions)
+        binding.swipeRefreshLayout.setOnRefreshListener { refreshContent() }
 
         val mClickListener = ClickListener { `object`: Any, _: Int ->
             val discussion = `object` as Discussion
@@ -91,14 +86,14 @@ class ForumFragment : Fragment() {
         }
 
         mAdapter = Adapter(mClickListener, ArrayList())
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = mAdapter
+        binding.discussions.layoutManager = LinearLayoutManager(requireContext())
+        binding.discussions.adapter = mAdapter
 
         refreshContent()
     }
 
     private fun refreshContent() {
-        swipeRefresh.isRefreshing = true
+        binding.swipeRefreshLayout.isRefreshing = true
         CoroutineScope(Dispatchers.IO).launch {
             val realm = Realm.getDefaultInstance()
             val courseDataHandler = CourseDataHandler(realm)
@@ -115,8 +110,8 @@ class ForumFragment : Fragment() {
                 CoroutineScope(Dispatchers.Main).launch {
 
                     if (discussions.size == 0) {
-                        emptyView.text = if (forumId != -1) getString(R.string.no_announcements) else getString(R.string.no_posts_to_display)
-                        emptyView.visibility = View.VISIBLE
+                        binding.tvEmpty.text = if (forumId != -1) getString(R.string.no_announcements) else getString(R.string.no_posts_to_display)
+                        binding.tvEmpty.visibility = View.VISIBLE
                     } else {
                         mAdapter.clearDiscussions()
                         mAdapter.addDiscussions(discussions)
@@ -124,7 +119,7 @@ class ForumFragment : Fragment() {
 
                     mAdapter.clearDiscussions()
                     mAdapter.addDiscussions(discussions)
-                    swipeRefresh.isRefreshing = false
+                    binding.swipeRefreshLayout.isRefreshing = false
                 }
             } catch (e: IOException) {
                 val realmDiscussions = courseDataHandler.getForumDiscussions(forumId)
@@ -132,8 +127,8 @@ class ForumFragment : Fragment() {
                 CoroutineScope(Dispatchers.Main).launch {
 
                     if (discussions.size == 0) {
-                        emptyView.text = if (forumId != -1) getString(R.string.no_announcements) else getString(R.string.no_posts_to_display)
-                        emptyView.visibility = View.VISIBLE
+                        binding.tvEmpty.text = if (forumId != -1) getString(R.string.no_announcements) else getString(R.string.no_posts_to_display)
+                        binding.tvEmpty.visibility = View.VISIBLE
                         Toast
                             .makeText(context, getString(R.string.no_cached_data), Toast.LENGTH_SHORT)
                             .show()
@@ -145,7 +140,7 @@ class ForumFragment : Fragment() {
                         mAdapter.clearDiscussions()
                         mAdapter.addDiscussions(discussions)
                     }
-                    swipeRefresh.isRefreshing = false
+                    binding.swipeRefreshLayout.isRefreshing = false
                 }
             }
         }
@@ -155,6 +150,7 @@ class ForumFragment : Fragment() {
         private val clickListener: ClickListener,
         val mDiscussions: MutableList<Discussion>,
     ): RecyclerView.Adapter<Adapter.ForumViewHolder>() {
+        private val inflater: LayoutInflater = LayoutInflater.from(context)
 
         fun addDiscussions(discussions: List<Discussion>) {
             mDiscussions.addAll(discussions)
@@ -167,8 +163,8 @@ class ForumFragment : Fragment() {
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ForumViewHolder {
-            val inflater = LayoutInflater.from(parent.context)
-            return ForumViewHolder(inflater.inflate(R.layout.row_forum, parent, false))
+            val itemBinding = RowForumBinding.inflate(inflater, null, false)
+            return ForumViewHolder(itemBinding)
         }
 
         override fun onBindViewHolder(holder: ForumViewHolder, position: Int) {
@@ -181,40 +177,27 @@ class ForumFragment : Fragment() {
             return mDiscussions.size
         }
 
-        inner class ForumViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            private val mUserPic: ImageView
-            private val mPinned: ImageView
-            private val mSubject: TextView
-            private val mUserName: TextView
-            private val mModifiedTime: TextView
-            private val mMessage: HtmlTextView
-
+        inner class ForumViewHolder(val itemBinding: RowForumBinding) : RecyclerView.ViewHolder(itemBinding.root) {
             fun bind(discussion: Discussion) {
-                Glide.with(mUserPic.context)
+                Glide.with(itemBinding.userPic.context)
                     .load(Urls.getProfilePicUrl(discussion.userPictureUrl))
-                    .into(mUserPic)
+                    .into(itemBinding.userPic)
 
-                mSubject.text = discussion.subject
-                mUserName.text = discussion.userFullName
-                mMessage.text = discussion.message
-                mModifiedTime.text = Utils.formatDate(discussion.timeModified)
+                itemBinding.subject.text = discussion.subject
+                itemBinding.userName.text = discussion.userFullName
+                itemBinding.message.text = discussion.message
+                itemBinding.modifiedTime.text = Utils.formatDate(discussion.timeModified)
 
                 if (!discussion.isPinned) {
-                    mPinned.visibility = View.GONE
+                    itemBinding.pinned.visibility = View.GONE
                 }
             }
 
             init {
-                itemView.setOnClickListener {
+                itemBinding.root.setOnClickListener {
                     clickListener.onClick(mDiscussions[layoutPosition], layoutPosition)
                 }
-                mUserPic = itemView.findViewById(R.id.user_pic)
-                mSubject = itemView.findViewById(R.id.subject)
-                mUserName = itemView.findViewById(R.id.user_name)
-                mModifiedTime = itemView.findViewById(R.id.modified_time)
-                mMessage = itemView.findViewById(R.id.message)
-                mPinned = itemView.findViewById(R.id.pinned)
-                itemView.findViewById<View>(R.id.click_wrapper).setOnClickListener {
+                itemBinding.clickWrapper.setOnClickListener {
                     val position = layoutPosition
                     clickListener.onClick(mDiscussions[position], position)
                 }

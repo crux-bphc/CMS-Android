@@ -20,6 +20,9 @@ class PreferencesFragment : PreferenceFragmentCompat() {
         if (UserAccount.isDarkModeEnabled) {
             requireActivity().setTheme(R.style.AppTheme_NoActionBar_Dark)
         }
+        else {
+            requireActivity().setTheme(R.style.AppTheme_NoActionBar)
+        }
     }
 
     override fun onStart() {
