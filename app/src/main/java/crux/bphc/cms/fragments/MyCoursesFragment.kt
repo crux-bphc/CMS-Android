@@ -27,11 +27,17 @@ import crux.bphc.cms.helper.CourseDataHandler
 import crux.bphc.cms.helper.CourseDownloader
 import crux.bphc.cms.helper.CourseRequestHandler
 import crux.bphc.cms.interfaces.ClickListener
+import crux.bphc.cms.models.UserAccount
 import crux.bphc.cms.models.course.Course
 import crux.bphc.cms.models.course.CourseSection
+import crux.bphc.cms.network.APIClient
+import crux.bphc.cms.network.MoodleServices
 import crux.bphc.cms.utils.UserUtils
 import io.realm.Realm
 import kotlinx.coroutines.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.IOException
 import java.text.DecimalFormat
 import java.util.*
@@ -40,11 +46,15 @@ import kotlin.collections.ArrayList
 class MyCoursesFragment : Fragment() {
     private lateinit var realm: Realm
     private lateinit var courseDataHandler: CourseDataHandler
+    private lateinit var courseRequestHandler: CourseRequestHandler
     private lateinit var binding: FragmentMyCoursesBinding
 
     private var coursesUpdated = 0
     private var courses: MutableList<Course> = ArrayList()
     private lateinit var mAdapter: Adapter
+
+    private val moodleServices: MoodleServices = APIClient.getRetrofitInstance().create(
+        MoodleServices::class.java)
 
     // Activity result launchers
     private val courseDetailActivityLauncher =
@@ -81,6 +91,21 @@ class MyCoursesFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.mark_all_as_read -> {
+                courseRequestHandler = CourseRequestHandler()
+                val call = moodleServices.markAllNotificationsAsRead(
+                    UserAccount.token,
+                    UserAccount.userID
+                )
+                call.enqueue(object : Callback<Boolean> {
+                    override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
+                        if (response.isSuccessful) {
+                            Log.i(TAG, "Marked all as read on website")
+                        }
+                    }
+                    override fun onFailure(call: Call<Boolean>, t: Throwable) {
+                        Log.wtf(TAG, t)
+                    }
+                })
                 CoroutineScope(Dispatchers.Default).launch {
                     val realm = Realm.getDefaultInstance()
                     val courseDataHandler = CourseDataHandler(realm)
