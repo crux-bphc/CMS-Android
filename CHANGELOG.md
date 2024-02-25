@@ -12,7 +12,17 @@ Dates are in `yyyy-mm-dd`.
 
 ### Fixed
 
-## Version 1.10 (verCode 1100000), 2024-02-25
+## Version 1.11 (verCode 1110000), 2024-02-25
+### Added
+* An icon that displays number of unread notifications
+* A new screen to view notifications
+
+### Changed
+
+### Fixed
+* HTML Text not rendering properly
+
+## Version 1.10 (verCode 1100000), 2023-05-23
 ### Added
 * Mark All as Read marks notifications as read on website.
 
