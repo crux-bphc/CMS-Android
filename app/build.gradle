@@ -28,8 +28,8 @@ android {
         applicationId "crux.bphc.cms"
         minSdkVersion 24
         targetSdkVersion 33
-        versionCode 1100000
-        versionName "1.10"
+        versionCode 1110000
+        versionName "1.11"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         // Inject the commit hash of HEAD into BuildConfig
