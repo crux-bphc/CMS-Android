@@ -8,9 +8,11 @@ Dates are in `yyyy-mm-dd`.
 ## Unreleased
 ### Added
 
-### Chaanged
+### Changed
 
 ### Fixed
+* Cancel button not visible in deletion dialog in dark mode.
+* Snackbar message on deletion not properly visible in dark mode.
 
 ## Version 1.9 (verCode 1090000), 2021-08-20
 ### Added
