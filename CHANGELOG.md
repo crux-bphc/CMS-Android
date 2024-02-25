@@ -19,7 +19,6 @@ Dates are in `yyyy-mm-dd`.
 ### Changed
 * Permission request for notification permissions.
 * Use full names for courses.
-* 
 
 ### Fixed
 * Cancel button not visible in deletion dialog in dark mode.
