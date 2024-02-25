@@ -2,7 +2,6 @@ package crux.bphc.cms.fragments
 
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,9 +23,9 @@ import crux.bphc.cms.helper.CourseRequestHandler
 import crux.bphc.cms.models.forum.Attachment
 import crux.bphc.cms.models.forum.Discussion
 import crux.bphc.cms.utils.Utils
+import crux.bphc.cms.widgets.HtmlTextView
 import crux.bphc.cms.widgets.PropertiesAlertDialog
 import io.realm.Realm
-import io.realm.RealmList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -92,7 +91,7 @@ class DiscussionFragment : Fragment() {
         binding.subject.text = discussion.subject
         binding.userName.text = discussion.userFullName
         binding.modifiedTime.text = Utils.formatDate(discussion.timeModified)
-        binding.message.text = discussion.message
+        binding.message.text = HtmlTextView.parseHtml(discussion.message)
         Glide.with(requireContext())
             .load(Urls.getProfilePicUrl(discussion.userPictureUrl))
             .into(binding.userPic)

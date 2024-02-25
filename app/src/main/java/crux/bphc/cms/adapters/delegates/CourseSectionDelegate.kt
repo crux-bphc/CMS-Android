@@ -38,7 +38,7 @@ class CourseSectionDelegate(activity: Activity) : AdapterDelegate<List<CourseCon
         val vh = holder as CourseSectionViewHolder
         val section = items[position] as CourseSection
         vh.sectionName.text = section.name
-        val summary = Utils.trimWhiteSpace(HtmlCompat.fromHtml(section.summary.trim { it <= ' ' },
+        val summary = Utils.trimWhiteSpace(HtmlCompat.fromHtml(section.summary,
                 HtmlCompat.FROM_HTML_MODE_COMPACT))
         if (summary.isNotEmpty()) {
             vh.sectionDescription.visibility = View.VISIBLE
