@@ -279,17 +279,17 @@ class MainActivity : AppCompatActivity() {
                     "We need permission to move course content"
                 }
                 else {
-                    "We need permission to send course notifications"
+                    "We need permission to send notifications"
                 }
                 MaterialAlertDialogBuilder(this)
                     .setTitle("Permission required")
                     .setMessage(messageText)
                     .setPositiveButton("OK") { _, _ ->
-                        requestReadStoragePermission()
+                        requestPermission()
                     }
                     .show()
             } else {
-                requestReadStoragePermission()
+                requestPermission()
             }
         } else {
             startDataMigrationIfRequired()
@@ -303,7 +303,7 @@ class MainActivity : AppCompatActivity() {
             startDataMigrationIfRequired()
     }
 
-    private fun requestReadStoragePermission() {
+    private fun requestPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             askPermission.launch(
                 arrayOf(
