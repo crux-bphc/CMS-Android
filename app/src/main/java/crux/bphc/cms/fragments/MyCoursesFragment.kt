@@ -11,15 +11,20 @@ import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.OptIn
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.badge.BadgeDrawable
+import com.google.android.material.badge.BadgeUtils
+import com.google.android.material.badge.ExperimentalBadgeUtils
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import crux.bphc.cms.R
 import crux.bphc.cms.activities.CourseDetailActivity
+import crux.bphc.cms.activities.MainActivity
 import crux.bphc.cms.databinding.FragmentMyCoursesBinding
 import crux.bphc.cms.databinding.RowCourseBinding
 import crux.bphc.cms.exceptions.InvalidTokenException
@@ -29,8 +34,6 @@ import crux.bphc.cms.helper.CourseRequestHandler
 import crux.bphc.cms.interfaces.ClickListener
 import crux.bphc.cms.models.course.Course
 import crux.bphc.cms.models.course.CourseSection
-import crux.bphc.cms.network.APIClient
-import crux.bphc.cms.network.MoodleServices
 import crux.bphc.cms.utils.UserUtils
 import io.realm.Realm
 import kotlinx.coroutines.*
@@ -67,6 +70,7 @@ class MyCoursesFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         requireActivity().title = "My Courses"
+        badge = null
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -76,33 +80,59 @@ class MyCoursesFragment : Fragment() {
         return binding.root
     }
 
+    private fun pushView(fragment: Fragment, tag: String) {
+        try {
+            val activity = requireActivity() as MainActivity
+            activity.pushView(fragment, tag, false)
+        } catch (e: Exception) {
+            Toast.makeText(requireContext(), "Failed to launch fragment $tag", Toast.LENGTH_SHORT)
+                .show()
+            e.printStackTrace()
+        }
+    }
+
+    @ExperimentalBadgeUtils
+    @OptIn(markerClass = [ExperimentalBadgeUtils::class])
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
+        attachBatchDrawable()
         inflater.inflate(R.menu.my_courses_menu, menu)
     }
 
+    @ExperimentalBadgeUtils
+    @OptIn(markerClass = [ExperimentalBadgeUtils::class])
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.mark_all_as_read -> {
                 CoroutineScope(Dispatchers.Default).launch {
                     courseRequestHandler = CourseRequestHandler()
-                    courseRequestHandler.markAllNotificationsAsRead()
+                    val isSuccessful = courseRequestHandler.markAllNotificationsAsRead()
                     val realm = Realm.getDefaultInstance()
                     val courseDataHandler = CourseDataHandler(realm)
                     courseDataHandler.markAllAsRead()
                     realm.close()
 
                     CoroutineScope(Dispatchers.Main).launch {
+                        if(isSuccessful) {
+                            detachBadgeDrawable()
+                        }
                         Toast.makeText(requireActivity(), "Marked all as read", Toast.LENGTH_SHORT).show()
                         mAdapter.courses = this@MyCoursesFragment.courseDataHandler.courseList
                     }
                 }
                 true
             }
+            R.id.current_notifications -> {
+                detachBadgeDrawable()
+                pushView(NotificationsFragment(), "notifications")
+                true
+            }
             else -> false
         }
     }
 
+    @ExperimentalBadgeUtils
+    @OptIn(markerClass = [ExperimentalBadgeUtils::class])
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         courseDataHandler = CourseDataHandler(realm)
@@ -193,6 +223,7 @@ class MyCoursesFragment : Fragment() {
         binding.swipeRefreshLayout.setOnRefreshListener {
             binding.swipeRefreshLayout.isRefreshing = true
             refreshCourses()
+            refreshNotifications()
         }
 
         checkEmpty()
@@ -281,6 +312,69 @@ class MyCoursesFragment : Fragment() {
                 }
                 Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+    @ExperimentalBadgeUtils
+    @OptIn(markerClass = [ExperimentalBadgeUtils::class])
+    private fun refreshNotifications() {
+        lifecycleScope.launch {
+            launch(Dispatchers.IO) { // lifecycle scope allows cancellation of this scope
+                val courseRequestHandler = CourseRequestHandler()
+                try {
+                    val notificationList = courseRequestHandler.fetchNotificationListSync()
+                    Log.i(NotificationsFragment.TAG, "${notificationList.size} notifications")
+                    val realm = Realm.getDefaultInstance() // tie a realm instance to this thread
+                    val courseDataHandler = CourseDataHandler(realm)
+                    courseDataHandler.replaceNotifications(notificationList)
+                    realm.close()
+                    attachBatchDrawable()
+                } catch (e: Exception) {
+                    Log.e(NotificationsFragment.TAG, "", e)
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(requireActivity(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                        if (e is InvalidTokenException) {
+                            UserUtils.logout()
+                            UserUtils.clearBackStackAndLaunchTokenActivity(requireActivity())
+                        }
+                    }
+                } finally {
+                    withContext(Dispatchers.Main) {
+                        binding.swipeRefreshLayout?.isRefreshing = false
+                    }
+                }
+            }
+        }
+    }
+
+    @ExperimentalBadgeUtils
+    @OptIn(markerClass = [ExperimentalBadgeUtils::class])
+    private fun attachBatchDrawable() {
+        val realm = Realm.getDefaultInstance()
+        val courseDataHandler = CourseDataHandler(realm)
+        val notifCount: Int = courseDataHandler.unreadNotificationCount
+        val visibility: Boolean = courseDataHandler.unreadNotificationCount > 0
+        badge = BadgeDrawable.create(requireContext()).apply {
+            badgeGravity = BadgeDrawable.TOP_END
+            number = notifCount
+            isVisible = visibility
+        }
+        BadgeUtils.attachBadgeDrawable(
+            badge!!,
+            (activity as AppCompatActivity).findViewById(R.id.toolbar),
+            R.id.current_notifications
+        )
+        realm.close()
+    }
+    @ExperimentalBadgeUtils
+    @OptIn(markerClass = [ExperimentalBadgeUtils::class])
+    private fun detachBadgeDrawable() {
+        if(badge != null) {
+            BadgeUtils.detachBadgeDrawable(
+                badge!!,
+                (activity as AppCompatActivity).findViewById(R.id.toolbar),
+                R.id.current_notifications
+            )
+            badge = null
         }
     }
 

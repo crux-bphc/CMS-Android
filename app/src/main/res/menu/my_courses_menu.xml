@@ -2,7 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/current_notifications"
+        android:title="@string/open_notifications"
+        android:icon="@drawable/ic_bell"
+        app:showAsAction="always"/>
+    <item
         android:id="@+id/mark_all_as_read"
         android:title="@string/mark_all_as_read"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 </menu>

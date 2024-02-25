@@ -101,6 +101,26 @@ public interface MoodleServices {
     @GET("webservice/rest/server.php?wsfunction=core_message_mark_all_notifications_as_read&moodlewsrestformat=json")
     Call<Boolean> markAllNotificationsAsRead(@Query("wstoken") String token, @Query("useridto") int userid);
 
+    /**
+     * Mark a notification as read for a user
+     *
+     * @param token A valid Moodle Web Service token
+     * @param notificationId Id of the user whose number of unread notifications are needed
+     */
+
+    @GET("webservice/rest/server.php?wsfunction=core_message_mark_notification_read&moodlewsrestformat=json")
+    Call<ResponseBody> markNotificationRead(@Query("wstoken") String token, @Query("notificationid") int notificationId);
+
+    /**
+     * Fetches recent popup notifications of a user
+     *
+     * @param token A valid Moodle Web Service token
+     * @param userid Id of the user whose notifications are needed
+     */
+
+    @GET("webservice/rest/server.php?wsfunction=message_popup_get_popup_notifications&moodlewsrestformat=json")
+    Call<ResponseBody> fetchNotifications(@Query("wstoken") String token, @Query("useridto") int userid);
+
     @GET("webservice/rest/server.php?wsfunction=core_user_add_user_device&moodlewsrestformat=json")
     Call<ResponseBody> registerUserDevice(@Query("wstoken") @NotNull String token,
                                     @Query("appid") @NotNull String appid,
