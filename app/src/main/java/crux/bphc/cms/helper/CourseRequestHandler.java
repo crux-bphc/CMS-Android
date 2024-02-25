@@ -229,6 +229,29 @@ public class CourseRequestHandler {
         });
     }
 
+    public Boolean markAllNotificationsAsRead() throws IOException, RuntimeException {
+        Call<Boolean> notificationCall = moodleServices.markAllNotificationsAsRead(userAccount.getToken(), userAccount.getUserID());
+
+        try {
+            Response<Boolean> response = notificationCall.execute();
+
+            if (response.code() != 200) { // Moodle returns 200 for all API calls
+                HttpException e = new HttpException(response);
+                Log.e(TAG, "Response code not 200!", e);
+                throw e;
+            }
+
+            if (response.body() == null) {
+                throw new RuntimeException("Response body is null");
+            }
+
+            return response.body();
+        } catch (IOException e) {
+            Log.e(TAG, "IOException when marking all notifications as read", e);
+            throw e;
+        }
+    }
+
 
     public List<Discussion> getForumDiscussions(int moduleId) {
         Call<ForumData> callForumData = moodleServices.getForumDiscussions(userAccount.getToken(), moduleId, 0, 0);
