@@ -31,6 +31,10 @@
         <item quantity="other">%d Courses updated</item>
     </plurals>
 
+    <!-- Notification -->
+    <string name="open_notifications">open notifications</string>
+    <string name="no_notifications_to_display">No Notifications to Display</string>
+
     <!-- Course Sections -->
     <string name="open_course_website_on_browser">open page in browser</string>
     <string name="mark_all_as_read">mark all as read</string>
