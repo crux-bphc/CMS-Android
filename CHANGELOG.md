@@ -11,6 +11,17 @@ Dates are in `yyyy-mm-dd`.
 ### Changed
 
 ### Fixed
+
+## Version 1.10 (verCode 1100000), 2024-02-25
+### Added
+* Mark All as Read marks notifications as read on website.
+
+### Changed
+* Permission request for notification permissions.
+* Use full names for courses.
+* 
+
+### Fixed
 * Cancel button not visible in deletion dialog in dark mode.
 * Snackbar message on deletion not properly visible in dark mode.
 
