@@ -4,28 +4,31 @@ import androidx.core.text.HtmlCompat
 import com.google.gson.annotations.SerializedName
 import crux.bphc.cms.R
 import crux.bphc.cms.interfaces.CourseContent
+import crux.bphc.cms.models.UserAccount
 import crux.bphc.cms.utils.FileUtils
 import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.Ignore
 import io.realm.annotations.PrimaryKey
 import java.util.*
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 /**
  * @author Harshit Agarwal (16-Dec-2016)
  * @author Abhijeet Viswa
  */
 open class Module(
-        @PrimaryKey @SerializedName("id") var id: Int = 0,
-        @SerializedName("instance") var instance: Int = 0,
-        name: String = "",
-        @SerializedName("url") var url: String = "",
-        @SerializedName("modicon") var modIcon: String = "",
-        @SerializedName("modname") private var modName: String = "",
-        @SerializedName("description") var description: String = "",
-        @SerializedName("contents") var contents: RealmList<Content> = RealmList(),
-        var courseSectionId: Int = 0,
-        var isUnread: Boolean = false,
+    @PrimaryKey @SerializedName("id") var id: Int = 0,
+    @SerializedName("instance") var instance: Int = 0,
+    name: String = "",
+    @SerializedName("url") var url: String = "",
+    @SerializedName("modicon") var modIcon: String = "",
+    @SerializedName("modname") private var modName: String = "",
+    description: String  = "",
+    @SerializedName("contents") var contents: RealmList<Content> = RealmList(),
+    var courseSectionId: Int = 0,
+    var isUnread: Boolean = false,
 ) : RealmObject(), CourseContent {
     enum class Type {
         RESOURCE, FORUM, LABEL, ASSIGNMENT, FOLDER, QUIZ, URL, PAGE, DEFAULT, BOOK
@@ -34,7 +37,24 @@ open class Module(
     @SerializedName("name") var name: String = name
         get() {
             return HtmlCompat.fromHtml(field, HtmlCompat.FROM_HTML_MODE_COMPACT).toString()
-                    .trim{ it <= ' ' }
+                .trim{ it <= ' ' }
+        }
+
+    @SerializedName("description") var description: String = description
+        get() {
+            val pattern: Pattern = Pattern.compile(URL_REGEX)
+            val matcher: Matcher = pattern.matcher(field)
+
+            val descriptionBuffer = StringBuffer(field.length)
+
+            while (matcher.find()) {
+                val foundLink = matcher.group(1)
+                val replaceWith = "<a href=\"$foundLink?token=${UserAccount.token}\">"
+                matcher.appendReplacement(descriptionBuffer, replaceWith)
+            }
+            matcher.appendTail(descriptionBuffer)
+
+            return descriptionBuffer.toString().trim { it <= ' ' }
         }
 
     @Ignore var modType: Type = Type.DEFAULT
@@ -67,20 +87,20 @@ open class Module(
         }
 
     fun deepCopy(): Module = Module(
-            id,
-            instance,
-            name,
-            url,
-            modIcon,
-            modName,
-            description,
-            RealmList<Content>(*contents.map { it.copy() }.toTypedArray()),
-            courseSectionId,
-            isUnread,
+        id,
+        instance,
+        name,
+        url,
+        modIcon,
+        modName,
+        description,
+        RealmList<Content>(*contents.map { it.copy() }.toTypedArray()),
+        courseSectionId,
+        isUnread,
     )
 
     private fun inferModuleTypeFromModuleName(): Type {
-        return when (modName.toLowerCase(Locale.ROOT)) {
+        return when (modName.lowercase(Locale.ROOT)) {
             "resource" -> Type.RESOURCE
             "forum" -> Type.FORUM
             "label" -> Type.LABEL
@@ -99,5 +119,9 @@ open class Module(
 
     override fun hashCode(): Int {
         return id
+    }
+
+    companion object {
+        private const val URL_REGEX = "<a href=\"(.*?)\">"
     }
 }

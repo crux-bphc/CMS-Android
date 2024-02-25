@@ -19,6 +19,7 @@ import crux.bphc.cms.helper.CourseRequestHandler
 import crux.bphc.cms.interfaces.ClickListener
 import crux.bphc.cms.models.forum.Discussion
 import crux.bphc.cms.utils.Utils
+import crux.bphc.cms.widgets.HtmlTextView
 import io.realm.Realm
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -185,7 +186,7 @@ class ForumFragment : Fragment() {
 
                 itemBinding.subject.text = discussion.subject
                 itemBinding.userName.text = discussion.userFullName
-                itemBinding.message.text = discussion.message
+                itemBinding.message.text = HtmlTextView.parseHtml(discussion.message)
                 itemBinding.modifiedTime.text = Utils.formatDate(discussion.timeModified)
 
                 if (!discussion.isPinned) {
