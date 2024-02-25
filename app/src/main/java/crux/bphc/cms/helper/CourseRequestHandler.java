@@ -12,6 +12,8 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ import java.util.TreeSet;
 
 import crux.bphc.cms.exceptions.InvalidTokenException;
 import crux.bphc.cms.models.UserAccount;
+import crux.bphc.cms.models.core.Notification;
 import crux.bphc.cms.models.course.Content;
 import crux.bphc.cms.models.course.Course;
 import crux.bphc.cms.models.course.CourseSection;
@@ -227,6 +230,59 @@ public class CourseRequestHandler {
                 }
             }
         });
+    }
+
+    public List<Notification> fetchNotificationListSync() throws IOException, RuntimeException, InvalidTokenException  {
+
+        Call<ResponseBody> notificationCall = moodleServices.fetchNotifications(userAccount.getToken(), userAccount.getUserID());
+
+        try {
+            Response<ResponseBody> response = notificationCall.execute();
+            if (response.code() != 200) { // Moodle returns 200 for all API calls
+                HttpException e = new HttpException(response);
+                Log.e(TAG, "Response code not 200!", e);
+                throw e;
+            }
+
+            if (response.body() == null) {
+                throw new RuntimeException("Response body is null");
+            }
+
+            String responseString = response.body().string();
+            if (responseString.contains("Invalid token")) {
+                throw new InvalidTokenException();
+            }
+            JSONObject json = new JSONObject(responseString);
+            Gson gson = new Gson();
+            return gson.fromJson(
+                    json.getJSONArray("notifications").toString(), new TypeToken<List<Notification>>() {}.getType());
+        } catch (IOException e) {
+            Log.e(TAG, "IOException when fetching Notification List", e);
+            throw e;
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void markNotificationAsRead(int notificationId) throws IOException, RuntimeException {
+        Call<ResponseBody> notificationCall = moodleServices.markNotificationRead(userAccount.getToken(), notificationId);
+
+        try {
+            Response<ResponseBody> response = notificationCall.execute();
+
+            if (response.code() != 200) { // Moodle returns 200 for all API calls
+                HttpException e = new HttpException(response);
+                Log.e(TAG, "Response code not 200!", e);
+                throw e;
+            }
+
+            if (response.body() == null) {
+                throw new RuntimeException("Response body is null");
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "IOException when fetching unread notification count", e);
+            throw e;
+        }
     }
 
     public Boolean markAllNotificationsAsRead() throws IOException, RuntimeException {

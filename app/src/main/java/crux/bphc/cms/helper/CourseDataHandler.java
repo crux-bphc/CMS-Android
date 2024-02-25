@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import crux.bphc.cms.models.UserAccount;
+import crux.bphc.cms.models.core.Notification;
 import crux.bphc.cms.models.course.Content;
 import crux.bphc.cms.models.course.Course;
 import crux.bphc.cms.models.course.CourseSection;
@@ -76,6 +77,44 @@ public class CourseDataHandler {
         } else {
             throw new NullPointerException("Realm instance is null");
         }
+    }
+
+    @NotNull
+    public List<Notification> getNotifications() {
+        if (realm != null) {
+            return realm.copyFromRealm(realm.where(Notification.class).findAll());
+        } else {
+            throw new NullPointerException("Realm instance is null");
+        }
+    }
+
+    public void replaceNotifications(@NotNull List<Notification> notifications) {
+        if (realm != null) {
+            realm.beginTransaction();
+            realm.delete(Notification.class);
+            realm.copyToRealm(notifications);
+            realm.commitTransaction();
+        } else {
+            throw new NullPointerException("Realm instance is null");
+        }
+    }
+
+    public void markNotificationAsRead(Notification notification) {
+        notification.setRead(true);
+        realm.executeTransaction(r -> {
+            Notification foundNotification = realm.where(Notification.class)
+                    .equalTo("notificationId", notification.getNotificationId())
+                    .findFirst();
+            if(foundNotification != null) {
+                foundNotification.setRead(true);
+            }
+        });
+    }
+
+    public int getUnreadNotificationCount() {
+        return realm.where(Notification.class)
+                .equalTo("read", false)
+                .findAll().size();
     }
 
     /**
@@ -346,7 +385,10 @@ public class CourseDataHandler {
      * Mark all modules across all courses as read.
      */
     public void markAllAsRead() {
-        realm.executeTransaction(r -> r.where(Module.class).findAll().setBoolean("isUnread", false));
+        realm.executeTransaction(r -> {
+            r.where(Module.class).findAll().setBoolean("isUnread", false);
+            r.where(Notification.class).findAll().setBoolean("read", true);
+        });
     }
 
     public void markModuleAsRead(Module module) {
@@ -368,7 +410,7 @@ public class CourseDataHandler {
     public String getCourseName(int courseId) {
         Course course = realm.where(Course.class).equalTo("id", courseId).findFirst();
         if (course == null) return "";
-        return course.getShortName();
+        return course.getFullName();
     }
 
     public String getCourseNameForActionBarTitle(int courseId){
